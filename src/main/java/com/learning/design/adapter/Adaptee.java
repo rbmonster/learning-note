@@ -12,6 +12,8 @@ package com.learning.design.adapter;
  * @Date: 2020/5/10 23:44
  */
 public class Adaptee {
+
     public void invokeExecute(){
+        System.out.println("this is apaptee say!!");
     }
 }
