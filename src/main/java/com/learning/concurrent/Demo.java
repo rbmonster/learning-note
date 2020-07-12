@@ -1,8 +1,9 @@
 package com.learning.concurrent;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * <pre>
@@ -15,15 +16,9 @@ import java.util.concurrent.Executors;
  * @Author: sanwu
  * @Date: 2020/7/5 21:31
  */
-public class Demo implements Runnable {
+public class Demo implements Delayed {
     public static volatile int value = 0;
     public static int tmp = 0;
-
-    @Override
-    public synchronized void run() {
-        value++;
-        testMethod();
-    }
 
     public static void read(){
         System.out.println(value);
@@ -44,5 +39,15 @@ public class Demo implements Runnable {
         Demo.value++;
         
 
+    }
+
+    @Override
+    public long getDelay(TimeUnit unit) {
+        return 100;
+    }
+
+    @Override
+    public int compareTo(Delayed o) {
+        return 0;
     }
 }

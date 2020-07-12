@@ -1,4 +1,4 @@
-package com.learning.concurrent;
+package com.learning.concurrent.exception;
 import java.util.concurrent.*;
 
 /**

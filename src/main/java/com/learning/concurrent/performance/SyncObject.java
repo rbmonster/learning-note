@@ -1,4 +1,4 @@
-package com.learning.concurrent;//: concurrency/SyncObject.java
+package com.learning.concurrent.performance;//: concurrency/SyncObject.java
 // Synchronizing on another object.
 
 import lombok.SneakyThrows;

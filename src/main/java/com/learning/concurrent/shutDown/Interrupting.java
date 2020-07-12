@@ -22,6 +22,9 @@ class SleepBlocked implements Runnable {
   }
 }
 
+/**
+ * IO读取期间，即使调用线程的中断也无法停止
+ */
 class IOBlocked implements Runnable {
   private InputStream in;
   public IOBlocked(InputStream is) { in = is; }
@@ -40,17 +43,18 @@ class IOBlocked implements Runnable {
   }
 }
 
+/**
+ * 设计一个用于不释放锁的程序再调用其的中断方法
+ */
 class SynchronizedBlocked implements Runnable {
   public synchronized void f() {
     while(true) // Never releases lock
       Thread.yield();
   }
   public SynchronizedBlocked() {
-    new Thread() {
-      public void run() {
-        f(); // Lock acquired by this thread
-      }
-    }.start();
+    new Thread(() -> {
+      f(); // Lock acquired by this thread
+    }).start();
   }
   public void run() {
     System.out.println("Trying to call f()");
