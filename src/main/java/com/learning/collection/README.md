@@ -15,6 +15,7 @@
   - HashSet: 存入的元素必须实现hashSet()方法。
   - TreeSet: 保持次序的Set，底层为树结构。元素必须实现Comparable接口。
   - SortedSet: 元素可以保证处于排序状态，必须实现Comparable接口. SortedSet<> so = new TreeSet<>()
+  - EnumSet：元素必须来自一个Enum。
 - Queue为LinkedList的子类：
   - offer()方法：将一个元素插入队尾并返回false
   - peek() 和element() 在被移除的情况下返回队头，element()遇到队列为空时返回null
@@ -31,6 +32,7 @@
   - ConcurrentHashMap: 线程安全的Map.
   - IdentityHashMap：使用==代替equals()对“键”进行比较的散列映射。
   - sortedMap: 排序的Map，现阶段TreeMap是其唯一实现。
+  - EnumMap:要求键必须来自一个Enum。
   - 散列陷阱：hashCode的生成应该保持在不同环境下生成的hashcode是不变的，否则就会造成放入HashMap中后，无法正常取出。
   - HashMap的性能因子
     - 容量：表中的桶位数。
@@ -46,7 +48,13 @@
 ### 散列
   - 散列的价值在于速度，散列是的查询得以快速进行。数组并不保存键本身，而是通过键对象生成一个对象，将其作为数组的下表，这个数字就是散列码。
   - 不同的键可以产生相同的下标，为了解决数组容量被固定的问题，相当于换算的键可能冲突。冲突通过外部链接处理，即链表。然后对链表中的值调用equals的方法进行线性查询。
-  
+ 
+### 持有引用(java.lang.ref)
+  - SoftReference用以实现内存敏感的高速缓存。
+  - WeakReference是为实现“规范映射”而设计的，它不妨碍垃圾回收器回收映射的键和值。
+  - PhantomReference用以调度回收前的清理工作，它比java机制更成熟。
+  - 引用的强弱顺序，为SoftReference、WeakReference、PhantomReference
+
 ### 性能测试
   - List 的结果如下
 ```
