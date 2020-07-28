@@ -184,6 +184,116 @@
 2. 使用运行的基础设施的指标。
 3. JDK对应的版本。
 
+#### 5.11 内存分配策略
+- 查看java 虚拟机的垃圾收集器：java -XX:+PrintCommandLineFlags -version
+
+- 对象优先在Eden分配
+  - 例子：-Xms20M -Xmx20M -Xmn10M ，分配3个2M、1个4M对象，分配第三个对象时，Eden空间不足4M，触发Minor GC，由于Survivor无法存放6M，通过分配担保机制转移到老年代
+- 大对象直接进入老年代： -XX:PretenureSizeThreshold 参数指定对象大于该值得对象直接转移至老年代，避免在Eden区及两个Survivor区之间来回复制。
+- 长期存活的对象将进入老年代：-XX:MaxTenuringThreshold用于设置对象晋升为老年代的年龄阀值。
+- 动态对象年龄判断：当Survivor空间中相同年龄的对象大小的综合大于Survivor空间的一半，年龄大于或等于该年龄的对象直接进入老年代，无需等待MaxTenuringThreshold。
+- 空间分配担保：
+  - 发生Minor GC前，首先检查老年代最大可用的连续空间是否大于新生代所有对象的总空间，条件成立说明Minor GC是安全的。
+  - 如果不成立，查看-XX:HandlePromotionFailure参数的设置值是否允许担保失败。
+  - 如果允许，那么检查老年代最大可用的连续空间是否大于历次晋升到老年代的平均大小，如果大于进行Minor GC，尽管有风险。
+  - 如果小于，或者参数设置为不允许冒险，那么改为进行一次Full GC。
+  - JDK6之后规则变为：只要老年代连续空间大于新生代总大小或者历次晋升的平均大小，就会进行Minor GC，否则进行Full GC。
+
+## 七、虚拟机类加载机制
+#### 7.1 类加载的时机
+- 类的生命周期： 加载、[验证、准备、解析]、初始化、使用、卸载。
+#### 7.2 类与类加载器
+- 自定义类加载器见代码
+- 双亲委派模型：
+  - 站在虚拟机角度，只存在两种不同的类加载器：
+    1. 启动类加载器BootStrap ClassLoader，由虚拟机实现，是虚拟机自身一部分。
+    2. 其他所有的类加载器，由Java语言实现，独立于虚拟机之外，都是继承自抽象类java.lang.ClassLoader。
+  - java相关的三层类加载器
+    - 启动类加载器BootStrap ClassLoader：负责加载存放在<JAVA HOME>\lib目录，或者被-Xbootclaspath参数，启动类加载器无法被Java程序直接引用，用户在编写自定义类加载器时，需要需要给引导类加载器去处理，那直接使用null替代即可。
+    - 扩展类加载器Extension ClassLoader：负责加载<JAVA HOME>\lib\ext目录，或者被java.ext.dirs系统变量所指定的目录中所有的类库。
+    - 应用程序类加载器Application ClassLoader：负责加载用户类路径ClassPath上所有的类库。
+  - 双亲委派模型加载过程：
+    a. 如果一个类加载器接收到类加载请求，它首先不会自己尝试加载这个类，而是把请求委托到父类执行。
+    b. 每一层次的类加载器都会委托其父类加载器去完成，最终传到最顶层的启动类加载器中。
+    c. 只有当所有父加载器都无法自己完成这个类加载请求，子加载器才会进行加载。
+  - 作用：因为这样可以避免重复加载，当父亲已经加载了该类的时候，就没有必要 ClassLoader 再加载一次。考虑到安全因素，我们试想一下，如果不使用这种委托模式，那我们就可以随时使用自定义的String来动态替代java核心api中定义的类型，这样会存在非常大的安全隐患，而双亲委托的方式，就可以避免这种情况，因为String 已经在启动时就被引导类加载器（Bootstrcp ClassLoader）加载，所以用户自定义的ClassLoader永远也无法加载一个自己写的String，除非你改变 JDK 中 ClassLoader 搜索类的默认算法。
+![avatar](http://ww1.sinaimg.cn/large/8dc363e6ly1g2fwftq83rj20jg0dz3z6.jpg)
+  - 相关代码：
+```
+    protected Class<?> loadClass(String name, boolean resolve)
+        throws ClassNotFoundException
+    {
+        synchronized (getClassLoadingLock(name)) {
+            // First, check if the class has already been loaded
+            Class<?> c = findLoadedClass(name);
+            if (c == null) {
+                long t0 = System.nanoTime();
+                try {
+                    if (parent != null) {
+                        c = parent.loadClass(name, false);
+                    } else {
+                        c = findBootstrapClassOrNull(name);
+                    }
+                } catch (ClassNotFoundException e) {
+                    // ClassNotFoundException thrown if class not found
+                    // from the non-null parent class loader
+                }
+
+                if (c == null) {
+                    // If still not found, then invoke findClass in order
+                    // to find the class.
+                    long t1 = System.nanoTime();
+                    c = findClass(name);
+
+                    // this is the defining class loader; record the stats
+                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+                    sun.misc.PerfCounter.getFindClasses().increment();
+                }
+            }
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
+        }
+    }
+```
+
+## 八、虚拟机字节码执行引擎
+#### 8.1 栈帧结构
+- 结构包含：局部变量表、操作数栈、动态连接、方法返回地址和一些额外的信息。
+- 在编译Java源码是，就计算出栈帧需要多大的局部变量表，和需要多深的操作数栈，并写入方法表的code属性中。
+
+##### 8.1.1 局部变量表
+- 定义包含boolean、byte、char、short、int、float、reference或returnAddress类型
+- reference类型表示对对象一个实例的引用，用于索引到Java堆或方法区中的相关信息。
+- 方法调用：如果执行的是实例方法，那么实例方法的第0位索引的变量是用于传递方法所属的对象的引用，即this。其余变量占用从1开始的局部变量槽。
+- 变量槽对于GC的影响，由于变量槽是可重用的，尽管限制了作用于仍可能存在变量不会被回收的现象。手工置为null是一种解决方案，但实际虚拟机可能优化掉该行代码，并不是完美的方法。
+
+##### 8.1.2 操作数栈
+- 定义：一个先入后出的栈。
+
+##### 8.1.3 方法返回地址
+- 方法返回的两种方式：
+  - 第一种执行引擎遇到返回的字节码指令，正常完成调用
+  - 另一种产生异常返回，异常调用完成
+  
+#### 8.2 方法调用
+- 静态分派：方法的调用根据所有依赖的静态类型来决定执行版本的分派动作，最典型的为重载。虚拟机在重载时是通过参数的静态类型(即声明的参数类型)而不是实际类型作为判定依据的。代码见：StaticDispatch
+  - 重载方法的优先级，char->int->long->float->double ->Character -> Serializable -> Object ,基本类型的重载方法会按此优先级寻找对应的方法，若重载的方法参数与调用的方法不一致，则会向父类查找匹配上相同类型的方法。
+  - 静态方法在编译期和类加载期间就完成解析，其选择重载的过程也是通过静态分派完成的
+- 动态分派：虚拟机根据实际类型来分派执行版本。典型的例子为重写。
+  - java中只有虚方法(调用指令invokevirtual)的存在，只对方法有效，对字段无效。子类存在与父类的同名字段时，虽然内存会保存两个，但是子类的字段会则必父类的同名字段。
+  - 虚拟机的指令解析大致分为4步
+    - 找操作数栈顶元素所指向对象的实际类型。
+    - 寻找匹配方法，若找到则返回方法的直接引用。
+    - 按继承关系依次找其父类，进行第二步的搜索。
+    - 始终没找到合适方法，抛出java.lang.AbstractMethodError异常。
+- java.lang.invoke方法与Reflection的区别
+  1. 本质都是模拟方法调用，但是Reflection是在模拟Java代码层次的方法调用，而MethodHandle是模拟字节码层次的方法调用。
+  2. Reflection的Method对象包含的信息比invoke包的MethodHandle的信息多的多。
+  3.
+   
 ## 十二、Java 内存模型
 
 #### 12.1. 硬件的效率与一致性
@@ -301,4 +411,34 @@ public class Singleton{
   - 自适应锁：自适应意味着自旋的时间不固定，由前一次在同一个锁上的自旋时间及锁的状态拥有者来决定。（如果之前自旋获得过锁，进而允许本次自旋更长时间。若很少成果获得锁，那么可能直接忽略跳过等待）
 - 锁消除：执行的方法体所有数据都不会逃逸出去被其他线程访问到，认为是线程私有的，便可以消除锁。
 - 锁粗化：同步块过于细化，导致多次获取锁，导致不必要的性能损耗，扩大锁的范围便可以解决这个问题。
--
+
+- 轻量级锁：
+  - 定义：jdk6引入的新型锁机制，减少传统重量级锁使用操作系统互斥量产生的性能消耗。
+  - Hotspot的对象头存储对象自身的运行时数据，如HashCode、GC分带年龄等。官方成为Mark Word
+![avatar](picture/object-head.jpg)
+  - 步骤：
+    1. 判断对象没有被锁定，锁标志位为01
+    2. 在当前线程的栈帧创建一个锁记录(Lock Record)的空间，用于存储所对象目前的Mark Word的拷贝。
+    3. 虚拟机使用CAS操作把对象Mark Word的更新指向Lock Record，若成功表示线程拥有该对象的锁，标志位转变成“00”。
+    4. 若更新失败，先检查Mark Word是否指向当前线程，如果是，说明线程已经拥有该对象，继续同步执行。
+    5. 若未拥有该对象的锁，尝试使用自旋来等待锁。若有两条及其以上线程，则锁膨胀为重量级锁，锁标志的状态变成“10”，此时Mark Word中存储的是指向重量级锁的指针。
+    6. 解锁时同样使用CAS操作，把Mark Word和线程中复制的锁空间替换回来。假如能够成功替换，释放锁。如果替换失败，说明存在锁竞争，释放锁的同时，唤醒被挂起的线程。
+  - 情况：升级为重量级锁：长时间自旋会导致CPU消耗，达到一定自旋次数还没有释放锁或者线程1还在执行线程2还在自旋，这时候又有线程3来竞争这个对象争锁，此时轻量级锁会升级为重量级锁。
+    
+- 偏向锁
+  - 定义：消除数据在无竞争情况下的同步。该锁会偏向第一次获取它的线程。在大多数情况下，锁不存在多线程竞争，总是由同一线程多次获得，那么此时引入偏向锁。一句话总结它的作用：减少同一线程获取锁的代价。
+  - 步骤：
+    1. 线程访问同步代码块，锁对象第一次被获取时，虚拟机会把对象头的锁标志设置成"01"，偏向标志设置为1，表示进入偏向模式
+    2. 使用CAS，把获取锁的线程ID记录及Epoch，记录到对象头Mark Word的对象哈希码中。
+    3. 执行完同步代码块后，线程并不会主动释放偏向锁。当第二次到达同步代码块时，线程会判断此时持有锁的线程是否就是自己（持有锁的线程ID也在对象头里），如果是则正常往下执行。由于之前没有释放锁，这里也就不需要重新加锁。
+    4. 一旦出现另一个线程尝试获得锁，申请同一个锁对象时，偏向锁就会立即升级为轻量级锁。注意这里的第二个线程只是申请锁，不存在两个线程同时竞争锁。进入下列流程。
+    5. 首先检查这个对象头的MarkWord是不是储存着这个线程的ID。如果是，那么直接进去而不需要任何别的操作。
+    6. 如果不相等（其他线程需要获取锁对象，如线程2），查看线程1是否存活。
+    7. 不存活则锁对象被重置为无锁状态，其他线程（线程2）可以竞争将其设置为偏向锁。
+    8. 存活状态下则立刻查找该线程（线程1）的栈帧信息
+      - 如果需要继续持有这个锁对象，那么会暂停该线程（线程1），撤销偏向锁，升级为轻量级锁进行后续操作。
+      - 如果不再需要这个锁对象，那么将锁对象设置为无锁状态，重新进行偏向锁竞争。
+   - 例外：当对象被调用Object.hash()方法后，自动升级为轻量级锁。
+- 锁膨胀： synchronize 偏向锁->轻量级锁-> 重量级锁  膨胀方向不可逆。
+![avatar](picture/lock-transfer.jpg)
+          
