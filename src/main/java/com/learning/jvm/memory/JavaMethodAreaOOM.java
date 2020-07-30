@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * <pre>
  * @Description:
  *  借助CGlib 使方法区出现内初溢出异常，在JDK7中导致内存空间溢出
- *
+ *  java 8 不会出现问题
  * 参数：-XX:PermSize=10M
  * </pre>
  *
