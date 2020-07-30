@@ -1,4 +1,4 @@
-package com.learning.jvm;
+package com.learning.jvm.initial;
 
 import java.io.Serializable;
 
