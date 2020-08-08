@@ -1,5 +1,6 @@
 package com.learning.client;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Data
 public class Location {
     private Double lng;
     private Double lat;

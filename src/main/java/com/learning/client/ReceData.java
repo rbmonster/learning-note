@@ -1,5 +1,6 @@
 package com.learning.client;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @Getter
 @Setter
+@Data
 public class ReceData {
     private int status;
     private String message;

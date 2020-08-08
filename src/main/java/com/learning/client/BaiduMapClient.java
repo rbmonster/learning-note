@@ -12,14 +12,15 @@ import org.springframework.web.bind.annotation.RequestParam;
  * </pre>
  *
  * @类名：com.xy.tms.api.baiduMap.BaiduMapClient
- * @作者： 洪杉铷
- * @创建日期: 2019/9/23 14:56
+ * @作者： Aziz
+ * @创建日期: 2020/7/23 14:56
  */
 @FeignClient(name = "baidu-map-service", url = "http://api.map.baidu.com")
 public interface BaiduMapClient {
 
     /**
      * 根据地址获取经纬度
+     *
      * @param address
      * @param output
      * @param ak
@@ -28,8 +29,21 @@ public interface BaiduMapClient {
     @GetMapping(path = "/geocoding/v3/")
     String getLatitudeAndLongitude(@RequestParam("address") String address, @RequestParam("output") String output, @RequestParam("ak") String ak);
 
+
+    /**
+     * 获取两地址之间的行驶路径
+     *
+     * @param origin
+     * @param destination
+     * @param ak
+     * @return
+     */
+    @GetMapping(path = "/directionlite/v1/driving")
+    String getRoad(@RequestParam("origin") String origin, @RequestParam("destination") String destination, @RequestParam("ak") String ak);
+
     /**
      * 根据经纬度获取地址
+     *
      * @param ak
      * @param output
      * @param coordtype
@@ -38,9 +52,6 @@ public interface BaiduMapClient {
      */
     @GetMapping(path = "/reverse_geocoding/v3/")
     String getAddressByLatAndLtude(@RequestParam("ak") String ak, @RequestParam("output") String output, @RequestParam("coordtype") String coordtype, @RequestParam("location") String location);
-
-    @GetMapping(path = "/directionlite/v1/driving")
-    String getRoad(@RequestParam("origin")String origin,@RequestParam("destination")String destination,@RequestParam("ak")String ak);
 }
 
 
