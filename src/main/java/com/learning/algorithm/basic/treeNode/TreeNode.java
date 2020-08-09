@@ -12,11 +12,11 @@ package com.learning.algorithm.basic.treeNode;
  * @Date: 2020/8/8 17:22
  */
 public class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
+    public int val;
+    public TreeNode left;
+    public TreeNode right;
 
-    TreeNode(int x) {
+    public TreeNode(int x) {
         val = x;
     }
 

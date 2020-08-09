@@ -1,5 +1,7 @@
 package com.learning.algorithm;
 
+import com.learning.algorithm.basic.treeNode.TreeNode;
+
 /**
  * <pre>
  * @Description:
@@ -14,22 +16,28 @@ package com.learning.algorithm;
 public class Demo {
 
     public static void main(String[] args) {
-        int [] num  = {-1,2147483647};
-        System.out.println(new Demo().containsNearbyAlmostDuplicate(num, 1,2147483647));
+        TreeNode node1 =new TreeNode(5);
+        TreeNode node2 =new TreeNode(13);
+        TreeNode node3 =new TreeNode(2);
+        node1.left = node3;
+        node1.right = node2;
+        System.out.println(new Demo().convertBST(node1));
     }
 
-    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
-        if(nums == null || nums.length ==0) {
-            return false;
+    public TreeNode convertBST(TreeNode root) {
+        helper(root, new Integer(0));
+        return root;
+    }
+
+    private void helper(TreeNode root, Integer upper) {
+        if (root == null) {
+            return;
         }
-        for(int i =0 ;i<nums.length ; i++) {
-            for(int j = i+1; j<nums.length&& j-i<=k;j++) {
-                long res = Math.abs(nums[i]-nums[j]);
-                if(res <= t) {
-                    return true;
-                }
-            }
+        helper(root.right, upper);
+        upper = upper + root.val;
+        if(root.val<= upper) {
+            root.val = upper;
         }
-        return false;
+        helper(root.left, upper);
     }
 }
