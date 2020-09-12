@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class BubbleSort {
 
     public static void main(String[] args) {
-        int [] array = {3,1,2,5,7,23,123,45,2,15,12};
+        int [] array = {12,28,83,4,25,26,25,2,25,25,25,12};
         new BubbleSort().bubbleSort2(array);
         System.out.println(Arrays.toString(array));
     }
