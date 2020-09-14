@@ -66,12 +66,12 @@ public class PreOrder {
         if (root == null) {
             return output;
         }
-
         stack.add(root);
         while (!stack.isEmpty()) {
             //每次获得第一个元素，理解成 栈的pop就行。
             TreeNode node = stack.pollLast();
             output.add(node.val);
+            // 由于栈的属性 右节点先入栈
             if (node.right != null) {
                 stack.add(node.right);
             }

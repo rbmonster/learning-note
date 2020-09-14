@@ -33,13 +33,13 @@ public class DFS {
             if(cur.val == target) {
                 return true;
             }
+            s.pop();
             for (Node next : cur.neighbors) {
                 if (!visited.contains(next)) {
                     s.push(next);
                     visited.add(next);
                 }
             }
-            s.pop();
         }
         return false;
     }

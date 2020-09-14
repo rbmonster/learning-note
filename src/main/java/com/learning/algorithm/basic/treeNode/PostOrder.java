@@ -28,7 +28,6 @@ public class PostOrder {
         if (root == null) {
             return output;
         }
-
         stack.add(root);
         while (!stack.isEmpty()) {
             TreeNode node = stack.pollLast();
