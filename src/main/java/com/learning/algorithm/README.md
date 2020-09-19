@@ -314,3 +314,102 @@ private int maximum_depth(TreeNode root) {
   - 二叉搜索树构建：
     - 将有序数组转换为二叉搜索树：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
     
+    
+    
+## 算法归类
+
+### 树
+- 树的遍历
+  - 二叉树的中序遍历：https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
+  - 二叉树的后序遍历：https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
+  - 二叉树的前序遍历：https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
+  - 二叉树的层平均值：https://leetcode-cn.com/problems/average-of-levels-in-binary-tree/
+  - 二叉树的层序遍历：https://leetcode-cn.com/problems/binary-tree-level-order-traversal/
+  - 二叉树的层次遍历 II：https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/  
+  - 二叉树的锯齿形层次遍历：https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
+  
+  - 二叉搜索树的最小绝对差：https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/
+  - 翻转二叉树：https://leetcode-cn.com/problems/invert-binary-tree/
+  - 对称二叉树：https://leetcode-cn.com/problems/symmetric-tree/
+  - 二叉树的所有路径：https://leetcode-cn.com/problems/binary-tree-paths/
+  - 二叉树中第二小的节点：https://leetcode-cn.com/problems/second-minimum-node-in-a-binary-tree/
+  - 另一个树的子树：https://leetcode-cn.com/problems/subtree-of-another-tree/
+  - 修剪二叉搜索树（review）：https://leetcode-cn.com/problems/trim-a-binary-search-tree/
+  - 左叶子之和（review）：https://leetcode-cn.com/problems/sum-of-left-leaves/
+  - 二叉树的右视图（review）：https://leetcode-cn.com/problems/binary-tree-right-side-view/
+  - 把二叉搜索树转换为累加树（review）：https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
+  - 找树左下角的值（review）：https://leetcode-cn.com/problems/find-bottom-left-tree-value/
+  - 寻找重复的子树（review）：https://leetcode-cn.com/problems/find-duplicate-subtrees/solution/
+  - 二叉搜索树中的众数：https://leetcode-cn.com/problems/find-mode-in-binary-search-tree/
+  - 打家劫舍 III：https://leetcode-cn.com/problems/house-robber-iii/
+  - 二叉搜索树中第K小的元素：https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/
+  - 合并二叉树（review）：https://leetcode-cn.com/problems/merge-two-binary-trees/
+  - 路径总和：https://leetcode-cn.com/problems/path-sum/
+  - 路径总和 II（review）：https://leetcode-cn.com/problems/path-sum-ii/
+  - 填充每个节点的下一个右侧节点指针（review）：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/
+  - 两数之和 IV - 输入 BST（review）：https://leetcode-cn.com/problems/two-sum-iv-input-is-a-bst/
+  - 验证二叉搜索树：https://leetcode-cn.com/problems/validate-binary-search-tree/   
+
+  
+- 树的高度
+  - 平衡二叉树：https://leetcode-cn.com/problems/balanced-binary-tree/
+  - 二叉树的直径：https://leetcode-cn.com/problems/diameter-of-binary-tree/
+  - 二叉树的最大深度：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+  - 二叉树的最小深度：https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
+  
+- 树的构建
+  - 从中序与后序遍历序列构造二叉树：https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/
+  - 从前序与中序遍历序列构造二叉树：https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+  - 将有序数组转换为二叉搜索树：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/  
+  - 最大二叉树：https://leetcode-cn.com/problems/maximum-binary-tree/
+  - 二叉树的序列化与反序列化：https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/
+  - 不同的二叉搜索树：https://leetcode-cn.com/problems/unique-binary-search-trees/
+  - 不同的二叉搜索树 II：https://leetcode-cn.com/problems/unique-binary-search-trees-ii/
+  
+- 树的基本操作
+  - 删除二叉搜索树中的节点：https://leetcode-cn.com/problems/delete-node-in-a-bst/
+  - 二叉树展开为链表：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
+  
+- 其他
+  - 二叉搜索树的最近公共祖先：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+  - 二叉树的最近公共祖先：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
+  
+## 二分法
+- 搜索旋转排序数组：https://leetcode-cn.com/problems/search-in-rotated-sorted-array/
+- 寻找旋转排序数组中的最小值：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/
+- 寻找旋转排序数组中的最小值 II：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/
+- 寻找峰值：https://leetcode-cn.com/problems/find-peak-element/
+- 有效的完全平方数：https://leetcode-cn.com/problems/valid-perfect-square/
+
+并查集
+```
+class UnionFindSet {
+        int[] rank;
+        int[] parent;
+
+        public UnionFindSet(int n) {
+            rank = new int[n];
+            parent = new int[n];
+        }
+
+       public int find(int x) {
+           if (parent[x] == 0) return x;
+           return parent[x] = find(parent[x]); // Path compression by halving.
+       }
+
+        public boolean union(int x, int y) {
+           int rootX = find(x);
+           int rootY = find(y);
+           if(rootX == rootY) return true;
+           if(rank[rootX]>rank[rootY]) {
+               parent[rootY] = rootX;
+           } else if(rank[rootX]<rank[rootY]) {
+               parent[rootX] = rootY;
+           } else {
+               parent[rootX] = rootY;
+               rank[rootY]++;
+           }
+           return false;
+       }
+    }
+```
