@@ -380,6 +380,80 @@ private int maximum_depth(TreeNode root) {
 - 寻找旋转排序数组中的最小值 II：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/
 - 寻找峰值：https://leetcode-cn.com/problems/find-peak-element/
 - 有效的完全平方数：https://leetcode-cn.com/problems/valid-perfect-square/
+- Pow(x, n)：https://leetcode-cn.com/problems/powx-n/
+
+- 在排序数组中查找元素的第一个和最后一个位置:https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+
+
+## DFS & BFS
+
+- BFS & DFS：
+  - 01 矩阵：https://leetcode-cn.com/problems/01-matrix/
+  - 朋友圈：https://leetcode-cn.com/problems/friend-circles/
+  - 判断二分图（review）：https://leetcode-cn.com/problems/is-graph-bipartite/
+    - 判断方法很特别，通过节点染色
+  - 岛屿的最大面积：https://leetcode-cn.com/problems/max-area-of-island/
+  - 打开转盘锁（经典问题）：https://leetcode-cn.com/problems/open-the-lock/
+  - 太平洋大西洋水流问题：https://leetcode-cn.com/problems/pacific-atlantic-water-flow/
+  - 二进制矩阵中的最短路径：https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/
+  - 被围绕的区域：https://leetcode-cn.com/problems/surrounded-regions/
+  
+  
+- 拓扑排序
+  - 课程表：https://leetcode-cn.com/problems/course-schedule/
+  - 课程表 II：https://leetcode-cn.com/problems/course-schedule-ii/
+
+- dfs+回溯
+  - 全排列（review）：https://leetcode-cn.com/problems/permutations/
+  - 全排列 II（review）：https://leetcode-cn.com/problems/permutations-ii/
+    - 重点看区别重复元素的条件
+    - ```   public List<List<Integer>> permute(int[] nums) {
+              List<List<Integer>> res = new ArrayList<>();
+              boolean[] used = new boolean[nums.length];
+              Arrays.sort(nums);
+              dfs(nums, new ArrayList<>(), used, res);
+              return res;
+          }
+          
+          
+              public void dfs(int[]nums, List<Integer>path,boolean[] used, List<List<Integer>> res ){
+                  if(path.size() == nums.length) {
+                      res.add(new ArrayList<>(path));
+                      return;
+                  }
+          
+                  for (int i = 0; i < nums.length; i++) {
+                      if (used[i]|| i>0&& nums[i] == nums[i-1] && !used[i-1]) continue;
+                      path.add(nums[i]);
+                      used[i] = true;
+                      dfs(nums,path,used,res);
+                      path.remove(path.size()-1);
+                      used[i] = false;
+                  }
+              }
+      ```
+  - 组合：https://leetcode-cn.com/problems/combinations/submissions/
+  - 组合总和（review）：https://leetcode-cn.com/problems/combination-sum/
+  - 组合总和 II：https://leetcode-cn.com/problems/combination-sum-ii/submissions/
+  - 组合总和 III：https://leetcode-cn.com/problems/combination-sum-iii/
+  - 组合总和 Ⅳ： https://leetcode-cn.com/problems/combination-sum-iv/
+  - 括号生成（review）：https://leetcode-cn.com/problems/generate-parentheses/
+  - 电话号码的字母组合：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/
+  - 分割回文串（review）：https://leetcode-cn.com/problems/palindrome-partitioning/
+    - 动态规划 + dfs + 回溯 或者 dfs + 回溯 
+  - 复原IP地址：https://leetcode-cn.com/problems/restore-ip-addresses/
+  - 子集（review）：https://leetcode-cn.com/problems/subsets/
+  - 子集 II（review）：https://leetcode-cn.com/problems/subsets-ii/
+  - 解数独：https://leetcode-cn.com/problems/sudoku-solver/
+  - 单词搜索：https://leetcode-cn.com/problems/word-search/
+  
+  ```
+  回溯中常常使用的避免重复解的条件：
+   if (i>start  && nums[i] == nums[i - 1]) {
+      continue;
+   }
+  ```
+
 
 并查集
 ```
@@ -413,3 +487,4 @@ class UnionFindSet {
        }
     }
 ```
+

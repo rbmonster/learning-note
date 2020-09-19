@@ -45,62 +45,30 @@ public class Demo {
         int res = map.computeIfPresent(3, (key, oldVal) -> oldVal - 1);
         System.out.println(map);
         int result1 = map.compute(3, (key, oldValue) -> oldValue - 10);
-//        int result = map.compute(4,(key, oldValue) -> oldValue-10);
-//        map.computeIfAbsent()
-//        System.out.println(main.fourSum(new int[] {0,0,0,0}, 0 ));
         int[][] example = new int[][]{{1,1,0}, {1,1,0},{0,0,1}};
-        System.out.println(main.findCircleNum(example));
+//        System.out.println(main.findCircleNum(example));
     }
 
-
-    public int findCircleNum(int[][] M) {
-        int m = M.length;
-        DisjointSet disjointSet = new DisjointSet(m);
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < m; j++) {
-                if(i == j) continue;
-                if (M[i][j]==1) {
-                    disjointSet.union(i,j);
-                }
-            }
-        }
-        int res = 0;
-        for (int i = 0; i < m; i++) {
-            int tmp = disjointSet.find(i);
-            if(tmp==i) {
-                res++;
-            }
-        }
+    List<List<Integer>> res = new ArrayList<>();
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+            dfs(candidates,0,target, new ArrayList<>());
         return res;
     }
 
-    class DisjointSet{
-        int[] parent;
-        byte[] rank;
-
-        public DisjointSet(int n){
-            parent = new int[n];
-            rank = new byte[n];
+    public void dfs(int[] candidates, int index, int target, List<Integer> path) {
+        if (target == 0 ) {
+            res.add(new ArrayList<>(path));
+            return;
         }
-
-        public int find(int i) {
-            if(parent[i] == 0) return i;
-            return parent[i] = find(parent[i]);
-        }
-
-        public boolean union(int x, int y) {
-            int rootX = find(x);
-            int rootY = find(y);
-            if(rootX == rootY) return true;
-            if(rank[rootX] > rank[rootY]) {
-                parent[rootY] = rootX;
-            } else if (rank[rootX] < rank[rootY]) {
-                parent[rootX] = rootY;
-            } else {
-                parent[rootX] = rootY;
-                rank[rootY]++;
-            }
-            return false;
+        if (index>= candidates.length) return;
+        if(target<candidates[0]) return;
+        for (int i = index; i < candidates.length; i++) {
+            if(i>index && candidates[i] == candidates[i-1]) continue;
+            if(candidates[i] >target) break;
+            path.add(candidates[i]);
+            dfs(candidates,i+1,target-candidates[i], path);
+            path.remove(path.size()-1);
         }
     }
 }

@@ -17,9 +17,9 @@ public class BinarySearch {
     public static void main(String[] args) {
         BinarySearch main = new BinarySearch();
         int [] array = {2, 4, 6, 12, 14, 17, 22, 24, 25, 26, 28, 83};
-        int [] arr = {1,2,2,4,4,5,5,6};
+        int [] arr = {1,2,2,4,4,5,5,7};
 //        int res = main.binarySearch(array, 5);
-        System.out.println(main.searchRight(arr,3));
+        System.out.println(main.searchLeft(arr,6));
     }
 
 
