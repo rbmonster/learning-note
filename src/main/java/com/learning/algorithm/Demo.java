@@ -49,26 +49,21 @@ public class Demo {
 //        System.out.println(main.findCircleNum(example));
     }
 
-    List<List<Integer>> res = new ArrayList<>();
-    public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        Arrays.sort(candidates);
-            dfs(candidates,0,target, new ArrayList<>());
-        return res;
-    }
 
-    public void dfs(int[] candidates, int index, int target, List<Integer> path) {
-        if (target == 0 ) {
-            res.add(new ArrayList<>(path));
-            return;
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+
+
+        for (int i = 0; i < nums.length; i++) {
+            int index = Math.abs(nums[i])-1;
+            if(nums[index]>0) {
+                nums[index] = -nums[index];
+            }
         }
-        if (index>= candidates.length) return;
-        if(target<candidates[0]) return;
-        for (int i = index; i < candidates.length; i++) {
-            if(i>index && candidates[i] == candidates[i-1]) continue;
-            if(candidates[i] >target) break;
-            path.add(candidates[i]);
-            dfs(candidates,i+1,target-candidates[i], path);
-            path.remove(path.size()-1);
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] >0)
+                res.add(i+1);
         }
+        return res;
     }
 }

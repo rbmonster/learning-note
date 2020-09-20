@@ -435,6 +435,7 @@ private int maximum_depth(TreeNode root) {
   - 组合：https://leetcode-cn.com/problems/combinations/submissions/
   - 组合总和（review）：https://leetcode-cn.com/problems/combination-sum/
   - 组合总和 II：https://leetcode-cn.com/problems/combination-sum-ii/submissions/
+    - 通过传递每次迭代的索引，避免重复记录
   - 组合总和 III：https://leetcode-cn.com/problems/combination-sum-iii/
   - 组合总和 Ⅳ： https://leetcode-cn.com/problems/combination-sum-iv/
   - 括号生成（review）：https://leetcode-cn.com/problems/generate-parentheses/
