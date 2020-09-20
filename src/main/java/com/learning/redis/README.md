@@ -115,6 +115,7 @@ typedef struct redisObject{
     //...
 }
 ```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/encodingCode.jpg)
 
 ### 字符串对象
 - 如果字符串保存的是一个字符串值，且长度<=39，则字符串对象使用的是embstr编码方式保存。
@@ -135,6 +136,8 @@ typedef struct redisObject{
 >OBJECT ENCODING msg
 "raw"
 ```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/stringCommand.jpg)
+
 
 ###列表对象
 - 列表元素较少时使用压缩列表(ziplist)，而元素多的时候使用双链表(linkedlist)
@@ -152,6 +155,8 @@ typedef struct redisObject{
 >OBJECT ENCODING blah
 "linkedlist"
 ```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/listCommand.jpg)
+
 
 ### 哈希对象
 - 哈希对象的编码可以是ziplist或hashtable
@@ -177,6 +182,8 @@ typedef struct redisObject{
 >OBJECT ENCODING numbers
 "hashtable"
 ```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/hashCommand.jpg)
+
 
 ### 集合对象
 - 集合对象的编码可以是intset或者 hashtable
@@ -197,6 +204,8 @@ typedef struct redisObject{
 >OBJECT ENCODING numbers
 "hashtable"
 ```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/setCommand.jpg)
+
 
 ### 有序集合对象
 - 有序集合的编码可以是ziplist或者skiplist
@@ -224,3 +233,4 @@ typedef struct redisObject{
 >OBJECT ENCODING blah
 "skiplist"
 ```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/zsetCommand.jpg)
