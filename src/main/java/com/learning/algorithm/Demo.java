@@ -47,6 +47,8 @@ public class Demo {
         int result1 = map.compute(3, (key, oldValue) -> oldValue - 10);
         int[][] example = new int[][]{{1,1,0}, {1,1,0},{0,0,1}};
 //        System.out.println(main.findCircleNum(example));
+//        System.out.println(main.findDuplicate(new int[] {1,2,3,3,4}));
+//        System.out.println(main.hammingDistance(1,4));
     }
 
 
@@ -66,4 +68,61 @@ public class Demo {
         }
         return res;
     }
+
+    public char nextGreatestLetter(char[] letters, char target) {
+        int min = Integer.MAX_VALUE;
+        for(int i =0;i< letters.length;i++) {
+        if(letters[i]> target) {
+            min = Math.min(letters[i]- target, min);
+        }
+    }
+        return (char)(target+ min);
+    }
+
+    public int findDuplicate(int[] nums) {
+        Arrays.sort(nums);
+        int n = nums.length-1;
+        int left = 0, right = nums.length;
+        while(left<right) {
+            int mid = left + (right - left)/2;
+            if(nums[mid] < mid+1 ) {
+                right= mid;
+            }else {
+                left = mid+1;
+            }
+        }
+
+        return nums[left];
+    }
+
+    public boolean canJump(int[] nums) {
+        int len = nums.length;
+        boolean [] dp = new boolean[len];
+        dp[len-1] =true;
+        for (int i = len-2; i >=0 ; i--) {
+            int distance = nums[i];
+            for (int j = i+1; j <= i+distance && j<len; j++) {
+                dp[i] = dp[i] || dp[j];
+                if(dp[i]) break;
+            }
+        }
+        return dp[0];
+    }
+
+//    private void dfs(int[]nums, int index) {
+//        if (result|| index>= nums.length) return;
+//        if (note.containsKey(index)) {
+//            return;
+//        }
+//        if(index == nums.length-1) {
+//            result = true;
+//            return;
+//        }
+//        int distance = nums[index];
+//        for (int i = index+1; i <= index+distance && i< nums.length; i++) {
+//            dfs(nums, i);
+//            if (result) break;
+//            note.put(i, false);
+//        }
+//    }
 }

@@ -117,7 +117,7 @@ typedef struct redisObject{
 ```
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/encodingCode.jpg)
 
-### 字符串对象
+### 字符串对象(String)
 - 如果字符串保存的是一个字符串值，且长度<=39，则字符串对象使用的是embstr编码方式保存。
   - embstr方式在内存分配时仅会调用一次内存分配函数，而raw会调用两次
   - embstr字符串对象保存在一块连续的内存里面。
@@ -139,8 +139,9 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/stringCommand.jpg)
 
 
-###列表对象
+###列表对象(list)
 - 列表元素较少时使用压缩列表(ziplist)，而元素多的时候使用双链表(linkedlist)
+  - 此处使用ziplist就是存列表连接
 - 编码转换条件：同时满足一下两条件使用ziplist,否则linkedlist。
   1. 列表对象保存的所有字符串元素的长度都小于64字节。
   2. 列表对象保存的元素数量小于512个。
@@ -158,8 +159,9 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/listCommand.jpg)
 
 
-### 哈希对象
+### 哈希对象(hash)
 - 哈希对象的编码可以是ziplist或hashtable
+  - ziplist会先保存键再保存值，因此键与值总是靠在一起，其中键的方向为压缩列表的表头方向。
 - 编码转换条件：同时以下条件的哈希对象使用ziplist编码，否则使用hashtable
   1. 哈希对象保存的所有字符串元素的长度都小于64字节。
   2. 哈希对象保存的元素数量小于512个。
@@ -185,7 +187,7 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/hashCommand.jpg)
 
 
-### 集合对象
+### 集合对象(set)
 - 集合对象的编码可以是intset或者 hashtable
   - intset整数集合作为底层实现，包含的所有元素都被保存在整数集合里面。
   
@@ -207,8 +209,9 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/setCommand.jpg)
 
 
-### 有序集合对象
+### 有序集合对象(zset)
 - 有序集合的编码可以是ziplist或者skiplist
+  - ziplist按分值从小到大的进行排序，分值小的元素放在靠近表头方向，对象在前值在后，两者紧凑。
   - skiplist编码的有序集合使用zset结构作为底层实现，一个zset结构同时包含一个字典和跳跃表
    - ``` 
      typedef struct zset{
@@ -233,4 +236,180 @@ typedef struct redisObject{
 >OBJECT ENCODING blah
 "skiplist"
 ```
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/zsetCommand.jpg)
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/zsetCommand.jpg)
+
+### 类型检查与命令多态
+- DEL、EXPIRE、RENAME、TYPE、OBJECT可以对任何键执行
+- 类型检查，Redis会先检查输入键的类型是否正确，然后在执行给定的命令。
+- 命令多态：由于基本类型的底层数据结构不确定，因此在执行命令时会先判断底层的数据结构类型再调用对应的命令函数。
+
+### 内存回收
+- Redis的内存回收使用的是引用计数的方式进行数据回收。对象的引用计数值为0时，对象所占用的内存会释放。
+
+### 对象共享
+- Redis数据库初始化时会创建一万个字符串对象，这些对象包含了从0到9999的所有整数值，当数据库需要用到这些字符串对象时，会共享这部分对象而不是新创建对象。
+- Redis 对象不共享字符串对象，因为整数性字符串对象的验证操作是O(1)，而字符串对象的验证操作是O(N)。为了节省内存反而会造成大量的CPU浪费，得不偿失。
+- 对象共享过程：
+  - 将数据库的值指向一个现有的值对象。
+  - 将被共享的值对象的引用计数增1。
+```
+>SET A 100
+OK
+
+>OBJECT REFCOUNT A
+(integer)2
+```
+### 对象的空转时间
+- redisObject的结构最后一个属性为lru属性，该属性记录了对象最后一次被命令层序访问的时间
+- 当内存开启maxmemory选项时，且回收算法是volatile-lru 或者 allkeys-lru，超过maxmemory设置上限值的部分，空转时间较高的会被服务器优先释放，回收内存。
+```
+>SET msg "hello world"
+
+>OBJECT LDLETIME msg     (打印空转时间)
+20
+```
+
+## 数据库
+- Redis默认会创建16个数据库
+- 可以使用SELECT 选择目标数据库。
+  - ```
+    >SET msg "hello world"
+    >GET msg 
+    "hello world"
+    >SELECT 2
+    
+    >GET msg
+    (nil)
+    ```
+### 数据库键空间
+- Redis 是一个键值对的数据库服务器。服务器中每个数据库都由一个redisDb结构的dict字典保存数据库中所有键值对，称为键空间。
+  - 键空间的键也就是数据库的键，每个键都是字符串对象。
+  - 键空间的值也就是数据库的值，每个值可以是五中基本类型对象。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/databaseDict.jpg)  
+
+- 清空数据库的键:FLUSHDB
+- 随机返回数据库中某个键：RANDOMKEY
+- 返回数据库数量：DBSIZE
+
+### 过期键
+- 设置键的生存时间(TTL time to live)或过期时间(PTTL)
+  - EXPIRE: 将键key的生存时间设成ttl秒。
+  - PEXPIRE: 将键key的生存时间设成ttl毫秒。
+  - EXPIREAT: 将键key的过期时间设置成timestamp所指的秒数时间戳。
+  - PEXPIREAT: 将键key 的过期时间设置成timestamp所指的毫秒数。
+```
+>SET key value
+
+>EXPIRE key 5
+
+>GET key
+"value"
+// 5s later
+>GET key
+(nil)
+```
+- 过期字典的键空间为expires字典，保存了所有键的过期时间
+  - 过期字典的键是一个指针，指向键空间的具体的键对象（数据库键）
+  - 过期字典的值为long类型的整数，键的保存了数据库的过期时间。
+  
+- 移除过期时间 PRESIST
+  - ```
+    >PEXPIREAT message 1391234440000  // 设置过期时间
+    
+    >TTL message  // 查询过期时间，以秒为单位返回键的剩余生存时间
+    
+    >PTTL message // 以毫秒为但会返回键的剩余生存时间
+    
+    >PERSIST message // 移除过期时间
+    
+    >TTL message 
+    -1 
+    ```
+- 过期键的判定
+  - 检查键是否存在于过期字典，如果存在取得过期时间
+  - 检查当前的UNIX时间戳是否大于键的过期时间，如果是表示已过期，否则键未过期
+  
+- 过期键的删除策略
+  - 定时删除，为每个过期键建立一个timer，缺点占用CPU
+  - 惰性删除，键获取的时候判断过期再清除，对内存不友好。
+  - 定期删除，即根据设定执行时长和操作频率清理。缺点难以确定。
+  - Redis使用惰性删除和定期删除结合的方式配合使用。
+  
+- RDB模式对过期键的处理
+  - 生成RDB文件时不保存已过期的键
+  - 载入文件时，若是主服务器运行，已过期的文件不再载入。从服务器运行，全部载入。
+  
+- AOF持久化运行时，如果某个键过期，执行以下三动作。（针对主服务器运行）
+  - 1.从数据库删除键。
+  - 2.追加一条DEL message命令到AOF文件。
+  - 3.向执行GET命令的客户端返回空回复。
+
+- Redis可配置对于数据键发生修改时，发送通知事件。
+
+## RDB 持久化
+- 解决服务器退出，数据库中数据库状态消失的问题。
+- RDB持久化可以手工执行，也可以根据服务器配置选项定期执行，该功能可以将某个时间点上的数据库状态保存在RDB文件中。
+
+### RDB文件创建与载入
+- SAVE命令，阻塞Redis服务器进程，直到RDB文件创建完毕为止。
+- BGSAVE命令会派生出一个子进程，然后由子进程创建EDB文件。
+
+- 因为AOF文件的更新频率比RDB文件高，因此如果开启了AOF持久化功能，服务器优先使用AOF文件还原数据。
+- 只有在AOF持久化功能关闭的时候，服务器才会使用RDB恢复数据库。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/RDBLoad.jpg)  
+
+- 自动保存功能
+```
+save 900 1 
+save 300 10
+save 60 10000
+// 分别表示
+- 服务器900秒内，对数据库进行了至少1次修改
+- 服务器300秒内，对数据库进行了至少10次修改
+- 服务器60秒内，对数据库进行了至少10000次修改
+```
+- 上述功能主要通过dirty计数器和lastsave属性实现
+  - dirty计数器：距离上一次成果执行SAVE命令或者BGSAVE命令后，服务器进行了多少次修改。
+  - lastsave属性，记录上一次成功RDB的时间。
+  
+- RDB文件结构（TODO暂时不需要了解）
+  - |REDIS|db_version|database|EOF|check_sum|
+  
+### AOF持久化
+- AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF文件中。
+
+- 持久化的三个过程：命令追加、文件写入、文件同步
+  - 命令追加即将执行的命令追加到AOF文件中。
+  - 文件写入使用缓存区实现
+  - 文件同步分为always、everysec、no三个选项。 安全级别从高到低、效率从低到高
+    - always每次执行均写入安全性高效率低。
+    - everysec每隔一秒子线程对AOF文件进行同步。理论只会丢失一秒数据。
+    - no 何时同步由操作系统控制，写入的速度长，因为累积了数据在缓冲区，效率与上一种类似。
+    
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/AOFLoad.jpg)  
+ 
+- AOF重写，指的是对命令进行压缩，将RPUSH、LPOP的类似命令进行压缩，减少AOF文件大小
+
+### 事件
+- Redis服务器是一个事件驱动程序，服务器需要处理一下两事件。
+  - 文件事件：服务器通过Socket与客户端连接
+  - 时间事件：服务器中的一些操作，需要在特定时间点执行。
+  
+- Redis的文件事件基于Reactor模式开发（反应器模式）
+  - 单线程，I/O多路复用
+  - I/O多路复用程序将产生的Socket事件放到队列中，以有序、同步的方式发送。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/filePorcesser.jpg)  
+
+- 客户端与服务器的通信过程
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/client2server.jpg)
+
+- 时间事件（2.8版本的redis只有周期性事件，没有定时事件）
+  - 服务器将所有时间事件放在一个无序链表中，每当时间事件执行器运行时，遍历整个链表。
+  
+### 客户端的关闭
+- 客户端进程退出或杀死
+- 客户端发送不符合协议的命令请求
+- 客户端成了CLIENT KILL命令的目标
+- 用户为server设置了timeout选项，时间超时时客户端会关闭。
+- 客户端发送的请求超过了输出缓冲区的限制大小（1GB）
+- 服务器要发送给客户端的返回命令请求大小超过了输出缓冲区的限制
