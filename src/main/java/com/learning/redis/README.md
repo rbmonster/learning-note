@@ -413,3 +413,123 @@ save 60 10000
 - 用户为server设置了timeout选项，时间超时时客户端会关闭。
 - 客户端发送的请求超过了输出缓冲区的限制大小（1GB）
 - 服务器要发送给客户端的返回命令请求大小超过了输出缓冲区的限制
+
+### 服务器
+- 命令请求的执行过程
+  1. 向服务器发送命令请求SET KEY VALUE.
+  2. 服务接收命令请求，在数据库中设置操作，并产生命令回复OK
+  3. 服务器将回复发送给客户端。
+  4. 客户端接收命令打印OK
+  
+- 每个Redis对象都会有一个lru属性，保存了对象最后一次被命令访问的时间。
+
+### 复制
+- 设置的操作流程
+  1. 设置主服务器的地址和端口。>SLAVEOF 127.0.0.1 6379
+  2. 建立socket连接
+  3. 发送ping命令
+    - 作用：1）与主服务器建立通信。2）检测主服务是否可正常处理请求
+  4. 身份验证。主从服务器是否均配置了masterauth选项。
+    - ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/masterauth.jpg)
+  5. 发送端口信息。从服务器发送需要从服务器端口信息。
+  6. 开始同步
+  7. 命令传播
+    - 命令传播阶段，从服务器每秒默认发送 >REPLCONF ACK <replication_offset> 命令
+    - replication_offset是从服务器当前的复制偏移量
+    - 作用：
+      - 检测主从服务器的网络连接状态
+      - 辅助实现min-slave选项。（主要用于防止主服务器在不安全状况下写命令）
+      - 检测命令丢失。
+  
+
+- 主从复制，主要两个命令SYNC、PSYNC
+  - SYNC：主服务器开启BGSAVE生成RDB文件，生成之后发送从服务器，占网络资源。从服务器主进程执行载入，阻塞无法处理命令请求。
+  - PSYNC：根据主从维护的复制偏移量，判断复制积压缓冲区（主服务器存储写命令队列的地方）是否存在偏移量之后的数据，如果存在，则进行部分重同步操作。否则执行完整重同步。
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/slaveCopy.jpg)
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/psync.jpg)
+
+### Sentinel 哨兵
+- Sentinel是Redis的一个高可用的解决方案：由一个或者多个Sentinel实例组成Sentinel系统。
+- 启动命令：
+```
+redis-sentinel /path/to/your/sentinel.conf
+or
+redis-server /path/to/your/sentinel.conf
+```
+
+- Sentinel故障转移操作
+  1. 当一个主服务下线时，各个Sentinel会选举一个领头Sentinel执行故障转移。
+    - 主要根据Raft领头选举算法实现
+  2. Sentinel系统选择一个server1属下的从服务器，并将这个从服务器升级成新主服务器。
+    - 从服务器的选择：1)删除下线或断开连接的从服务。2)删除5s无回复从服务。3)按照复制偏移量排名，最大的表示具有最新的数据信息。相同偏移量则按照ID从小到大选取。
+  3. Sentinel系统向Server1属下的从服务器发送新的复制指令，让其成为新主服务器的从服务。当复制完成，故障转移完毕。
+  4. Sentinel系统继续监视下线的server1，当其重新上线时设置成主服务器的从服务。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/sentinel.jpg)
+
+- Sentinel服务器有其专用的服务器代码
+  - 仅支持PING、SENTINEL、INFO、SUBSCRIBE、UNSUBSCRIBE、PSUBSCRIBE和PUNSUBSCRIBE七个操作。
+  
+- 创建连向主服务器的连接
+  - 命令连接：用于向主服务器发送命令与主服务器通信。
+  - 订阅连接：sentinel：hello频道，用于记录主服务器的回复消息，防止客户端断线的回复信息丢失。
+  
+- Sentinel与主服务器默认十秒频率发送INFO命令。用于更新整个主从的结构信息。
+- Sentinel每2秒向所监视的服务器发送PUBLISH 信息。（具体干嘛的没懂，估计也是监测用）
+- Sentinel每1秒向主从及其他Sentinel发送PING命令，用于判断实例是否在线。
+
+- 客观下线：当一个Sentinel判断一个服务器下线时，会询问其他的Sentinel是否真的是下线。
+
+### 集群
+- Redis集群是Redis提供的分布式数据库方案，集群通过分片实现数据共享，并提供复制和故障转移功能。
+
+- 集群建立
+```
+// 向节点7001发送命令，将节点7001添加到7000集群
+127.0.0.1:7000>CLUSTER MEET 127.0.0.1 7001
+
+127.0.0.1:7000>CLUSTER NODES
+
+127.0.0.1:7000>CLUSTER MEET 127.0.0.1 7002
+```
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/cluster.jpg)
+
+- 槽指派：Redis集群通过分片的方式保存数据库的键值对。集群的整个数据库被分成16384个槽slot
+  - 对数据库的16384个槽进行指派之后，集群就处于上线状态。
+  - 在获取数据库键时，便需要对键进行计算，再获取对应的槽位，并判断当前数据库是否为负责键所在槽的节点。
+```
+127.0.0.1:7000> CLUSTER ADDSLOTS 0 1 2 3 4 ...5000
+
+127.0.0.1:7001 > CLUSTER ADDSLOTS 5000 5001 5002 5003 5004 ... 10000
+
+127.0.0.1:7002 > CLUSTER ADDSLOTS 10001 10002 10003 ... 16383
+
+// 查看给定键属于哪个槽
+127.0.0.1:7000> CLUSTER KETSLOT "msg"
+
+// 第一次向节点7000发送set返回MOVE错误，并向7001节点执行set指令。
+127.0.0.1:7000> SET msg "heppy"
+->redirected to slot [6257] located at 127.0.0.1:7001
+OK
+```
+
+- 节点数据库和单机数据库在数据库方面的一个区别是，节点只能使用0号数据库，而单机Redis服务器则没有这个限制。 
+- 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
+  - 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/askError.jpg)
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/slotReadd.jpg)
+
+- 复制与故障转移
+  - 设置从节点
+  - ```
+    > CLUSTER REPLICATE 127.0.0.1:7001
+    ```
+  - 集群中每个节点都会定期的向集群中的其他节点发送PING消息，以检测对方是否在线。
+    - 若出现疑似下线的情况，集群中的各个节点会互相交换信息，已确定节点的状态。
+  - 故障转移
+    1. 从主节点的从节点选择一个从节点，使用Raft领头选举方式实现。
+    2. 被选择的从节点执行SLAVEOF no one命令，成为新的主节点。
+    3. 新的主节点撤销已下线节点的槽指派，并指派向自己。
+    4. 新的主节点在集群中发送PONG消息，通知其他节点该节点变成主节点。
+    5. 新主节点开始接受和处理指派槽的消息。
