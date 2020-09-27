@@ -533,3 +533,23 @@ OK
     3. 新的主节点撤销已下线节点的槽指派，并指派向自己。
     4. 新的主节点在集群中发送PONG消息，通知其他节点该节点变成主节点。
     5. 新主节点开始接受和处理指派槽的消息。
+    
+### 发布与订阅
+```
+//查看服务器目前订阅的通道
+>PUBSUB CHANNELS
+//正则匹配服务器通道
+>PUBSUB CHANNELS "new.[is]"
+
+// 订阅 new.it 通道
+>SUBSCRIBE "new.it"
+
+//取消订阅
+>UNSUBSCRIBE "new.it"
+
+//发布消息
+>PUBLISH "new.it" "hello"
+```
+- 发送消息
+  1. 将消息发送给channel频道的所有订阅者。
+  2. 如果有一个或者多个模式patten与channel匹配，那么将message发送给patten的订阅者。
