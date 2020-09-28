@@ -483,7 +483,7 @@ redis-server /path/to/your/sentinel.conf
 
 ### 集群
 - Redis集群是Redis提供的分布式数据库方案，集群通过分片实现数据共享，并提供复制和故障转移功能。
-
+- 建立一个集群 至少需要三主三从六台服务器。
 - 集群建立
 ```
 // 向节点7001发送命令，将节点7001添加到7000集群
@@ -553,3 +553,92 @@ OK
 - 发送消息
   1. 将消息发送给channel频道的所有订阅者。
   2. 如果有一个或者多个模式patten与channel匹配，那么将message发送给patten的订阅者。
+  
+### 事务
+- Redis通过MULTI、EXEC、WATCH等命令来实现事务。
+```
+>MULTI
+QUEUED
+
+>SET "name" "werwer"
+QUEUED
+
+>GET "name"
+QUEUED
+
+>SET "author" "Peter"
+QUEUED
+
+>GET "AUTHOR
+QUEUED
+
+>EXEC
+
+1)OK
+2)"werwer"
+3)OK
+4)"Peter"
+```
+- 事务从开始到结束经历三个阶段
+  1. 事务入队
+  2. 命令入队
+  3. 事务执行
+  - 事务命令使用队列实现。
+  
+- 事务开始后，若客户端发送的命令为EXEC、DISCARD、WATCH、MULTI四个命令其中一个，服务器会立即执行，否则执行命令入队操作。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/transaction.jpg)
+
+- MULTI命令标志着事务的开始
+- EXEC命令会让服务器立即执行事务队列语句。
+- WATCH为一个乐观锁实现。
+  - 一个执行失败的例子
+  - ```
+    >WATCH "name"
+    
+    >MULTI 
+    >SET "name" "peter"
+    >EXEC
+    (nil)
+    ```
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/optiLock.jpg)
+
+- redis 事务的ACID
+  - 原子性：事务的多个操作当成一个整体来执行，要么全部执行，要么都不执行。
+  - 一致性：事务执行前是“一致”的，执行后也是“一致”的。“一致”指的是符合数据库本身的定义和要求，没有包含非法或无效的错误数据。
+  - 隔离性：并发执行和串行执行结果一致。Redis事务总是以串行执行，因此保证了隔离性。
+  - 耐久性：一个事务执行完毕，结果会被保存到硬盘中，停机不丢失。
+  
+### Lua脚本
+- 客户端可执行的脚本语言
+```
+>EVAL "return 'hello world'" 0
+```
+
+### 排序
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/sort.jpg)
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/sort2.jpg)
+- SORT <key> :对一个包含数字值的键key进行排序
+- SORT <key> ALPHA: 使用ALPHA选项可以对字符串值的键进行排序。
+- SORT <key> ASC(DESC) :升序与降序。
+- BY 指定某些字符串键或者某个哈希键所包含的某些域作为元素的权重，对一个键进行排序。
+- LIMIT限制返回指定的一部分数据
+  - ```
+    >SORT alphabet ALPHA LIMIT 0 4
+    ```
+- GET可以用于排序之后返回指定的某些建的值
+  - ```
+    >SORT students ALPHA GET *-name
+    // 返回students排序后对应的值 name
+    ```
+- STORE保存排序结果
+  - ```
+    >SORT students ALPHA STORE sorted_students
+    // 保存结果在sorted_students中
+    ```
+    
+### 二进制位数据
+- Redis 提供SETBIT、GETBIT、BITCOUNT、BITOP四个命令用于处理二进制位数组。
+
+### 慢查询日志
+- slowlog-log-slower-than选项：指定超过多少微妙记录到慢查询日志上。
+- slowlog-max-len选项：指定服务器最多保存多少条慢查询日志。
