@@ -186,8 +186,9 @@ B-树与B+树的特征
 
 #### 覆盖索引
 - InnoDB存储引擎支持覆盖索引，即从辅助索引中就可以得到查询的记录，而不需要查询聚集索引中的记录。
+  - 如： ``` select id, b from t where b = xxx   (id为主键，b为索引)```
 - 由于覆盖索引可以减少树的搜索次数（减少IO）， 显著提升查询性能， 所以使用覆盖索引是一个常用的性能优化手段。
-- 这边理解优点问题
+
 
 #### 最左前缀原则
 - B+树这种索引结构， 可以利用索引的“最左前缀”， 来定位记录。  
@@ -204,6 +205,78 @@ mysql> select * from tuser where name like '张%' and age=10 and ismale=1;
 ```
 - mysql 5.6 后引入索引下推。
 - 索引遍历过程中， 对索引中包含的字段先做判断， 直接过滤掉不满足条件的记录， 减少回表次数
+
+### 索引选错及优化器执行逻辑
+- 下面是一个索引走错的例子，图二为慢查询日志的结果，红框内容为实际扫描行数。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/errorIndex1.jpg)
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/errorIndex2.jpg)
+```
+// 设置慢查询日志
+set long_query_time=0;
+// Q1是session B原来的查询；
+select * from t where a between 10000 and 20000; /*Q1*/
+//  Q2是加了force index(a)来和session B原来的查询语句执行情况对比
+select * from t force index(a) where a between 10000 and 20000;/*Q2*/
+```
+
+- 优化器选择索引的目的是找一个最优方案，用最小的代价执行语句。其中扫描行数、是否使用临时表、是否排序等因素都会影响优化器对索引的选择判断。
+
+- 扫描行数判断，mysql使用采样统计的方式来获取索引的统计信息基数。采样统计的方式可以减少磁盘的IO次数
+  - InnoDB默认会选择N个数据页， 统计这些页面上的不同值， 得到一个平均值， 然后乘以这个索引的页面数， 就得到了这个索引的基数。
+  - 一个索引上不同的值的个数， 我们称之为“基数”（cardinality） 
+  - 当变更的数据行数超过1/M的时候， 会自动触发重新做一次索引统计。
+  
+- 在MySQL中， 有两种存储索引统计的方式， 可以通过设置参数innodb_stats_persistent的值来选择：
+  - 设置为on的时候， 表示统计信息会持久化存储。 这时， 默认的N是20， M是10。
+  - 设置为off的时候， 表示统计信息只存储在内存中。 这时， 默认的N是8， M是16
+  - 由于是采样统计， 所以不管N是20还是8， 这个基数都是很容易不准的。
+  - analyze table t 命令， 可以用来重新统计索引信息。 
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/errorIndex2.jpg)
+- 使用explain 语句分析SQL的扫描行数信息，rows的结果为根据采样结果预计的扫描行数。
+  - 选错索引的根本原因为采样统计信息有误统计成了37116行，而由于查询所有字段，使用索引还需要根据ID回表查询其他信息，经过优化器估算，全表扫描代价低。
+  - 优化器的选择方案时，使用普通索引会把回表的代价也算进去。
+
+#### 解决索引选择异常方案
+- 使用force index
+- 引导Mysql使用我们期望的索引，如order by b,a limit 1 与 order by b limit 1 逻辑上能保持一致，那么就能这么修改
+- 在有些场景下， 我们可以新建一个更合适的索引， 来提供给优化器做选择， 或删掉误用的索引。（较少用）
+
+### 添加索引的技巧
+#### 前缀索引
+- 定义：定义字符串的一部分作为索引。
+```
+mysql> alter table SUser add index index2(email(6));
+```
+- 前缀索引可以减少索引占用的空间，但是可能需要额外增加扫描次数。
+- 使用前缀索引， 定义好长度， 就可以做到既节省空间， 又不用额外增加太多的查询成本。如使用身份证的后六位作为索引，索引的区分度好。
+```
+mysql> select
+count(distinct left(email,4)） as L4,
+count(distinct left(email,5)） as L5,
+count(distinct left(email,6)） as L6,
+count(distinct left(email,7)） as L7,
+from SUser;
+```
+- 使用前缀索引很可能会损失区分度， 所以你需要预先设定一个可以接受的损失比例， 比如5%。 然后， 在返回的L4~L7中， 找出不小于 L * 95%的值， 
+- 使用前缀索引就用不上覆盖索引对查询性能的优化了，对于已经找到类似字段的记录，都需要回表进行扫描。这也是你在选择是否使用前缀索引时需要考虑的一个因素。
+
+#### 一些添加索引的技巧
+- 倒序存储。比如存储身份证时都倒序存储，而身份证的后六位区分度好，便于建立前缀索引.
+  - 缺点：无法查询区间。
+  - ```
+    mysql> select field_list from t where id_card = reverse('input_id_card_string');
+    ```
+- 使用Hash字段。每次插入新记录的时候， 都同时用crc32()这个函数得到校验码填到一个新字段.
+  - ```
+    mysql> alter table t add id_card_crc int unsigned, add index(id_card_crc);
+    ```
+#### 添加索引的一些方式方法比较
+1. 直接创建完整索引， 这样可能比较占用空间；
+2. 创建前缀索引， 节省空间， 但会增加查询扫描次数， 并且不能使用覆盖索引；
+3. 倒序存储， 再创建前缀索引， 用于绕过字符串本身前缀的区分度不够的问题；
+4. 创建hash字段索引， 查询性能稳定， 有额外的存储和计算消耗， 跟第三种方式一样， 都不支
+持范围扫描
 
 ## 全局锁、表级锁、行级锁、死锁
 ### 全局锁
@@ -247,3 +320,35 @@ mysql> select * from tuser where name like '张%' and age=10 and ismale=1;
     - 弊端：判断是否存在死锁的成本会随着数据量的增长，而大量消耗CPU。假设有1000个并发线程要同时更新同一行， 那么死锁检测操作就是100万这个量级的。
     - 解决方案：1.确定不会出现死锁，关闭死锁检测。2.控制并发度。3.改写mysql源码。
     
+
+## Mysql数据库抖动
+- 当内存数据页跟磁盘数据页内容不一致的时候， 我们称这个内存页为“脏页”。 
+- 在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologFlush.jpg)
+- Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（flush）的方法
+  - 第一种：对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
+  - 第二种：系统的内存需要新的内存页，这时候需要淘汰一些内存也。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
+    - 为什么不直接淘汰脏页，等新数据读取的时候再应用redo log？ 主要为了保证状态统一，内存的数据存在则肯定是最新的，内存没有则文件肯定是最新的。
+  - 第三种：Mysql认为系统空闲时，刷脏页。
+  - 第四种：MySql关闭时刷脏页。
+  
+### 内存不足刷脏页的情况
+- 缓冲池中的内存页有三种状态：
+  - 第一种是， 还没有使用的；
+  - 第二种是， 使用了并且是干净页；
+  - 第三种是， 使用了并且是脏页。
+  
+- 如果要淘汰的是一个干净页， 就直接释放出来复用； 但如果是脏页呢， 就必须将脏页先刷到磁盘， 变成干净页后才能复用。
+  
+#### InnoDB刷脏页的控制策略
+  - innodb_io_capacity这个参数，会告诉InnoDB你的磁盘能力。
+    - 建议设置成磁盘的IOPS。 磁盘的IOPS可以通过fio这个工具来测试
+  - 参数设置过低会导致InnoDB认为这个系统的能力就这么差， 所以刷脏页刷得特别慢， 甚至比脏页生成的速度还慢， 这样就造成了脏页累积， 影响了查询和更新性能
+  - 参数设置太高会影响除Mysql外的服务响应。
+  
+- InnoDB的刷盘速度就是要参考这两个因素： 一个是脏页比例， 一个是redo log写盘速度。
+  - 参数innodb_max_dirty_pages_pct是脏页比例上限， 默认值是75%。 InnoDB会根据当前的脏页比例（假设为M） ，算出一个范围在0到100之间的数字F(M)
+  - InnoDB每次写入的日志都有一个序号， 当前写入的序号跟checkpoint对应的序号之间的差值，我们假设为N，计算出F(N)。 
+  - 上述算得的F1(M)和F2(N)两个值， 取其中较大的值记为R， 之后引擎就可以按 照innodb_io_capacity定义的能力乘以R%来控制刷脏页的速度。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/memoryflash.jpg)
