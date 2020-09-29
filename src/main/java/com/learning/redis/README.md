@@ -398,7 +398,7 @@ save 60 10000
 - Redis的文件事件基于Reactor模式开发（反应器模式）
   - 单线程，I/O多路复用
   - I/O多路复用程序将产生的Socket事件放到队列中，以有序、同步的方式发送。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/filePorcesser.jpg)  
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/fileProcesser.jpg)  
 
 - 客户端与服务器的通信过程
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/client2server.jpg)
@@ -586,7 +586,7 @@ QUEUED
   - 事务命令使用队列实现。
   
 - 事务开始后，若客户端发送的命令为EXEC、DISCARD、WATCH、MULTI四个命令其中一个，服务器会立即执行，否则执行命令入队操作。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/transaction.jpg)
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/transaction.png)
 
 - MULTI命令标志着事务的开始
 - EXEC命令会让服务器立即执行事务队列语句。
