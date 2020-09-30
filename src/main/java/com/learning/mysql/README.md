@@ -69,6 +69,8 @@ mysql> select * from T where ID=10;
 
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologwrite.jpg)
 
+- redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志的。 在执行事务的时候，如insert、update会先存在buffer中。等事务commit，再一起写入redo log
+
 ### binlog
 - MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
 #### 两种日志有以下三点不同。
@@ -80,10 +82,34 @@ mysql> select * from T where ID=10;
 #### 一条update语句的执行流程
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/updateProcess.jpg)
 
+#### 两阶段提交
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/twocommit.jpg)
 - 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
+- 图中 两个“commit”的概念：
+  - “commit语句”， 是指MySQL语法中， 用于提交一个事务的命令。 一般跟begin/start transaction 配对使用。
+  - 图中用到的这个“commit步骤”， 指的是事务提交过程中的一个小步骤， 也是最后一步。 当这个步骤执行完成后， 这个事务就提交完成了。
+  - “commit语句”执行的时候， 会包含“commit 步骤
 
-#### 崩溃后的数据恢复阶段
+- 崩溃后的数据恢复阶段
   - 如果在更新或写入数据的过程中，机器出现崩溃。那么在机器在重启后，MySQL会首先去验证redolog的完整性，如果redolog中没有prepare状态的记录，则记录是完整的，就日记提交。如果redolog中存在prepare记录，那么就去验证这条redolog对应的binlog记录，如果这条binlog是完整的，那么完整提交redolog，否则执行回滚逻辑
+  - 崩溃恢复时的判断规则。
+    1. 如果redo log里面的事务是完整的， 也就是已经有了commit标识， 则直接提交；
+    2. 如果redo log里面的事务只有完整的prepare， 则判断对应的事务binlog是否存在并完整：
+       - 如果是， 则提交事务；
+       - 否则， 回滚事务。
+    - 如果碰到既有prepare、 又有commit的redo log， 就直接提交；
+    - 如果碰到只有parepare、 而没有commit的redo log， 就拿着XID去binlog找对应的事务。
+         
+- 一个事务的binlog是有完整格式的：
+  - statement格式的binlog， 最后会有COMMIT；
+  - row格式的binlog， 最后会有一个XID event
+ 
+- 为何需要两个日志
+  - 只使用binlog的话，相当于一个update语句： => binlog write ->commit ->binlog write -> commit
+    - 若崩溃在binlog write的阶段，就是crash-unsafe
+  - 只使用redo log，可以保证crash-safe。
+    - binlog作为MySQL一开始就有的功能， 被用在了很多地方。其中， MySQL系统高可用的基础， 就是binlog复制
+    - 很多公司有异构系统（比如一些数据分析系统） ， 这些系统就靠消费MySQL的binlog来更新自己的数据。 
   
 ### 事务隔离
 - SQL标准的事务隔离级别包括：
@@ -147,6 +173,7 @@ MySQL的事务启动方式有以下几种：
 
 ## 索引
 - 索引的出现其实就是为了提高数据查询的效率， 就像书的目录一样。 一本500页的书，对于数据库的表而言， 索引其实就是它的“目录”。
+- 若一张表中无主键索引，mysql会默认创建一个长度为6字节的rowid主键。
 - InnoDB里面索引对应一棵B+树
   - 使用B+树而不是二叉搜索树的原因是，由于存储介质的特性，磁盘本身存取就比主存慢很多，每次搜索的磁盘IO的开销过大，而B+树可以使用较少次的磁盘IO搜索到对象。
   - B-Tree中一次检索最多需要h-1次I/O（根节点常驻内存），渐进复杂度为O(h)=O(logdN)。
@@ -352,3 +379,164 @@ from SUser;
   - InnoDB每次写入的日志都有一个序号， 当前写入的序号跟checkpoint对应的序号之间的差值，我们假设为N，计算出F(N)。 
   - 上述算得的F1(M)和F2(N)两个值， 取其中较大的值记为R， 之后引擎就可以按 照innodb_io_capacity定义的能力乘以R%来控制刷脏页的速度。
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/memoryflash.jpg)
+
+
+## 数据库表数据删除
+- 参数innodb_file_per_table
+  - OFF表示的是， 表的数据放在系统共享表空间， 也就是跟数据字典放在一起.
+  - ON表示的是， 每个InnoDB表数据存储在一个以 .ibd为后缀的文件中。
+  - 将innodb_file_per_table设置为ON，文件的存储形式便于管理。
+  
+- delete命令其实只是把记录的位置， 或者数据页标记为了“可复用”， 但磁盘文件的大小是不会变的。 通过delete命令是不能回收表空间的
+- 删除数据会造成空洞， 插入数据也会。主要体现在插入数据出现页分裂，那么分裂完成的页势必存在空洞位置。
+
+### 重建表消除数据空洞
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/rebuildTable.jpg)
+```
+alter table A engine=InnoDB
+```
+- Online DDL重建表的流程:
+    1. 建立一个临时文件， 扫描表A主键的所有数据页；
+    2. 用数据页中表A的记录生成B+树， 存储到临时文件中；
+    3. 生成临时文件的过程中， 将所有对A的操作记录在一个日志文件（row log） 中， 对应的是图中state2的状态；
+    4. 临时文件生成后， 将日志文件中的操作应用到临时文件， 得到一个逻辑数据上与表A相同的数据文件， 对应的就是图中state3的状态；
+    5. 用临时文件替换表A的数据文件。
+  - alter语句在启动的时候需要获取MDL写锁， 但是这个写锁在真正拷贝数据之前就退化成读锁了。同时禁止其他线程对这个表同时做DDL。
+  - 在图4中， 根据表A重建出来的数据是放在“tmp_file”里的， 这个临时文件是InnoDB在内部创建出来的。 整个DDL过程都在InnoDB内部完成。 对于server层来说， 没有把数据挪动到临时表， 是一个“原地”操作， 这就是“inplace”名称的来源。
+
+
+### count(*)实现
+- 不同引擎中的实现
+  - MyISAM引擎把一个表的总行数存在了磁盘上， 因此执行count(*)的时候会直接返回这个数，效率很高；
+  - 而InnoDB引擎就麻烦了， 它执行count(*)的时候， 需要把数据一行一行地从引擎里面读出来， 然后累积计数
+  
+- InnoDB中Mysql对于count(*)的优化：InnoDB是索引组织表， 主键索引树的叶子节点是数据， 而普通索引树的叶子节点是主键值。 所以， 普通索引树比主键索引树小很多。 通索引树比主键索引树小很多。 对于count(*)这样的操作， 遍历哪个索引树得到的结果逻辑上都是一样的。 因此， MySQL优化器会找到最小的那棵树来遍历。 在保证逻辑正确的前提下， 尽量减少扫描的数据量， 是数据库系统设计的通用法则之一。
+
+- show table status 命令也可以显示行数，这里的行数是基于采样统计的，并不准确。
+- 使用Redis缓存记录的行数，由于无法控制并发的执行时刻，会出现，读取的行数不一致的情况。比如数据库已插入，而Redis未增加计数。
+
+- 不同count的用法：count(*)、 count(主键id)、 count(字段)和count(1)
+  - count()是一个聚合函数， 对于返回的结果集， 一行行地判断， 如果count函数的参数不是NULL， 累计值就加1， 否则不加。 最后返回累计值
+  - 对于count(主键id)来说， InnoDB引擎会遍历整张表， 把每一行的id值都取出来， 返回给server层。 server层拿到id后， 判断是不可能为空的， 就按行累加。
+  - 对于count(1)来说， InnoDB引擎遍历整张表， 但不取值。 server层对于返回的每一行， 放一个数字“1”进去， 判断是不可能为空的， 按行累加。
+  - 对于count(字段)来说：
+    1. 如果这个“字段”是定义为not null的话， 一行行地从记录里面读出这个字段， 判断不能为null， 按行累加；
+    2. 如果这个“字段”定义允许为null， 那么执行的时候， 判断到有可能是null， 还要把值取出来再判断一下， 不是null才累加。
+  - count(*)是例外， 并不会把全部字段取出来， 而是专门做了优化， 不取值。 count(*)肯定不是null， 按行累加。
+  - 按照效率排序的话， count(字段)<count(主键id)<count(1)≈count(*)
+  
+### order by 处理流程
+#### 全字段排序
+```
+CREATE TABLE `t` (
+`id` int(11) NOT NULL,
+`city` varchar(16) NOT NULL,
+`name` varchar(16) NOT NULL,
+`age` int(11) NOT NULL,
+`addr` varchar(128) DEFAULT NULL,
+PRIMARY KEY (`id`),
+KEY `city` (`city`)
+) ENGINE=InnoDB;
+
+select city,name,age from t where city='杭州' order by name limit 1000 ;
+```
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby1.jpg)
+- Extra这个字段中的“Using filesort”表示的就是需要排序， MySQL会给每个线程分配一块内存用于排序， 称为sort_buffer。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby2.jpg)
+- 这个语句执行流程如下所示 ：
+  1. 初始化sort_buffer， 确定放入name、 city、 age这三个字段；
+  2. 从索引city找到第一个满足city='杭州’条件的主键id， 也就是图中的ID_X；
+  3. 到主键id索引取出整行， 取name、 city、 age三个字段的值， 存入sort_buffer中；
+  4. 从索引city取下一个记录的主键id；
+  5. 重复步骤3、 4直到city的值不满足查询条件为止， 对应的主键id也就是图中的ID_Y；
+  6. 对sort_buffer中的数据按照字段name做快速排序；
+  7. 按照排序结果取前1000行返回给客户端
+- sort_buffer_size， 是MySQL为排序开辟的内存（sort_buffer） 的大小。 如果要排序的数据量小于sort_buffer_size， 排序就在内存中完成。 但如果排序数据量太大， 内存放不下， 则不得不利用磁盘临时文件辅助排序。
+  - sort_buffer_size大于了需要排序的数据量的大小， number_of_tmp_files就是0，排序直接在内存完成。
+- optimizer_trace 是一个跟踪功能，跟踪执行的语句的解析优化执行的过程，比explain更详细。
+  - number_of_tmp_files表示的是， 排序过程中使用的临时文件数。
+  - sort_mode: 表示参与排序的只有name和id这两个字段
+  - ```
+    /* 打开optimizer_trace， 只对本线程有效 */
+    SET optimizer_trace='enabled=on';
+    ```
+- 这里的排序使用的是归并排序
+
+#### rowId排序
+- max_length_for_sort_data :是MySQL中专门控制用于排序的行数据的长度的一个参数。 它的意思是， 如果单行的长度超过这个值， MySQL就认为单行太大， 要换一个算法。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby3.jpg)
+- 主要体现在内存排序完毕之后要多一次查询。
+
+- 对于InnoDB表来说， 执行全字段排序会减少磁盘访问， 因此会被优先选择。
+- 在“InnoDB表”中， 对于内存表， 回表过程只是简单地根据数据行的位置， 直接访问内存得到数据， 根本不会导致多访问磁盘。 
+  - 优化器会优先考虑的，就是用于排序的行越少越好。
+  
+- order by rand()使用了内存临时表， 内存临时表排序的时候使用了rowid排序方法。
+
+- 内存临时表与磁盘临时表
+  - tmp_table_size这个配置限制了内存临时表的大小， 默认值是16M。 如果临时表大小超过了tmp_table_size， 那么内存临时表就会转成磁盘临时表
+  
+- 直接使用order byrand()， 这个语句需要Using temporary和 Using filesort， 查询的执行代价往往是比较大的
+
+## MySQL执行语句的一些坑
+### 条件字段函数操作
+```
+mysql> select count(*) from tradelog where month(t_modified)=7;
+```
+- 对索引字段做函数操作， 可能会破坏索引值的有序性， 因此优化器就决定放弃走树搜索功能。
+- 例子里， 放弃了树搜索功能， 优化器可以选择遍历主键索引， 也可以选择遍历索引t_modified， 优化器对比索引大小后发现， 索引t_modified更小， 遍历这个索引比遍历主键索引来得更快。 因此最终还是会选择索引t_modified。
+
+### 隐式类型转换
+```
+// tradeid的字段类型是varchar(32)
+mysql> select * from tradelog where tradeid=110717;
+// 对于优化器会变成
+mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;
+```
+- 这条语句触发了我们上面说到的规则： 对索引字段做函数操作， 优化器会放弃走树搜索功能。
+
+### 隐式字符集编码转换
+- 表间字符集不同导致索引失效，连接过程中要求在被驱动表的索引字段上加函数操作
+  - 如两个表的字符集不同， 一个是utf8， 一个是utf8mb4， 所以做表连接查询的时候用不上关联字段的索引。 utf8mb4是utf8的超集。
+  - 较常见的优化方法是， 把trade_detail表上的tradeid字段的字符集也改成utf8mb4
+  - 如果数据量比较大， 或者业务上暂时不能做这个DDL的话， 那就只能采用修改SQL语句的方法了
+    - 如转换集合CONVERT($R4.tradeid.value USING utf8mb4);
+    - 或者将转换函数作用在连接的值上，解决了函数作用于索引上导致索引失效的。
+    
+### 简单查询长时间不返回
+- 等MDL锁。
+  - 使用show processlist命令查看Waiting for table metadata lock
+  - 通过查询sys.schema_table_lock_waits这张表， 我们就可以直接找出造成阻塞的process id， 把这个连接用kill 命令断开即可
+    - ```
+      mysql> select blocking_pid from sys.schema_table_lock_waits 
+      ```
+- 等flush
+  - ```
+    flush tables t with read lock;
+    flush tables with read lock;
+    ```
+  - 两个flush table的语句
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/longquery.jpg)
+
+- 等行锁
+  - ```
+    mysql> select * from t where id=1 lock in share mode;
+    ```
+  - Session A 开启事务执行更新还未提交事务。Session B 使用该语句查询时就会等待行锁释放。
+  - sys.innodb_lock_waits 表：可以用来查询行锁的占用情况
+    - ```
+      mysql> select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'`\G
+      ```
+
+### 查询慢
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/slowquery1.jpg)
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/slowquery2.jpg)
+```
+//session A
+select * from t where id=1
+
+//session B
+select * from t where id=1 lock in share mode
+```
+- session B更新完100万次， 生成了100万个回滚日志(undo log)。带lock in share mode的SQL语句， 是当前读， 因此会直接读到1000001这个结果， 所以速度很快； 而select * from t where id=1这个语句， 是一致性读， 因此需要从1000001开始， 依次执行undo log， 执行了100万次以后， 才将1这个结果返回。
