@@ -71,6 +71,22 @@ mysql> select * from T where ID=10;
 
 - redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志的。 在执行事务的时候，如insert、update会先存在buffer中。等事务commit，再一起写入redo log
 
+#### redo log 写入机制
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologwrite.png)
+- 这三种状态分别是：
+    1. 存在redo log buffer中， 物理上是在MySQL进程内存中， 就是图中的红色部分；
+    2. 写到磁盘(write)， 但是没有持久化（fsync)， 物理上是在文件系统的page cache里面， 也就是图中的黄色部分；
+    3. 持久化到磁盘， 对应的是hard disk， 也就是图中的绿色部分。
+    
+- 为了控制redo log的写入策略， InnoDB提供了innodb_flush_log_at_trx_commit参数， 它有三种可能取值：
+  1. 设置为0的时候， 表示每次事务提交时都只是把redo log留在redo log buffer中;
+  2. 设置为1的时候， 表示每次事务提交时都将redo log直接持久化到磁盘；
+  3. 设置为2的时候， 表示每次事务提交时都只是把redo log写到page cache。
+- InnoDB写盘的三种情况：
+    1. InnoDB有一个后台线程， 每隔1秒， 就会把redo log buffer中的日志， 调用write写到文件系统的page cache， 然后调用fsync持久化到磁盘。
+    2. redo log buffer占用的空间即将达到 innodb_log_buffer_size一半的时候，后台线程会主动写盘。
+    3. 并行的事务提交的时候， 顺带将这个事务的redo log buffer持久化到磁盘。 
+
 ### binlog
 - MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
 #### 两种日志有以下三点不同。
@@ -110,6 +126,31 @@ mysql> select * from T where ID=10;
   - 只使用redo log，可以保证crash-safe。
     - binlog作为MySQL一开始就有的功能， 被用在了很多地方。其中， MySQL系统高可用的基础， 就是binlog复制
     - 很多公司有异构系统（比如一些数据分析系统） ， 这些系统就靠消费MySQL的binlog来更新自己的数据。 
+    
+    
+#### bin log写入机制
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/binlogwrite.jpg)
+- 每个线程有自己binlog cache， 但是共用同一份binlog文件。
+  1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
+  2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下， 我们认为fsync才占磁盘的IOPS
+
+- write 和fsync的时机， 是由参数sync_binlog控制的：
+  1. sync_binlog=0的时候， 表示每次提交事务都只write， 不fsync；
+  2. sync_binlog=1的时候， 表示每次提交事务都会执行fsync；
+  3. sync_binlog=N(N>1)的时候， 表示每次提交事务都write， 但累积N个事务后才fsync。
+  
+- bin log 三种数据格式，主要区别于在存储bin log 的格式区别  越来越多的场景要求把MySQL的binlog格式设置成row，有利于恢复数据。
+  1. statement 
+  2. row
+  3. mix 上面两种的混合
+
+  
+#### 两阶段提交的实际执行流程
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/actualWrite.jpg)
+- WAL机制主要得益于两个方面：
+1. redo log 和 binlog都是顺序写， 磁盘的顺序写比随机写速度要快；
+2. 组提交机制， 可以大幅度降低磁盘的IOPS消耗。
+
   
 ### 事务隔离
 - SQL标准的事务隔离级别包括：
@@ -540,3 +581,69 @@ select * from t where id=1
 select * from t where id=1 lock in share mode
 ```
 - session B更新完100万次， 生成了100万个回滚日志(undo log)。带lock in share mode的SQL语句， 是当前读， 因此会直接读到1000001这个结果， 所以速度很快； 而select * from t where id=1这个语句， 是一致性读， 因此需要从1000001开始， 依次执行undo log， 执行了100万次以后， 才将1这个结果返回。
+
+## 幻读
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead.jpg)
+- session A里执行了三次查询， 分别是Q1、 Q2和Q3。 它们的SQL语句相同， 都是select * from t where d=5 for update。 表示查所有d=5的行， 而且使用的是当前读， 并且加上写锁。 
+- 其中， Q3读到id=1这一行的现象， 被称为“幻读”。 也就是说， 幻读指的是一个事务在前后两次查询同一个范围的时候， 后一次查询看到了前一次查询没有看到的行
+- 幻读会导致数据一致性的问题。 锁的设计是为了保证数据的一致性。 而这个一致性， 不止是数据库内部数据状态在此刻的一致性， 还包含了数据和日志在逻辑上的一致性。
+  1. 在可重复读隔离级别下， 普通的查询是快照读， 是不会看到别的事务插入的数据的。 因此，幻读在“当前读”下才会出现。
+  2. 上面session B的修改结果， 被session A之后的select语句用“当前读”看到， 不能称为幻读。幻读仅专指“新插入的行”
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead2.jpg)
+- 尝试解决幻读，把所有语句都上锁，查询语句改成select * from t for update。但是仍然无法解决插入新语句出现的幻读现象。
+
+### 如何解决幻读？
+- InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过程中， 不仅将给行加上了行锁， 还给行两边的空隙， 也加上了间隙锁。
+
+- 间隙锁之间的冲突：跟间隙锁存在冲突关系的， 是“往这个间隙中插入一个记录”这个操作。 间隙锁之间都不存在冲突关系。
+- 间隙锁和行锁合称next-keylock， 每个next-keylock是前开后闭区间。 
+  - 如果用select * from t for update要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
+  - InnoDB给每个索引加了一个不存在的最大值supremum。
+
+- 间隙锁的引入， 可能会导致同样的语句锁住更大的范围， 这其实是影响了并发度的。
+
+#### 加锁原则
+总结的加锁规则里面， 包含了两个“原则”、 两个“优化”和一个“bug”。
+1. 原则1： 加锁的基本单位是next-keylock。 希望你还记得， next-keylock是前开后闭区间。
+2. 原则2： 查找过程中访问到的对象才会加锁。
+3. 优化1： 索引上的等值查询， 给唯一索引加锁的时候， next-keylock退化为行锁。
+4. 优化2： 索引上的等值查询， 向右遍历时且最后一个值不满足等值条件的时候， next-key lock退化为间隙锁。
+5. 一个bug： 唯一索引上的范围查询会访问到不满足条件的第一个值为止。
+
+- 一个next Key Lock 的加锁例子
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead3.jpg)
+1. 开始执行的时候， 要找到第一个id=10的行， 因此本该是next-keylock(5,10]。 根据优化1，主键id上的等值条件， 退化成行锁， 只加了id=10这一行的行锁。
+2. 范围查找就往后继续找， 找到id=15这一行停下来， 因此需要加next-keylock(10,15]。所以， session A这时候锁的范围就是主键索引上， 行锁id=10和next-keylock(10,15]。
+
+- 死锁案例（间隙锁不互斥导致）
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead3.jpg)
+1. session A 启动事务后执行查询语句加lock in share mode， 在索引c上加了next-key lock(5,10] 和间隙锁(10,15)；
+2. session B 的update语句也要在索引c上加next-keylock(5,10] ， 进入锁等待；
+3. 然后session A要再插入(8,8,8)这一行， 被session B的间隙锁锁住。 由于出现了死锁， InnoDB让session B回滚
+- session B的“加next-keylock(5,10] ”操作， 实际上分成了两步， 先是加(5,10)的间隙锁， 加锁成功； 然后加c=10的行锁， 这时候才被锁住的。
+
+## Mysql 短时间提升性能方法
+- 使用短连接的风险：短时间连接暴增
+  - 第一种方法： 先处理掉那些占着连接但是不工作的线程
+  - 第二种方法： 减少连接过程的消耗。（让数据库跳过权限验证阶段） 不推荐
+
+- 慢查询导致的性能问题
+  1. 索引未设计好。若使用主从可以再从库执行索引，再进行主从切换。
+  2. 另一种查询问题，语句没写好
+    - 应急方案使用：使用查询重写功能， 给原来的语句加上force index，
+    - 提前发现：在上线前回归测试，使用slow log 记录
+    
+- QPS突增
+ 1. 一种是由全新业务的bug导致的。 假设你的DB运维是比较规范的，从数据库端直接把白名单去掉
+ 2. 如果这个新功能使用的是单独的数据库用户， 可以用管理员账号把这个用户删掉， 然后断开现有连接。 这样， 这个新功能的连接不成功， 由它引发的QPS就会变成0。
+ 3. 如果这个新增的功能跟主体功能是部署在一起的， 那么我们只能通过处理语句来限制。可能造成“误伤”。
+ 
+## 主从同步流程图
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/masterSlave.jpg)
+一个事务日志同步的完整过程是这样的：
+1. 在备库B上通过change master命令， 设置主库A的IP、 端口、 用户名、 密码， 以及要从哪个位置开始请求binlog， 这个位置包含文件名和日志偏移量。
+2. 在备库B上执行start slave命令， 这时候备库会启动两个线程， 就是图中的io_thread和sql_thread。 其中io_thread负责与主库建立连接。
+3. 主库A校验完用户名、 密码后， 开始按照备库B传过来的位置， 从本地读取binlog， 发给B。
+4. 备库B拿到binlog后， 写到本地文件， 称为中转日志（relaylog） 。
+5. sql_thread读取中转日志， 解析出日志里的命令， 并执行。
