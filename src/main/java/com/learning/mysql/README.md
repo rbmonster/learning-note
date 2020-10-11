@@ -597,7 +597,7 @@ select * from t where id=1 lock in share mode
 - InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过程中， 不仅将给行加上了行锁， 还给行两边的空隙， 也加上了间隙锁。
 
 - 间隙锁之间的冲突：跟间隙锁存在冲突关系的， 是“往这个间隙中插入一个记录”这个操作。 间隙锁之间都不存在冲突关系。
-- 间隙锁和行锁合称next-keylock， 每个next-keylock是前开后闭区间。 
+- 间隙锁和行锁合称next-key lock， 每个next-key lock是前开后闭区间。 
   - 如果用select * from t for update要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
   - InnoDB给每个索引加了一个不存在的最大值supremum。
 
@@ -611,18 +611,63 @@ select * from t where id=1 lock in share mode
 4. 优化2： 索引上的等值查询， 向右遍历时且最后一个值不满足等值条件的时候， next-key lock退化为间隙锁。
 5. 一个bug： 唯一索引上的范围查询会访问到不满足条件的第一个值为止。
 
+#### 间隙锁相关实例说明
 - 一个next Key Lock 的加锁例子
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead3.jpg)
 1. 开始执行的时候， 要找到第一个id=10的行， 因此本该是next-keylock(5,10]。 根据优化1，主键id上的等值条件， 退化成行锁， 只加了id=10这一行的行锁。
 2. 范围查找就往后继续找， 找到id=15这一行停下来， 因此需要加next-keylock(10,15]。所以， session A这时候锁的范围就是主键索引上， 行锁id=10和next-keylock(10,15]。
 
 - 死锁案例（间隙锁不互斥导致）
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead3.jpg)
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead4.jpg)
 1. session A 启动事务后执行查询语句加lock in share mode， 在索引c上加了next-key lock(5,10] 和间隙锁(10,15)；
 2. session B 的update语句也要在索引c上加next-keylock(5,10] ， 进入锁等待；
 3. 然后session A要再插入(8,8,8)这一行， 被session B的间隙锁锁住。 由于出现了死锁， InnoDB让session B回滚
 - session B的“加next-keylock(5,10] ”操作， 实际上分成了两步， 先是加(5,10)的间隙锁， 加锁成功； 然后加c=10的行锁， 这时候才被锁住的。
 
+
+##### 一组next-key lock 案例
+- 初始表数据
+```
+CREATE TABLE `t` (
+`id` int(11) NOT NULL,
+`c` int(11) DEFAULT NULL,
+`d` int(11) DEFAULT NULL,
+PRIMARY KEY (`id`),
+KEY `c` (`c`)
+) ENGINE=InnoDB;
+//
+insert into t values(0,0,0),(5,5,5),
+(10,10,10),(15,15,15),(20,20,20),(25,25,25);
+```
+
+- 不等号条件里的等值查询
+```
+begin;
+select * from t where id>9 and id<12 order by id desc for update;
+```
+  - 主键索引上的 (0,5]、 (5,10]和(10, 15)。
+  - id=15这一行， 并没有被加上行锁，这用到了优化2，即索引上的等值查询， 向右遍历的时候id=15不满足条件， 所以next-keylock退化为了间隙锁 (10, 15)。
+
+- 等值查询的过程
+```
+begin;
+select id from t where c in(5,20,10) lock in share mode;
+```
+  - 查找c=5的时候， 先锁住了(0,5]。 但是因为c不是唯一索引， 为了确认还有没有别的记录c=5，就要向右遍历， 找到c=10才确认没有了， 这个过程满足优化2， 所以加了间隙锁(5,10)。同样的， 执行c=10这个逻辑的时候， 加锁的范围是(5,10] 和 (10,15)； 执行c=20这个逻辑的时候， 加锁的范围是(15,20] 和 (20,25)
+  - 这个加锁范围， 从(5,25)中去掉c=15的行锁.
+  
+- order by 加锁过程
+```
+select id from t where c in(5,20,10) order by c desc for update;
+```
+  - 由于语句里面是order byc desc， 这三个记录锁的加锁顺序， 是先锁
+    c=20， 然后c=10， 最后是c=5
+    
+- 锁范围增长
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/nextKeyLockExtend.jpg)
+- 由于session A并没有锁住c=10这个记录， 所以session B删除id=10这一行是可以的。 但是之后， session B再想insert id=10这一行回去就不行了
+- 由于delete操作把id=10这一行删掉了， 原来的两个间隙(5,10)、 (10,15）变成了一个(5,15)
+  
 ## Mysql 短时间提升性能方法
 - 使用短连接的风险：短时间连接暴增
   - 第一种方法： 先处理掉那些占着连接但是不工作的线程
@@ -647,3 +692,63 @@ select * from t where id=1 lock in share mode
 3. 主库A校验完用户名、 密码后， 开始按照备库B传过来的位置， 从本地读取binlog， 发给B。
 4. 备库B拿到binlog后， 写到本地文件， 称为中转日志（relaylog） 。
 5. sql_thread读取中转日志， 解析出日志里的命令， 并执行。
+
+
+
+## Innodb的内存管理策略LRU
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/LRU1.jpg)
+InnoDB管理Buffer Pool的LRU算法， 是用链表来实现的。
+1. 在图中的状态1里， 链表头部是P1， 表示P1是最近刚刚被访问过的数据页。
+2. 状态2 表示刚访问过P3，移到表头
+3. 若有新数据则添加到表头，若内存已满，移除表尾的数据。
+
+- innoDB对LRU改进，防止大数据量查询导致，内存的数据命中率突然下降过快。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/LRU2.jpg)
+- 在InnoDB实现上， 按照5:3的比例把整个LRU链表分成了young区域和old区域。 图中LRU_old指向的就是old区域的第一个位置， 是整个链表的5/8处。 也就是说， 靠近链表头部的5/8是young区域， 靠近链表尾部的3/8是old区域。
+- young区域的数据和之前的算法一致，而针对新数据都是插入到old区域，因此young区域的数据不受影响，保证了业务的数据命中率。
+- 处于old区域的数据页， 每次被访问的时候都要做下面这个判断：
+  - 若这个数据页在LRU链表中存在的时间超过了1秒， 就把它移动到链表头部；
+  - 如果这个数据页在LRU链表中存在的时间短于1秒， 位置保持不变。 1秒这个时间， 是由参数innodb_old_blocks_time控制的。 其默认值是1000， 单位毫秒
+
+## SQL 语句执行流程
+### join的执行过程
+#### Index Nested-Loop Join
+```
+select * from t1 straight_join t2 on (t1.a=t2.a);
+```
+- 执行流程是这样的：
+    1. 从表t1中读入一行数据 R；
+    2. 从数据行R中， 取出a字段到表t2里去查找；
+    3. 取出表t2中满足条件的行， 跟R组成一行， 作为结果集的一部分；
+    4. 重复执行步骤1到3， 直到表t1的末尾循环结束
+    - 实际执行的时候使用了BAK优化，将尽可能多的驱动表数据取出放Join Buffer中，再关联查询。
+
+- 流程中：
+    1. 对驱动表t1做了全表扫描， 这个过程需要扫描100行；
+    2. 而对于每一行R， 根据a字段去表t2查找， 走的是树搜索过程。 由于我们构造的数据都是一一
+    对应的， 因此每次的搜索过程都只扫描一行， 也是总共扫描100行；
+    3. 所以， 整个执行流程， 总扫描行数是200。
+
+#### Simple Nested-Loop Join
+```
+select * from t1 straight_join t2 on (t1.a=t2.b);
+```
+- 表t2的字段b上没有索引，关联查询使用全表扫描。
+- SQL请求就要扫描表t2多达100次， 总共扫描100*1000=10万行。
+#### Block Nested-Loop Join
+- 将驱动表数据读入线程内存join_buffer中，同样以全表扫描，但是因为使用内存操作，速度比上述方法快。
+
+
+#### join语句mysql的优化
+- Multi-Range Read优化
+  - 大多数的数据都是按照主键递增顺序插入得到的， 所以可以认为， 如果按照主键的递增顺序查询的话， 对磁盘的读比较接近顺序读， 能够提升读性能
+  - MRR优化思路即将查询的关联集合排序，再关联查询，提高查询效率。将随机访问改成范围访问。
+
+- Batched Key Access （BAK）
+  - 将驱动表数据取出放join_buffer中，进行排序再关联查询。
+  - join_buffer内存不够大时，进行多次的重复操作。
+
+#### 总结
+1. 尽量使用被驱动表的索引，即关联表的字段为索引。
+2. 不能使用被驱动表的索引， 只能使用Block Nested-Loop Join算法， 这样的语句就尽量不要使用；
+3. 在使用join的时候， 应该让小表做驱动表。
