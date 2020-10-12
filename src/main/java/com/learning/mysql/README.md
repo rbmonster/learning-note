@@ -752,3 +752,49 @@ select * from t1 straight_join t2 on (t1.a=t2.b);
 1. 尽量使用被驱动表的索引，即关联表的字段为索引。
 2. 不能使用被驱动表的索引， 只能使用Block Nested-Loop Join算法， 这样的语句就尽量不要使用；
 3. 在使用join的时候， 应该让小表做驱动表。
+
+### union执行流程
+```
+(select 1000 as f) union (select id from t1 order by id desc limit 2);
+```
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/union.jpg)
+
+执行流程是这样的：
+1. 创建一个内存临时表， 这个临时表只有一个整型字段f， 并且f是主键字段。
+2. 执行第一个子查询， 得到1000这个值， 并存入临时表中。
+3. 执行第二个子查询：拿到第一行id=1000， 试图插入临时表中。 但由于1000这个值已经存在于临时表了， 违反了唯一性约束， 所以插入失败， 然后继续执行；取到第二行id=999， 插入临时表成功。
+4. 从临时表中按行取出数据， 返回结果， 并删除临时表， 结果中包含两行数据分别是1000和999
+
+#### union all
+```
+(select 1000 as f) union all(select id from t1 order by id desc limit 2);
+```
+- 与上面的区别为union all不需要除重，因此直接把查询结果放在结果集中返回。
+
+### group by 执行流程
+```
+select id%10 as m, count(*) as c from t1 group by m;
+```
+- 使用explain分析sql
+    - Using index， 表示这个语句使用了覆盖索引， 选择了索引a， 不需要回表；
+    - Using temporary， 表示使用了临时表；
+    - Using filesort， 表示需要文件排序。
+- 这个语句的执行流程是这样的：
+1. 创建内存临时表， 表里有两个字段m和c， 主键是m；
+2. 扫描表t1的索引a， 依次取出叶子节点上的id值， 计算id%10的结果， 记为x；
+  （1）如果临时表中没有主键为x的行， 就插入一个记录(x,1);
+  （2）如果表中有主键为x的行， 就将x这一行的c值加1；
+3. 遍历完成后， 再根据字段m做排序， 得到结果集返回给客户端。
+
+- group by语句默认都会对语句进行排序，可以使用order by null 避免group by 排序。
+```
+select id%10 as m, count(*) as c from t1 group by m order by null;
+```
+#### group by 优化 ——索引
+- 索引保证了数据有序，在group by时候，分组计数计算时一片区域的id都是连续的，整个表扫描结束时便可以拿到结果，不需要临时表也不需要排序。
+
+#### group by 优化 —— 直接排序
+- 确保数据量确实超过了sort buffer，可以直接强制mysql直接使用磁盘文件排序。
+```
+select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
+```
