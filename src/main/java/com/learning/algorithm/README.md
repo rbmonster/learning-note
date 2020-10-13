@@ -387,7 +387,7 @@ private int maximum_depth(TreeNode root) {
 
 ## DFS & BFS
 
-- BFS & DFS：
+### BFS & DFS：
   - 01 矩阵：https://leetcode-cn.com/problems/01-matrix/
   - 朋友圈：https://leetcode-cn.com/problems/friend-circles/
   - 判断二分图（review）：https://leetcode-cn.com/problems/is-graph-bipartite/
@@ -399,11 +399,11 @@ private int maximum_depth(TreeNode root) {
   - 被围绕的区域：https://leetcode-cn.com/problems/surrounded-regions/
   
   
-- 拓扑排序
+### 拓扑排序
   - 课程表：https://leetcode-cn.com/problems/course-schedule/
   - 课程表 II：https://leetcode-cn.com/problems/course-schedule-ii/
 
-- dfs+回溯
+### dfs+回溯
   - 全排列（review）：https://leetcode-cn.com/problems/permutations/
   - 全排列 II（review）：https://leetcode-cn.com/problems/permutations-ii/
     - 重点看区别重复元素的条件
@@ -456,7 +456,7 @@ private int maximum_depth(TreeNode root) {
   ```
 
 
-并查集
+### 并查集
 ```
 class UnionFindSet {
         int[] rank;
