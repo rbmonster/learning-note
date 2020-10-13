@@ -89,16 +89,33 @@ mysql> select * from T where ID=10;
 
 ### binlog
 - MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
-#### 两种日志有以下三点不同。
+
+#### bin log写入机制
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/binlogwrite.jpg)
+- 每个线程有自己binlog cache， 但是共用同一份binlog文件。
+  1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
+  2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下， 我们认为fsync才占磁盘的IOPS
+
+- write 和fsync的时机， 是由参数sync_binlog控制的：
+  1. sync_binlog=0的时候， 表示每次提交事务都只write， 不fsync；
+  2. sync_binlog=1的时候， 表示每次提交事务都会执行fsync；
+  3. sync_binlog=N(N>1)的时候， 表示每次提交事务都write， 但累积N个事务后才fsync。
+  
+- bin log 三种数据格式，主要区别于在存储bin log 的格式区别  越来越多的场景要求把MySQL的binlog格式设置成row，有利于恢复数据。
+  1. statement 
+  2. row
+  3. mix 上面两种的混合
+
+### 两种日志有以下三点不同。
   1. redo log是InnoDB引擎特有的； binlog是MySQL的Server层实现的， 所有引擎都可以使用。
   2. redo log是物理日志， 记录的是“在某个数据页上做了什么修改”； binlog是逻辑日志， 记录的是这个语句的原始逻辑， 比如“给ID=2这一行的c字段加1 ”。
   3. redo log是循环写的， 空间固定会用完； binlog是可以追加写入的。 “追加写”是指binlog文件写到一定大小后会切换到下一个， 并不会覆盖以前的日志。
   4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
 
-#### 一条update语句的执行流程
+### 一条update语句的执行流程
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/updateProcess.jpg)
 
-#### 两阶段提交
+### 两阶段提交
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/twocommit.jpg)
 - 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
 - 图中 两个“commit”的概念：
@@ -128,23 +145,6 @@ mysql> select * from T where ID=10;
     - 很多公司有异构系统（比如一些数据分析系统） ， 这些系统就靠消费MySQL的binlog来更新自己的数据。 
     
     
-#### bin log写入机制
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/binlogwrite.jpg)
-- 每个线程有自己binlog cache， 但是共用同一份binlog文件。
-  1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
-  2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下， 我们认为fsync才占磁盘的IOPS
-
-- write 和fsync的时机， 是由参数sync_binlog控制的：
-  1. sync_binlog=0的时候， 表示每次提交事务都只write， 不fsync；
-  2. sync_binlog=1的时候， 表示每次提交事务都会执行fsync；
-  3. sync_binlog=N(N>1)的时候， 表示每次提交事务都write， 但累积N个事务后才fsync。
-  
-- bin log 三种数据格式，主要区别于在存储bin log 的格式区别  越来越多的场景要求把MySQL的binlog格式设置成row，有利于恢复数据。
-  1. statement 
-  2. row
-  3. mix 上面两种的混合
-
-  
 #### 两阶段提交的实际执行流程
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/actualWrite.jpg)
 - WAL机制主要得益于两个方面：
@@ -152,14 +152,14 @@ mysql> select * from T where ID=10;
 2. 组提交机制， 可以大幅度降低磁盘的IOPS消耗。
 
   
-### 事务隔离
+## 事务隔离
 - SQL标准的事务隔离级别包括：
   - 读未提交（ read uncommitted）
   - 读提交（read committed）
   - 可重复读（ repeatable read）
   - 串行化（ serializable ）
   
-#### 隔离级别的例子
+### 区分隔离级别（例子）
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/transactionProcess.jpg)
 
 - 若隔离级别是“读未提交”， 则V1的值就是2。 这时候事务B虽然还没有提交， 但是结果已经被A看到了。 因此， V2、 V3也都是2。
@@ -168,12 +168,12 @@ mysql> select * from T where ID=10;
 - 若隔离级别是“串行化”， 则在事务B执行“将1改成2”的时候， 会被锁住。 直到事务A提交后，事务B才可以继续执行。 所以从A的角度看， V1、 V2值是1， V3的值是2
 
 - 可重复读的一个应用：账户余额与交易明细核对，通过开启事务，保证核对期间的交易不影响查询核对的过程。
-#### 事务启动的方式
+### 事务启动的方式
 MySQL的事务启动方式有以下几种：
 1. 显式启动事务语句， begin 或 start transaction。 配套的提交语句是commit， 回滚语句是rollback。
 2. set autocommit=0， 这个命令会将这个线程的自动提交关掉。 意味着如果你只执行一个select语句， 这个事务就启动了， 而且并不会自动提交。 这个事务持续存在直到你主动执行commit 或 rollback 语句， 或者断开连接。
 
-#### 事务隔离的实现
+### 事务隔离的实现
 - 事务启动的时候会创建一个视图read-view。
 - begin/start transaction 命令并不是一个事务的起点， 在执行到它们之后的第一个操作InnoDB表的语句， 事务才真正启动。 如果你想要马上启动一个事务， 可以使用start transaction with consistent snapshot 这个命令。
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/transactiongeli.jpg)
@@ -190,7 +190,7 @@ MySQL的事务启动方式有以下几种：
 - 虚线框里是同一行数据的4个版本， 当前最新版本是V4， k的值是22， 它是被transaction id为25的事务更新的， 因此它的row trx_id也是25。而V1、 V2、 V3并不是物理上真实存在的， 而是每次需要的时候根据当前版本和undo log计算出来的。 
 - 图中的三个虚线箭头，就是undo log； 
 
-#### 关于数据隔离的说明
+### 关于数据隔离的说明
 - 以可重复读为例
   - 查询语句以自己的视图版本为准。
   - 更新语句以当前的视图版本为准。
@@ -234,7 +234,7 @@ MySQL的事务启动方式有以下几种：
   2. 该索引必须是唯一索引。
   - 由于没有其他索引， 所以也就不用考虑其他索引的叶子节点大小的问题。
  
-#### 唯一索引与普通索引的选择
+### 唯一索引与普通索引的选择
 - 两者查询性能差不多。
 - 主要区别在于，这个记录要更新的目标页不在内存中时。普通索引更新会使用change Buffer。唯一索引，由于需要校验数据的唯一性，因此每次更新操作都需要读磁盘把数据载进内存，涉及IO操作。
 - 在不影响数据一致性的前提下， InooDB会将这些更新操作缓存在change buffer中， 这样就不需要从磁盘中读入这个数据页了。 在下次查询需要访问这个数据页的时候， 将数据页读入内存， 然后执行change buffer中与这个页有关的操作。 通过这种方式就能保证这个数据逻辑的正确性
@@ -252,6 +252,7 @@ MySQL的事务启动方式有以下几种：
  
 B-树与B+树的特征
 
+### 索引规则
 #### 覆盖索引
 - InnoDB存储引擎支持覆盖索引，即从辅助索引中就可以得到查询的记录，而不需要查询聚集索引中的记录。
   - 如： ``` select id, b from t where b = xxx   (id为主键，b为索引)```
@@ -346,7 +347,7 @@ from SUser;
 4. 创建hash字段索引， 查询性能稳定， 有额外的存储和计算消耗， 跟第三种方式一样， 都不支
 持范围扫描
 
-## 全局锁、表级锁、行级锁、死锁
+## Mysql的锁
 ### 全局锁
 - 根据加锁的范围， MySQL里面的锁大致可以分成全局锁、 表级锁和行锁三类。
 - 全局锁就是对整个数据库实例加锁。 MySQL提供了一个加全局读锁的方法， 命令是Flush tables with read lock (FTWRL)。 
@@ -388,63 +389,93 @@ from SUser;
     - 弊端：判断是否存在死锁的成本会随着数据量的增长，而大量消耗CPU。假设有1000个并发线程要同时更新同一行， 那么死锁检测操作就是100万这个量级的。
     - 解决方案：1.确定不会出现死锁，关闭死锁检测。2.控制并发度。3.改写mysql源码。
     
+### 幻读(间隙锁)
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead.jpg)
+- session A里执行了三次查询， 分别是Q1、 Q2和Q3。 它们的SQL语句相同， 都是select * from t where d=5 for update。 表示查所有d=5的行， 而且使用的是当前读， 并且加上写锁。 
+- 其中， Q3读到id=1这一行的现象， 被称为“幻读”。 也就是说， 幻读指的是一个事务在前后两次查询同一个范围的时候， 后一次查询看到了前一次查询没有看到的行
+- 幻读会导致数据一致性的问题。 锁的设计是为了保证数据的一致性。 而这个一致性， 不止是数据库内部数据状态在此刻的一致性， 还包含了数据和日志在逻辑上的一致性。
+  1. 在可重复读隔离级别下， 普通的查询是快照读， 是不会看到别的事务插入的数据的。 因此，幻读在“当前读”下才会出现。
+  2. 上面session B的修改结果， 被session A之后的select语句用“当前读”看到， 不能称为幻读。幻读仅专指“新插入的行”
 
-## Mysql数据库抖动
-- 当内存数据页跟磁盘数据页内容不一致的时候， 我们称这个内存页为“脏页”。 
-- 在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead2.jpg)
+- 尝试解决幻读，把所有语句都上锁，查询语句改成select * from t for update。但是仍然无法解决插入新语句出现的幻读现象。
 
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologFlush.jpg)
-- Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（flush）的方法
-  - 第一种：对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
-  - 第二种：系统的内存需要新的内存页，这时候需要淘汰一些内存也。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
-    - 为什么不直接淘汰脏页，等新数据读取的时候再应用redo log？ 主要为了保证状态统一，内存的数据存在则肯定是最新的，内存没有则文件肯定是最新的。
-  - 第三种：Mysql认为系统空闲时，刷脏页。
-  - 第四种：MySql关闭时刷脏页。
-  
-### 内存不足刷脏页的情况
-- 缓冲池中的内存页有三种状态：
-  - 第一种是， 还没有使用的；
-  - 第二种是， 使用了并且是干净页；
-  - 第三种是， 使用了并且是脏页。
-  
-- 如果要淘汰的是一个干净页， 就直接释放出来复用； 但如果是脏页呢， 就必须将脏页先刷到磁盘， 变成干净页后才能复用。
-  
-#### InnoDB刷脏页的控制策略
-  - innodb_io_capacity这个参数，会告诉InnoDB你的磁盘能力。
-    - 建议设置成磁盘的IOPS。 磁盘的IOPS可以通过fio这个工具来测试
-  - 参数设置过低会导致InnoDB认为这个系统的能力就这么差， 所以刷脏页刷得特别慢， 甚至比脏页生成的速度还慢， 这样就造成了脏页累积， 影响了查询和更新性能
-  - 参数设置太高会影响除Mysql外的服务响应。
-  
-- InnoDB的刷盘速度就是要参考这两个因素： 一个是脏页比例， 一个是redo log写盘速度。
-  - 参数innodb_max_dirty_pages_pct是脏页比例上限， 默认值是75%。 InnoDB会根据当前的脏页比例（假设为M） ，算出一个范围在0到100之间的数字F(M)
-  - InnoDB每次写入的日志都有一个序号， 当前写入的序号跟checkpoint对应的序号之间的差值，我们假设为N，计算出F(N)。 
-  - 上述算得的F1(M)和F2(N)两个值， 取其中较大的值记为R， 之后引擎就可以按 照innodb_io_capacity定义的能力乘以R%来控制刷脏页的速度。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/memoryflash.jpg)
+#### 如何解决幻读？
+- InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过程中， 不仅将给行加上了行锁， 还给行两边的空隙， 也加上了间隙锁。
+
+- 间隙锁之间的冲突：跟间隙锁存在冲突关系的， 是“往这个间隙中插入一个记录”这个操作。 间隙锁之间都不存在冲突关系。
+- 间隙锁和行锁合称next-key lock， 每个next-key lock是前开后闭区间。 
+  - 如果用select * from t for update要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
+  - InnoDB给每个索引加了一个不存在的最大值supremum。
+
+- 间隙锁的引入， 可能会导致同样的语句锁住更大的范围， 这其实是影响了并发度的。
+
+#### 加锁原则
+总结的加锁规则里面， 包含了两个“原则”、 两个“优化”和一个“bug”。
+1. 原则1： 加锁的基本单位是next-keylock。 希望你还记得， next-keylock是前开后闭区间。
+2. 原则2： 查找过程中访问到的对象才会加锁。
+3. 优化1： 索引上的等值查询， 给唯一索引加锁的时候， next-keylock退化为行锁。
+4. 优化2： 索引上的等值查询， 向右遍历时且最后一个值不满足等值条件的时候， next-key lock退化为间隙锁。
+5. 一个bug： 唯一索引上的范围查询会访问到不满足条件的第一个值为止。
+
+#### 间隙锁相关实例说明
+- 一个next Key Lock 的加锁例子
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead3.jpg)
+1. 开始执行的时候， 要找到第一个id=10的行， 因此本该是next-keylock(5,10]。 根据优化1，主键id上的等值条件， 退化成行锁， 只加了id=10这一行的行锁。
+2. 范围查找就往后继续找， 找到id=15这一行停下来， 因此需要加next-keylock(10,15]。所以， session A这时候锁的范围就是主键索引上， 行锁id=10和next-keylock(10,15]。
+
+- 死锁案例（间隙锁不互斥导致）
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead4.jpg)
+1. session A 启动事务后执行查询语句加lock in share mode， 在索引c上加了next-key lock(5,10] 和间隙锁(10,15)；
+2. session B 的update语句也要在索引c上加next-keylock(5,10] ， 进入锁等待；
+3. 然后session A要再插入(8,8,8)这一行， 被session B的间隙锁锁住。 由于出现了死锁， InnoDB让session B回滚
+- session B的“加next-keylock(5,10] ”操作， 实际上分成了两步， 先是加(5,10)的间隙锁， 加锁成功； 然后加c=10的行锁， 这时候才被锁住的。
 
 
-## 数据库表数据删除
-- 参数innodb_file_per_table
-  - OFF表示的是， 表的数据放在系统共享表空间， 也就是跟数据字典放在一起.
-  - ON表示的是， 每个InnoDB表数据存储在一个以 .ibd为后缀的文件中。
-  - 将innodb_file_per_table设置为ON，文件的存储形式便于管理。
-  
-- delete命令其实只是把记录的位置， 或者数据页标记为了“可复用”， 但磁盘文件的大小是不会变的。 通过delete命令是不能回收表空间的
-- 删除数据会造成空洞， 插入数据也会。主要体现在插入数据出现页分裂，那么分裂完成的页势必存在空洞位置。
-
-### 重建表消除数据空洞
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/rebuildTable.jpg)
+##### 一组next-key lock 案例
+- 初始表数据
 ```
-alter table A engine=InnoDB
+CREATE TABLE `t` (
+`id` int(11) NOT NULL,
+`c` int(11) DEFAULT NULL,
+`d` int(11) DEFAULT NULL,
+PRIMARY KEY (`id`),
+KEY `c` (`c`)
+) ENGINE=InnoDB;
+//
+insert into t values(0,0,0),(5,5,5),
+(10,10,10),(15,15,15),(20,20,20),(25,25,25);
 ```
-- Online DDL重建表的流程:
-    1. 建立一个临时文件， 扫描表A主键的所有数据页；
-    2. 用数据页中表A的记录生成B+树， 存储到临时文件中；
-    3. 生成临时文件的过程中， 将所有对A的操作记录在一个日志文件（row log） 中， 对应的是图中state2的状态；
-    4. 临时文件生成后， 将日志文件中的操作应用到临时文件， 得到一个逻辑数据上与表A相同的数据文件， 对应的就是图中state3的状态；
-    5. 用临时文件替换表A的数据文件。
-  - alter语句在启动的时候需要获取MDL写锁， 但是这个写锁在真正拷贝数据之前就退化成读锁了。同时禁止其他线程对这个表同时做DDL。
-  - 在图4中， 根据表A重建出来的数据是放在“tmp_file”里的， 这个临时文件是InnoDB在内部创建出来的。 整个DDL过程都在InnoDB内部完成。 对于server层来说， 没有把数据挪动到临时表， 是一个“原地”操作， 这就是“inplace”名称的来源。
 
+- 不等号条件里的等值查询
+```
+begin;
+select * from t where id>9 and id<12 order by id desc for update;
+```
+  - 主键索引上的 (0,5]、 (5,10]和(10, 15)。
+  - id=15这一行， 并没有被加上行锁，这用到了优化2，即索引上的等值查询， 向右遍历的时候id=15不满足条件， 所以next-keylock退化为了间隙锁 (10, 15)。
+
+- 等值查询的过程
+```
+begin;
+select id from t where c in(5,20,10) lock in share mode;
+```
+  - 查找c=5的时候， 先锁住了(0,5]。 但是因为c不是唯一索引， 为了确认还有没有别的记录c=5，就要向右遍历， 找到c=10才确认没有了， 这个过程满足优化2， 所以加了间隙锁(5,10)。同样的， 执行c=10这个逻辑的时候， 加锁的范围是(5,10] 和 (10,15)； 执行c=20这个逻辑的时候， 加锁的范围是(15,20] 和 (20,25)
+  - 这个加锁范围， 从(5,25)中去掉c=15的行锁.
+  
+- order by 加锁过程
+```
+select id from t where c in(5,20,10) order by c desc for update;
+```
+  - 由于语句里面是order byc desc， 这三个记录锁的加锁顺序， 是先锁
+    c=20， 然后c=10， 最后是c=5
+    
+- 锁范围增长
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/nextKeyLockExtend.jpg)
+- 由于session A并没有锁住c=10这个记录， 所以session B删除id=10这一行是可以的。 但是之后， session B再想insert id=10这一行回去就不行了
+- 由于delete操作把id=10这一行删掉了， 原来的两个间隙(5,10)、 (10,15）变成了一个(5,15)
+
+## SQL 语句执行流程
 
 ### count(*)实现
 - 不同引擎中的实现
@@ -519,198 +550,6 @@ select city,name,age from t where city='杭州' order by name limit 1000 ;
   
 - 直接使用order byrand()， 这个语句需要Using temporary和 Using filesort， 查询的执行代价往往是比较大的
 
-## MySQL执行语句的一些坑
-### 条件字段函数操作
-```
-mysql> select count(*) from tradelog where month(t_modified)=7;
-```
-- 对索引字段做函数操作， 可能会破坏索引值的有序性， 因此优化器就决定放弃走树搜索功能。
-- 例子里， 放弃了树搜索功能， 优化器可以选择遍历主键索引， 也可以选择遍历索引t_modified， 优化器对比索引大小后发现， 索引t_modified更小， 遍历这个索引比遍历主键索引来得更快。 因此最终还是会选择索引t_modified。
-
-### 隐式类型转换
-```
-// tradeid的字段类型是varchar(32)
-mysql> select * from tradelog where tradeid=110717;
-// 对于优化器会变成
-mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;
-```
-- 这条语句触发了我们上面说到的规则： 对索引字段做函数操作， 优化器会放弃走树搜索功能。
-
-### 隐式字符集编码转换
-- 表间字符集不同导致索引失效，连接过程中要求在被驱动表的索引字段上加函数操作
-  - 如两个表的字符集不同， 一个是utf8， 一个是utf8mb4， 所以做表连接查询的时候用不上关联字段的索引。 utf8mb4是utf8的超集。
-  - 较常见的优化方法是， 把trade_detail表上的tradeid字段的字符集也改成utf8mb4
-  - 如果数据量比较大， 或者业务上暂时不能做这个DDL的话， 那就只能采用修改SQL语句的方法了
-    - 如转换集合CONVERT($R4.tradeid.value USING utf8mb4);
-    - 或者将转换函数作用在连接的值上，解决了函数作用于索引上导致索引失效的。
-    
-### 简单查询长时间不返回
-- 等MDL锁。
-  - 使用show processlist命令查看Waiting for table metadata lock
-  - 通过查询sys.schema_table_lock_waits这张表， 我们就可以直接找出造成阻塞的process id， 把这个连接用kill 命令断开即可
-    - ```
-      mysql> select blocking_pid from sys.schema_table_lock_waits 
-      ```
-- 等flush
-  - ```
-    flush tables t with read lock;
-    flush tables with read lock;
-    ```
-  - 两个flush table的语句
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/longquery.jpg)
-
-- 等行锁
-  - ```
-    mysql> select * from t where id=1 lock in share mode;
-    ```
-  - Session A 开启事务执行更新还未提交事务。Session B 使用该语句查询时就会等待行锁释放。
-  - sys.innodb_lock_waits 表：可以用来查询行锁的占用情况
-    - ```
-      mysql> select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'`\G
-      ```
-
-### 查询慢
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/slowquery1.jpg)
-
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/slowquery2.jpg)
-```
-//session A
-select * from t where id=1
-
-//session B
-select * from t where id=1 lock in share mode
-```
-- session B更新完100万次， 生成了100万个回滚日志(undo log)。带lock in share mode的SQL语句， 是当前读， 因此会直接读到1000001这个结果， 所以速度很快； 而select * from t where id=1这个语句， 是一致性读， 因此需要从1000001开始， 依次执行undo log， 执行了100万次以后， 才将1这个结果返回。
-
-## 幻读
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead.jpg)
-- session A里执行了三次查询， 分别是Q1、 Q2和Q3。 它们的SQL语句相同， 都是select * from t where d=5 for update。 表示查所有d=5的行， 而且使用的是当前读， 并且加上写锁。 
-- 其中， Q3读到id=1这一行的现象， 被称为“幻读”。 也就是说， 幻读指的是一个事务在前后两次查询同一个范围的时候， 后一次查询看到了前一次查询没有看到的行
-- 幻读会导致数据一致性的问题。 锁的设计是为了保证数据的一致性。 而这个一致性， 不止是数据库内部数据状态在此刻的一致性， 还包含了数据和日志在逻辑上的一致性。
-  1. 在可重复读隔离级别下， 普通的查询是快照读， 是不会看到别的事务插入的数据的。 因此，幻读在“当前读”下才会出现。
-  2. 上面session B的修改结果， 被session A之后的select语句用“当前读”看到， 不能称为幻读。幻读仅专指“新插入的行”
-
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead2.jpg)
-- 尝试解决幻读，把所有语句都上锁，查询语句改成select * from t for update。但是仍然无法解决插入新语句出现的幻读现象。
-
-### 如何解决幻读？
-- InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过程中， 不仅将给行加上了行锁， 还给行两边的空隙， 也加上了间隙锁。
-
-- 间隙锁之间的冲突：跟间隙锁存在冲突关系的， 是“往这个间隙中插入一个记录”这个操作。 间隙锁之间都不存在冲突关系。
-- 间隙锁和行锁合称next-key lock， 每个next-key lock是前开后闭区间。 
-  - 如果用select * from t for update要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
-  - InnoDB给每个索引加了一个不存在的最大值supremum。
-
-- 间隙锁的引入， 可能会导致同样的语句锁住更大的范围， 这其实是影响了并发度的。
-
-#### 加锁原则
-总结的加锁规则里面， 包含了两个“原则”、 两个“优化”和一个“bug”。
-1. 原则1： 加锁的基本单位是next-keylock。 希望你还记得， next-keylock是前开后闭区间。
-2. 原则2： 查找过程中访问到的对象才会加锁。
-3. 优化1： 索引上的等值查询， 给唯一索引加锁的时候， next-keylock退化为行锁。
-4. 优化2： 索引上的等值查询， 向右遍历时且最后一个值不满足等值条件的时候， next-key lock退化为间隙锁。
-5. 一个bug： 唯一索引上的范围查询会访问到不满足条件的第一个值为止。
-
-#### 间隙锁相关实例说明
-- 一个next Key Lock 的加锁例子
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead3.jpg)
-1. 开始执行的时候， 要找到第一个id=10的行， 因此本该是next-keylock(5,10]。 根据优化1，主键id上的等值条件， 退化成行锁， 只加了id=10这一行的行锁。
-2. 范围查找就往后继续找， 找到id=15这一行停下来， 因此需要加next-keylock(10,15]。所以， session A这时候锁的范围就是主键索引上， 行锁id=10和next-keylock(10,15]。
-
-- 死锁案例（间隙锁不互斥导致）
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead4.jpg)
-1. session A 启动事务后执行查询语句加lock in share mode， 在索引c上加了next-key lock(5,10] 和间隙锁(10,15)；
-2. session B 的update语句也要在索引c上加next-keylock(5,10] ， 进入锁等待；
-3. 然后session A要再插入(8,8,8)这一行， 被session B的间隙锁锁住。 由于出现了死锁， InnoDB让session B回滚
-- session B的“加next-keylock(5,10] ”操作， 实际上分成了两步， 先是加(5,10)的间隙锁， 加锁成功； 然后加c=10的行锁， 这时候才被锁住的。
-
-
-##### 一组next-key lock 案例
-- 初始表数据
-```
-CREATE TABLE `t` (
-`id` int(11) NOT NULL,
-`c` int(11) DEFAULT NULL,
-`d` int(11) DEFAULT NULL,
-PRIMARY KEY (`id`),
-KEY `c` (`c`)
-) ENGINE=InnoDB;
-//
-insert into t values(0,0,0),(5,5,5),
-(10,10,10),(15,15,15),(20,20,20),(25,25,25);
-```
-
-- 不等号条件里的等值查询
-```
-begin;
-select * from t where id>9 and id<12 order by id desc for update;
-```
-  - 主键索引上的 (0,5]、 (5,10]和(10, 15)。
-  - id=15这一行， 并没有被加上行锁，这用到了优化2，即索引上的等值查询， 向右遍历的时候id=15不满足条件， 所以next-keylock退化为了间隙锁 (10, 15)。
-
-- 等值查询的过程
-```
-begin;
-select id from t where c in(5,20,10) lock in share mode;
-```
-  - 查找c=5的时候， 先锁住了(0,5]。 但是因为c不是唯一索引， 为了确认还有没有别的记录c=5，就要向右遍历， 找到c=10才确认没有了， 这个过程满足优化2， 所以加了间隙锁(5,10)。同样的， 执行c=10这个逻辑的时候， 加锁的范围是(5,10] 和 (10,15)； 执行c=20这个逻辑的时候， 加锁的范围是(15,20] 和 (20,25)
-  - 这个加锁范围， 从(5,25)中去掉c=15的行锁.
-  
-- order by 加锁过程
-```
-select id from t where c in(5,20,10) order by c desc for update;
-```
-  - 由于语句里面是order byc desc， 这三个记录锁的加锁顺序， 是先锁
-    c=20， 然后c=10， 最后是c=5
-    
-- 锁范围增长
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/nextKeyLockExtend.jpg)
-- 由于session A并没有锁住c=10这个记录， 所以session B删除id=10这一行是可以的。 但是之后， session B再想insert id=10这一行回去就不行了
-- 由于delete操作把id=10这一行删掉了， 原来的两个间隙(5,10)、 (10,15）变成了一个(5,15)
-  
-## Mysql 短时间提升性能方法
-- 使用短连接的风险：短时间连接暴增
-  - 第一种方法： 先处理掉那些占着连接但是不工作的线程
-  - 第二种方法： 减少连接过程的消耗。（让数据库跳过权限验证阶段） 不推荐
-
-- 慢查询导致的性能问题
-  1. 索引未设计好。若使用主从可以再从库执行索引，再进行主从切换。
-  2. 另一种查询问题，语句没写好
-    - 应急方案使用：使用查询重写功能， 给原来的语句加上force index，
-    - 提前发现：在上线前回归测试，使用slow log 记录
-    
-- QPS突增
- 1. 一种是由全新业务的bug导致的。 假设你的DB运维是比较规范的，从数据库端直接把白名单去掉
- 2. 如果这个新功能使用的是单独的数据库用户， 可以用管理员账号把这个用户删掉， 然后断开现有连接。 这样， 这个新功能的连接不成功， 由它引发的QPS就会变成0。
- 3. 如果这个新增的功能跟主体功能是部署在一起的， 那么我们只能通过处理语句来限制。可能造成“误伤”。
- 
-## 主从同步流程图
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/masterSlave.jpg)
-一个事务日志同步的完整过程是这样的：
-1. 在备库B上通过change master命令， 设置主库A的IP、 端口、 用户名、 密码， 以及要从哪个位置开始请求binlog， 这个位置包含文件名和日志偏移量。
-2. 在备库B上执行start slave命令， 这时候备库会启动两个线程， 就是图中的io_thread和sql_thread。 其中io_thread负责与主库建立连接。
-3. 主库A校验完用户名、 密码后， 开始按照备库B传过来的位置， 从本地读取binlog， 发给B。
-4. 备库B拿到binlog后， 写到本地文件， 称为中转日志（relaylog） 。
-5. sql_thread读取中转日志， 解析出日志里的命令， 并执行。
-
-
-
-## Innodb的内存管理策略LRU
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/LRU1.jpg)
-InnoDB管理Buffer Pool的LRU算法， 是用链表来实现的。
-1. 在图中的状态1里， 链表头部是P1， 表示P1是最近刚刚被访问过的数据页。
-2. 状态2 表示刚访问过P3，移到表头
-3. 若有新数据则添加到表头，若内存已满，移除表尾的数据。
-
-- innoDB对LRU改进，防止大数据量查询导致，内存的数据命中率突然下降过快。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/LRU2.jpg)
-- 在InnoDB实现上， 按照5:3的比例把整个LRU链表分成了young区域和old区域。 图中LRU_old指向的就是old区域的第一个位置， 是整个链表的5/8处。 也就是说， 靠近链表头部的5/8是young区域， 靠近链表尾部的3/8是old区域。
-- young区域的数据和之前的算法一致，而针对新数据都是插入到old区域，因此young区域的数据不受影响，保证了业务的数据命中率。
-- 处于old区域的数据页， 每次被访问的时候都要做下面这个判断：
-  - 若这个数据页在LRU链表中存在的时间超过了1秒， 就把它移动到链表头部；
-  - 如果这个数据页在LRU链表中存在的时间短于1秒， 位置保持不变。 1秒这个时间， 是由参数innodb_old_blocks_time控制的。 其默认值是1000， 单位毫秒
-
-## SQL 语句执行流程
 ### join的执行过程
 #### Index Nested-Loop Join
 ```
@@ -725,8 +564,7 @@ select * from t1 straight_join t2 on (t1.a=t2.a);
 
 - 流程中：
     1. 对驱动表t1做了全表扫描， 这个过程需要扫描100行；
-    2. 而对于每一行R， 根据a字段去表t2查找， 走的是树搜索过程。 由于我们构造的数据都是一一
-    对应的， 因此每次的搜索过程都只扫描一行， 也是总共扫描100行；
+    2. 而对于每一行R， 根据a字段去表t2查找， 走的是树搜索过程。 由于我们构造的数据都是一一对应的， 因此每次的搜索过程都只扫描一行， 也是总共扫描100行；
     3. 所以， 整个执行流程， 总扫描行数是200。
 
 #### Simple Nested-Loop Join
@@ -735,6 +573,7 @@ select * from t1 straight_join t2 on (t1.a=t2.b);
 ```
 - 表t2的字段b上没有索引，关联查询使用全表扫描。
 - SQL请求就要扫描表t2多达100次， 总共扫描100*1000=10万行。
+
 #### Block Nested-Loop Join
 - 将驱动表数据读入线程内存join_buffer中，同样以全表扫描，但是因为使用内存操作，速度比上述方法快。
 
@@ -752,6 +591,7 @@ select * from t1 straight_join t2 on (t1.a=t2.b);
 1. 尽量使用被驱动表的索引，即关联表的字段为索引。
 2. 不能使用被驱动表的索引， 只能使用Block Nested-Loop Join算法， 这样的语句就尽量不要使用；
 3. 在使用join的时候， 应该让小表做驱动表。
+4. 把join 的条件写在where和写在on中区别为，一个为连接的条件。
 
 ### union执行流程
 ```
@@ -798,3 +638,168 @@ select id%10 as m, count(*) as c from t1 group by m order by null;
 ```
 select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 ```
+
+  
+## 其他
+### Mysql数据库抖动
+- 当内存数据页跟磁盘数据页内容不一致的时候， 我们称这个内存页为“脏页”。 
+- 在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologFlush.jpg)
+- Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（flush）的方法
+  - 第一种：对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
+  - 第二种：系统的内存需要新的内存页，这时候需要淘汰一些内存也。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
+    - 为什么不直接淘汰脏页，等新数据读取的时候再应用redo log？ 主要为了保证状态统一，内存的数据存在则肯定是最新的，内存没有则文件肯定是最新的。
+  - 第三种：Mysql认为系统空闲时，刷脏页。
+  - 第四种：MySql关闭时刷脏页。
+  
+#### 内存不足刷脏页的情况
+- 缓冲池中的内存页有三种状态：
+  - 第一种是， 还没有使用的；
+  - 第二种是， 使用了并且是干净页；
+  - 第三种是， 使用了并且是脏页。
+  
+- 如果要淘汰的是一个干净页， 就直接释放出来复用； 但如果是脏页呢， 就必须将脏页先刷到磁盘， 变成干净页后才能复用。
+  
+#### InnoDB刷脏页的控制策略
+  - innodb_io_capacity这个参数，会告诉InnoDB你的磁盘能力。
+    - 建议设置成磁盘的IOPS。 磁盘的IOPS可以通过fio这个工具来测试
+  - 参数设置过低会导致InnoDB认为这个系统的能力就这么差， 所以刷脏页刷得特别慢， 甚至比脏页生成的速度还慢， 这样就造成了脏页累积， 影响了查询和更新性能
+  - 参数设置太高会影响除Mysql外的服务响应。
+  
+- InnoDB的刷盘速度就是要参考这两个因素： 一个是脏页比例， 一个是redo log写盘速度。
+  - 参数innodb_max_dirty_pages_pct是脏页比例上限， 默认值是75%。 InnoDB会根据当前的脏页比例（假设为M） ，算出一个范围在0到100之间的数字F(M)
+  - InnoDB每次写入的日志都有一个序号， 当前写入的序号跟checkpoint对应的序号之间的差值，我们假设为N，计算出F(N)。 
+  - 上述算得的F1(M)和F2(N)两个值， 取其中较大的值记为R， 之后引擎就可以按 照innodb_io_capacity定义的能力乘以R%来控制刷脏页的速度。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/memoryflash.jpg)
+
+
+### 数据库表数据删除
+- 参数innodb_file_per_table
+  - OFF表示的是， 表的数据放在系统共享表空间， 也就是跟数据字典放在一起.
+  - ON表示的是， 每个InnoDB表数据存储在一个以 .ibd为后缀的文件中。
+  - 将innodb_file_per_table设置为ON，文件的存储形式便于管理。
+  
+- delete命令其实只是把记录的位置， 或者数据页标记为了“可复用”， 但磁盘文件的大小是不会变的。 通过delete命令是不能回收表空间的
+- 删除数据会造成空洞， 插入数据也会。主要体现在插入数据出现页分裂，那么分裂完成的页势必存在空洞位置。
+
+#### 重建表消除数据空洞
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/rebuildTable.jpg)
+```
+alter table A engine=InnoDB
+```
+- Online DDL重建表的流程:
+    1. 建立一个临时文件， 扫描表A主键的所有数据页；
+    2. 用数据页中表A的记录生成B+树， 存储到临时文件中；
+    3. 生成临时文件的过程中， 将所有对A的操作记录在一个日志文件（row log） 中， 对应的是图中state2的状态；
+    4. 临时文件生成后， 将日志文件中的操作应用到临时文件， 得到一个逻辑数据上与表A相同的数据文件， 对应的就是图中state3的状态；
+    5. 用临时文件替换表A的数据文件。
+  - alter语句在启动的时候需要获取MDL写锁， 但是这个写锁在真正拷贝数据之前就退化成读锁了。同时禁止其他线程对这个表同时做DDL。
+  - 在图4中， 根据表A重建出来的数据是放在“tmp_file”里的， 这个临时文件是InnoDB在内部创建出来的。 整个DDL过程都在InnoDB内部完成。 对于server层来说， 没有把数据挪动到临时表， 是一个“原地”操作， 这就是“inplace”名称的来源。
+
+
+### MySQL执行语句的一些坑
+#### 条件字段函数操作
+```
+mysql> select count(*) from tradelog where month(t_modified)=7;
+```
+- 对索引字段做函数操作， 可能会破坏索引值的有序性， 因此优化器就决定放弃走树搜索功能。
+- 例子里， 放弃了树搜索功能， 优化器可以选择遍历主键索引， 也可以选择遍历索引t_modified， 优化器对比索引大小后发现， 索引t_modified更小， 遍历这个索引比遍历主键索引来得更快。 因此最终还是会选择索引t_modified。
+
+#### 隐式类型转换
+```
+// tradeid的字段类型是varchar(32)
+mysql> select * from tradelog where tradeid=110717;
+// 对于优化器会变成
+mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;
+```
+- 这条语句触发了我们上面说到的规则： 对索引字段做函数操作， 优化器会放弃走树搜索功能。
+
+#### 隐式字符集编码转换
+- 表间字符集不同导致索引失效，连接过程中要求在被驱动表的索引字段上加函数操作
+  - 如两个表的字符集不同， 一个是utf8， 一个是utf8mb4， 所以做表连接查询的时候用不上关联字段的索引。 utf8mb4是utf8的超集。
+  - 较常见的优化方法是， 把trade_detail表上的tradeid字段的字符集也改成utf8mb4
+  - 如果数据量比较大， 或者业务上暂时不能做这个DDL的话， 那就只能采用修改SQL语句的方法了
+    - 如转换集合CONVERT($R4.tradeid.value USING utf8mb4);
+    - 或者将转换函数作用在连接的值上，解决了函数作用于索引上导致索引失效的。
+    
+#### 简单查询长时间不返回
+- 等MDL锁。
+  - 使用show processlist命令查看Waiting for table metadata lock
+  - 通过查询sys.schema_table_lock_waits这张表， 我们就可以直接找出造成阻塞的process id， 把这个连接用kill 命令断开即可
+    - ```
+      mysql> select blocking_pid from sys.schema_table_lock_waits 
+      ```
+- 等flush
+  - ```
+    flush tables t with read lock;
+    flush tables with read lock;
+    ```
+  - 两个flush table的语句
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/longquery.jpg)
+
+- 等行锁
+  - ```
+    mysql> select * from t where id=1 lock in share mode;
+    ```
+  - Session A 开启事务执行更新还未提交事务。Session B 使用该语句查询时就会等待行锁释放。
+  - sys.innodb_lock_waits 表：可以用来查询行锁的占用情况
+    - ```
+      mysql> select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'`\G
+      ```
+
+#### 查询慢
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/slowquery1.jpg)
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/slowquery2.jpg)
+```
+//session A
+select * from t where id=1
+
+//session B
+select * from t where id=1 lock in share mode
+```
+- session B更新完100万次， 生成了100万个回滚日志(undo log)。带lock in share mode的SQL语句， 是当前读， 因此会直接读到1000001这个结果， 所以速度很快； 而select * from t where id=1这个语句， 是一致性读， 因此需要从1000001开始， 依次执行undo log， 执行了100万次以后， 才将1这个结果返回。
+
+
+### Mysql 短时间提升性能方法
+- 使用短连接的风险：短时间连接暴增
+  - 第一种方法： 先处理掉那些占着连接但是不工作的线程
+  - 第二种方法： 减少连接过程的消耗。（让数据库跳过权限验证阶段） 不推荐
+
+- 慢查询导致的性能问题
+  1. 索引未设计好。若使用主从可以再从库执行索引，再进行主从切换。
+  2. 另一种查询问题，语句没写好
+    - 应急方案使用：使用查询重写功能， 给原来的语句加上force index，
+    - 提前发现：在上线前回归测试，使用slow log 记录
+    
+- QPS突增
+ 1. 一种是由全新业务的bug导致的。 假设你的DB运维是比较规范的，从数据库端直接把白名单去掉
+ 2. 如果这个新功能使用的是单独的数据库用户， 可以用管理员账号把这个用户删掉， 然后断开现有连接。 这样， 这个新功能的连接不成功， 由它引发的QPS就会变成0。
+ 3. 如果这个新增的功能跟主体功能是部署在一起的， 那么我们只能通过处理语句来限制。可能造成“误伤”。
+ 
+### 主从同步流程图
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/masterSlave.jpg)
+一个事务日志同步的完整过程是这样的：
+1. 在备库B上通过change master命令， 设置主库A的IP、 端口、 用户名、 密码， 以及要从哪个位置开始请求binlog， 这个位置包含文件名和日志偏移量。
+2. 在备库B上执行start slave命令， 这时候备库会启动两个线程， 就是图中的io_thread和sql_thread。 其中io_thread负责与主库建立连接。
+3. 主库A校验完用户名、 密码后， 开始按照备库B传过来的位置， 从本地读取binlog， 发给B。
+4. 备库B拿到binlog后， 写到本地文件， 称为中转日志（relaylog） 。
+5. sql_thread读取中转日志， 解析出日志里的命令， 并执行。
+
+
+
+### Innodb的内存管理策略LRU
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/LRU1.jpg)
+InnoDB管理Buffer Pool的LRU算法， 是用链表来实现的。
+1. 在图中的状态1里， 链表头部是P1， 表示P1是最近刚刚被访问过的数据页。
+2. 状态2 表示刚访问过P3，移到表头
+3. 若有新数据则添加到表头，若内存已满，移除表尾的数据。
+
+- innoDB对LRU改进，防止大数据量查询导致，内存的数据命中率突然下降过快。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/LRU2.jpg)
+- 在InnoDB实现上， 按照5:3的比例把整个LRU链表分成了young区域和old区域。 图中LRU_old指向的就是old区域的第一个位置， 是整个链表的5/8处。 也就是说， 靠近链表头部的5/8是young区域， 靠近链表尾部的3/8是old区域。
+- young区域的数据和之前的算法一致，而针对新数据都是插入到old区域，因此young区域的数据不受影响，保证了业务的数据命中率。
+- 处于old区域的数据页， 每次被访问的时候都要做下面这个判断：
+  - 若这个数据页在LRU链表中存在的时间超过了1秒， 就把它移动到链表头部；
+  - 如果这个数据页在LRU链表中存在的时间短于1秒， 位置保持不变。 1秒这个时间， 是由参数innodb_old_blocks_time控制的。 其默认值是1000， 单位毫秒
