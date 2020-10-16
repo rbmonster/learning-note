@@ -49,8 +49,32 @@ public class Demo {
 //        System.out.println(main.findCircleNum(example));
 //        System.out.println(main.findDuplicate(new int[] {1,2,3,3,4}));
 //        System.out.println(main.hammingDistance(1,4));
+        String[] A = new String[] {"123"};
+
     }
 
+    public List<String> generateParenthesis(int n) {
+        List<String> result = new ArrayList<>();
+        backTrack(result, new StringBuilder(""),0,0,n);
+        return result;
+    }
+
+    public void backTrack(List<String>result, StringBuilder sb, int open, int close,int max) {
+        if(sb.length() == max*2) {
+            result.add(sb.toString());
+            return;
+        }
+        if(open<max) {
+            sb.append("(");
+            backTrack(result,sb,open+1,close,max);
+            sb.deleteCharAt(sb.length()-1);
+        }
+        if (close<open) {
+            sb.append(")");
+            backTrack(result,sb,open,close+1,max);
+            sb.deleteCharAt(sb.length()-1);
+        }
+    }
 
     public List<Integer> findDisappearedNumbers(int[] nums) {
         List<Integer> res = new ArrayList<>();
@@ -125,4 +149,29 @@ public class Demo {
 //            note.put(i, false);
 //        }
 //    }
+
+    public int singleNonDuplicate(int[] nums) {
+        int left = 0,right = nums.length-1;
+        while(left<right) {
+            int mid = left + (right-left)/2;
+            boolean flag = (right-mid)%2==0;
+            if(nums[mid]==nums[mid+1]) {
+                if(flag) {
+                    left = mid+2;
+                } else {
+                    right = mid-1;
+                }
+            }
+            else if (nums[mid-1]==nums[mid] ){
+                if(flag) {
+                    right = mid-2;
+                } else {
+                    left = mid +1;
+                }
+            }else {
+                return nums[mid];
+            }
+        }
+        return nums[left];
+    }
 }
