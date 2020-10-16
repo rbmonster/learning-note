@@ -1,3 +1,97 @@
+### 线程
+#### 线程状态
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadState.jpg)
+
+- 新建（NEW）：创建后尚未启动。
+- 可运行（RUNABLE）：正在 Java 虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。
+- 阻塞（BLOCKED）：请求获取 monitor lock 从而进入 synchronized 函数或者代码块，但是其它线程已经占用了该 monitor lock，所以出于阻塞状态。要结束该状态进入从而 RUNABLE 需要其他线程释放 monitor lock。
+- 无限期等待（WAITING）：等待其它线程显式地唤醒。
+   - 阻塞和等待的区别在于，阻塞是被动的，它是在等待获取 monitor lock。而等待是主动的，通过调用  Object.wait() 等方法进入。
+
+| 进入方法 | 退出方法 |
+| --- | --- |
+| 没有设置 Timeout 参数的 Object.wait() 方法 | Object.notify() / Object.notifyAll() |
+| 没有设置 Timeout 参数的 Thread.join() 方法 | 被调用的线程执行完毕 |
+| LockSupport.park() 方法 | LockSupport.unpark(Thread) |
+
+- 限期等待（TIMED_WAITING）：无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
+  - 调用 Thread.sleep() 方法使线程进入限期等待状态时，常常用“使一个线程睡眠”进行描述。调用 Object.wait() 方法使线程进入限期等待或者无限期等待时，常常用“挂起一个线程”进行描述。睡眠和挂起是用来描述行为，而阻塞和等待用来描述状态。
+
+| 进入方法 | 退出方法 |
+| --- | --- |
+| Thread.sleep() 方法 | 时间结束 |
+| 设置了 Timeout 参数的 Object.wait() 方法 | 时间结束 / Object.notify() / Object.notifyAll()  |
+| 设置了 Timeout 参数的 Thread.join() 方法 | 时间结束 / 被调用的线程执行完毕 |
+| LockSupport.parkNanos() 方法 | LockSupport.unpark(Thread) |
+| LockSupport.parkUntil() 方法 | LockSupport.unpark(Thread) |
+
+- 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadState2.jpg)
+### 线程池
+#### 线程池状态
+线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadPool.jpg)
+
+- RUNNING
+  1. 状态说明：线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
+  2. 状态切换：线程池的初始化状态是RUNNING。换句话说，线程池被一旦被创建，就处于RUNNING状态
+
+- SHUTDOWN
+  1. 状态说明：线程池处在SHUTDOWN状态时，不接收新任务，但能处理已添加的任务。 
+  2. 状态切换：调用线程池的shutdown()接口时，线程池由RUNNING -> SHUTDOWN。
+
+- STOP
+  1. 状态说明：线程池处在STOP状态时，不接收新任务，不处理已添加的任务，并且会中断正在处理的任务。 
+  2. 状态切换：调用线程池的shutdownNow()接口时，线程池由(RUNNING or SHUTDOWN ) -> STOP。 
+
+- TIDYING
+  1. 状态说明：当所有的任务已终止，ctl记录的”任务数量”为0，线程池会变为TIDYING状态。当线程池变为TIDYING状态时，会执行钩子函数terminated()。terminated()在ThreadPoolExecutor类中是空的，若用户想在线程池变为TIDYING时，进行相应的处理；可以通过重载terminated()函数来实现。 
+  2. 状态切换：当线程池在SHUTDOWN状态下，阻塞队列为空并且线程池中执行的任务也为空时，就会由 SHUTDOWN -> TIDYING。 
+
+- TERMINATED
+  1. 状态说明：线程池彻底终止，就变成TERMINATED状态。 
+  2. 状态切换：线程池处在TIDYING状态时，执行完terminated()之后，就会由 TIDYING -> TERMINATED当线程池在STOP状态下，线程池中执行的任务为空时，就会由STOP -> TIDYING。
+#### 线程池创建
+- 线程池的初始化：
+```
+/**
+ * 用给定的初始参数创建一个新的ThreadPoolExecutor。
+ */
+public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
+                          int maximumPoolSize,//线程池的最大线程数
+                          long keepAliveTime,//当线程数大于核心线程数时，多余的空闲线程存活的最长时间
+                          TimeUnit unit,//时间单位
+                          BlockingQueue<Runnable> workQueue,//任务队列，用来储存等待执行任务的队列
+                          ThreadFactory threadFactory,//线程工厂，用来创建线程，一般默认即可
+                          RejectedExecutionHandler handler//拒绝策略，当提交的任务过多而不能及时处理时，我们可以定制策略来处理任务
+                           ){
+.......
+}
+```
+- corePoolSize：核心线程数量，当有新任务在execute()方法提交时，会执行以下判断：
+  - 如果运行的线程少于 corePoolSize，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；
+  - 如果线程池中的线程数量大于等于 corePoolSize 且小于 maximumPoolSize，则只有当workQueue满时才创建新的线程去处理任务；
+  - 如果设置的corePoolSize 和 maximumPoolSize相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；
+  - 如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务
+  - 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
+
+- 线程池拒绝策略
+  - ThreadPoolExecutor.AbortPolicy：抛出 RejectedExecutionException来拒绝新任务的处理。
+  - ThreadPoolExecutor.CallerRunsPolicy：调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
+    - 简单的说就是用启动threadPool的线程执行新的请求。
+  - ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
+  - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadPoolProcess.jpg)
+
+
+#### 阿里开发规范
+- 线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。
+  - 说明： Executors 返回的线程池对象的弊端如下：
+1. FixedThreadPool 和 SingleThreadPool:允许的请求队列长度为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。
+2. CachedThreadPool 和 ScheduledThreadPool:允许的创建线程数量为 Integer.MAX_VALUE， 可能会创建大量的线程，从而导致 OOM。
+
 ### 解决共享资源竞争
 
 #### synchronized:
