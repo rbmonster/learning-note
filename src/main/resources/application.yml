@@ -1,0 +1,10 @@
+spring:
+  application:
+    name:  test
+
+server:
+  port: 8090
+
+#logging:
+#  level:
+#    root: trace

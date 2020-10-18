@@ -60,7 +60,7 @@ public class PreOrder {
      * @param root
      * @return
      */
-    public List<Integer> preorderTraversal1(TreeNode root) {
+    public List<Integer> preOrderTraversal1(TreeNode root) {
         LinkedList<TreeNode> stack = new LinkedList<>();
         LinkedList<Integer> output = new LinkedList<>();
         if (root == null) {

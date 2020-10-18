@@ -1,8 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.util.concurrent.AtomicDouble;
 import com.learning.client.*;
-import com.learning.LearnApplication;
+import com.four.server.LearnApplication;
 import com.learning.offer.DemoMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.doubleThat;
 import static org.mockito.Mockito.when;
 
 /**
