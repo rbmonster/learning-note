@@ -40,91 +40,60 @@
 - 5、生成文件名
   当文件存储到某个子目录后，即认为该文件存储成功，接下来会为该文件生成一个文件名，文件名由group、存储目录、两级子目录、fileid、文件后缀名
   
-### 线程池
-#### 线程池创建
-- 线程池的初始化：
+
+
+
+
+
+### redis一般用什么数据结构？
+- String、hash、list、set、sortSet
+更新hash是如何更新的？别的数据结构有用过吗？
 ```
-/**
- * 用给定的初始参数创建一个新的ThreadPoolExecutor。
- */
-public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
-                          int maximumPoolSize,//线程池的最大线程数
-                          long keepAliveTime,//当线程数大于核心线程数时，多余的空闲线程存活的最长时间
-                          TimeUnit unit,//时间单位
-                          BlockingQueue<Runnable> workQueue,//任务队列，用来储存等待执行任务的队列
-                          ThreadFactory threadFactory,//线程工厂，用来创建线程，一般默认即可
-                          RejectedExecutionHandler handler//拒绝策略，当提交的任务过多而不能及时处理时，我们可以定制策略来处理任务
-                           ){
-.......
-}
+>SET msg "hello word"
+// list
+>RPUSH blah "hello" "world" "again"
+
+>HSET book name "Master C++ in 21 days"
+
+>SADD numbers 1 3 5 
+
+>ZADD blah 1.0 www
+
 ```
-- corePoolSize：核心线程数量，当有新任务在execute()方法提交时，会执行以下判断：
-  - 如果运行的线程少于 corePoolSize，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；
-  - 如果线程池中的线程数量大于等于 corePoolSize 且小于 maximumPoolSize，则只有当workQueue满时才创建新的线程去处理任务；
-  - 如果设置的corePoolSize 和 maximumPoolSize相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；
-  - 如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务
-  - 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
-
-- 线程池拒绝策略
-  - ThreadPoolExecutor.AbortPolicy：抛出 RejectedExecutionException来拒绝新任务的处理。
-  - ThreadPoolExecutor.CallerRunsPolicy：调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
-    - 简单的说就是用启动threadPool的线程执行新的请求。
-  - ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
-  - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
-
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadPoolProcess.jpg)
-
-- 任务缓存队列
-  - 在前面我们多次提到了任务缓存队列，即workQueue，它用来存放等待执行的任务。
-  - workQueue的类型为BlockingQueue<Runnable>，通常可以取下面三种类型：
-
-1）有界任务队列ArrayBlockingQueue：基于数组的先进先出队列，此队列创建时必须指定大小；
-
-2）无界任务队列LinkedBlockingQueue：基于链表的先进先出队列，如果创建时没有指定此队列大小，则默认为Integer.MAX_VALUE；
-
-3）直接提交队列synchronousQueue：这个队列比较特殊，它不会保存提交的任务，而是将直接新建一个线程来执行新来的任务。
-
-- 线上线程池的配置：
 
 
-### Map 相关：
-  - HashMap: 给予散列表实现。可以通过构造器设置容量和负载因子，以调整容器的性能
-  - LinkedHashMap：类似HashMap，但是迭代访问时，取得“键值对”的顺序是按其插入对的顺序，或者是最近最少使用(LRU)的次序。
-    - 在构造器可以指定参数为new LinkedHashMap<>(initialCapacity, loadFactor, true),initialCapacity为初始容量，loadFactor为加载因子，true表示使用LRU访问。
-    - 初始容量是创建哈希表时的容量，加载因子是哈希表在其容量自动增加之前可以达到多满的一种尺度，它衡量的是一个散列表的空间的使用程度，负载因子越大表示散列表的装填程度越高，反之愈小。
-  - TreeMap: 基于红黑树的实现。“键”或“键值对”的次序是由Comparable或Comparator决定的。TreeMap是唯一带有subMap()方法的Map，可以返回一个子树。
-  - WeakHashMap： 弱键映射，允许设释放射所指对象。被垃圾收集器回收。
-  - ConcurrentHashMap: 线程安全的Map.
-  - IdentityHashMap：使用==代替equals()对“键”进行比较的散列映射。
-  - sortedMap: 排序的Map，现阶段TreeMap是其唯一实现。
-  - EnumMap:要求键必须来自一个Enum。
-  - 散列陷阱：hashCode的生成应该保持在不同环境下生成的hashcode是不变的，否则就会造成放入HashMap中后，无法正常取出。
-  - HashMap的性能因子
-    - 容量：表中的桶位数。
-    - 初始容量：表在创建时拥有的桶位数。允许在初始化时指定。
-    - 尺寸：表中当前存储的项数。
-    - 负载因子： 尺寸/容量。空表时因子值为0，半满时值为0.5。负载轻的表产生的冲突的可能性最小，因此HashMap和HashSet都具有允许你再指定负载因子的构造器，表示达到该负载因子水平时，容器将自动增加容量，使容器的容量大致加倍，并重新分布到新的桶位集中。
-    - 再散列：达到该负载因子水平时，容器将自动增加容量，使容器的容量大致加倍，并重新分布到新的桶位集中（再散列）。
-    - HashMap中的默认负载因子为0.75，这个因子在时间和空间代价之间达到了平衡。
-
-- HashMap 数据结构
-- resize会出现的问题
-- 初始化100个元素大小如何设置
+### 数据库和redis如何保证数据一致性？
+- mysql 数据更新成功会生成binlog， 通过canal订阅时间，获取binlog的key，更新到redis里面。  
+  - canal是阿里巴巴旗下的一款开源项目,纯Java开发。基于数据库增量日志解析
+https://zhuanlan.zhihu.com/p/91770135
 
 
-### Spring aop了解
-5.spring aop有了解吗？spring事务有哪些？同一个方法无事务的方法调用有事务的方法会出现什么情况？
-
-6.事务注解另一个属性，事务隔离级别有了解吗？读已提交核和可重复读诗如何实现的？读已提交和可重复读区别。
-  数据库数据库一致性是如何实现的？redolog、undolog、binlog区别？binlog的作用？（说的是监控，其实主要是主从复制或者备份）
+### 分布式事务
+- 分布式事务指事务的操作位于不同的节点上，需要保证事务的 AICD 特性。
+- 例如在下单场景下，库存和订单如果不在同一个节点上，就涉及分布式事务。
+- 两阶段提交（Two-phase Commit，2PC），通过引入协调者（Coordinator）来协调参与者的行为，并最终决定这些参与者是否要真正执行事务。
+- 第三方的MQ是支持事务消息的，比如RocketMQ，他们支持事务消息的方式也是类似于采用的二阶段提交，但是市面上一些主流的MQ都是不支持事务消息的，比如 RabbitMQ 和 Kafka 都不支持。
+  - 以阿里的 RocketMQ 中间件为例，其思路大致为：
+  - 第一阶段Prepared消息，会拿到消息的地址。 第二阶段执行本地事务，第三阶段通过第一阶段拿到的地址去访问消息，并修改状态。如果确认消息发送失败了RocketMQ会定期扫描消息集群中的事务消息，这时候发现了Prepared消息，它会向消息发送者确认，所以生产方需要实现一个check接口，RocketMQ会根据发送端设置的策略来决定是回滚还是继续发送确认消息。这样就保证了消息发送与本地事务同时成功或同时失败。
   
-7.主键索引和非主键索引有什么区别？索引失效有哪些？
-  联合索引1.商家id，2.订单时间,3.订单id，查询的时候会命中几个字段？(1个，时间会失效)
-  
-8.数据库什么情况会出现死锁？如何处理死锁？
+- 在XA协议中包含着两个角色：事务协调者和事务参与者。让我们来看一看他们之间的交互流程：
 
-9.redis一般用什么数据结构？更新hash是如何更新的？别的数据结构有用过吗？
+在XA分布式事务的第一阶段，作为事务协调者的节点会首先向所有的参与者节点发送Prepare请求。
 
-10.数据库和redis如何保证数据一致性？加入新增数据库成功，然后更新redis失败怎么解决？
+在接到Prepare请求之后，每一个参与者节点会各自执行与事务有关的数据更新，写入Undo Log和Redo Log。如果参与者执行成功，暂时不提交事务，而是向事务协调节点返回“完成”消息。
 
-11.分布式事务，分库分表有了解吗？
+当事务协调者接到了所有参与者的返回消息，整个分布式事务将会进入第二阶段。
+
+接到Commit请求之后，事务参与者节点会各自进行本地的事务提交，并释放锁资源。当本地事务完成提交后，将会向事务协调者返回“完成”消息。
+
+### 分库分表有了解吗？
+- 了解决由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。
+- 垂直分表定义：将一个表按照字段分成多表，每个表存储其中一部分字段。
+  - 通常我们按以下原则进行垂直拆分:
+  1. 把不常用的字段单独放在一张表;
+  1. 把text，blob等大字段拆分出来放在附表中;
+  1. 经常组合查询的列放在一张表中;
+- 垂直分库是指按照业务将表进行分类，分布到不同的数据库上面，每个库可以放在不同的服务器上，它的核心理念是专库专用。
+- 水平分库是把同一个表的数据按一定规则拆到不同的数据库中，每个库可以放在不同的服务器上。
+  - 如将店铺ID为单数的和店铺ID为双数的商品信息分别放在两个库中。
+- 水平分表是在同一个数据库内，把同一个表的数据按一定规则拆到多个表中。

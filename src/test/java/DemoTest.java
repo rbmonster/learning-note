@@ -1,7 +1,7 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.learning.client.*;
 import com.four.server.LearnApplication;
+import com.learning.client.*;
 import com.learning.offer.DemoMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +12,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.when;
 
@@ -29,11 +31,11 @@ import static org.mockito.Mockito.when;
 ////启动Spring
 //@SpringBootTest
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT,classes = LearnApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = LearnApplication.class)
 @DirtiesContext
 public class DemoTest {
 
-    @Autowired
+    @Autowired(required = false)
     BaiduMapClient baiduMapClient;
 
     public final static String AK = "3pkCQmAqaDlPBHAiI3HE3VA9GZP9vG1M";
@@ -46,7 +48,7 @@ public class DemoTest {
     }
 
     @Test
-    public void roadFormat(){
+    public void roadFormat() {
 //        double[][] road = {
 //                {0.0, 186839.0, 178449.0, 329124.0, 128794.0, 215349.0, 216527.0, 240100.0, 241289.0, 327655.0, 196548.0, 261768.0, 237561.0, 101043.0, 81075.0, 85314.0, 278714.0, 434474.0, 570914.0, 278294.0, 201572.0, 335056.0, 435956.0, 500573.0, 541344.0, 385832.0, 274646.0, 262417.0, 397253.0, 297151.0},
 //                {185468.0, 0.0, 58529.0, 482939.0, 62942.0, 42193.0, 55112.0, 67757.0, 108634.0, 407670.0, 305629.0, 223861.0, 199654.0, 168427.0, 137094.0, 105379.0, 200851.0, 274200.0, 482261.0, 126980.0, 147580.0, 217948.0, 354577.0, 335257.0, 401436.0, 239303.0, 238883.0, 137084.0, 310460.0, 131835.0},
@@ -79,7 +81,7 @@ public class DemoTest {
 //                {397323.0, 311831.0, 347838.0, 715152.0, 350448.0, 268402.0, 305964.0, 245051.0, 355279.0, 678956.0, 582576.0, 513170.0, 474516.0, 415423.0, 388113.0, 381395.0, 132361.0, 190252.0, 212138.0, 194168.0, 218444.0, 120191.0, 59877.0, 272239.0, 216522.0, 180392.0, 163127.0, 170867.0, 0.0, 283975.0},
 //                {298904.0, 134404.0, 158164.0, 582574.0, 176378.0, 99445.0, 102365.0, 96434.0, 126692.0, 479450.0, 405264.0, 306305.0, 245929.0, 274888.0, 250530.0, 218815.0, 174246.0, 227142.0, 455656.0, 97889.0, 148339.0, 191343.0, 327972.0, 288199.0, 374925.0, 175666.0, 229815.0, 125281.0, 283855.0, 0.0}
 //        };
-        double[][] road  = new double[][]{
+        double[][] road = new double[][]{
                 {0.0, 22418.0, 2729.0, 11899.0, 16670.0, 16492.0, 20130.0, 15645.0},
                 {21095.0, 0.0, 20006.0, 18655.0, 4615.0, 14047.0, 5688.0, 6633.0},
                 {1541.0, 20129.0, 0.0, 9610.0, 17033.0, 14203.0, 17841.0, 16469.0},
@@ -91,7 +93,7 @@ public class DemoTest {
         };
         for (int i = 0; i < road.length; i++) {
             for (int j = 0; j < road.length; j++) {
-                road[i][j] = Double.valueOf(String.format("%.2f",  road[i][j]/10000 ));
+                road[i][j] = Double.valueOf(String.format("%.2f", road[i][j] / 10000));
             }
         }
         for (int i = 0; i < road.length; i++) {
@@ -102,12 +104,12 @@ public class DemoTest {
     @Test
     public void baiduMap() throws JsonProcessingException {
 //        String[] citys = {"南京市","无锡市","江阴市","徐州市","常州市","苏州市","常熟市","吴江市","南通市","连云港市","淮安市","盐城市","东台市","扬州市","镇江市","丹阳市","杭州市","宁波市","温州市","嘉兴市","湖州市","绍兴市","金华市","舟山市","台州市","余姚市","临安市","桐乡市","义乌市","上海市"};
-        String[] citys = {"上海华东理工大学徐汇校区","上海世纪公园","上海南站","上海中山公园","上海浦东图书馆","上海站","上海源深体育馆","上海大华北公园"};
+        String[] citys = {"上海华东理工大学徐汇校区", "上海世纪公园", "上海南站", "上海中山公园", "上海浦东图书馆", "上海站", "上海源深体育馆", "上海大华北公园"};
         String[] lngLat = new String[citys.length];
         for (int i = 0; i < citys.length; i++) {
             ReceData receData = getLocation(citys[i]);
             Location location = receData.getResult().getLocation();
-            String lngLatStr = String.format("%.6f",location.getLat())+","+String.format("%.6f",location.getLng());
+            String lngLatStr = String.format("%.6f", location.getLat()) + "," + String.format("%.6f", location.getLng());
 //            String lngLatStr = String.format("%.6f",location.getLng())+","+String.format("%.6f",location.getLat());
             lngLat[i] = lngLatStr;
         }
@@ -130,11 +132,11 @@ public class DemoTest {
         for (int i = 0; i < locations.length; i++) {
             String currentLocation = locations[i];
             for (int j = 0; j < locations.length; j++) {
-                if (i==j){
-                    distances[i][j]=0;
+                if (i == j) {
+                    distances[i][j] = 0;
                     continue;
                 }
-                distances[i][j]=getRoadLength(currentLocation, locations[j]);
+                distances[i][j] = getRoadLength(currentLocation, locations[j]);
             }
         }
         for (int i = 0; i < distances.length; i++) {
@@ -146,9 +148,9 @@ public class DemoTest {
         String result = baiduMapClient.getRoad(origin, destination, AK);
         ObjectMapper objectMapper = new ObjectMapper();
         RoadData roadData = objectMapper.readValue(result, RoadData.class);
-        List<Routes>routes = roadData.getResult().getRoutes();
-        Optional<Double> min =  routes.stream().map(Routes::getDistance).min(Double::compareTo);
-        if (!min.isPresent()){
+        List<Routes> routes = roadData.getResult().getRoutes();
+        Optional<Double> min = routes.stream().map(Routes::getDistance).min(Double::compareTo);
+        if (!min.isPresent()) {
             System.out.println(min);
         }
         return min.get();
@@ -172,7 +174,7 @@ public class DemoTest {
 //        System.out.println("上海源深体育馆" + getLocation("上海源深体育馆"));
 //        System.out.println("上海大华北公园" + getLocation("上海迪士尼"));
         int[] order = {2, 0, 7, 4, 1, 6, 5, 3};
-        String[] citys = {"上海华东理工大学徐汇校区","上海世纪公园","上海南站","上海中山公园","上海浦东图书馆","上海站","上海源深体育馆","上海大华北公园"};
+        String[] citys = {"上海华东理工大学徐汇校区", "上海世纪公园", "上海南站", "上海中山公园", "上海浦东图书馆", "上海站", "上海源深体育馆", "上海大华北公园"};
 //
 //
         String[] locations = {"121.430226,31.149538",
@@ -184,39 +186,82 @@ public class DemoTest {
                 "121.544428,31.238645",
                 "121.537908,31.185839"};
 
-        for (int tmp: order) {
+        for (int tmp : order) {
             System.out.println(citys[tmp]);
         }
-        for (int tmp: order) {
+        for (int tmp : order) {
             System.out.println(locations[tmp]);
         }
     }
 
 
-@Test
+    @Test
     public void test() {
-    String[] locations = {"32.06465,118.80242","31.49881,120.31858","31.92604,120.29157","34.21267,117.29058","31.81580,119.98148","31.30356,120.59241","31.65954,120.75950","31.14464,120.65157","31.98655,120.90159","34.60225,119.22862","33.61630,119.02148","33.35510,120.16754","32.87272,120.32654","32.40068,119.41942","32.19472,119.43049","32.01592,119.61250","30.25308,120.21551","29.86603,121.62857","28.00109,120.70648","30.75097,120.76355","30.89896,120.09452","30.03637,120.58548","29.08464,119.65344","29.99091,122.21356","28.66219,121.42743","30.04273,121.16059","30.23981,119.73152","30.63631,120.57154","29.31115,120.08158","31.23593,121.48054"};
+        String[] locations = {"32.06465,118.80242", "31.49881,120.31858", "31.92604,120.29157", "34.21267,117.29058", "31.81580,119.98148", "31.30356,120.59241", "31.65954,120.75950", "31.14464,120.65157", "31.98655,120.90159", "34.60225,119.22862", "33.61630,119.02148", "33.35510,120.16754", "32.87272,120.32654", "32.40068,119.41942", "32.19472,119.43049", "32.01592,119.61250", "30.25308,120.21551", "29.86603,121.62857", "28.00109,120.70648", "30.75097,120.76355", "30.89896,120.09452", "30.03637,120.58548", "29.08464,119.65344", "29.99091,122.21356", "28.66219,121.42743", "30.04273,121.16059", "30.23981,119.73152", "30.63631,120.57154", "29.31115,120.08158", "31.23593,121.48054"};
 //    int[] footprint = {0, 13, 14, 15, 4, 2, 1, 5, 7, 20, 26, 16, 28, 22, 18, 24, 17, 23, 25, 21, 27, 19, 29, 6, 8, 12, 11, 9, 3, 10};
-    int[] footprint = {11, 9, 3, 10, 0, 13, 14, 15, 4, 2, 1, 5, 7, 20, 26, 16, 28, 22, 18, 24, 17, 23, 25, 21, 27, 19, 29, 6, 8, 12};
-    int i = 0;
-    for (int index: footprint) {
-        String[] a = locations[index].split(",");
-        System.out.println("var p"+i+" = new BMap.Point(" + a[1] +","+ a[0]+");");
-        i++;
-    }
-    for (int j = 0; j < 30; j++) {
-        System.out.print("p"+j+",");
-    }
-    String[] name = {"南京市","无锡市","江阴市","徐州市","常州市","苏州市","常熟市","吴江市","南通市","连云港市","淮安市","盐城市","东台市","扬州市","镇江市","丹阳市","杭州市","宁波市","温州市","嘉兴市","湖州市","绍兴市","金华市","舟山市","台州市","余姚市","临安市","桐乡市","义乌市","上海市"};
-    for (int j = 0; j <30; j++) {
-        String  markergg = "markergg"+j;
-        System.out.println("var "+markergg+" = new BMap.Marker(p"+j+");");
-        System.out.println("map.addOverlay("+markergg+");");
-        System.out.println(markergg + ".setLabel(new BMap.Label('"+ name[footprint[j]] +"("+footprint[j] +")',{offset:new BMap.Size(20,-10)}));");
+        int[] footprint = {11, 9, 3, 10, 0, 13, 14, 15, 4, 2, 1, 5, 7, 20, 26, 16, 28, 22, 18, 24, 17, 23, 25, 21, 27, 19, 29, 6, 8, 12};
+        int i = 0;
+        for (int index : footprint) {
+            String[] a = locations[index].split(",");
+            System.out.println("var p" + i + " = new BMap.Point(" + a[1] + "," + a[0] + ");");
+            i++;
+        }
+        for (int j = 0; j < 30; j++) {
+            System.out.print("p" + j + ",");
+        }
+        String[] name = {"南京市", "无锡市", "江阴市", "徐州市", "常州市", "苏州市", "常熟市", "吴江市", "南通市", "连云港市", "淮安市", "盐城市", "东台市", "扬州市", "镇江市", "丹阳市", "杭州市", "宁波市", "温州市", "嘉兴市", "湖州市", "绍兴市", "金华市", "舟山市", "台州市", "余姚市", "临安市", "桐乡市", "义乌市", "上海市"};
+        for (int j = 0; j < 30; j++) {
+            String markergg = "markergg" + j;
+            System.out.println("var " + markergg + " = new BMap.Marker(p" + j + ");");
+            System.out.println("map.addOverlay(" + markergg + ");");
+            System.out.println(markergg + ".setLabel(new BMap.Label('" + name[footprint[j]] + "(" + footprint[j] + ")',{offset:new BMap.Size(20,-10)}));");
 //        var labelgg1 = new BMap.Label("123",{offset:new BMap.Size(20,-10)});
 
+        }
     }
-}
 
-//    private getRoad
+
+    @Test
+    public void testNumber() {
+        largestNumber(new int[] {3,30,34,5,9});
+    }
+    public String largestNumber(int[] nums) {
+        PriorityQueue<String> priorityQueue = new PriorityQueue<>((o1, o2) -> (o2 + o1).compareTo(o1 + o2));
+        for (int num : nums) {
+            priorityQueue.add(String.valueOf(num));
+        }
+        Stream.of(nums).map(String::valueOf).collect(Collectors.toList()).sort((o1, o2) -> (o2 + o1).compareTo(o1 + o2));
+        StringBuilder sb = new StringBuilder();
+        priorityQueue.forEach(str -> sb.append(str));
+        return sb.reverse().toString();
+    }
+
+    public List<List<String>> partition(String s) {
+
+        return new ArrayList<>();
+    }
+    List<List<String>> res = new ArrayList<>();
+    public void backLook(List<String>list, String s, StringBuilder sb, int index) {
+        if (index>= s.length()) {
+            list.add(sb.toString());
+            return;
+        }
+        sb.append(s.charAt(index));
+        if (isQua(sb)) {
+            backLook(list,s, sb,index++);
+            list.add(sb.toString());
+            backLook(list, s, new StringBuilder(), index);
+        }else {
+            sb.deleteCharAt(sb.length()-1);
+        }
+    }
+
+    public boolean isQua(StringBuilder sb) {
+        for (int i = 0,j=sb.length(); i <=j ; i++,j--) {
+            if (sb.charAt(i)!= sb.charAt(j)){
+                return false;
+            }
+        }
+        return true;
+    }
 }
