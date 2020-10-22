@@ -198,7 +198,7 @@ void f2();
 2. notifyAll()的并不是唤醒所有正在等待的任务。本质是notifyALl()因特定锁而被调用时，只有等待这个锁的任务才会被唤醒。
 3. 使用ReentrantLock，通过lock.newCondition()，使用lock的signAll的方法实现线程间的协作
 4. 使用BlockingQueue,阻塞队列来实现线程间协作，就可以较少很多繁杂的wait和notify操作。
-- 通常可以使用LinkedBlockingQueue一个无届队列，ArrayBlockingQueue一个固定尺寸的队列。SynchronousQueue 只能包含一个元素的队列。
+- 通常可以使用LinkedBlockingQueue一个无界队列，ArrayBlockingQueue一个固定尺寸的队列。SynchronousQueue 只能包含一个元素的队列。
 5.管道通信，线程之间通过管道进行连接传输信息。涉及的类PipedWriter和PipedReader，两者需要建立管道连接new PipedReader(sender.getPipedWriter())。
 
 ### 死锁产生条件
