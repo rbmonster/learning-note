@@ -264,4 +264,26 @@ public class DemoTest {
         }
         return true;
     }
+
+
+    public int longestMountain(int[] A) {
+        int len = A.length;
+        int[][] dp = new int[len][2];
+        for (int i = 1; i < len; i++) {
+            if(A[i] > A[i-1]) {
+                dp[i][0] = dp[i-1][0] +1;
+            }
+        }
+        for (int i = len-2; i >=0 ; i--) {
+            if (A[i]> A[i+1]) {
+                dp[i][1] = dp[i+1][1]+1;
+            }
+        }
+        int max = 0;
+        for (int[] tmp: dp ) {
+            if (tmp[0]==0 || tmp[1]==0) continue;
+            max = Math.max(max, tmp[0] + tmp[1] +1);
+        }
+        return max<2? 0:max;
+    }
 }

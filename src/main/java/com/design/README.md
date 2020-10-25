@@ -123,6 +123,7 @@ Content-Type: application/json
 ##### 3. 使用统一的数据返回结构JsonResponse 包括异常类型
  - 继承接口ResponseBodyAdvice+ @RestControllerAdvice 指定包范围
  - 根据HttpMethodType 和 统一返回对象的code 生成对应的HttpStatus
+ - RestControllerAdvice顾名思义，就是声明了范围内的RestController的建议处理控制
  
-##### 使用swagger八路参数
+##### 使用swagger暴露参数
  - Swagger是一种广泛使用的工具来用来记录与呈现 REST API，它提供了一种探索特定 API 使用的方法，因此允许开发人员理解底层的语义行为。

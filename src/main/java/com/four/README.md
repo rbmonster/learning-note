@@ -73,6 +73,19 @@
 #### aop切面的相关方法   
 https://www.cnblogs.com/zhangxufeng/p/9160869.html
 
+
+## servlet 过滤器
+- SpringBootApplication 上使用@ServletComponentScan 注解后
+    - Servlet可以直接通过@WebServlet注解自动注册
+      - 常规servlet，可以声明URL，doGet和doPost方法
+    - Filter可以直接通过@WebFilter注解自动注册
+      - @Order里边的数字越小代表越先被该Filter过滤
+      - Filter和FilterChain都是用责任链模式实现
+    - Listener可以直接通过@WebListener 注解自动注册
+      - 监听Servlet生命周期
+
+
+
 ## 零散的一些面试题
 
 #### @Autowired和@Resource的区别是什么？
