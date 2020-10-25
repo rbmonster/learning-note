@@ -1,4 +1,4 @@
-package com.learning.io.newio;
+package com.learning.io;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
  * @Author: 86159
  * @Date: 2020/3/22 21:56
  */
-public class BufferToText {
+public class ChannelBufferToText {
     private static final int BSIZE = 1024;
 
     public static void main(String[] args) throws IOException {

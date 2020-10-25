@@ -1,6 +1,6 @@
 ### 线程
 #### 线程状态
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadState.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState.jpg)
 
 - 新建（NEW）：创建后尚未启动。
 - 可运行（RUNABLE）：正在 Java 虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。
@@ -27,11 +27,27 @@
 
 - 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadState2.jpg)
+#### 创建一个线程的开销
+- JVM 在背后帮我们做了哪些事情：
+
+1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
+2. 每一栈帧由一个局部变量数组、返回值、操作数堆栈和常量池组成
+3. 一些支持本机方法的 jvm 也会分配一个本机堆栈
+4. 每个线程获得一个程序计数器，告诉它当前处理器执行的指令是什么
+5. 系统创建一个与Java线程对应的本机线程
+6. 将与线程相关的描述符添加到JVM内部数据结构中
+7. 线程共享堆和方法区域
+
+> 用数据来说明创建一个线程（即便不干什么）需要多大空间呢？答案是大约 1M 左右
+
+> java -XX:+UnlockDiagnosticVMOptions -XX:NativeMemoryTracking=summary -XX:+PrintNMTStatistics -version
+- 用 Java8 的测试结果，19个线程，预留和提交的大概都是19000+KB，平均每个线程大概需要 1M 左右的大小
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState2.jpg)
 ### 线程池
 #### 线程池状态
 线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadPool.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPool.jpg)
 
 - RUNNING
   1. 状态说明：线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
@@ -83,7 +99,7 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
   - ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
   - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadPoolProcess.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
 
 
 #### 阿里开发规范
@@ -108,9 +124,38 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
   - CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
 - IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程上运行IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即时在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。
 - 对于不同性质的任务来说
-  - CPU密集型任务应配置尽可能小的线程，如配置CPU个数的线程数
+  - CPU密集型任务应配置尽可能小的线程，如配置CPU个数的线程数+1
+    - 计算密（CPU）集型的线程恰好在某时因为发生一个页错误或者因其他原因而暂停，刚好有一个“额外”的线程，可以确保在这种情况下CPU周期不会中断工作。
   - IO密集型任务应配置尽可能多的线程，因为IO操作不占用CPU，不要让CPU闲下来，应加大线程数量，如配置两倍CPU个数+1，
+    - 单核最佳线程数 = (1/CPU利用率) = 1 + (I/O耗时/CPU耗时)
+    - 最佳线程数 = CPU核心数 * (1/CPU利用率) = CPU核心数 * 1 + (I/O耗时/CPU耗时)
+    - CPU利用率： （CPU耗时）/ （I/O耗时/ CPU耗时）
+    
+- 使用以下工具来了解I/O 耗时与 CUP耗时
+  - SkyWalking
+  - CAT
+  - zipkin
+  
+> 假设要求一个系统的 TPS（Transaction Per Second 或者 Task Per Second）至少为20，然后假设每个Transaction由一个线程完成，继续假设平均每个线程处理一个Transaction的时间为4s
+> 如何设计线程个数，使得可以在1s内处理完20个Transaction？
+- 答案：80。一般服务器的CPU核数为16或者32，如果有80个线程，那么肯定会带来太多不必要的线程上下文切换开销
 
+> 计算操作需要5ms，DB操作需要 100ms，对于一台 8 核CPU的服务器，怎么设置线程数呢？
+-  8*  （1/(5/100+5) = 168 个线程数
+
+> 那如果DB的 QPS（Query Per Second）上限是1000，此时这个线程数又该设置为多大呢？
+- 一个线程的TPS（每秒） = 1000/105
+- 系统的QPS = 168 * 1000/105    >1600
+- 假设一个TPS 对应一次QPS
+- 答案：线程数 = 168* (1000/ 1600) > 105 
+
+> 增加服务器核心数，与线程间的关系
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
+
+> 假设： 1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。
+
+> 临界区都是串行的，非临界区都是并行的，用单线程执行 临界区的时间/用单线程执行(临界区+非临界区)的时间 就是串行百分比
 ### 解决共享资源竞争
 
 #### synchronized:

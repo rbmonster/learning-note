@@ -69,7 +69,9 @@
 - 当这个方法被同一个类调用的时候，spring无法将这个方法加到事务管理中。只有在代理对象之间进行调用时，可以触发切面逻辑。
 1.使用 ApplicationContext 上下文对象获取该对象;
 2.使用 AopContext.currentProxy() 获取代理对象,但是需要配置exposeProxy=true
-   
+
+#### aop切面的相关方法   
+https://www.cnblogs.com/zhangxufeng/p/9160869.html
 
 ## 零散的一些面试题
 

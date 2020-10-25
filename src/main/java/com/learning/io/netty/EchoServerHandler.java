@@ -1,4 +1,4 @@
-package com.learning.netty.demo;
+package com.learning.io.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -25,7 +25,9 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf in = (ByteBuf) msg;
         System.out.println(
                 "Server received: " + in.toString(CharsetUtil.UTF_8));
-        ctx.write(in);
+
+        ctx.write(Unpooled.copiedBuffer("server reply rock and roll!",
+                CharsetUtil.UTF_8));
     }
 
     @Override

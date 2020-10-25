@@ -1,12 +1,12 @@
-package com.learning.netty.demo;
+package com.learning.io.netty;
 
-import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.net.InetSocketAddress;
 
@@ -16,38 +16,35 @@ import java.net.InetSocketAddress;
  * </pre>
  *
  * @version v1.0
- * @ClassName: EchoClient
+ * @ClassName: EchoServer
  * @Author: 86159
- * @Date: 2020/3/17 0:07
+ * @Date: 2020/3/16 23:54
  */
-public class EchoClient {
-
-    private final String host;
+public class EchoServer {
     private final int port;
-    public EchoClient(String host, int port) {
-        this.host = host;
+    public EchoServer(int port) {
         this.port = port;
     }
 
     public static void main(String[] args) throws Exception {
-        new EchoClient("localhost", 8099).start();
+        new EchoServer(8099).start();
     }
 
     public void start() throws Exception {
+        final EchoServerHandler serverHandler = new EchoServerHandler();
         EventLoopGroup group = new NioEventLoopGroup();
         try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .remoteAddress(new InetSocketAddress(host, port))
-                    .handler(new ChannelInitializer<SocketChannel>() {
+            ServerBootstrap b = new ServerBootstrap();
+             b = b.group(group)
+                    .channel(NioServerSocketChannel.class)
+                    .localAddress(new InetSocketAddress(port))
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(
-                                    new EchoClientHandler());
+                            ch.pipeline().addLast(serverHandler);
                         }
                     });
-            ChannelFuture f = b.connect().sync();
+            ChannelFuture f = b.bind().sync();
             f.channel().closeFuture().sync();
         } finally {
             group.shutdownGracefully().sync();
