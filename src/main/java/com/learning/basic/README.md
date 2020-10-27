@@ -40,7 +40,7 @@ int y = x;         // 拆箱 调用了 X.intValue()
 #### 缓冲池
 - 包装类型内存使用 private static class IntegerCache，声明一个内部使用的缓存池
   - 如Integer中有个静态内部类IntegerCache，里面有个cache[],也就是Integer常量池，常量池的大小为一个字节（-128~127）
-
+  - 为啥把缓存设置为[-128，127]区间？性能和资源之间的权衡。
 - 在 jdk 1.8 所有的数值类缓冲池中，Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 - 128，上界默认是 127，但是这个上界是可调的，在启动 jvm 的时候，通过 -XX:AutoBoxCacheMax=<size> 来指定这个缓冲池的大小。
 
 - 基本类型对应的缓冲池如下：
@@ -49,6 +49,17 @@ int y = x;         // 拆箱 调用了 X.intValue()
     - short values: between -128 and 127
     - int values: between -128 and 127
     - char: in the range \u0000 to \u007F
+    
+### BigDecimal
+- BigDecimal 主要用于处理解决精度丢失问题
+  - float和double类型主要是为了科学计算和工程计算而设计的。执行二进制浮点运算，这是为了在广泛的数字范围上提供较为精确的快速近似计算而精心设计的。然而，它们并没有提供完全精确的结果
+```
+float a = 1.0f - 0.9f;
+float b = 0.9f - 0.8f;
+System.out.println(a);// 0.100000024
+System.out.println(b);// 0.099999964
+System.out.println(a == b);// false
+```
     
 ## String
 - String 被声明为 final，因此它不可被继承
@@ -304,7 +315,7 @@ public boolean equals(Object o) {
 
 #### 比较
 - 从设计层面上看
-  - 抽象类的实现目的，是代码复用，可以让这些类都派生于一个抽象类。
+  - 抽象类的实现目的，是代码复用，一种模板设计的方式，可以让这些类都派生于一个抽象类。
   - 接口的设计目的，是对类的行为进行约束（更准确的说是一种“有”约束，因为接口不能规定类不可以有什么行为），也就是提供一种机制，可以强制要求不同的类具有相同的行为。
 - 从使用上来看，一个类可以实现多个接口，但是不能继承多个抽象类。
 - 接口的字段只能是 static 和 final 类型的，而抽象类的字段没有这种限制。
@@ -343,3 +354,217 @@ public boolean equals(Object o) {
 //output 
 this is int 97
 ```
+## 反射
+- 反射可以提供运行时的类信息，并且这个类可以在运行时才加载进来，甚至在编译时期该类的 .class 不存在也可以加载进来。
+  - 当编译一个新类时，会产生一个同名的 .class 文件，该文件内容保存着 Class 对象。
+  - 类加载相当于 Class 对象的加载，类在第一次使用时才动态加载到 JVM 中。
+  - 也可以使用 Class.forName("com.mysql.jdbc.Driver") 这种方式来控制类的加载，该方法会返回一个 Class 对象。
+  
+- Class 和 java.lang.reflect 一起对反射提供了支持，java.lang.reflect 类库主要包含了以下三个类：
+    - Field ：可以使用 get() 和 set() 方法读取和修改 Field 对象关联的字段；
+    - Method ：可以使用 invoke() 方法调用与 Method 对象关联的方法；
+    - Constructor ：可以用 Constructor 的 newInstance() 创建新的对象。
+- 反射的优点：
+  - **可扩展性**   ：应用程序可以利用全限定名创建可扩展对象的实例，如com.demo.Test。
+  - 调试器和测试工具： 调试器需要能够检查一个类里的私有成员。测试工具可以利用反射来自动地调用类里定义的可被发现的 API 定义，以确保一组测试中有较高的代码覆盖率。
+  - 开发工具：如IDEA开发工具可以从反射中获取类的信息，帮助开发人员代码编写。
+  
+- 反射的缺点：如果一个功能可以不用反射完成，那么最好就不用。
+  - **性能开销**   ：反射涉及了动态类型的解析，所以 JVM 无法对这些代码进行优化。因此，反射操作的效率要比那些非反射操作低得多。
+  - **安全限制**   ：使用反射技术要求程序必须在一个没有安全限制的环境中运行。
+  - 内部暴露： 反射破坏了封装性，可能会导致意料之外的副作用，这可能导致代码功能失调并破坏可移植性
+  
+## 异常
+- Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： Error 和 Exception。
+  - 其中 Error 用来表示 JVM 无法处理的错误，
+  - Exception 分为两种：
+   - 受检异常 ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
+   - 非受检异常 ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此时程序崩溃并且无法恢复
+   - 运行时异常（runtime exception）
+- RuntimeException是一种Unchecked Exception，即表示编译器不会检查程序是否对RuntimeException作了处理，在程序中不必捕获RuntimException类型的异常，也不必在方法体声明抛出RuntimeException类。一般来说，RuntimeException发生的时候，表示程序中出现了编程错误，所以应该找出错误修改程序，而不是去捕获RuntimeException。
+  - 常见RuntimeException异常：NullPointException、ClassCastException、IllegalArgumentException、IndexOutOfBoundException
+  
+- 如果try语句里有return，返回的是try语句块中变量值。 
+  - 详细执行过程如下：
+    1. 如果有返回值，就把返回值保存到局部变量中；
+    2. 执行jsr指令跳到finally语句里执行；
+    3. 执行完finally语句后，返回之前保存在局部变量表里的值。
+    4. 针对对象引用的返回，如果finally中有修改值，返回的是引用的对象。
+  **如果try，finally语句里均有return，忽略try的return，而使用finally的return.**
+  
+## 泛型
+- 泛型的本质是参数化类型，也就是所操作的数据类型被指定为一个参数。
+  - 在集合中存储对象并在使用前进行类型转换是多么的不方便。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
+  - 使用T, E or K,V等被广泛认可的类型占位符。
+  
+- 泛型有三种常用的使用方式：泛型类，泛型接口和泛型方法。
+- 限定通配符和非限定通配符 
+  - 非限定通配符：另一方面<?>表示了非限定通配符，因为<?>可以用任意类型来替代。
+  - 一种是<? extends T>它通过确保类型必须是T的子类来设定类型的上界
+  - 另一种是<? super T>它通过确保类型必须是T的父类来设定类型的下界
+  - 泛型类型必须用限定内的类型来进行初始化，否则会导致编译错误。
+  
+-  类型擦除: Java的泛型基本上都是在编译器这个层次上实现的，在生成的字节码中是不包含泛型中的类型信息的，使用泛型的时候加上类型参数，在编译器编译的时候会去掉，这个过程成为类型擦除。
+   - 如在代码中定义List<Object>和List<String>等类型，在编译后都会变成List，JVM看到的只是List，而由泛型附加的类型信息对JVM是看不到的。
+   - 类型擦除后保留的原始类型，最后在字节码中的类型变量变成真正类型。无论何时定义一个泛型，相应的原始类型都会被自动提供，无限定的变量用Object替换。
+- 泛型擦除的例子： 本应该只能储存Integer，在通过反射调用方法时，却可以添加String数据
+```
+ public static void main(String[] args) throws Exception {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        list.add(1);  //这样调用 add 方法只能存储整形，因为泛型类型的实例为 Integer
+        list.getClass().getMethod("add", Object.class).invoke(list, "asd");
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }
+    }
+// output
+//1
+//asd
+```
+- 类型擦除后保留的原始类型：在调用泛型方法时，可以指定泛型，也可以不指定泛型。
+  - 在不指定泛型的情况下，泛型变量的类型为该方法中的几种类型的同一父类的最小级，直到Object
+  - 在指定泛型的情况下，该方法的几种类型必须是该泛型的实例的类型或者其子类
+```
+Number f = Test.add(1, 1.2); //这两个参数一个是Integer，以风格是Float，所以取同一父类的最小级，为Number  
+Object o = Test.add(1, "asd"); //这两个参数一个是Integer，以风格是Float，所以取同一父类的最小级，为Object  
+  
+//这是一个简单的泛型方法  
+public static <T> T add(T x,T y){  
+    return y;  
+}    
+```
+- 泛型使用的一个例子
+```
+public class Box<T> {
+    // T stands for "Type"
+    private T t;
+    public void set(T t) { this.t = t; }
+    public T get() { return t; }
+    public <E> E get(E param) {
+        // do some logic 
+        return (E)obj;
+    }
+}
+```
+
+- Java不能实现真正的泛型，只能使用类型擦除来实现伪泛型，这样虽然不会有类型膨胀问题，但是也引起来许多新问题
+
+## 注解
+- java.lang.annotation 提供了四种元注解，专门注解其他的注解（在自定义注解的时候，需要使用到元注解）：
+  - @Documented：注解是否将包含在JavaDoc中
+  - @Retention：什么时候使用该注解 
+       - RetentionPolicy.SOURCE : 在编译阶段丢弃。这些注解在编译结束之后就不再有任何意义，所以它们不会写入字节码。@Override, @SuppressWarnings都属于这类注解。
+       - RetentionPolicy.CLASS : 在类加载的时候丢弃。在字节码文件的处理中有用。注解默认使用这种方式
+       - RetentionPolicy.RUNTIME : 始终不会丢弃，运行期也保留该注解，因此可以使用反射机制读取该注解的信息。我们自定义的注解通常使用这种方式。
+  - @Target – 注解用于什么地方
+     - ElementType.CONSTRUCTOR: 用于描述构造器
+     - ElementType.FIELD: 成员变量、对象、属性（包括enum实例）
+     - ElementType.LOCAL_VARIABLE: 用于描述局部变量
+     - ElementType.METHOD: 用于描述方法
+     - ElementType.PACKAGE: 用于描述包
+     - ElementType.PARAMETER: 用于描述参数
+     - ElementType.TYPE: 用于描述类、接口(包括注解类型) 或enum声明 常见的@Component、@Service
+  - @Inherited – 是否允许子类继承该注解
+    - @Inherited 元注解是一个标记注解，@Inherited 阐述了某个被标注的类型是被继承的。如果一个使用了@Inherited 修饰的annotation 类型被用于一个class，则这个annotation 将被用于该class 的子类
+- 编写注解的规则
+  1. Annotation 型定义为@interface。
+  2. 参数成员只能用public 或默认(default) 这两个访问权修饰
+  3. 参数成员只能用基本类型byte、short、char、int、long、float、double、boolean八种基本数据类型和String、Enum、Class、annotations等数据类型，以及这一些类型的数组。
+  4. 要获取类方法和字段的注解信息，必须通过Java的反射技术来获取 Annotation 对象
+```
+ @Target(FIELD)
+ @Retention(RUNTIME)
+ @Documented
+ public @interface FruitName {
+     String value() default "";
+ }
+```
+## 线程
+#### 线程状态
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState.jpg)
+
+- 新建（NEW）：创建后尚未启动。
+- 可运行（RUNABLE）：正在 Java 虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。
+- 阻塞（BLOCKED）：请求获取 monitor lock 从而进入 synchronized 函数或者代码块，但是其它线程已经占用了该 monitor lock，所以出于阻塞状态。要结束该状态进入从而 RUNABLE 需要其他线程释放 monitor lock。
+- 无限期等待（WAITING）：等待其它线程显式地唤醒。
+   - 阻塞和等待的区别在于，阻塞是被动的，它是在等待获取 monitor lock。而等待是主动的，通过调用  Object.wait() 等方法进入。
+
+| 进入方法 | 退出方法 |
+| --- | --- |
+| 没有设置 Timeout 参数的 Object.wait() 方法 | Object.notify() / Object.notifyAll() |
+| 没有设置 Timeout 参数的 Thread.join() 方法 | 被调用的线程执行完毕 |
+| LockSupport.park() 方法 | LockSupport.unpark(Thread) |
+
+- 限期等待（TIMED_WAITING）：无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
+  - 调用 Thread.sleep() 方法使线程进入限期等待状态时，常常用“使一个线程睡眠”进行描述。调用 Object.wait() 方法使线程进入限期等待或者无限期等待时，常常用“挂起一个线程”进行描述。睡眠和挂起是用来描述行为，而阻塞和等待用来描述状态。
+
+| 进入方法 | 退出方法 |
+| --- | --- |
+| Thread.sleep() 方法 | 时间结束 |
+| 设置了 Timeout 参数的 Object.wait() 方法 | 时间结束 / Object.notify() / Object.notifyAll()  |
+| 设置了 Timeout 参数的 Thread.join() 方法 | 时间结束 / 被调用的线程执行完毕 |
+| LockSupport.parkNanos() 方法 | LockSupport.unpark(Thread) |
+| LockSupport.parkUntil() 方法 | LockSupport.unpark(Thread) |
+
+- 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
+
+#### 创建一个线程的开销
+- JVM 在背后帮我们做了哪些事情：
+
+1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
+2. 每一栈帧由一个局部变量数组、返回值、操作数堆栈和常量池组成
+3. 一些支持本机方法的 jvm 也会分配一个本机堆栈
+4. 每个线程获得一个程序计数器，告诉它当前处理器执行的指令是什么
+5. 系统创建一个与Java线程对应的本机线程
+6. 将与线程相关的描述符添加到JVM内部数据结构中
+7. 线程共享堆和方法区域
+
+
+
+## 零散的点
+- 方法：
+  - 按值调用(call by value)表示方法接收的是调用者提供的值，
+  - 而按引用调用（call by reference)表示方法接收的是调用者提供的变量地址。
+  - 方法体传递参数时，无论是值还是对象都是“值”传递。引用类型传递的是引用变量的地址。
+```
+public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Student s1 = new Student("小张");
+		Student s2 = new Student("小李");
+		Test.swap(s1, s2);
+		System.out.println("s1:" + s1.getName());
+		System.out.println("s2:" + s2.getName());
+	}
+
+	public static void swap(Student x, Student y) {
+		Student temp = x;
+		x = y;
+		y = temp;
+		System.out.println("x:" + x.getName());
+		System.out.println("y:" + y.getName());
+	}
+// output
+x:小李
+y:小张
+s1:小张
+s2:小李
+```
+
+- 封装:封装是指把一个对象的状态信息（也就是属性）隐藏在对象内部，不允许外部对象直接访问对象的内部信息。
+- 继承:不同类型的对象，相互之间经常有一定数量的共同点。 extends
+- 多态:表示一个对象具有多种的状态。具体表现为父类的引用指向子类的实例。
+
+- transient 关键字的作用是：阻止实例中那些用此关键字修饰的的变量序列化；当对象被反序列化时，被 transient 修饰的变量值不会被持久化和恢复。transient 只能修饰变量，不能修饰类和方法。
+
+- 获取键盘输入的两种方式：
+```
+//通过 Scanner
+Scanner input = new Scanner(System.in);
+String s  = input.nextLine();
+input.close();
+
+方法 2：通过 BufferedReader
+BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+String s = input.readLine();
+```
+- Arrays.asList():返回的并不是 java.util.ArrayList ，而是 java.util.Arrays 的一个内部类,这个内部类并没有实现集合的add()、remove()、clear()会抛出异常unSupportedOperationException。
