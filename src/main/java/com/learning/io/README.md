@@ -68,7 +68,7 @@ BIO多线程情况下的缺点：
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/io/picture/ioModel.jpg)
 
 - 所有的系统I/O都分为两个阶段：等待就绪和操作。
-  - 举例来说，读函数，分为等待系统可读和真正的读；
+  - 举例来说，读函数，分为等f待系统可读和真正的读；
   - 同理，写函数分为等待网卡可以写和真正的写。
 
 - 需要说明的是等待就绪的阻塞是不使用CPU的，是在“空等”；

@@ -37,7 +37,6 @@ public class Demo implements Delayed {
 //        System.out.println(Demo.tmp);
         Demo demo = new Demo();
         Demo.value++;
-        
 
     }
 

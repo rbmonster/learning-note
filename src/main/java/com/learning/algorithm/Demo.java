@@ -50,12 +50,14 @@ public class Demo {
 ////        System.out.println(main.findDuplicate(new int[] {1,2,3,3,4}));
 ////        System.out.println(main.hammingDistance(1,4));
 //        String[] A = new String[] {"123"};
+
         Map<Integer,Integer> map = new HashMap<>(4,1);
         map.put(1,1);
         map.put(4,1);
         map.put(2,1);
         map.put(3,1);
         map.put(5,1);
+        int aaa = 1;
     }
 
     public List<String> generateParenthesis(int n) {
@@ -205,5 +207,14 @@ public class Demo {
         for (int k = 0; k < footprint.length; k++) {
             dfs(grid,i+footprint[k][0],j+footprint[k][1]);
         }
+    }
+
+    public boolean uniqueOccurrences(int[] arr) {
+        Map<Integer,Integer> map = new HashMap<>();
+        for(int tmp: arr) {
+            map.put(tmp, map.getOrDefault(tmp,0)+1);
+        }
+
+        return map.values().size() != map.keySet().size();
     }
 }
