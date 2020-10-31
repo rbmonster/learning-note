@@ -52,12 +52,10 @@ public class Demo {
 //        String[] A = new String[] {"123"};
 
         Map<Integer,Integer> map = new HashMap<>(4,1);
-        map.put(1,1);
-        map.put(4,1);
-        map.put(2,1);
-        map.put(3,1);
-        map.put(5,1);
-        int aaa = 1;
+
+        Set<Integer> set = new LinkedHashSet<>();
+        Map<String, String > map1 = new HashMap<>();
+         Scanner scanner = new Scanner(System.in);
     }
 
     public List<String> generateParenthesis(int n) {
@@ -216,5 +214,71 @@ public class Demo {
         }
 
         return map.values().size() != map.keySet().size();
+    }
+
+    int[][] footprints = new int[][] {{0,1},{0,-1},{1,0},{-1,0}};
+    public int islandPerimeter(int[][] grid) {
+        int len = 0;
+        int m = grid.length;
+        int n = grid[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] ==1) {
+                    len = getBorder(grid,i,j);
+                    break;
+                }
+            }
+
+        }
+        return len;
+    }
+
+    public int getBorder(int[][] grid, int x, int y) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if (x<0 || x >=m || y<0|| y>=n|| grid[x][y]==0) {
+            return 1;
+        }
+        if(grid[x][y] ==2) {
+            return 0;
+        }
+        grid[x][y] =2;
+        int res = 0;
+        for(int[] foot: footprints) {
+            res+=getBorder(grid, x+foot[0], y+foot[1]);
+        }
+        return res;
+    }
+
+    public List<Integer> partitionLabels(String S) {
+        List<Integer> res = new ArrayList<>();
+        int[][] arr = new int[26][2];
+        Arrays.fill(arr[0], -1);
+        Arrays.fill(arr[1], -1);
+        Set<Character> set = new LinkedHashSet<>();
+        for (int i = 0; i < S.length(); i++) {
+            char ch = S.charAt(i);
+            set.add(ch);
+            int index = ch -'a';
+            if (arr[index][0] ==-1) {
+                arr[index][0] = i;
+            } else {
+                arr[index][1] = i;
+            }
+        }
+        int p1 = 0;
+        int p2 = 0;
+        for (Character ch : set) {
+            int cur = ch-'a';
+            if (arr[cur][0] == -1) continue;
+            if(arr[cur][0] > p2) {
+                res.add(p2-p1+1);
+                p1 = arr[cur][0];
+                p2 = arr[cur][1] == -1? arr[cur][0]:arr[cur][1];
+            } else {
+                p2 = Math.max(arr[cur][1],p2);
+            }
+        }
+        return res;
     }
 }

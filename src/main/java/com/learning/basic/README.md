@@ -80,9 +80,9 @@ System.out.println(a == b);// false
   - 当一个字符串调用 intern() 方法时，如果 String Pool 中已经存在一个字符串和该字符串值相等（使用 equals() 方法进行确定），那么就会返回 String Pool 中字符串的引用；
   - 否则，就会在 String Pool 中添加一个新的字符串，并返回这个新字符串的引用。
 - String、StringBuilder、StringBuffer三者的执行效率：
-　　- StringBuilder > StringBuffer > String
-　　- 当然这个是相对的，不一定在所有情况下都是这样。
-　　- 比如String str = "hello"+ "world"的效率就比 StringBuilder st  = new StringBuilder().append("hello").append("world")要高。
+    - StringBuilder > StringBuffer > String
+    - 当然这个是相对的，不一定在所有情况下都是这样。
+    - 比如String str = "hello"+ "world"的效率就比 StringBuilder st  = new StringBuilder().append("hello").append("world")要高。
 - 对于三者使用的总结：
     1. 操作少量的数据: 适用String
     2. 单线程操作字符串缓冲区下操作大量数据: 适用StringBuilder
