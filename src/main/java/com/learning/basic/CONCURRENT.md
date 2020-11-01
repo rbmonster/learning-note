@@ -1,4 +1,4 @@
-# java 并发
+# java并发
 ## 基本概念
 - 并发编程可以抽象成三个核心问题: 分工、同步/协作、互斥
 #### 分工
@@ -68,6 +68,7 @@
     - 而防止指令重排uniqueInstance = new Singleton(); 这段代码其实是分为三步执行：
     -  singleton = new Singleton()实际上分为： （1）为uniqueInstance 分配内存空间（2）初始化 uniqueInstance（3）将 uniqueInstance 指向分配的内存地址
     - 但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1>3>2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。例如，线程 T1 执行了 1 和 3，此时 T2 调用 getUniqueInstance() 后发现 uniqueInstance 不为空，因此返回 uniqueInstance，但此时 uniqueInstance 还未被初始化。
+  - java编译器会在生成指令系列时在适当的位置会插入 "内存屏障"指令来禁止特定类型的处理器重排序。
 ```
 public class Singleton{
     private Singleton() {}
@@ -91,12 +92,13 @@ public class Singleton{
 3. 解锁走出临界区
 
 ## synchronized
+- 定义：synchronized 关键字解决的是多个线程之间访问资源的同步性，synchronized关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。
 - 【进入】synchronized 块的内存语义是把在 synchronized 块内使用的变量从线程的工作内存中清除，从主内存中读取
 - 【退出】synchronized 块的内存语义事把在 synchronized 块内对共享变量的修改刷新到主内存中
 
-- 对于普通同步方法，锁的是当前实例对象，通常指 this
+- 对于普通实例方法，锁的是当前实例对象，通常指 this
 - 对于静态同步方法，锁的是当前类的 Class 对象，如 ThreeSync.class
-- 对于同步方法块，锁的是 synchronized 括号内的对象
+- 对于同步代码块，锁的是 synchronized 括号内的对象
 ```
 // 锁方法
 	public synchronized void normalSyncMethod(){
@@ -132,8 +134,51 @@ class Account {
 - volatile 与 synchronized 在处理哪些问题是相对等价的？
     - 如果写入变量值不依赖变量当前值，那么就可以用 volatile。
     - 因此在于获取值时候，
-- 为什么说 volatile 是 synchronized 弱同步的方式？
+   
 
--  ArrayBlockingQueue.java
+### synchronized 关键字底层原理属于 JVM 层面。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadstate.jpg)
+#### synchronized 同步语句块的情况
+```
+publicclass SynchronizedDemo {
+	public void method() {
+		synchronized (this) {
+			System.out.println("synchronized 代码块");
+		}
+	}
+}
+
+javap -c -s -v -l SynchronizedDemo.class 反编译
+```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/synchronizeCode.jpg)
+- synchronized 同步语句块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。 
+  - 当计数器为0则可以成功获取，获取后将锁计数器设为1也就是加1。相应的在执行 monitorexit 指令后，将锁计数器设为0，表明锁被释放。
+
+#### synchronized 修饰方法的的情况
+```
+public class SynchronizedDemo2 {
+	public synchronized void method() {
+		System.out.println("synchronized 方法");
+	}
+}
+```
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/synchronizeMethod.jpg)
+-  方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
+
+### synchronize锁升级
+- 偏向锁： 
+- 当一个线程访问同步块并获取锁时, 会在锁对象的对象头和栈帧中的锁记录里存储锁偏向的线程ID, 以后该线程进入和退出同步块时不需要进行CAS操作来加锁和解锁。
+- 需要简单的测试一下锁对象的对象头的MarkWord里是否存储着指向当前线程的偏向锁(线程ID是当前线程), 如果测试成功, 表示线程已经获得了锁; 如果测试失败, 则需要再测试一下MarkWord中偏向锁的标识是否设置成1(表示当前是偏向锁)
+- 如果没有设置, 则使用CAS竞争锁, 如果设置了, 则尝试使用CAS将锁对象的对象头的偏向锁指向当前线程.
+
+偏向锁的撤销
+偏向锁使用了一种等到竞争出现才释放锁的机制, 所以当其他线程尝试竞争偏向锁时, 持有偏向锁的线程才会释放锁. 偏向锁的撤销需要等到全局安全点(在这个时间点上没有正在执行的字节码). 首先会暂停持有偏向锁的线程, 然后检查持有偏向锁的线程是否存活, 如果线程不处于活动状态, 则将锁对象的对象头设置为无锁状态; 如果线程仍然活着, 则锁对象的对象头中的MarkWord和栈中的锁记录要么重新偏向于其它线程要么恢复到无锁状态, 最后唤醒暂停的线程(释放偏向锁的线程).
+
+- https://www.cnblogs.com/wuqinglong/p/9945618.html#%E6%97%A0%E9%94%81%E7%8A%B6%E6%80%81
+
+### synchronize 的锁优化
+- 自旋锁和自适应锁
+  - 自旋锁：对于锁状态很短的线程，挂起和恢复线程是开销很大的，因此让线程执行一个忙等待（自旋），这就是自旋锁的技术
+  - 自适应锁：自适应意味着自旋的时间不固定，由前一次在同一个锁上的自旋时间及锁的状态拥有者来决定。（如果之前自旋获得过锁，进而允许本次自旋更长时间。若很少成果获得锁，那么可能直接忽略跳过等待）
+- 锁消除：执行的方法体所有数据都不会逃逸出去被其他线程访问到，认为是线程私有的，便可以消除锁。
+- 锁粗化：同步块过于细化，导致多次获取锁，导致不必要的性能损耗，扩大锁的范围便可以解决这个问题。
