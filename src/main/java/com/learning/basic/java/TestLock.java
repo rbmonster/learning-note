@@ -2,10 +2,8 @@ package com.learning.basic.java;
 
 import lombok.SneakyThrows;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -20,13 +18,25 @@ import java.util.concurrent.locks.ReentrantLock;
  * @Date: 2020/11/3 0:21
  */
 public class TestLock {
-    public static void main(String[] args) {
-//        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(3,3,1000, TimeUnit.SECONDS,new LinkedBlockingQueue<>(), Executors.defaultThreadFactory());
-        ReentrantLock lock =new ReentrantLock();
-        new Thread(new Thread1(lock)).start();
-        new Thread(new Thread2(lock)).start();
-        new Thread(new Thread3(lock)).start();
 
+    private  static volatile boolean flag = true;
+    public static void main(String[] args) throws InterruptedException {
+//        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(3,3,1000, TimeUnit.SECONDS,new LinkedBlockingQueue<>(), Executors.defaultThreadFactory());
+//        ReentrantLock lock =new ReentrantLock();
+//        Condition condition = lock.newCondition();
+//        lock.lock();
+//       condition.signal();
+//
+//       condition.signal();
+        Thread thread = new Thread(new Thread1(new ReentrantLock()));
+        thread.start();
+        TimeUnit.SECONDS.sleep(1);
+        thread.interrupt();
+        CyclicBarrier barrier = new CyclicBarrier(12);
+        System.out.println("interrupt thread");
+        while (flag) {
+
+        }
     }
 
 
@@ -38,10 +48,17 @@ public class TestLock {
         @SneakyThrows
         @Override
         public void run() {
-            lock.lock();
-            TimeUnit.SECONDS.sleep(2);
-            System.out.println(this.toString()+ "complete sleep" );
-            lock.unlock();
+            while(!Thread.currentThread().isInterrupted()){
+
+            }
+            System.out.println("i am interrupted");
+            Thread.interrupted();
+
+            while(!Thread.currentThread().isInterrupted()){
+
+            }
+            flag =false;
+            System.out.println("out of work");
         }
     }
     static class Thread2 implements Runnable{
