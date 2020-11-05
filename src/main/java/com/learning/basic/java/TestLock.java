@@ -3,8 +3,10 @@ package com.learning.basic.java;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicStampedReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * <pre>
@@ -28,51 +30,43 @@ public class TestLock {
 //       condition.signal();
 //
 //       condition.signal();
-        Thread thread = new Thread(new Thread1(new ReentrantLock()));
-        thread.start();
-        TimeUnit.SECONDS.sleep(1);
-        thread.interrupt();
-        CyclicBarrier barrier = new CyclicBarrier(12);
-        System.out.println("interrupt thread");
-        while (flag) {
 
-        }
+        ReentrantReadWriteLock lock =new ReentrantReadWriteLock();
+        new Thread(new Thread1(lock)).start();
+        new Thread(new Thread2(lock)).start();
+
+
     }
 
 
     static class Thread1 implements Runnable{
-        ReentrantLock lock;
-        Thread1(ReentrantLock lock) {
+        ReentrantReadWriteLock lock;
+        Thread1(ReentrantReadWriteLock lock) {
             this.lock = lock;
         }
         @SneakyThrows
         @Override
         public void run() {
-            while(!Thread.currentThread().isInterrupted()){
-
-            }
             System.out.println("i am interrupted");
-            Thread.interrupted();
-
-            while(!Thread.currentThread().isInterrupted()){
-
-            }
-            flag =false;
+            lock.readLock().lock();
+            TimeUnit.SECONDS.sleep(5);
+            System.out.println(this.toString()+ "complete sleep" );
+            lock.readLock().unlock();
             System.out.println("out of work");
         }
     }
     static class Thread2 implements Runnable{
-        ReentrantLock lock;
-        Thread2(ReentrantLock lock) {
+        ReentrantReadWriteLock lock;
+        Thread2(ReentrantReadWriteLock lock) {
             this.lock = lock;
         }
         @SneakyThrows
         @Override
         public void run() {
-            lock.lock();
+            lock.writeLock().lock();
             TimeUnit.SECONDS.sleep(5);
             System.out.println(this.toString()+ "complete sleep" );
-            lock.unlock();
+            lock.writeLock().unlock();
 
         }
     }
@@ -90,5 +84,9 @@ public class TestLock {
             }
 
         }
+    }
+
+    static class Person{
+        int age;
     }
 }

@@ -308,7 +308,6 @@
 - java.lang.invoke方法与Reflection的区别
   1. 本质都是模拟方法调用，但是Reflection是在模拟Java代码层次的方法调用，而MethodHandle是模拟字节码层次的方法调用。
   2. Reflection的Method对象包含的信息比invoke包的MethodHandle的信息多的多。
-  3.
    
 ## 十二、Java 内存模型
 

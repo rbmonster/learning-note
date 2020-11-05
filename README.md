@@ -1,14 +1,31 @@
 # learning-note
-记录平常学习java 的一些知识点
+## day by day
+- [Java基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic)
+- [IO总结](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/basic/)
+- [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/COLLECTION.md)
+- Java并发相关
+  - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/THREAD.md)
+  - [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENT.md)
+  - [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENTTOOL.md)
+### Spring
+- [Bean生命周期](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/lifecycle)
+- [Spring Basic(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four)
 
+### 其他
+- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/apidesign)
+
+### 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/design)
 - [JVM基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/jvm)
+  - 主要是周志明《深入理解java虚拟机》书的记录
 - [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/algorithm)
 - [Redis基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/redis)
+  - 基于Redis的设计与实现
 - [MySql45讲](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/mysql)
+- Java编程思想总结
+    - [java集合类](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/collection)
+    - [java并发](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/concurrent)
 
-- [java集合类](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/collection)
-- [java并发](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/concurrent)
 
 ### 分布式文件存储系统
 - FastDFS服务端有三个角色：跟踪服务器（tracker server）、存储服务器（storage server）和客户端（client）。

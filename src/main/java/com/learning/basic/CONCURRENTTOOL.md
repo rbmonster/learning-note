@@ -283,3 +283,97 @@ public final void signal() {
 - 内部分别定义了读锁与写锁。
 - 读锁共享锁实现。
 - 写锁独占锁实现。
+
+## Atomic 原子类
+- 原子类主要基于CAS操作实现，同时使用 volatile 保证可见性。
+
+### 原子类型
+- 使用原子的方式更新基本类型
+    - AtomicInteger：整型原子类
+    - AtomicLong：长整型原子类
+    - AtomicBoolean ：布尔型原子类
+- AtomicInteger 类常用方法
+```
+public final int get() //获取当前的值
+public final int getAndSet(int newValue)//获取当前的值，并设置新的值
+public final int getAndIncrement()//获取当前的值，并自增
+public final int getAndDecrement() //获取当前的值，并自减
+public final int getAndAdd(int delta) //获取当前的值，并加上预期的值
+boolean compareAndSet(int expect, int update) //如果输入的数值等于预期值，则以原子方式将该值设置为输入值（update）
+public final void lazySet(int newValue)//最终设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
+```
+
+### 数组类型
+- 数组类型:使用原子的方式更新数组里的某个元素
+    - AtomicIntegerArray：整型数组原子类
+    - AtomicLongArray：长整型数组原子类
+    - AtomicReferenceArray ：引用类型数组原子类
+- AtomicIntegerArray 类常用方法
+```
+public final int get(int i) //获取 index=i 位置元素的值
+public final int getAndSet(int i, int newValue)//返回 index=i 位置的当前的值，并将其设置为新值：newValue
+public final int getAndIncrement(int i)//获取 index=i 位置元素的值，并让该位置的元素自增
+public final int getAndDecrement(int i) //获取 index=i 位置元素的值，并让该位置的元素自减
+public final int getAndAdd(int i, int delta) //获取 index=i 位置元素的值，并加上预期的值
+boolean compareAndSet(int i, int expect, int update) //如果输入的数值等于预期值，则以原子方式将 index=i 位置的元素值设置为输入值（update）
+public final void lazySet(int i, int newValue)//最终 将index=i 位置的元素设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
+```
+### 引用类型
+- 引用类型
+    - AtomicReference：引用类型原子类
+    - AtomicMarkableReference：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来，也可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+    - AtomicStampedReference ：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+- AtomicReference 类使用示例
+```
+AtomicReference<Person> ar = new AtomicReference<Person>();
+Person person = new Person("SnailClimb", 22);
+ar.set(person);
+Person updatePerson = new Person("Daisy", 20);
+ar.compareAndSet(person, updatePerson);
+
+System.out.println(ar.get().getName());
+System.out.println(ar.get().getAge());
+```
+- AtomicStampedReference 类使用示例
+```
+// 实例化、取当前值和 stamp 值
+final Integer initialRef = 0, initialStamp = 0;
+final AtomicStampedReference<Integer> asr = new AtomicStampedReference<>(initialRef, initialStamp);
+
+   // compare and set 操作
+final Integer newReference = 666, newStamp = 999;
+final boolean casResult = asr.compareAndSet(initialRef, newReference, initialStamp, newStamp);
+```
+    
+### 对象的属性修改类型
+- 如果需要原子更新某个类里的某个字段时，需要用到对象的属性修改类型原子类。
+    - AtomicIntegerFieldUpdater:原子更新整型字段的更新器
+    - AtomicLongFieldUpdater：原子更新长整型字段的更新器
+    - AtomicReferenceFieldUpdater：原子更新引用类型里的字段
+
+```
+AtomicIntegerFieldUpdater<User> a = AtomicIntegerFieldUpdater.newUpdater(User.class, "age");
+
+User user = new User("Java", 22);
+System.out.println(a.getAndIncrement(user));// 22
+```
+
+## 阻塞队列
+- ConcurrentHashMap: 线程安全的 HashMap
+- CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.
+- ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
+- BlockingQueue: 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。
+- ConcurrentSkipListMap: 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
+
+### blockingQueue
+#### ArrayBlockingQueue
+- ArrayBlockingQueue 是 BlockingQueue 接口的有界队列实现类，底层采用数组来实现。ArrayBlockingQueue 一旦创建，容量不能改变。其并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。
+- ArrayBlockingQueue 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
+
+#### LinkedBlockingQueue
+- LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。
+  - 使用两个ReentrantLock，takeLock和putLock两把锁，分别用于阻塞队列的读写线程，也就是说，读线程和写线程可以同时运行，在多线程高并发场景，应该可以有更高的吞吐量，性能比单锁更高。
+  
+#### PriorityBlockingQueue
+- PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
+  - PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为无界队列
