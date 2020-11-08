@@ -279,7 +279,7 @@ public boolean equals(Object o) {
             test.wait();
         }
 }
-// synchronized 方法抛异常
+// synchronized 方法不抛异常
    synchronized void test() throws InterruptedException {
         this.wait();
     }

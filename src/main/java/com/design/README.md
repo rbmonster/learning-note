@@ -25,9 +25,13 @@
   1. POST：新建（Create）
   2. GET：读取（Read）
   3. PUT：更新（Update）
-  4. PATCH：更新（Update），通常不分更新，也很少用到
+  4. PATCH：更新（Update），通常不分更新，也很少用到。对资源进行部分修改，PUT 也可以用于修改资源，但是只能完全替代原始资源，PATCH 允许部分修改。
   5. DELETE：删除（Delete）
-
+  6. HEAD：获取报文首部和 GET 方法类似，但是不返回报文实体主体部分。主要用于确认 URL 的有效性以及资源更新的日期时间等。
+  7. OPTIONS：查询支持的方法，查询指定的 URL 能够支持的方法。会返回 Allow: GET, POST, HEAD, OPTIONS 这样的内容。
+  8. TRACE：追踪路径。服务器会将通信路径返回给客户端。发送请求时，在 Max-Forwards 首部字段中填入数值，每经过一个服务器就会减 1，当数值为 0 时就停止传输。
+  9. CONNECT：要求在与代理服务器通信时建立隧道，使用 SSL（Secure Sockets Layer，安全套接层）和 TLS（Transport Layer Security，传输层安全）协议把通信内容加密后经网络隧道传输。
+     
 - 有些客户端只能使用GET和POST这两种方法。服务器必须接受POST模拟其他三个方法（PUT、PATCH、DELETE）。这时，客户端发出的 HTTP 请求，要加上X-HTTP-Method-Override属性，告诉服务器应该使用哪一个动词，覆盖POST方法。
 ```
 POST /users/12 HTTP/1.1
@@ -88,7 +92,8 @@ Content-Type: application/json
 > 201 Created每当创建新实例时，都应返回此状态代码。例如，使用POST方法创建新实例时，应始返回201状态代码。
 
 > 204 No Content表示请求已成功处理，但未返回任何内容。
-  
+
+> 206 Partial Content ：表示客户端进行了范围请求，响应报文包含由 Content-Range 指定范围的实体内容。
 - 3xx（重定向类别）
 > 304 Not Modified表示客户端已在其缓存中有响应，因此无需再次传输相同的数据。
   
@@ -112,6 +117,15 @@ Content-Type: application/json
 > 503 Service Unavailable大多数情况下表示服务器已关闭或无法接收和处理请求，例如服务器正在进行维护。
 
 
+**状态码范围：**
+
+| 2xx：成功 | 3xx：重定向    | 4xx：客户端错误  | 5xx：服务器错误 |
+| --------- | -------------- | ---------------- | --------------- |
+| 200 成功  | 301 永久重定向 | 400 错误请求     | 500 服务器错误  |
+| 201 创建  | 304 资源未修改 | 401 未授权       | 502 网关错误    |
+| 204 No Content表示请求已成功处理，但未返回任何内容    |     | 403 禁止访问     | 504 网关超时    |
+|           |                | 404 未找到       |                 |
+|           |                | 405 请求方法不对 |                 |
 ### API接口设计 三板斧
 
 ##### 1. entity对象使用@Valid 简化参数判断

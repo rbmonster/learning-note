@@ -30,14 +30,19 @@ public class TestLock {
 //       condition.signal();
 //
 //       condition.signal();
+//
+//        ReentrantReadWriteLock lock =new ReentrantReadWriteLock();
+//        new Thread(new Thread1(lock)).start();
+//        new Thread(new Thread2(lock)).start();
 
-        ReentrantReadWriteLock lock =new ReentrantReadWriteLock();
-        new Thread(new Thread1(lock)).start();
-        new Thread(new Thread2(lock)).start();
-
-
+        new TestLock().test();
     }
 
+    synchronized void test() throws InterruptedException{
+        while(true) {
+            System.out.println(1111111);
+        }
+    }
 
     static class Thread1 implements Runnable{
         ReentrantReadWriteLock lock;

@@ -1,4 +1,4 @@
-package com.four.filter;
+package com.four.filterinterceptor.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
