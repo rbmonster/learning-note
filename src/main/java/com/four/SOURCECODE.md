@@ -105,6 +105,7 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 
 ```
 
+- Spring 事务处理 中，可以通过设计一个 TransactionProxyFactoryBean 来使用 AOP 功能，通过这个 TransactionProxyFactoryBean 可以生成 Proxy 代理对象
 
 # 事务不生效
 

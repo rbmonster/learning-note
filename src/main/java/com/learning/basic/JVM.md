@@ -318,6 +318,14 @@
 - 方法体对应的访问范围
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/classArea.jpg)
 
+### 类初始化的时机
+- Java 虚拟机规范没有强制约束类加载过程的第一阶段（即：加载）什么时候开始，但对于“初始化”阶段，有着严格的规定。有且仅有 5 种情况必须立即对类进行“初始化”：
+  - 在遇到 new、putstatic、getstatic、invokestatic 字节码指令时，如果类尚未初始化，则需要先触发其初始化。
+  - 对类进行反射调用时，如果类还没有初始化，则需要先触发其初始化。
+  - 初始化一个类时，如果其父类还没有初始化，则需要先初始化父类。
+  - 虚拟机启动时，用于需要指定一个包含 main() 方法的主类，虚拟机会先初始化这个主类。
+  - 当使用 JDK 1.7 的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic、REF_putStatic、REF_invokeStatic 的方法句柄，并且这个方法句柄所对应的类还没初始化，则需要先触发其初始化。
+- 这 5 种场景中的行为称为对一个类进行主动引用，除此之外，其它所有引用类的方式都不会触发初始化，称为被动引用。
 
 ### 类的生命周期
 - 类的生命周期： 加载、连接[验证、准备、解析]、初始化、使用、卸载。
