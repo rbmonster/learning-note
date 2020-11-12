@@ -363,3 +363,60 @@ public final class NamingThreadFactory implements ThreadFactory {
   
 - 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文（Context），它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
 
+
+#### spring 中的线程池
+- 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
+  - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
+  - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
+- 没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
+  - ```
+    @Bean
+      public Executor taskExecutor() {
+        // Spring 默认配置是核心线程数大小为1，最大线程容量大小不受限制，队列容量也不受限制。
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(CORE_POOL_SIZE);
+        executor.setMaxPoolSize(MAX_POOL_SIZE);
+        executor.setQueueCapacity(QUEUE_CAPACITY);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setThreadNamePrefix("My ThreadPoolTaskExecutor-");
+        executor.initialize();
+        return executor;
+      }
+    ```
+- 异步编程的例子：
+  - ```
+     @Async
+      public CompletableFuture<List<String>> completableFutureTask(String start) {
+        // 打印日志
+        logger.warn(Thread.currentThread().getName() + "start this task!");
+        // 找到特定字符/字符串开头的电影
+        List<String> results =
+            movies.stream().filter(movie -> movie.startsWith(start)).collect(Collectors.toList());
+        // 模拟这是一个耗时的任务
+        try {
+          Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        //返回一个已经用给定值完成的新的CompletableFuture。
+        return CompletableFuture.completedFuture(results);
+      }
+    
+    // 调用方法
+    @GetMapping("/movies")
+      public String completableFutureTask() throws ExecutionException, InterruptedException {
+        //开始时间
+        long start = System.currentTimeMillis();
+        // 开始执行大量的异步任务
+        List<String> words = Arrays.asList("F", "T", "S", "Z", "J", "C");
+        List<CompletableFuture<List<String>>> completableFutureList =
+            words.stream()
+                .map(word -> asyncService.completableFutureTask(word))
+                .collect(Collectors.toList());
+        // CompletableFuture.join（）方法可以获取他们的结果并将结果连接起来
+        List<List<String>> results = completableFutureList.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        // 打印结果以及运行程序运行花费时间
+        System.out.println("Elapsed time: " + (System.currentTimeMillis() - start));
+        return results.toString();
+      }
+    ```

@@ -16,8 +16,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @Date: 2020/4/19 22:17
  */
 @SpringBootApplication
-@EnableFeignClients
-@EnableAspectJAutoProxy
 public class LearnApplication {
 
     public static void main(String[] args) {

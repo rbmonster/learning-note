@@ -1,4 +1,43 @@
 # Spring源码
+
+
+## Spring IOC初始化
+- 构造方法：this.reader = new AnnotatedBeanDefinitionReader(this);
+  - AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
+  - 默认添加几个Processor：
+    - internalConfigurationAnnotationProcessor
+    - internalAutowiredAnnotationProcessor
+    - internalCommonAnnotationProcessor
+    - internalEventListenerProcessor
+    - internalEventListenerFactory
+### invokeBeanFactoryPostProcessors(beanFactory);
+- PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
+  - 获取到ConfigurationClassPostProcessor， 并调用postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) 方法
+  - ConfigurationClassParser.doProcessConfigurationClass ：扫描注解的地方
+    - // Process any @Import annotations // processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
+
+    
+- // Invoke factory processors registered as beans in the context.
+  invokeBeanFactoryPostProcessors(beanFactory);
+   - ConfigurationClassPostProcessor.processConfigBeanDefinitions
+   - ```
+     	// Parse each @Configuration class
+     		ConfigurationClassParser parser = new ConfigurationClassParser(
+     				this.metadataReaderFactory, this.problemReporter, this.environment,
+     				this.resourceLoader, this.componentScanBeanNameGenerator, registry);
+     
+     		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
+     		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
+     		do {
+     			parser.parse(candidates);
+     ```
+     
+   org.springframework.boot.autoconfigure.AutoConfigurationMetadataLoader
+   protected static final String PATH = "META-INF/spring-autoconfigure-metadata.properties";
+ 
+- AnnotationConfigUtils.registerAnnotationConfigProcessors() 
+ 
+### Spring自动配置加载
 - 根据注解加载配置：org.springframework.context.annotation.ConfigurationClassParser
 - @EnableAutoConfiguration导入AutoConfigurationImportSelector：org.springframework.boot.autoconfigure.AutoConfigurationImportSelector.getAutoConfigurationEntry
 - AutoConfigurationImportSelector 加载配置，先看Exclude注解有没有需要过滤的，在执行过滤器过滤出需要加载的autoConfiguration
@@ -13,6 +52,7 @@
 - 注解@EnableTransactionManagement 实现事务相关的Bean加载（现在自动配置使用AutoConfiguration实现）
 - TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
 - 实现原理为使用AOP+Threadlocal实现。
+
 ### TransactionAspectSupport
 
 - transactionInfoHolder：定义一个ThreadLocal，Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
@@ -107,7 +147,28 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 
 - Spring 事务处理 中，可以通过设计一个 TransactionProxyFactoryBean 来使用 AOP 功能，通过这个 TransactionProxyFactoryBean 可以生成 Proxy 代理对象
 
-# 事务不生效
+# @Transactional失效场景
+- private方法不会生效，JDK中必须是接口，接口中不可能有private方法，protect方法的话，也不生效。原因是spring内部判断方法修饰符如果不是public不生成事务拦截代理类。
+- CGLib代理的时候，final方法不会生效，抛NullPointException，cglib与JDK内部机制。
 
-private方法不会生效，JDK中必须是接口，接口中不可能有private方法，protect方法的话，也不生效。原因是spring内部判断方法修饰符如果不是public不生成事务拦截代理类。
-CGLib代理的时候，final方法不会生效，抛NullPointException，cglib与JDK内部机制。
+- @Transactional 应用在非 public 修饰的方法上
+  - ```
+    @Nullable
+    protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
+        // Don't allow no-public methods as required.
+        if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
+            return null;
+        }
+    ...
+    }
+    ```
+    
+    
+- 同一个类中方法调用，导致@Transactional失效，在当前的bean中非事务方法调用事务方法为什么不生效？
+  - 当进行方法拦截的时候，方法拦截器首先获取当前动态代理的对象所代理的原始对象。如果判断当前的方法比如save方法没有Advice(增强)，则直接调用原对象的方法，即这个时候调用的是FirstApp.save方法。
+
+
+- @Transactional 注解属性 propagation 设置错误，设置了以非事务的状态运行
+- @Transactional  注解属性 rollbackFor 设置错误，实际抛出的错误跟设置不一致
+- 异常被 catch 导致@Transactional失效
+- 数据库引擎不支持事务

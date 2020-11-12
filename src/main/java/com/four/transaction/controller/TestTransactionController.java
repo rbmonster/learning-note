@@ -52,7 +52,7 @@ public class TestTransactionController {
         Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
         jdbcTemplate.update(sql, objects);
         return "123";
-//        testTransaction();
+//        testTransaction();F
 //        throw new RuntimeException("123123");
     }
 
