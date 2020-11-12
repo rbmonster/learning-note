@@ -1,6 +1,7 @@
 #Spring boot 
 
 ## Spring boot start
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/springLoad.jpg)
 
 - spring 构造方法：
 ```
@@ -214,44 +215,28 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 
 ---
 
-Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application,
-application 配置文件这个容易理解，主要用于 Spring Boot 项目的自动化配置。
-bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。
-bootstrap 主要用于从额外的资源来加载配置信息，还可以在本地外部配置文件中解密属性。
-这两个上下文共用一个环境，它是任何Spring应用程序的外部属性的来源。
-bootstrap 里面的属性会优先加载，它们默认也不能被本地相同配置覆盖。
-boostrap 由父 ApplicationContext 加载，比 applicaton 优先加载
+- Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application,
+    - application 配置文件这个容易理解，主要用于 Spring Boot 项目的自动化配置。
+    - bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。
+    - bootstrap 主要用于从额外的资源来加载配置信息，还可以在本地外部配置文件中解密属性。
+    - 这两个上下文共用一个环境，它是任何Spring应用程序的外部属性的来源。
+    - bootstrap 里面的属性会优先加载，它们默认也不能被本地相同配置覆盖。
+    - boostrap 由父 ApplicationContext 加载，比 applicaton 优先加载
+    - boostrap 里面的属性不能被覆盖
 
-boostrap 里面的属性不能被覆盖
-
-（二）、bootstrap 配置文件有以下几个应用场景。
-
-使用 Spring Cloud Config 配置中心时，这时需要在 bootstrap 配置文件中添加连接到配置中心的配置属性来加载外部配置中心的配置信息；
-
-一些固定的不能被覆盖的属性
-
-一些加密/解密的场景；
-
-以下这个截图是一个国外网友问了一个 Spring Cloud 工程师得到的回答
+- bootstrap 配置文件有以下几个应用场景。
+  - 使用 Spring Cloud Config 配置中心时，这时需要在 bootstrap 配置文件中添加连接到配置中心的配置属性来加载外部配置中心的配置信息；
+  - 一些加密/解密的场景；
 
 
----
-Spring Boot提供了不同的方法来覆盖这些属性。
 
-我们可以在代码、命令行参数、ServletConfig init参数、ServletContext init参数、Java系统属性、操作系统变量和应用程序属性文件中覆盖这些参数。
-
-Spring 与其他形式的重写应用程序上下文属性相比，application properties属性文件具有最低的优先级。
-
-我们倾向于将可以在应用程序上下文中覆盖的属性分组:
-
-核心属性(日志属性、线程属性)
-
-集成属性(RabbitMQ属性，ActiveMQ属性)
-
-Web属性(HTTP属性，MVC属性)
-
-安全属性(LDAP属性、OAuth2属性)
-
+- Spring 与其他形式的重写应用程序上下文属性相比，application properties属性文件具有最低的优先级。Spring Boot提供了不同的方法来覆盖这些属性。
+    - 我们可以在代码、命令行参数、ServletConfig init参数、ServletContext init参数、Java系统属性、操作系统变量和应用程序属性文件中覆盖这些参数。
+    - 倾向于将可以在应用程序上下文中覆盖的属性分组:
+        - 核心属性(日志属性、线程属性)
+        - 集成属性(RabbitMQ属性，ActiveMQ属性)
+        - Web属性(HTTP属性，MVC属性)
+        - 安全属性(LDAP属性、OAuth2属性)
 
 - bootstrap Context：负责从外部源加载配置属性，以及用于在本地外部配置文件中解密属性。
   - 要记住的另一个关键点是，这两个上下文共享环境，而环境是任何Spring应用程序的外部属性的源。
