@@ -140,7 +140,7 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/stringCommand.jpg)
 
 
-###列表对象(list)
+### 列表对象(list)
 - 列表元素较少时使用压缩列表(ziplist)，而元素多的时候使用双链表(linkedlist)
   - 此处使用ziplist就是存列表连接
 - 编码转换条件：同时满足一下两条件使用ziplist,否则linkedlist。
@@ -357,6 +357,7 @@ OK
 
 - 因为AOF文件的更新频率比RDB文件高，因此如果开启了AOF持久化功能，服务器优先使用AOF文件还原数据。
 - 只有在AOF持久化功能关闭的时候，服务器才会使用RDB恢复数据库。
+
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/RDBLoad.jpg)  
 
 - 自动保存功能
@@ -376,7 +377,7 @@ save 60 10000
 - RDB文件结构（TODO暂时不需要了解）
   - |REDIS|db_version|database|EOF|check_sum|
   
-### AOF持久化
+## AOF持久化
 - AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF文件中。
 
 - 持久化的三个过程：命令追加、文件写入、文件同步
@@ -391,7 +392,7 @@ save 60 10000
  
 - AOF重写，指的是对命令进行压缩，将RPUSH、LPOP的类似命令进行压缩，减少AOF文件大小
 
-### 事件
+## 事件
 - Redis服务器是一个事件驱动程序，服务器需要处理一下两事件。
   - 文件事件：服务器通过Socket与客户端连接
   - 时间事件：服务器中的一些操作，需要在特定时间点执行。
@@ -407,7 +408,7 @@ save 60 10000
 - 时间事件（2.8版本的redis只有周期性事件，没有定时事件）
   - 服务器将所有时间事件放在一个无序链表中，每当时间事件执行器运行时，遍历整个链表。
   
-### 客户端的关闭
+## 客户端的关闭
 - 客户端进程退出或杀死
 - 客户端发送不符合协议的命令请求
 - 客户端成了CLIENT KILL命令的目标
@@ -415,7 +416,7 @@ save 60 10000
 - 客户端发送的请求超过了输出缓冲区的限制大小（1GB）
 - 服务器要发送给客户端的返回命令请求大小超过了输出缓冲区的限制
 
-### 服务器
+## 服务器
 - 命令请求的执行过程
   1. 向服务器发送命令请求SET KEY VALUE.
   2. 服务接收命令请求，在数据库中设置操作，并产生命令回复OK
@@ -424,7 +425,7 @@ save 60 10000
   
 - 每个Redis对象都会有一个lru属性，保存了对象最后一次被命令访问的时间。
 
-### 复制
+## 复制
 - 设置的操作流程
   1. 设置主服务器的地址和端口。>SLAVEOF 127.0.0.1 6379
   2. 建立socket连接
@@ -451,7 +452,7 @@ save 60 10000
 
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/psync.jpg)
 
-### Sentinel 哨兵
+## Sentinel 哨兵
 - Sentinel是Redis的一个高可用的解决方案：由一个或者多个Sentinel实例组成Sentinel系统。
 - 启动命令：
 ```
@@ -482,7 +483,7 @@ redis-server /path/to/your/sentinel.conf
 
 - 客观下线：当一个Sentinel判断一个服务器下线时，会询问其他的Sentinel是否真的是下线。
 
-### 集群
+## 集群
 - Redis集群是Redis提供的分布式数据库方案，集群通过分片实现数据共享，并提供复制和故障转移功能。
 - 建立一个集群 至少需要三主三从六台服务器。
 - 集群建立
@@ -535,7 +536,7 @@ OK
     4. 新的主节点在集群中发送PONG消息，通知其他节点该节点变成主节点。
     5. 新主节点开始接受和处理指派槽的消息。
     
-### 发布与订阅
+## 发布与订阅
 ```
 //查看服务器目前订阅的通道
 >PUBSUB CHANNELS
@@ -555,7 +556,7 @@ OK
   1. 将消息发送给channel频道的所有订阅者。
   2. 如果有一个或者多个模式patten与channel匹配，那么将message发送给patten的订阅者。
   
-### 事务
+## 事务
 - Redis通过MULTI、EXEC、WATCH等命令来实现事务。
 ```
 >MULTI
@@ -609,13 +610,13 @@ QUEUED
   - 隔离性：并发执行和串行执行结果一致。Redis事务总是以串行执行，因此保证了隔离性。
   - 耐久性：一个事务执行完毕，结果会被保存到硬盘中，停机不丢失。
   
-### Lua脚本
+## Lua脚本
 - 客户端可执行的脚本语言
 ```
 >EVAL "return 'hello world'" 0
 ```
 
-### 排序
+## 排序
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/sort.jpg)
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/sort2.jpg)
 - SORT <key> :对一个包含数字值的键key进行排序
@@ -637,9 +638,9 @@ QUEUED
     // 保存结果在sorted_students中
     ```
     
-### 二进制位数据
+## 二进制位数据
 - Redis 提供SETBIT、GETBIT、BITCOUNT、BITOP四个命令用于处理二进制位数组。
 
-### 慢查询日志
+## 慢查询日志
 - slowlog-log-slower-than选项：指定超过多少微妙记录到慢查询日志上。
 - slowlog-max-len选项：指定服务器最多保存多少条慢查询日志。
