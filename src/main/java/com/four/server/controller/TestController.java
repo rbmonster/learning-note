@@ -1,6 +1,7 @@
 package com.four.server.controller;
 
 import com.four.server.aop.entity.LogHome;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,7 +35,14 @@ public class TestController {
 
     @LogHome("logHome for command")
     @GetMapping(path = "/getCommand2")
+    @Transactional
     public String forAop(@RequestParam("command1") String command1, @RequestParam("command2") String command2) {
         return "command is " +command1 +" " + command2;
     }
+
+    @GetMapping(path = "/getCommand5")
+    public String forAop2(@RequestParam("command") String command) {
+        return "command is " +command;
+    }
+
 }

@@ -1,7 +1,10 @@
 package com.four.transaction.controller;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,10 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * <pre>
@@ -28,7 +28,7 @@ import java.util.Random;
  */
 @RestController
 @RequestMapping("/transaction")
-public class TestTransactionController {
+public class TestTransactionController implements ApplicationContextAware {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -48,6 +48,7 @@ public class TestTransactionController {
     @Transactional(propagation = Propagation.NEVER)
     @GetMapping("/update")
     public String update() {
+        Object testTransactionController = applicationContext.getBean("testTransactionController");
         Thread thread = Thread.currentThread();
         ThreadLocal threadLocal = new ThreadLocal();
 //        Object obj = threadLocal.get();
@@ -65,5 +66,11 @@ public class TestTransactionController {
         String sql = "INSERT INTO `demo_detail` (`detail_id`, `demo_id`, `detail_remark`, `detail_start`, `detail_end`, `min_value`, `max_value`, `rage`) VALUES (?, 123, ?, '2020-11-07', '2020-11-07', '2', '1', '12')";
         Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
         jdbcTemplate.update(sql, objects);
+    }
+
+    private ApplicationContext applicationContext;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
