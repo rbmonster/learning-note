@@ -590,6 +590,7 @@ OK
   
 - **redis高并发**：系统在下午高峰时间段，外部车队、船公司、内部的工厂及业务人员的业务操作比较集中，单单使用mysql数据库，在系统业务操作高峰时间数据库压力较大。
 
+- redis 分布式锁：保证集群之间的资源同步。
 
 ## 缓存一致性
 ### 允许缓存与数据库存在偶尔不一致
@@ -774,4 +775,87 @@ public class LRU<K, V> implements Iterable<K> {
 }
 ```
 
-## 分布式锁TODO
+## 分布式锁
+
+### 独立实现分布式锁
+#### 加锁
+- 通过指令SET结合过期时间一起使用，并设置过期时间，防止线程挂了导致锁未释放
+```
+SET key value[EX seconds][PX milliseconds][NX|XX]
+```
+- EX seconds: 设定过期时间，单位为秒
+- PX milliseconds: 设定过期时间，单位为毫秒
+- NX: 仅当key不存在时设置值
+- XX: 仅当key存在时设置值
+
+- 实操：
+```
+127.0.0.1:6379> set ad firethehole nx ex 10
+OK
+127.0.0.1:6379> keys *
+1) "ad"
+2) "mes"
+127.0.0.1:6379> get ad
+"firethehole"
+```
+
+##### value必须要具有唯一性
+假如value不是随机字符串，而是一个固定值，那么就可能存在下面的问题：
+
+1. 客户端1获取锁成功
+2. 客户端1在某个操作上阻塞了太长时间
+3. 设置的key过期了，锁自动释放了
+4. 客户端2获取到了对应同一个资源的锁
+5. 客户端1从阻塞中恢复过来，因为value值一样，所以执行释放锁操作时就会释放掉客户端2持有的锁，这样就会造成问题
+
+简而言之，就是A线程锁过期，后序导致对锁的异常释放。
+
+##### SET 命令的缺陷
+- 加锁后主节点出现故障，锁数据未同步，导致加锁失败，其他节点获得锁。
+
+- 具体流程
+A客户端在Redis的master节点上拿到了锁，但是这个加锁的key还没有同步到slave节点，master故障，发生故障转移，一个slave节点升级为master节点，B客户端也可以获取同个key的锁，但客户端A也已经拿到锁了，这就导致多个客户端都拿到锁。
+
+#### 释放锁
+释放锁时需要验证value值，也就是说我们在获取锁的时候需要设置一个value，**不能直接用del key这种粗暴的方式，因为直接del key任何客户端都可以进行解锁了**，所以解锁时，我们需要判断锁是否是自己的，基于value值来判断，代码如下：
+- 使用Lua脚本的方式，尽量保证原子性。
+```
+public boolean releaseLock_with_lua(String key,String value) {
+    String luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then " +
+            "return redis.call('del',KEYS[1]) else return 0 end";
+    return jedis.eval(luaScript, Collections.singletonList(key), Collections.singletonList(value)).equals(1L);
+}
+```
+
+### Redisson 分布式方案
+- redisson是在redis基础上实现的一套开源解决方案，提供了分布式的相关实现及RedLock的分布式锁实现。
+
+原理：生成唯一的Value，即UUID+threadId。获取锁时向多个redis实例发送的LUA脚本命令，解锁同理。
+```
+<T> RFuture<T> tryLockInnerAsync(long leaseTime, TimeUnit unit, long threadId, RedisStrictCommand<T> command) {
+    internalLockLeaseTime = unit.toMillis(leaseTime);
+    // 获取锁时向5个redis实例发送的命令
+    return commandExecutor.evalWriteAsync(getName(), LongCodec.INSTANCE, command,
+              // 首先分布式锁的KEY不能存在，如果确实不存在，那么执行hset命令（hset REDLOCK_KEY uuid+threadId 1），并通过pexpire设置失效时间（也是锁的租约时间）
+              "if (redis.call('exists', KEYS[1]) == 0) then " +
+                  "redis.call('hset', KEYS[1], ARGV[2], 1); " +
+                  "redis.call('pexpire', KEYS[1], ARGV[1]); " +
+                  "return nil; " +
+              "end; " +
+              // 如果分布式锁的KEY已经存在，并且value也匹配，表示是当前线程持有的锁，那么重入次数加1，并且设置失效时间
+              "if (redis.call('hexists', KEYS[1], ARGV[2]) == 1) then " +
+                  "redis.call('hincrby', KEYS[1], ARGV[2], 1); " +
+                  "redis.call('pexpire', KEYS[1], ARGV[1]); " +
+                  "return nil; " +
+              "end; " +
+              // 获取分布式锁的KEY的失效时间毫秒数
+              "return redis.call('pttl', KEYS[1]);",
+              // 这三个参数分别对应KEYS[1]，ARGV[1]和ARGV[2]
+                Collections.<Object>singletonList(getName()), internalLockLeaseTime, getLockName(threadId));
+}
+```
+
+- 针对过期时间的设置，假设业务还未处理完，锁已过期，Redisson会启动监控线程查看业务执行状态，再重新设置过期时间
+
+
+- 相关文章：https://juejin.cn/post/6844903830442737671#heading-10

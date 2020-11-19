@@ -204,3 +204,26 @@
   
 - 总结：在分布式环境下，由于默认的MyBatis Cache实现都是基于本地的，分布式环境下必然会出现读取到脏数据
 - 美团技术团队mybatis缓存分析：https://tech.meituan.com/2018/01/19/mybatis-cache.html
+
+### 13.千万级数据查询方案---- 流式查询
+- 流式查询指的是查询成功后不是返回一个集合而是返回一个迭代器，应用每次从迭代器取一条查询结果。流式查询的好处是能够降低内存使用。
+- 流式查询的过程当中，数据库连接是保持打开状态的，因此要注意的是：执行一个流式查询后，数据库访问框架（mybatis）就不负责关闭数据库连接了，需要应用在取完数据后自己关闭。
+- ```
+  // Cursor 还提供了三个方法：
+  
+  // 1. isOpen()：用于在取数据之前判断 Cursor 对象是否是打开状态。只有当打开时 Cursor 才能取数据；
+  // 2. isConsumed()：用于判断查询结果是否全部取完。
+  // 3. getCurrentIndex()：返回已经获取了多少条数据
+  
+  // 正常使用方案1 , 使用sql session
+  try (
+          SqlSession sqlSession = sqlSessionFactory.openSession();  // 1
+          Cursor<Foo> cursor = 
+                sqlSession.getMapper(FooMapper.class).scan(limit)   // 2
+      ) {
+          cursor.forEach(foo -> { });
+      }
+  }
+  // 方案2，使用编程式事务 TransactionTemplate
+  // 方案3，使用声明式事务 @Transaction
+  ```

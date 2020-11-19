@@ -56,7 +56,48 @@ public class Demo {
         Set<Integer> set = new LinkedHashSet<>();
         Map<String, String > map1 = new HashMap<>();
          Scanner scanner = new Scanner(System.in);
+        Demo demo = new Demo();
+         demo.canCompleteCircuit(new int[]{1,2,3,4,5}, new int[]{3,4,5,1,2});
+         String aa = new String();
     }
+    Map<String, Integer> note = new HashMap<>();
+
+    public void insert(String key, int val) {
+        note.put(key, val);
+    }
+
+    public int sum(String prefix) {
+
+        return note.entrySet().stream().filter( key -> key.getKey().startsWith(prefix)).map(Map.Entry::getValue).mapToInt(Integer::intValue).sum();
+
+    }
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int len = gas.length;
+        for(int i = 0;i<len;i++) {
+            if( gas[i] - cost[i] < 0){
+                continue;
+            }
+            if(helper(gas, cost, i)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean helper(int[] gas, int[] cost, int index) {
+        int len = gas.length;
+        int tank = 0;
+        for(int i =0 ;i< len;i++) {
+            int next = (index+i) %len;
+            if( tank +gas[next]< cost[next]) {
+                return false;
+            }
+            tank += gas[next] -cost[next];
+        }
+        return true;
+    }
+
+
 
     public List<String> generateParenthesis(int n) {
         List<String> result = new ArrayList<>();
