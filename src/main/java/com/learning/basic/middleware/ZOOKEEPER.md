@@ -184,6 +184,13 @@ zookeeper 是通过 树形结构 来存储数据节点的，那也就是说，�
 - 现在有三个系统A、B、C，他们有三份配置，分别是ASystem.yml、BSystem.yml、CSystem.yml，抽取公共配置common.yml。
 - 将common.yml这份配置放在ZooKeeper的Znode节点中，系统A、B、C监听着这个Znode节点有无变更，如果变更了，及时响应。
 
+### 分布式队列
+入队操作就是在 queue_fifo 下创建自增序的子节点，并把数据（队列大小）放入节点内。出队操作就是先找到 queue_fifo 下序号最下的那个节点，取出数据，然后删除此节点。
+
+### 栅栏
+线程启动时在 ZooKeeper 节点 /queue_barrier 下插入顺序临时节点，然后检查 /queue/barrier 下所有 children 节点的数量是否为所有的线程数，如果不是，则等待，如果是，则开始执行。
+
+- 相关文章：https://zhuanlan.zhihu.com/p/59669985
 
 ## 命令行操作
 - 临时节点都是会话级别的，会话断开之后，节点就删除了。

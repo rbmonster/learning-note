@@ -1,9 +1,10 @@
 # learning-note
 ## day by day
+#### Java相关
 - [Java基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic)
-- [IO总结](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/io/)
 - [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/COLLECTION.md)
-- Java并发相关
+- [IO总结](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/io/)
+#### Java并发相关
   - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/THREAD.md)
   - [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENT.md)
   - [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENTTOOL.md)
@@ -16,20 +17,25 @@
 - [拦截器与过滤器](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/FILTERANDINTERCEPTOR.md)
 - [Spring Boot加载流程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/SPRINGBOOT.md)
 
+### 中间件
+- [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/DISTRIBUTED-SYSTEM.md)
+- [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/ZOOKEEPER.md)
+- [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/MESSAGEQUEUE.md)
+
+### 算法
+- [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/algorithm)
+
 ### 其他
 - [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/apidesign)
+- [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/MYBATIS.md)
 
-### 记录平常学习java 的一些知识点
+## 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/design)
-- [JVM基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/jvm)
-  - 主要是周志明《深入理解java虚拟机》书的记录
-- [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/algorithm)
-- [Redis基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/redis)
-  - 基于Redis的设计与实现
+- [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/jvm)
+- [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/redis)
 - [MySql45讲](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/mysql)
-- Java编程思想总结
-    - [java集合类](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/collection)
-    - [java并发](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/concurrent)
+- [java集合类(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/collection)
+- [java并发(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/concurrent)
 
 
 ### 分布式文件存储系统
@@ -62,33 +68,6 @@
 - 5、生成文件名
   当文件存储到某个子目录后，即认为该文件存储成功，接下来会为该文件生成一个文件名，文件名由group、存储目录、两级子目录、fileid、文件后缀名
   
-
-
-
-
-
-### redis一般用什么数据结构？
-- String、hash、list、set、sortSet
-更新hash是如何更新的？别的数据结构有用过吗？
-```
->SET msg "hello word"
-// list
->RPUSH blah "hello" "world" "again"
-
->HSET book name "Master C++ in 21 days"
-
->SADD numbers 1 3 5 
-
->ZADD blah 1.0 www
-
-```
-
-
-### 数据库和redis如何保证数据一致性？
-- mysql 数据更新成功会生成binlog， 通过canal订阅时间，获取binlog的key，更新到redis里面。  
-  - canal是阿里巴巴旗下的一款开源项目,纯Java开发。基于数据库增量日志解析
-https://zhuanlan.zhihu.com/p/91770135
-
 
 ### 分布式事务
 - 分布式事务指事务的操作位于不同的节点上，需要保证事务的 AICD 特性。
