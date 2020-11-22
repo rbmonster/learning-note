@@ -32,10 +32,13 @@ public class EchoServer {
 
     public void start() throws Exception {
         final EchoServerHandler serverHandler = new EchoServerHandler();
-        EventLoopGroup group = new NioEventLoopGroup();
+        // bossGroup 用于接收连接，workerGroup 用于具体的处理
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
-             b = b.group(group)
+            // 给引导类配置两大线程组,确定了线程模型
+             b = b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .localAddress(new InetSocketAddress(port))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
@@ -45,9 +48,11 @@ public class EchoServer {
                         }
                     });
             ChannelFuture f = b.bind().sync();
+            // 等待连接关闭
             f.channel().closeFuture().sync();
         } finally {
-            group.shutdownGracefully().sync();
+            bossGroup.shutdownGracefully().sync();
+            workerGroup.shutdownGracefully();
         }
     }
 }

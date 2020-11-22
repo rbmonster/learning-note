@@ -3,12 +3,13 @@
 #### Java相关
 - [Java基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic)
 - [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/COLLECTION.md)
-- [IO总结](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/io/)
-#### Java并发相关
-  - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/THREAD.md)
-  - [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENT.md)
-  - [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENTTOOL.md)
+- [Java IO](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/io/)
 - [Java虚拟机](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/JVM.md)
+
+#### Java并发相关
+- [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/THREAD.md)
+- [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENT.md)
+- [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENTTOOL.md)
 
 ### Spring
 - [Spring Basic(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four)
@@ -18,6 +19,7 @@
 - [Spring Boot加载流程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/SPRINGBOOT.md)
 
 ### 中间件
+- [Redis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/REDIS.md)
 - [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/DISTRIBUTED-SYSTEM.md)
 - [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/ZOOKEEPER.md)
 - [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/MESSAGEQUEUE.md)
@@ -26,8 +28,9 @@
 - [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/algorithm)
 
 ### 其他
-- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/apidesign)
 - [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/MYBATIS.md)
+- [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/NETWORK.md)
+- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/apidesign)
 
 ## 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/design)
@@ -68,24 +71,6 @@
 - 5、生成文件名
   当文件存储到某个子目录后，即认为该文件存储成功，接下来会为该文件生成一个文件名，文件名由group、存储目录、两级子目录、fileid、文件后缀名
   
-
-### 分布式事务
-- 分布式事务指事务的操作位于不同的节点上，需要保证事务的 AICD 特性。
-- 例如在下单场景下，库存和订单如果不在同一个节点上，就涉及分布式事务。
-- 两阶段提交（Two-phase Commit，2PC），通过引入协调者（Coordinator）来协调参与者的行为，并最终决定这些参与者是否要真正执行事务。
-- 第三方的MQ是支持事务消息的，比如RocketMQ，他们支持事务消息的方式也是类似于采用的二阶段提交，但是市面上一些主流的MQ都是不支持事务消息的，比如 RabbitMQ 和 Kafka 都不支持。
-  - 以阿里的 RocketMQ 中间件为例，其思路大致为：
-  - 第一阶段Prepared消息，会拿到消息的地址。 第二阶段执行本地事务，第三阶段通过第一阶段拿到的地址去访问消息，并修改状态。如果确认消息发送失败了RocketMQ会定期扫描消息集群中的事务消息，这时候发现了Prepared消息，它会向消息发送者确认，所以生产方需要实现一个check接口，RocketMQ会根据发送端设置的策略来决定是回滚还是继续发送确认消息。这样就保证了消息发送与本地事务同时成功或同时失败。
-  
-- 在XA协议中包含着两个角色：事务协调者和事务参与者。让我们来看一看他们之间的交互流程：
-
-在XA分布式事务的第一阶段，作为事务协调者的节点会首先向所有的参与者节点发送Prepare请求。
-
-在接到Prepare请求之后，每一个参与者节点会各自执行与事务有关的数据更新，写入Undo Log和Redo Log。如果参与者执行成功，暂时不提交事务，而是向事务协调节点返回“完成”消息。
-
-当事务协调者接到了所有参与者的返回消息，整个分布式事务将会进入第二阶段。
-
-接到Commit请求之后，事务参与者节点会各自进行本地的事务提交，并释放锁资源。当本地事务完成提交后，将会向事务协调者返回“完成”消息。
 
 ### 分库分表有了解吗？
 - 了解决由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。
