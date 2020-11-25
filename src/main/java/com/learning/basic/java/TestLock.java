@@ -34,7 +34,6 @@ public class TestLock {
 //        ReentrantReadWriteLock lock =new ReentrantReadWriteLock();
 //        new Thread(new Thread1(lock)).start();
 //        new Thread(new Thread2(lock)).start();
-
         new TestLock().test();
     }
 
@@ -87,7 +86,6 @@ public class TestLock {
                 System.out.println(this.toString()+ "complete sleep" );
                 lock.unlock();
             }
-
         }
     }
 

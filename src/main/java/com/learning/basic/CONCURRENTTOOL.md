@@ -3,11 +3,13 @@
 ## AQS 相关
 
 ### AbstractQueuedSynchronizer AQS 基础类
-- AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器。核心思想是
-  - 如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。
-  - 如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
-  - CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）
-- 使用模板模式提供了 锁与同步的框架，将一些实现延迟到子类中实现。
+AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器。核心思想是
+1. 如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。
+2. 如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
+3. CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）
+4. 通过自旋+CAS获取共享资源，如果获取失败则调用调用native方法 进入park 状态。
+
+使用模板模式提供了 锁与同步的框架，将一些实现延迟到子类中实现。
   - 需要具体子类实现的方法：
   - ```
     isHeldExclusively()//该线程是否正在独占资源。只有用到condition才需要去实现它。
@@ -54,7 +56,7 @@
  }
 ```
 
-- addWaiter ：用于添加节点到队尾
+addWaiter ：用于添加节点到队尾
   - 如果队尾节点存在直接CAS添加
   - 如果队尾节点不存在，使用for自旋先添加空的头节点，再添加当前线程的队尾节点
   
@@ -85,16 +87,16 @@ final boolean acquireQueued(final Node node, int arg) {
             cancelAcquire(node);
     }
 ```
-- acquireQueued ：CLH节点休眠与被唤醒后的主要处理逻辑
+acquireQueued ：CLH节点休眠与被唤醒后的主要处理逻辑
   - 进入一段自旋
   - 节点正常添加到队尾后，如果当前节点的前驱为头节点，使用CAS尝试获取。获取成功后设置当前节点为头结点。之前的头节点让GC回收
   - 获取失败，则进入shouldParkAfterFailedAcquire方法。
   
-- shouldParkAfterFailedAcquire方法：
+shouldParkAfterFailedAcquire方法：
   - 正常的尾节点添加，需要使用CAS先把前驱节点的状态变成signal，通过acquireQueued的自旋，再进入到挂起的状态。
   - 若前驱节点声明为取消CANCELLED状态，则需要找到非CANCELLED的前驱节点并连接上，取消的节点排除在双链表外。
   
-- parkAndCheckInterrupt方法：正常尾结点添加完成之后，进入到挂起的逻辑。
+parkAndCheckInterrupt方法：正常尾结点添加完成之后，进入到挂起的逻辑。
 ##### 释放锁的框架方法
 ```
 // 释放锁
@@ -109,8 +111,9 @@ public final boolean release(int arg) {
     return false;
 }
 ```
-- tryRelease方法：需要自定义，正常这步已经把锁给释放了，即修改状态为0，资源当前线程为null
-- unparkSuccessor：资源释放后的队列抢资源逻辑
+tryRelease方法：需要自定义，正常这步已经把锁给释放了，即修改状态为0，资源当前线程为null
+
+unparkSuccessor：资源释放后的队列抢资源逻辑
   - 定位到头结点，CAS修改状态为0
   - 从尾到头寻找最早一个需要唤醒的线程节点，独占锁模式正常定位到头结点的下一个节点。
   - 执行唤醒逻辑，线程重新进入到acquireQueued
@@ -118,19 +121,31 @@ public final boolean release(int arg) {
   
 #### 条件队列
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/conditionqueue.jpg)
-- condition：条件队列的实现，常可以用在生产者-消费者的场景中。
+condition：条件队列的实现，常可以用在生产者-消费者的场景中。
   - condition 的方法主要就两个await等待、signal唤醒
-- 条件队列与阻塞队列
-  - 阻塞队列为Lock中获取共享资源的CLH阻塞双向链表队列
-  - 条件队列为conditionObject中维护的一个单向链表
+
+条件队列与阻塞队列
+  - 阻塞队列为Lock中获取共享资源的CLH阻塞双向链表队列，AQS中设置head和tail变量。
+  - 条件队列为**conditionObject中维护的一个单向链表**
+  - ```
+    public class ConditionObject implements Condition, java.io.Serializable {
+        private static final long serialVersionUID = 1173984872572414699L;
+        /** First node of condition queue. */
+        private transient Node firstWaiter;
+        /** Last node of condition queue. */
+        private transient Node lastWaiter;
+        ...
+    }
+    ```
 - AbstractQueueSynchronizer中的Node节点，分别代表上述两数据结构的节点
 
-- 条件队列流程简叙： 
-    1. 生产者condition，首先需要获取当前锁，调用await方法。
-    2. await方法中会创建condition state 的node 节点，加入到condition的条件单向链表中。
-    3. 释放当前持有的锁资源，进入循环判断节点是否进入到AQS阻塞队列中。没有则挂起等待唤醒。
-    4. 若有另一个线程唤醒了生产者，唤醒signal的逻辑中会把唤醒的节点，从当前条件队列中移除并添加到阻塞队列中
-    5. await的线程被唤醒后，进入阻塞队列的队列获取锁逻辑，如果前驱节点为头结点，尝试去获取锁资源，否则修改前驱节点为带唤醒状态。等待锁资源释放后的调用。
+
+条件队列流程简叙： 
+1. 生产者condition，首先需要获取当前锁，调用await方法。
+2. await方法中会创建**condition state** 的node 节点，加入到condition的条件单向链表中。
+3. 释放当前持有的锁资源，进入循环判断节点是否进入到AQS阻塞队列中。没有则挂起等待唤醒。
+4. 若有另一个线程唤醒了生产者，唤醒signal的逻辑中会把唤醒的节点，从当前条件队列中移除并添加到阻塞队列中
+5. await的线程被唤醒后，进入阻塞队列的队列获取锁逻辑，如果前驱节点为头结点，尝试去获取锁资源，否则修改前驱节点为带唤醒状态。等待锁资源释放后的调用。
 - 注意点：在条件队列中，等待的线程节点，即使发生了中断，节点依然会转移到阻塞队列。主要通过是唤醒之后，执行检查中断状态为true的transferAfterCancelledWait实现。
   - 这里描绘了一个场景，本来有个线程，它是排在条件队列的后面的，但是因为它被中断了，那么它会被唤醒，然后它发现自己不是被 signal 的那个，但是它会自己主动去进入到阻塞队列。
   - 全部加入阻塞队列以及使用状态表示，主要用于区分节点是，是在发生中断sign前还是sign后。
@@ -161,10 +176,10 @@ static final class Node {
 }
 ```
 ##### await方法
-- interruptMode 中断状态：
-    - REINTERRUPT(1)： 代表 await 返回的时候，需要重新设置中断状态
-    - THROW_IE(-1)： 代表 await 返回的时候，需要抛出 InterruptedException 异常
-    - 0 ：说明在 await 期间，没有发生中断
+interruptMode 中断状态：
+- REINTERRUPT(1)： 代表 await 返回的时候，需要重新设置中断状态
+- THROW_IE(-1)： 代表 await 返回的时候，需要抛出 InterruptedException 异常
+- 0 ：说明在 await 期间，没有发生中断
 ```
    public final void await() throws InterruptedException {
         // 检查当前线程是不是中断
@@ -204,7 +219,7 @@ static final class Node {
     }
 ```
 
-#### signal方法
+##### signal方法
 ```
 public final void signal() {
      // 自定义方法，主要用于判断是否获取到监听器对象，如果没有抛出IllegalMonitorStateException
@@ -243,13 +258,13 @@ public final void signal() {
 ```
 
 ### ReentrantLock
-- 定义基于AQS实现独占锁及condition
+定义基于AQS实现独占锁及condition
 - Sync 抽象静态父类提供基础的一些实现。
 - 公平锁 FairSync：尝试获取资源时候，均要查看是否有等待队列，若存在等待队列则不尝试获取锁，直接添加到队列里面。实现共享资源按顺序获取。
 - 非公平锁 NonfairSync：当线程要获取锁时，先通过两次 CAS 操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。
   - 非公平锁会有更好的性能，因为它的吞吐量比较大。当然，非公平锁让获取锁的时间变得更加不确定，可能会导致在阻塞队列中的线程长期处于饥饿状态。
 
-- AQS独占锁获取流程简述：
+AQS独占锁获取流程简述：
   - 非公平锁:获取资源会先直接CAS去获取，没获取到进入acquire模板逻辑，若发现此时状态为0，会再进行一次CAS获取。
   - 公平锁获取资源，会先检查是否有CLH队列存在，直接返回，不进行获取的逻辑。
   - 以下共同逻辑，首先自旋+CAS操作添加当前线程节点到队尾。（包括初始化逻辑）。
@@ -257,30 +272,95 @@ public final void signal() {
   - 当有其他线程唤醒时，同样判断前驱是否为头结点，为头节点才获取。获取成功后，修改自身为头结点。脱离双向链表结构。
   - unlock逻辑：状态减1，当状态为零时，释放共享资源。CAS替换头结点状态为0，从尾到头找第一个状态<0的节点，唤醒线程。
   
+#### 非公平锁
+```
+final void lock() {
+    // 调用时候先CAS获取锁
+    if (compareAndSetState(0, 1))
+        setExclusiveOwnerThread(Thread.currentThread());
+    else
+        acquire(1);
+}
+
+protected final boolean tryAcquire(int acquires) {
+    return nonfairTryAcquire(acquires);
+}
+
+ final boolean nonfairTryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        // 如果发现状态为零，马上又去CAS抢资源
+        if (compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    }
+    else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc < 0) // overflow
+            throw new Error("Maximum lock count exceeded");
+        setState(nextc);
+        return true;
+    }
+    return false;
+}
+```
+
+#### 公平锁
+```
+ protected final boolean tryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        // 这边存在队就加入队列
+        if (!hasQueuedPredecessors() &&
+            compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    }
+    else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc < 0)
+            throw new Error("Maximum lock count exceeded");
+        setState(nextc);
+        return true;
+    }
+    return false;
+}
+```
 ### countdownLatch
-- 实现了AQS的共享锁，初始化的时候设置了AQS的state的数量
-- await实际调用AQS的acquireShared模板方法
-  - 如果state为0，表示数全部被countdown了，不阻塞方法。
-  - 数量不为0，新建的Node节点添加CLH队列中。更新前缀节点为-1。
-- countdown使用自旋加CAS更新状态，状态为0时，更新等待队列头结点为0，唤醒头结点后的第一个待唤醒节点。
-  - 唤醒后的节点自己设置为头节点，更新状态为0，并依次唤醒后序节点。若已唤醒其他节点更新状态为propagate。
+定义：实现了AQS的共享锁，初始化的时候设置了AQS的state的数量
+
+await实际调用AQS的acquireShared模板方法
+- 如果state为0，表示数全部被countdown了，不阻塞方法。
+- 数量不为0，新建的Node节点添加CLH队列中。更新前缀节点为-1。
+
+countdown使用自旋加CAS更新状态，状态为0时，更新等待队列头结点为0，唤醒头结点后的第一个待唤醒节点。
+- 唤醒后的节点自己设置为头节点，更新状态为0，并依次唤醒后序节点。若已唤醒其他节点更新状态为propagate。
   
 ### CyclicBarrier
-- 内部使用ReentrantLock 非公平锁，每次await时，加锁扣减数量，使用condition的await等待唤醒。
-  - 数量扣减为0时，如果有定义栅栏开始的方法则执行，并调用condition的signAll,条件单链表逐个唤醒。
+内部使用ReentrantLock 非公平锁，每次await时，加锁扣减数量，使用condition的await等待唤醒。
+  - 数量扣减为0时，如果有定义栅栏开始的方法则执行，并调用condition的signAll，条件单链表逐个唤醒。
   - generation 代表栅栏重复使用的一代或者一个周期。
-- 什么时候栅栏会被打破，总结如下：
-  - 中断，我们说了，如果某个等待的线程发生了中断，那么会打破栅栏，同时抛出 InterruptedException 异常；
+什么时候栅栏会被打破，总结如下：
+  - 中断，如果某个等待的线程发生了中断，那么会打破栅栏，同时抛出 InterruptedException 异常；
   - 超时，打破栅栏，同时抛出 TimeoutException 异常；
   - 指定执行的操作抛出了异常。
  
 ### Semaphore 
-- 基于AQS区分公平锁与非公平锁
+基于AQS区分公平锁与非公平锁
 - acquire：获取锁CAS+ 自旋 获取锁，如果发现资源为0，进入队列等待。
 - release：自旋+CAS释放锁，如果释放成功，唤醒队列的节点起来获取。
 
+```
+public Semaphore(int permits, boolean fair) {
+    sync = fair ? new FairSync(permits) : new NonfairSync(permits);
+}
+```
 ### ReentrantReadWriteLock
-- 内部分别定义了读锁与写锁。
+内部分别定义了读锁与写锁。
 - 读锁共享锁实现。
 - 写锁独占锁实现。
 
@@ -288,7 +368,7 @@ public final void signal() {
 - 原子类主要基于CAS操作实现，同时使用 volatile 保证可见性。
 
 ### 原子类型
-- 使用原子的方式更新基本类型
+使用原子的方式更新基本类型
     - AtomicInteger：整型原子类
     - AtomicLong：长整型原子类
     - AtomicBoolean ：布尔型原子类
@@ -319,11 +399,12 @@ boolean compareAndSet(int i, int expect, int update) //如果输入的数值等�
 public final void lazySet(int i, int newValue)//最终 将index=i 位置的元素设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
 ```
 ### 引用类型
-- 引用类型
-    - AtomicReference：引用类型原子类
-    - AtomicMarkableReference：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来，也可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
-    - AtomicStampedReference ：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
-- AtomicReference 类使用示例
+引用类型
+- AtomicReference：引用类型原子类
+- AtomicMarkableReference：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来，也可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+- AtomicStampedReference ：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+
+AtomicReference 类使用示例
 ```
 AtomicReference<Person> ar = new AtomicReference<Person>();
 Person person = new Person("SnailClimb", 22);
@@ -334,7 +415,8 @@ ar.compareAndSet(person, updatePerson);
 System.out.println(ar.get().getName());
 System.out.println(ar.get().getAge());
 ```
-- AtomicStampedReference 类使用示例
+
+AtomicStampedReference 类使用示例
 ```
 // 实例化、取当前值和 stamp 值
 final Integer initialRef = 0, initialStamp = 0;
@@ -346,10 +428,10 @@ final boolean casResult = asr.compareAndSet(initialRef, newReference, initialSta
 ```
     
 ### 对象的属性修改类型
-- 如果需要原子更新某个类里的某个字段时，需要用到对象的属性修改类型原子类。
-    - AtomicIntegerFieldUpdater:原子更新整型字段的更新器
-    - AtomicLongFieldUpdater：原子更新长整型字段的更新器
-    - AtomicReferenceFieldUpdater：原子更新引用类型里的字段
+如果需要原子更新某个类里的某个字段时，需要用到对象的属性修改类型原子类。
+- AtomicIntegerFieldUpdater:原子更新整型字段的更新器
+- AtomicLongFieldUpdater：原子更新长整型字段的更新器
+- AtomicReferenceFieldUpdater：原子更新引用类型里的字段
 
 ```
 AtomicIntegerFieldUpdater<User> a = AtomicIntegerFieldUpdater.newUpdater(User.class, "age");
@@ -367,13 +449,14 @@ System.out.println(a.getAndIncrement(user));// 22
 
 ### blockingQueue
 #### ArrayBlockingQueue
-- ArrayBlockingQueue 是 BlockingQueue 接口的有界队列实现类，底层采用数组来实现。ArrayBlockingQueue 一旦创建，容量不能改变。其并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。
-- ArrayBlockingQueue 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
+ArrayBlockingQueue 是 BlockingQueue 接口的有界队列实现类，底层采用数组来实现。ArrayBlockingQueue 一旦创建，容量不能改变。其并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。
+
+ArrayBlockingQueue 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
 
 #### LinkedBlockingQueue
-- LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。
+LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。
   - 使用两个ReentrantLock，takeLock和putLock两把锁，分别用于阻塞队列的读写线程，也就是说，读线程和写线程可以同时运行，在多线程高并发场景，应该可以有更高的吞吐量，性能比单锁更高。
   
 #### PriorityBlockingQueue
-- PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
+PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
   - PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为无界队列

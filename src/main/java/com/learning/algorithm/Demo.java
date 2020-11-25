@@ -58,7 +58,7 @@ public class Demo {
          Scanner scanner = new Scanner(System.in);
         Demo demo = new Demo();
          demo.canCompleteCircuit(new int[]{1,2,3,4,5}, new int[]{3,4,5,1,2});
-         String aa = new String();
+
     }
     Map<String, Integer> note = new HashMap<>();
 

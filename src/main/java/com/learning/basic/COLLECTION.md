@@ -311,9 +311,8 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
 1. 计算出hash位置，通过unsafe的包，保证可见性的获取节点。
 2. 若节点的equals方法不匹配，说明存在链表、红黑树或者ForwardingNode。
 3. 调用链表节点、红黑树节点或ForwardingNode对应的查找方法。
-```
 
-```
+
 #### put方法
 - 首先进入一个自旋的for循环
 1. 若未初始化，进行初始化操作。设置sizeCtl为-1，表示正在初始化。

@@ -28,10 +28,10 @@
 
 - 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadstate.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadstate.png)
 
 #### 创建一个线程的开销
-- JVM 在背后帮我们做了哪些事情：
+JVM 在背后帮我们做了哪些事情：
 
 1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
 2. 每一栈帧由一个局部变量数组、返回值、操作数堆栈和常量池组成
@@ -47,16 +47,7 @@
 - 用 Java8 的测试结果，19个线程，预留和提交的大概都是19000+KB，平均每个线程大概需要 1M 左右的大小
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState2.jpg)
-### 创建一个线程的开销
-- JVM 在背后帮我们做了哪些事情：
 
-1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
-2. 每一栈帧由一个局部变量数组、返回值、操作数堆栈和常量池组成
-3. 一些支持本机方法的 jvm 也会分配一个本机堆栈
-4. 每个线程获得一个程序计数器，告诉它当前处理器执行的指令是什么
-5. 系统创建一个与Java线程对应的本机线程
-6. 将与线程相关的描述符添加到JVM内部数据结构中
-7. 线程共享堆和方法区域
 
 ### 创建线程的几种方式
 - callable 接口继承：可以获取线程的返回值。
@@ -112,7 +103,6 @@ class RunnableThread implements Runnable{
 ```
 
 ### 退出线程的方法
-- 与synchronized相关
 1. 线程中使用一个静态的volatile的标志判断退出。
 2. 调用Executors的submit方法，获取线程上下文对象Future，调用cancel方法。（注：无法中断正在试图获取synchronized锁或者试图执行I/O操作的线程）IO的中断，关闭底层资源之后，任务将解除阻塞。如socket连接，调用socket的close 或者 system.in 的输入连接调用in.close().
 3. 调用ExecutorService的shutdown的方法。
@@ -120,15 +110,14 @@ class RunnableThread implements Runnable{
 - 与Runnable相关: 主要是通过调用Thread.interrupt方法实现。
 - 与Callable相关：可以调用Future对象的cancel(true)方法。
 
-
-- ReentrantLock调用锁的lockInterruptibly()方法，
+ReentrantLock调用锁的lockInterruptibly()方法，
 - 1）lock(), 拿不到lock就不罢休，不然线程就一直block。 比较无赖的做法。
 - 2）tryLock()，马上返回，拿到lock就返回true，不然返回false。 比较潇洒的做法。
   带时间限制的tryLock()，拿不到lock，就等一段时间，超时返回false。比较聪明的做法。
 - 3）lockInterruptibly()就稍微难理解一些。
   先说说线程的打扰机制，每个线程都有一个 打扰 标志。这里分两种情况，
   - 线程在sleep或wait,join， 此时如果别的进程调用此进程的 interrupt（）方法，此线程会被唤醒并被要求处理InterruptedException；(thread在做IO操作时也可能有类似行为，见java thread api)
-  - 此线程在运行中， 则不会收到提醒。但是 此线程的 “打扰标志”会被设置， 可以通过isInterrupted()查看并 作出处理。
+  - 此线程在运行中，则不会收到提醒。但是 此线程的 “打扰标志”会被设置， 可以通过isInterrupted()查看并 作出处理。
   - 结论：lockInterruptibly()和上面的第一种情况是一样的， 线程在请求lock并被阻塞时，如果被interrupt，则“此线程会被唤醒并被要求处理InterruptedException”。并且如果线程已经被interrupt，再使用lockInterruptibly的时候，此线程也会被要求处理interruptedException
  
 
@@ -174,14 +163,14 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 .......
 }
 ```
-- corePoolSize：核心线程数量，当有新任务在execute()方法提交时，会执行以下判断：
+corePoolSize：核心线程数量，当有新任务在execute()方法提交时，会执行以下判断：
   - 如果运行的线程少于 corePoolSize，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；
   - 如果线程池中的线程数量大于等于 corePoolSize 且小于 maximumPoolSize，则只有当workQueue满时才创建新的线程去处理任务；
   - 如果设置的corePoolSize 和 maximumPoolSize相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；
   - 如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务
   - 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
 
-- 线程池拒绝策略
+线程池拒绝策略
   - ThreadPoolExecutor.AbortPolicy：抛出 RejectedExecutionException来拒绝新任务的处理。
   - ThreadPoolExecutor.CallerRunsPolicy：调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
     - 简单的说就是用启动threadPool的线程执行新的请求。
@@ -220,23 +209,25 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
   - ArrayBlockingQueue是一个有界缓存等待队列，可以指定缓存队列的大小，当正在执行的线程数等于corePoolSize时，多余的元素缓存在ArrayBlockingQueue队列中等待有空闲的线程时继续执行，当ArrayBlockingQueue已满时，加入ArrayBlockingQueue失败，会开启新的线程去执行，当线程数已经达到最大的maximumPoolSizes时，再有新的元素尝试加入ArrayBlockingQueue时会报错
 
 #### 线程池相关方法
-- execute() vs submit()
-    - execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
-    - submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，
-- shutdown()VS shutdownNow()
-  - shutdown（） :关闭线程池，线程池的状态变为 SHUTDOWN。线程池不再接受新任务了，但是队列里的任务得执行完毕。
-  - shutdownNow（） :关闭线程池，线程的状态变为 STOP。线程池会终止当前正在运行的任务，并停止处理排队的任务并返回正在等待执行的 List。
-- isTerminated() VS isShutdown()
-    - isShutDown 当调用 shutdown() 方法后返回为 true。
-    - isTerminated 当调用 shutdown() 方法后，并且所有提交的任务完成后返回为 true
+execute() vs submit()
+- execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
+- submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，
+shutdown()VS shutdownNow()
+- shutdown（） :关闭线程池，线程池的状态变为 SHUTDOWN。线程池不再接受新任务了，但是队列里的任务得执行完毕。
+- shutdownNow（） :关闭线程池，线程的状态变为 STOP。线程池会终止当前正在运行的任务，并停止处理排队的任务并返回正在等待执行的 List。
+isTerminated() VS isShutdown()
+- isShutDown 当调用 shutdown() 方法后返回为 true。
+- isTerminated 当调用 shutdown() 方法后，并且所有提交的任务完成后返回为 true
   
 #### 线上线程池的配置
 ##### 常规思路
-- CPU密集: CPU密集的意思是该任务需要大量的运算，而没有阻塞，CPU一直全速运行。
-  - CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
-- IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程上运行IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即时在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。
-  - 网络读取，文件读取这类都是 IO 密集型
-- 对于不同性质的任务来说
+CPU密集: CPU密集的意思是该任务需要大量的运算，而没有阻塞，CPU一直全速运行。
+- CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
+  
+IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程上运行IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即时在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。
+- 网络读取，文件读取这类都是 IO 密集型
+  
+对于不同性质的任务来说
   - CPU密集型任务应配置尽可能小的线程，如配置CPU个数的线程数+1。比 CPU 核心数多出来的一个线程是为了防止线程偶发的缺页中断，或者其它原因导致的任务暂停而带来的影响。
     - 计算密（CPU）集型的线程恰好在某时因为发生一个页错误或者因其他原因而暂停，刚好有一个“额外”的线程，可以确保在这种情况下CPU周期不会中断工作。
   - IO密集型任务应配置尽可能多的线程，因为IO操作不占用CPU，不要让CPU闲下来，应加大线程数量，如配置两倍CPU个数+1，
@@ -261,7 +252,7 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 
 > 增加服务器核心数，与线程间的关系
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadpool1.jpg)
 
 > 假设： 1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。
 
@@ -278,14 +269,15 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
         threadPoolExecutor.setCorePoolSize(10);
         threadPoolExecutor.setMaximumPoolSize(10);
 ```
-- 逻辑：
-    1. 首先是参数合法性校验。
-    2. 然后用传递进来的值，覆盖原来的值。
-    3. 判断工作线程是否是大于最大线程数，如果大于，则对空闲线程发起中断请求。
-- 注意点：
+逻辑：
+1. 首先是参数合法性校验。
+2. 然后用传递进来的值，覆盖原来的值。
+3. 判断工作线程是否是大于最大线程数，如果大于，则对空闲线程发起中断请求。
+    
+注意点：
   - 设置核心线程数的时候，同时设置最大线程数。否则若出现核心线程数大于最大线程数，在线程池getTask的任务处理中，会因为该问题导致设置不生效。
   - 由于LinkedBlockingQueue的容量capacity为final类型的，需要动态修改队列的容量可以通过继承该queue声明一个可改变的capacity参数。
-  - 其他的tip
+  - **其他的tip**
     - ```
         // 预启动线程池的核心线程，对线程池进行预热
         threadPoolExecutor.prestartAllCoreThreads();
@@ -297,15 +289,18 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
   - SkyWalking
   - CAT
   - zipkin
-
+  
+##### 相关资料
+美团线程池：https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html
 #### ThreadFactory 线程工厂
-- ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
+ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
   - 对于区分业务的线程池，就可以用到到命名线程工厂的实现，针对不同线程池资源定义不同的线程名
   - 或者设置一个创建守护线程的线程工厂。
-- 优点： 
-    - 很容易改变的类创建的对象或我们创建这些对象的方式。
-    - 很容易用有限的资源限制的创建对象，例如,我们只能有N个对象。
-    - 很容易生成统计数据对创建的对象。
+  
+优点： 
+- 很容易改变的类创建的对象或我们创建这些对象的方式。
+- 很容易用有限的资源限制的创建对象，例如,我们只能有N个对象。
+- 很容易生成统计数据对创建的对象。
 ```
 public final class NamingThreadFactory implements ThreadFactory {
 
@@ -331,20 +326,20 @@ public final class NamingThreadFactory implements ThreadFactory {
 }
 ```
 
-#### ThreadLocal 
-- Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
-  - key key视作ThreadLocal，value为代码中放入的值（实际上key并不是ThreadLocal本身，而是它的一个弱引用）.
+### ThreadLocal 
+Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
+  - key key视作ThreadLocal，value为代码中放入的值（实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference）.
   - ThreadLocalMap的key 为每个新建的ThreadLocal private void set(ThreadLocal<?> key, Object value) { }
-- ThreadMap的实现类似于HashMap，不过其数据结构仅使用数组，定义一个Entry的类，key为 WeakReference引用的ThreadLocal，value为存入的value。
+ThreadMap的实现类似于HashMap，不过其数据结构仅使用数组，定义一个Entry的类，key为 WeakReference引用的ThreadLocal，value为存入的value。
   - key的hash计算：使用黄金分割数*AtomInteger计算，再根据容量确定索引位置。每次新增一个元素，AtomInteger都自动加一。
   - 因为map的key都是threadLocal，所以在不set或remove元素的时候，每次get都是同一个元素的值。
   
-- set元素逻辑：
+set元素逻辑：
   - 进过hash定位到数组索引位置，如果位置无元素直接设值。
   - 如果存在元素对比当前Entry key的hash 是否一致，一致则直接替换元素。
   - 若不一致，向后一次找一个空位。
   
-- TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收的情况
+TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收的情况
   - 在set的时如果遇到Entry是被回收的值，则触发探测性清理。
     - 探测性清理：以当前Entry 向后迭代查找，遇到为null则结束清理，遇到entry为空的值，清空数组位置，size--。非空的entry计算重哈希的位置。
     - 启发性清理：向后递归查找一个过期的位置，找到过期的位置触发探测性清理。
@@ -352,23 +347,24 @@ public final class NamingThreadFactory implements ThreadFactory {
 
 - 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
 
-- 阿里巴巴提供TransmittableThreadLocal组件：父线程与子线程传递threadLocal的方案
-  - InheritableThreadLocal： 父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
+##### 父线程与子线程传递threadLocal的方案
+阿里巴巴提供TransmittableThreadLocal组件：父线程与子线程传递threadLocal的方案
+InheritableThreadLocal： 父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
     - 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
     
 ##### ThreadLocal应用
-- Spring 事务应用
+Spring 事务应用
     - Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
-    - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面，代码如下所示:
+    - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
   
-- 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文（Context），它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
+> 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文（Context），它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
 
 
-#### spring 中的线程池
-- 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
+### spring 中的线程池
+如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
   - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
-- 没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
+没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
   - ```
     @Bean
       public Executor taskExecutor() {
@@ -383,7 +379,7 @@ public final class NamingThreadFactory implements ThreadFactory {
         return executor;
       }
     ```
-- 异步编程的例子：
+##### 异步编程的例子：
   - ```
      @Async
       public CompletableFuture<List<String>> completableFutureTask(String start) {
