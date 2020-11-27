@@ -58,7 +58,7 @@ AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高�
 
 addWaiter ：用于添加节点到队尾
   - 如果队尾节点存在直接CAS添加
-  - 如果队尾节点不存在，使用for自旋先添加空的头节点，再添加当前线程的队尾节点
+  - 如果队尾节点不存在，使用for自旋先**添加空的头节点**，再添加当前线程的队尾节点
   
 ```
 final boolean acquireQueued(final Node node, int arg) {
@@ -122,6 +122,7 @@ unparkSuccessor：资源释放后的队列抢资源逻辑
 #### 条件队列
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/conditionqueue.jpg)
 condition：条件队列的实现，常可以用在生产者-消费者的场景中。
+  - 在所对象中内置一个newCondition方法，用于创建一个条件队列。
   - condition 的方法主要就两个await等待、signal唤醒
 
 条件队列与阻塞队列
@@ -330,25 +331,95 @@ protected final boolean tryAcquire(int acquires) {
     return false;
 }
 ```
+
 ### countdownLatch
-定义：实现了AQS的共享锁，初始化的时候设置了AQS的state的数量
+定义：实现了AQS的共享锁，初始化的时候设置了AQS的state的数量。主要方法是await 和 countdown方法
 
 await实际调用AQS的acquireShared模板方法
 - 如果state为0，表示数全部被countdown了，不阻塞方法。
-- 数量不为0，新建的Node节点添加CLH队列中。更新前缀节点为-1。
+- 数量不为0，新建的Node节点添加CLH队列中，更新前缀节点为-1。
 
-countdown使用自旋加CAS更新状态，状态为0时，更新等待队列头结点为0，唤醒头结点后的第一个待唤醒节点。
-- 唤醒后的节点自己设置为头节点，更新状态为0，并依次唤醒后序节点。若已唤醒其他节点更新状态为propagate。
+countdown方法：CAS+自旋扣减statue状态。当状态为0时，唤醒await等待的线程。
+- countdown使用自旋加CAS更新状态，状态为0时，更新等待队列头结点为0，唤醒头结点后的第一个待唤醒节点。
+- 唤醒后的节点自己设置为头节点，更新状态为0，并依次唤醒后序节点。
+
   
-### CyclicBarrier
-内部使用ReentrantLock 非公平锁，每次await时，加锁扣减数量，使用condition的await等待唤醒。
+### CyclicBarrier(可重复使用的栅栏)
+内部使用ReentrantLock 非公平锁，每次await时，加锁扣减数量，使用condition的await等待唤醒。CountDownLatch 基于 AQS 的共享模式的使用，而 CyclicBarrier 基于 Condition 来实现。
   - 数量扣减为0时，如果有定义栅栏开始的方法则执行，并调用condition的signAll，条件单链表逐个唤醒。
   - generation 代表栅栏重复使用的一代或者一个周期。
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/cyclicBarrier.jpg)
+  
 什么时候栅栏会被打破，总结如下：
   - 中断，如果某个等待的线程发生了中断，那么会打破栅栏，同时抛出 InterruptedException 异常；
   - 超时，打破栅栏，同时抛出 TimeoutException 异常；
   - 指定执行的操作抛出了异常。
  
+```
+ public int await() throws InterruptedException, BrokenBarrierException {
+        try {
+            return dowait(false, 0L);
+        } catch (TimeoutException toe) {
+            throw new Error(toe); // cannot happen
+        }
+    }
+
+ private int dowait(boolean timed, long nanos)
+        throws InterruptedException, BrokenBarrierException,
+               TimeoutException {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            final Generation g = generation;
+            // index 是这个 await 方法的返回值
+            int index = --count;
+             // 如果等于 0，说明所有的线程都到栅栏上了，准备通过
+            if (index == 0) {  // tripped
+                boolean ranAction = false;
+                try {
+                    // 如果在初始化的时候，指定了通过栅栏前需要执行的操作，在这里会得到执行
+                    final Runnable command = barrierCommand;
+                    if (command != null)
+                        command.run();
+                    // 如果 ranAction 为 true，说明执行 command.run() 的时候，没有发生异常退出的情况
+                    ranAction = true;
+                    // !!!!!! 唤醒等待的线程，然后开启新的一代 
+                    nextGeneration();
+                    return 0;
+                } finally {
+                    if (!ranAction)
+                        // 进到这里，说明执行指定操作的时候，发生了异常，那么需要打破栅栏
+                        // 之前我们说了，打破栅栏意味着唤醒所有等待的线程，设置 broken 为 true，重置 count 为 parties
+                        breakBarrier();
+                }
+            }
+            
+            // 如果是最后一个线程调用 await，那么上面就返回了
+            // 下面的操作是给那些不是最后一个到达栅栏的线程执行的
+             for (;;) {
+                try {
+                  // 如果带有超时机制，  调用带超时的 Condition 的 await 方法等待，直到最后一个线程调用 await
+                    if (!timed)
+                        trip.await();
+                    else if (nanos > 0L)
+                        nanos = trip.awaitNanos(nanos);
+                } catch (InterruptedException ie) {
+                    // 如果到这里，说明等待的线程在 await（是 Condition 的 await）的时候被中断
+                    if (g == generation && ! g.broken) {
+                        breakBarrier();
+                        throw ie;
+                    } else {
+                        // We're about to finish waiting even if we had not
+                        // been interrupted, so this interrupt is deemed to
+                        // "belong" to subsequent execution.
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
+              ...
+        }
+```
 ### Semaphore 
 基于AQS区分公平锁与非公平锁
 - acquire：获取锁CAS+ 自旋 获取锁，如果发现资源为0，进入队列等待。
@@ -361,7 +432,26 @@ public Semaphore(int permits, boolean fair) {
 ```
 ### ReentrantReadWriteLock
 内部分别定义了读锁与写锁。
-- 读锁共享锁实现。
+- 读锁共享锁实现。若当前头结点为状态0，则更新状态为propagate，保证共享锁的传播特性。
+  - ```
+     private void doAcquireShared() // 获取共享锁方法
+    
+       protected final int tryAcquireShared(int unused) {
+             
+            Thread current = Thread.currentThread();
+            int c = getState();
+            if (exclusiveCount(c) != 0 &&
+                getExclusiveOwnerThread() != current)
+                return -1;
+            int r = sharedCount(c);
+            if (!readerShouldBlock() &&
+                r < MAX_COUNT &&
+                // 设置最大共享线程数为  SHARED_UNIT    = (1 << 16)  65,536
+                compareAndSetState(c, c + SHARED_UNIT)) {
+           }
+        ...
+        }
+    ```
 - 写锁独占锁实现。
 
 ## Atomic 原子类
@@ -369,9 +459,10 @@ public Semaphore(int permits, boolean fair) {
 
 ### 原子类型
 使用原子的方式更新基本类型
-    - AtomicInteger：整型原子类
-    - AtomicLong：长整型原子类
-    - AtomicBoolean ：布尔型原子类
+- AtomicInteger：整型原子类
+- AtomicLong：长整型原子类
+- AtomicBoolean ：布尔型原子类
+
 - AtomicInteger 类常用方法
 ```
 public final int get() //获取当前的值
@@ -379,15 +470,16 @@ public final int getAndSet(int newValue)//获取当前的值，并设置新的�
 public final int getAndIncrement()//获取当前的值，并自增
 public final int getAndDecrement() //获取当前的值，并自减
 public final int getAndAdd(int delta) //获取当前的值，并加上预期的值
-boolean compareAndSet(int expect, int update) //如果输入的数值等于预期值，则以原子方式将该值设置为输入值（update）
+boolean compareAndSet(int expect, int update) //如果输入的数值等于预期值，则以原子方式将该值设置为输入值（update）,添加失败返回false
 public final void lazySet(int newValue)//最终设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
 ```
 
 ### 数组类型
-- 数组类型:使用原子的方式更新数组里的某个元素
-    - AtomicIntegerArray：整型数组原子类
-    - AtomicLongArray：长整型数组原子类
-    - AtomicReferenceArray ：引用类型数组原子类
+数组类型:使用原子的方式更新数组里的某个元素
+- AtomicIntegerArray：整型数组原子类
+- AtomicLongArray：长整型数组原子类
+- AtomicReferenceArray ：引用类型数组原子类
+
 - AtomicIntegerArray 类常用方法
 ```
 public final int get(int i) //获取 index=i 位置元素的值
@@ -440,7 +532,7 @@ User user = new User("Java", 22);
 System.out.println(a.getAndIncrement(user));// 22
 ```
 
-## 阻塞队列
+## 队列
 - ConcurrentHashMap: 线程安全的 HashMap
 - CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.
 - ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
@@ -460,3 +552,6 @@ LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做
 #### PriorityBlockingQueue
 PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
   - PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为无界队列
+  
+## 相关文章
+- https://www.javadoop.com/post/AbstractQueuedSynchronizer-3

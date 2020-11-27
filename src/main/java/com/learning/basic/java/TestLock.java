@@ -25,16 +25,17 @@ public class TestLock {
     public static void main(String[] args) throws InterruptedException {
 //        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(3,3,1000, TimeUnit.SECONDS,new LinkedBlockingQueue<>(), Executors.defaultThreadFactory());
 //        ReentrantLock lock =new ReentrantLock();
-//        Condition condition = lock.newCondition();
 //        lock.lock();
 //       condition.signal();
 //
 //       condition.signal();
 //
-//        ReentrantReadWriteLock lock =new ReentrantReadWriteLock();
-//        new Thread(new Thread1(lock)).start();
-//        new Thread(new Thread2(lock)).start();
-        new TestLock().test();
+        ReentrantReadWriteLock lock =new ReentrantReadWriteLock();
+
+        new Thread(new Thread2(lock)).start();
+        new Thread(new Thread1(lock)).start();
+        new Thread(new Thread1(lock)).start();
+//        new TestLock().test();
     }
 
     synchronized void test() throws InterruptedException{
@@ -52,8 +53,8 @@ public class TestLock {
         @Override
         public void run() {
             System.out.println("i am interrupted");
+            TimeUnit.SECONDS.sleep(2);
             lock.readLock().lock();
-            TimeUnit.SECONDS.sleep(5);
             System.out.println(this.toString()+ "complete sleep" );
             lock.readLock().unlock();
             System.out.println("out of work");
@@ -68,7 +69,7 @@ public class TestLock {
         @Override
         public void run() {
             lock.writeLock().lock();
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(30);
             System.out.println(this.toString()+ "complete sleep" );
             lock.writeLock().unlock();
 
