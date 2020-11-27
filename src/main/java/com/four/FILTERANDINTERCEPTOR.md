@@ -2,30 +2,31 @@
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/filter2intercept.jpg)
 ## 过滤器 servlet
-- filter（过滤器）作用于在intreceptor(拦截器)之前，不像intreceptor一样依赖于springmvc框架，只需要依赖于serverlet。
-    - 比较原始的一种方法是定义一个类实现javax.servlet.Filter接口
-    - 另一种方法的自定义Filter，继承springframework.web.filter.OncePerRequestFilter，可以对同一个请求，只经过一次过滤
+filter（过滤器）作用于在intreceptor(拦截器)之前，不像intreceptor一样依赖于springmvc框架，只需要依赖于serverlet。
+- 比较原始的一种方法是定义一个类实现javax.servlet.Filter接口
+- 另一种方法的自定义Filter，继承springframework.web.filter.OncePerRequestFilter，可以对同一个请求，只经过一次过滤
 
-- SpringBootApplication 上使用@ServletComponentScan 注解后
-    - Servlet可以直接通过@WebServlet注解自动注册
-      - 常规servlet，可以声明URL，doGet和doPost方法
-    - Filter可以直接通过@WebFilter注解自动注册
-      - @Order里边的数字越小代表越先被该Filter过滤
-      - Filter和FilterChain都是用责任链模式实现
-    - Listener可以直接通过@WebListener 注解自动注册
-      - 监听Servlet生命周期
+SpringBootApplication 上使用@ServletComponentScan 注解后
+- Servlet可以直接通过@WebServlet注解自动注册
+  - 常规servlet，可以声明URL，doGet和doPost方法
+- Filter可以直接通过@WebFilter注解自动注册
+  - @Order里边的数字越小代表越先被该Filter过滤
+  - Filter和FilterChain都是用责任链模式实现
+- Listener可以直接通过@WebListener 注解自动注册
+  - 监听Servlet生命周期
 
 
 ## 拦截器
 ### HandlerInterceptor
-- 拦截器可用于横切关注点，并避免重复的处理程序代码，如日志记录、更改Spring模型中全局使用的参数等。
-- 通过继承HandlerInterceptor接口，重写以下三个方法：
-    - preHandle()： 在实际的handler被执行前但是modelView 还未生成前调用。
-      - 返回boolean类型数据，可以告诉spring 是否执行该方法。
-    - postHandle()：在handler处理请求完成之后，生成视图之前执行。 
-    - afterCompletion()：在请求完全完成且视图也生成了之后调用。
+拦截器可用于横切关注点，并避免重复的处理程序代码，如日志记录、更改Spring模型中全局使用的参数等。
+
+通过继承HandlerInterceptor接口，重写以下三个方法：
+- preHandle()： 在实际的handler被执行前但是modelView 还未生成前调用。
+  - 返回boolean类型数据，可以告诉spring 是否执行该方法。
+- postHandle()：在handler处理请求完成之后，生成视图之前执行。 
+- afterCompletion()：在请求完全完成且视图也生成了之后调用。
     
-- spring mvc的拦截器是只拦截controller而不拦截jsp,html 页面文件的。这就用到过滤器filter了，filter是在servlet前执行的，你也可以理解成过滤器中包含拦截器，一个请求过来 ，先进行过滤器处理，看程序是否受理该请求 。 过滤器放过后 ， 程序中的拦截器进行处理 。
+spring mvc的拦截器是只拦截controller而不拦截jsp,html 页面文件的。这就用到过滤器filter了，filter是在servlet前执行的，你也可以理解成过滤器中包含拦截器，一个请求过来 ，先进行过滤器处理，看程序是否受理该请求 。 过滤器放过后 ， 程序中的拦截器进行处理 。
 1. 拦截器不依赖servlet容器，过滤器依赖；
 2. 拦截器是基于java反射机制来实现的，过滤器基于回调
 
@@ -82,9 +83,9 @@ protected void doDispatch(HttpServletRequest request, HttpServletResponse respon
 
 
 ### MethodInterceptor
-- MethodInterceptor是AOP项目中的拦截器，它拦截的目标是方法，即使不是controller中的方法。实现MethodInterceptor拦截器大致也分为两种，一种是实现MethodInterceptor接口，另一种利用AspectJ的注解或配置。
+MethodInterceptor是AOP项目中的拦截器，它拦截的目标是方法，即使不是controller中的方法。实现MethodInterceptor拦截器大致也分为两种，一种是实现MethodInterceptor接口，另一种利用AspectJ的注解或配置。
 
-- MethodInterceptor是AOP项目中的拦截器，它拦截的目标是方法，即使不是controller中的方法。实现MethodInterceptor拦截器大致也分为两种，一种是实现MethodInterceptor接口，另一种利用AspectJ的注解或配置。
+MethodInterceptor是AOP项目中的拦截器，它拦截的目标是方法，即使不是controller中的方法。实现MethodInterceptor拦截器大致也分为两种，一种是实现MethodInterceptor接口，另一种利用AspectJ的注解或配置。
 
 1. 实现MethodInterceptor接口：实际见项目
 

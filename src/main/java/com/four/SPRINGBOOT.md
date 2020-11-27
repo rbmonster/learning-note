@@ -1,11 +1,11 @@
 #Spring boot 
 
 ## Spring boot start
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/springBootLoadother.png)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/springBootLoadother.png)
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/springLoad.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/springLoad.jpg)
 
-- spring 构造方法：
+## spring 构造方法
 ```
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
@@ -21,7 +21,7 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
     this.mainApplicationClass = deduceMainApplicationClass();
 }
 ```
-- Spring boot的run方法
+## Spring boot的run方法
 ```
     // spring boot start
 	public ConfigurableApplicationContext run(String... args) {
@@ -74,7 +74,7 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 	}
 ```
 
-- prepare准备上下文
+## prepare准备上下文
 ```
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
@@ -119,7 +119,8 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 	}
 ```
 
-- 调用上下文的refresh方法
+## refresh方法
+调用上下文的refresh方法
   - AbstractRefreshableApplicationContext:这个类在每次调用refresh方法的时候都会产生一个新的beanfactory实例(通常是，但是不是必须的)。这个应用上下文会通过一系列的配置文件去加载BeanDefinition。在调用refresh方法的时候才会创建内部持有的BeanFacoty实例(可以参见该类中的refreshBeanFactory方法）
   - GenericApplicationContext:这个类内部持有唯一的一个DefaultListableBeanFactory实例，而且相较于其它ApplicationContext的实现类，这个类在创建的时候就会有一个BeanFactory的实例，意思就是在refresh方法调用前，内部持有的BeanFactory实例就已经创建，且这个类从开始到最终都是一个BeanFacoty实例。
 ```
@@ -217,33 +218,34 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 
 ---
 
-### spring boot 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/BootStrapLoad.png)
-- Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application,
-    - application 配置文件这个容易理解，主要用于 Spring Boot 项目的自动化配置。
-    - bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。
-    - bootstrap 主要用于从额外的资源来加载配置信息，还可以在本地外部配置文件中解密属性。
-    - 这两个上下文共用一个环境，它是任何Spring应用程序的外部属性的来源。
-    - bootstrap 里面的属性会优先加载，它们默认也不能被本地相同配置覆盖。
-    - boostrap 由父 ApplicationContext 加载，比 applicaton 优先加载
-    - boostrap 里面的属性不能被覆盖
+## spring boot相关知识
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/BootStrapLoad.png)
+Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application,
+- application 配置文件这个容易理解，主要用于 Spring Boot 项目的自动化配置。
+- bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。
+- bootstrap 主要用于从额外的资源来加载配置信息，还可以在本地外部配置文件中解密属性。
+- 这两个上下文共用一个环境，它是任何Spring应用程序的外部属性的来源。
+- bootstrap 里面的属性会优先加载，它们默认也不能被本地相同配置覆盖。
+- boostrap 由父 ApplicationContext 加载，比 applicaton 优先加载
+- boostrap 里面的属性不能被覆盖
 
-- bootstrap 配置文件有以下几个应用场景。
-  - 使用 Spring Cloud Config 配置中心时，这时需要在 bootstrap 配置文件中添加连接到配置中心的配置属性来加载外部配置中心的配置信息；
-  - 一些加密/解密的场景；
+bootstrap 配置文件有以下几个应用场景。
+1. 使用 Spring Cloud Config 配置中心时，这时需要在 bootstrap 配置文件中添加连接到配置中心的配置属性来加载外部配置中心的配置信息；
+2. 一些加密/解密的场景；
 
 
 
-- Spring 与其他形式的重写应用程序上下文属性相比，application properties属性文件具有最低的优先级。Spring Boot提供了不同的方法来覆盖这些属性。
-    - 我们可以在代码、命令行参数、ServletConfig init参数、ServletContext init参数、Java系统属性、操作系统变量和应用程序属性文件中覆盖这些参数。
-    - 倾向于将可以在应用程序上下文中覆盖的属性分组:
-        - 核心属性(日志属性、线程属性)
-        - 集成属性(RabbitMQ属性，ActiveMQ属性)
-        - Web属性(HTTP属性，MVC属性)
-        - 安全属性(LDAP属性、OAuth2属性)
+Spring 与其他形式的重写应用程序上下文属性相比，application properties属性文件具有最低的优先级。Spring Boot提供了不同的方法来覆盖这些属性。
+- 我们可以在代码、命令行参数、ServletConfig init参数、ServletContext init参数、Java系统属性、操作系统变量和应用程序属性文件中覆盖这些参数。
+- 倾向于将可以在应用程序上下文中覆盖的属性分组:
+    - 核心属性(日志属性、线程属性)
+    - 集成属性(RabbitMQ属性，ActiveMQ属性)
+    - Web属性(HTTP属性，MVC属性)
+    - 安全属性(LDAP属性、OAuth2属性)
 
-- bootstrap Context：负责从外部源加载配置属性，以及用于在本地外部配置文件中解密属性。
+bootstrap Context：负责从外部源加载配置属性，以及用于在本地外部配置文件中解密属性。
   - 要记住的另一个关键点是，这两个上下文共享环境，而环境是任何Spring应用程序的外部属性的源。
-- bootstrap Context 加载配置的源可以是文件系统，甚至是git存储库。这些服务使用它们的spring-cloud-config-client依赖关系来访问配置服务器。
+
+bootstrap Context 加载配置的源可以是文件系统，甚至是git存储库。这些服务使用它们的spring-cloud-config-client依赖关系来访问配置服务器。
 
 

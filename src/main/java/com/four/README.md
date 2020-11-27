@@ -7,16 +7,17 @@
   2. 依赖注入：将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。简化开发及对象的创建。
   
 ### AOP
-- AOP(Aspect-Oriented Programming:面向切面编程)
+AOP(Aspect-Oriented Programming:面向切面编程)
   - 能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
-- Spring AOP就是基于动态代理的，如果要代理的对象，实现了某个接口，那么Spring AOP会使用JDK Proxy，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候Spring AOP会使用Cglib 。
+
+Spring AOP就是基于动态代理的，如果要代理的对象，实现了某个接口，那么Spring AOP会使用JDK Proxy，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候Spring AOP会使用Cglib 。
 #### aop切面的相关方法   
 https://www.cnblogs.com/zhangxufeng/p/9160869.html
 
 ### Spring AOP 和 AspectJ AOP 有什么区别？
-- Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
-  - 如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，基于字节码的修改实现代理，它比Spring AOP 快很多。
-  - @EnableAspectJAutoProxy + @Configuration 用于加载@AspectJ的类。但是在Spring Boot项目中，我们不必显式使用@EnableAspectJAutoProxy。 如果Aspect或Advice位于类路径中，则有一个专用的AopAutoConfiguration启用Spring的AOP支持。
+Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
+- 如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，基于字节码的修改实现代理，它比Spring AOP 快很多。
+- @EnableAspectJAutoProxy + @Configuration 用于加载@AspectJ的类。但是在Spring Boot项目中，我们不必显式使用@EnableAspectJAutoProxy。 如果Aspect或Advice位于类路径中，则有一个专用的AopAutoConfiguration启用Spring的AOP支持。
 
 
 ## Spring 中的 bean 的作用域有哪些?
@@ -30,14 +31,15 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
 - 见声明周期详解
 
 ## Spring 循环依赖
-- 对于普通的循环依赖如A 依赖B， B依赖A。在初始化A的时候，会实例化B，实例化B发现需要A的引用，这时候通过缓存返回A的引用。虽然A还未初始化完毕，但是由于是对象的引用，所以最终初始化完成的时候，两个对象均是初始化完整的。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/iocAutowire.png)
-- getSingleton(beanName, true)这个方法实际上就是到缓存中尝试去获取Bean，整个缓存分为三级
-  - singletonObjects，一级缓存，存储的是所有创建好了的单例Bean
-  - earlySingletonObjects，完成实例化，但是还未进行属性注入及初始化的对象
-  - singletonFactories，提前暴露的一个单例工厂（一个获取对象的函数表达式），二级缓存中存储的就是从这个工厂中获取到的对象。
+对于普通的循环依赖如A 依赖B， B依赖A。在初始化A的时候，会实例化B，实例化B发现需要A的引用，这时候通过缓存返回A的引用。虽然A还未初始化完毕，但是由于是对象的引用，所以最终初始化完成的时候，两个对象均是初始化完整的。
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/iocAutowire.png)
 
-- 循环依赖装载流程：
+getSingleton(beanName, true)这个方法实际上就是到缓存中尝试去获取Bean，整个缓存分为三级
+- singletonObjects，一级缓存，存储的是所有创建好了的单例Bean
+- earlySingletonObjects，完成实例化，但是还未进行属性注入及初始化的对象
+- singletonFactories，提前暴露的一个单例工厂（一个获取对象的函数表达式），二级缓存中存储的就是从这个工厂中获取到的对象。
+
+循环依赖装载流程：
   - 条件1.出现循环依赖的Bean必须要是单例
   - 条件2.依赖注入的方式不能全是构造器注入的方式
   1. 实例化A对象，添加提前暴露的对象的方法到singletonFactory
@@ -46,26 +48,33 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
   4. 若A为AOP代理，此时二级缓存中的对象为代理对象A。
   5. B初始化完成后，继续A的对象填充及初始化，填充完成后。从二级缓存中获取对象，若存在对象，说明发生了循环引用，返回二级缓存的对象。
 
-- 如果单单使用二级缓存，为解决循环引用问题，那么二级缓存存储的就是为进行属性注入的对象。这与Spring生命周期的设计相悖。
-- Spring结合AOP跟Bean的生命周期本身就是通过AnnotationAwareAspectJAutoProxyCreator这个后置处理器来完成的，在这个后置处理的postProcessAfterInitialization方法中对初始化后的Bean完成AOP代理。如果出现了循环依赖，那没有办法，只有给Bean先创建代理，但是没有出现循环依赖的情况下，设计之初就是让Bean在生命周期的最后一步完成代理而不是在实例化后就立马完成代理。
+### 相关问题(加深理解)
+如果单单使用二级缓存，为解决循环引用问题，那么二级缓存存储的就是为进行属性注入的对象。这与Spring生命周期的设计相悖。
+- Spring结合AOP跟Bean的生命周期本身就是通过AnnotationAwareAspectJAutoProxyCreator这个后置处理器来完成的，在这个后置处理的postProcessAfterInitialization方法中对初始化后的Bean完成AOP代理。
+  - 如果出现了循环依赖，那没有办法，只有给Bean先创建代理。
+  - 但是如果没有出现循环依赖的情况下，设计之初就是让Bean在生命周期的最后一步完成代理而不是在实例化后就立马完成代理。
 
-
-- 三级缓存为什么要使用工厂而不是直接使用引用？换而言之，为什么需要这个三级缓存，直接通过二级缓存暴露一个引用不行吗？
-  - 这个工厂的目的在于**延迟对实例化阶段生**成的对象的代理，只有真正发生循环依赖的时候，才去提前生成代理对象，否则只会创建一个工厂并将其放入到三级缓存中，但是不会去通过这个工厂去真正创建对象。
+三级缓存为什么要使用工厂而不是直接使用引用？换而言之，为什么需要这个三级缓存，直接通过二级缓存暴露一个引用不行吗？
+- 这个工厂的目的在于**延迟对实例化阶段生成对象的代理**，只有真正发生循环依赖的时候，才去提前生成代理对象，否则只会创建一个工厂并将其放入到三级缓存中，但是不会去通过这个工厂去真正创建对象。
+  
 - 三级缓存引入对于对象延迟实例化的体现。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/iocAutowire.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/iocAutowire.jpg)
 
 - 不同注入方式对于循环引用的影响
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/iocAutowire3.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/iocAutowire3.jpg)
+
+### 相关文章
+- https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ
 
 ## Spring Transaction
-- Spring 框架中，事务管理相关最重要的 3 个接口如下：
-    - PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心。
-    - TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
-    - TransactionStatus： 事务运行状态。
-- 注解@EnableTransactionManagement 实现事务相关的Bean加载（现在自动配置使用AutoConfiguration实现）
-- TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
-- 实现原理为使用AOP+ThreadLocal实现。
+Spring 框架中，事务管理相关最重要的 3 个接口如下：
+- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心。
+- TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
+- TransactionStatus： 事务运行状态。
+
+1. 注解@EnableTransactionManagement 实现事务相关的Bean加载（现在自动配置使用AutoConfiguration实现）
+2. TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
+3. 实现原理为使用AOP+ThreadLocal实现。
 
 #### 注解 @Transactional 的声明式事务管理
 - Propagation.REQUIRED：如果当前存在事务，则加入该事务，如果当前不存在事务，则创建一个新的事务。
@@ -86,14 +95,14 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
 
 ####  同一个方法无事务的方法调用有事务的方法会出现什么情况？
 - 当这个方法被同一个类调用的时候，spring无法将这个方法加到事务管理中。只有在代理对象之间进行调用时，可以触发切面逻辑。
-1.使用 ApplicationContext 上下文对象获取该对象;
-2.使用 AopContext.currentProxy() 获取代理对象,但是需要配置exposeProxy=true
+1. 使用 ApplicationContext 上下文对象获取该对象;
+2. 使用 AopContext.currentProxy() 获取代理对象,但是需要配置exposeProxy=true
 
 
 
 ## Spring boot 自动配置的加载流程
-- postProcessor是有执行等级之分的。
-- invokeBeanFactoryPostProcessors(beanFactory);
+> 在上下文初始化中invoke**PostProcessor是有执行等级之分的。
+> 自动配置加载主要在上下文初始化的invokeBeanFactoryPostProcessors(beanFactory);
 1. Spring boot的配置自动加载主要通过@SpringBootApplication 中的 @EnableAutoConfiguration注解实现
 2. 注解中@Import(AutoConfigurationImportSelector.class) 的类。借助@Import的支持，收集和注册特定场景相关的bean定义。
 3. 该AutoConfigurationImportSelector类的getAutoConfigurationEntry方法会扫描所有包下spring-autoconfigure-metadata.properties的属性
@@ -101,8 +110,7 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
 5. 再执行初始化方法。
 
 ## Spring mvc 工作原理
-- 流程说明（重要）：
-
+流程说明（重要）：
 1. 客户端（浏览器）发送请求，直接请求到 DispatcherServlet。
 2. DispatcherServlet 根据请求信息调用 HandlerMapping，解析请求对应的 Handler。
 3. 解析到对应的 Handler（也就是我们平常说的 Controller 控制器）后，开始由 HandlerAdapter 适配器处理。
@@ -115,13 +123,13 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
 
 
 ## @RestController vs @Controller
-- @RestController
+@RestController
   - ```
     @Controller
     @ResponseBody
     public @interface RestController { ... }
     ```
-- 单独使用 @Controller 不加 @ResponseBody的话返回一个视图，这种情况属于比较传统的Spring MVC 的应用
+> 单独使用 @Controller 不加 @ResponseBody的话返回一个视图，这种情况属于比较传统的Spring MVC 的应用
 - @ResponseBody 注解的作用是将 Controller 的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中，通常用来返回 JSON 或者 XML 数据，返回 JSON 数据的情况比较多。
 
 ## spring中的设计模式
@@ -139,11 +147,11 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
 1. @Autowired注解是按类型装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它required属性为false。可以结合@Qualifier注解一起使用。
 2. @Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上，但它默认按名称装配。默认按byName自动注入，也提供按照byType 注入；
 3. @Resources按名字，是JDK的，@Autowired按类型，是Spring的。
-4. 处理这2个注解的BeanPostProcessor不一样CommonAnnotationBeanPostProcessor是处理@ReSource注解的AutoWiredAnnotationBeanPostProcessor是处理@AutoWired注解的
+4. 处理这2个注解的BeanPostProcessor不一样CommonAnnotationBeanPostProcessor是处理@Resource注解的，AutoWiredAnnotationBeanPostProcessor是处理@AutoWired注解的
 
 
 #### @PostConstruct和@PreDestroy
-- @PostConstruct和@PreDestroy 是两个作用于 Servlet 生命周期的注解，被这两个注解修饰的方法可以保证在整个 Servlet 生命周期只被执行一次，即使 Web 容器在其内部中多次实例化该方法所在的 bean。
+@PostConstruct和@PreDestroy 是两个作用于 Servlet 生命周期的注解，被这两个注解修饰的方法可以保证在整个 Servlet 生命周期只被执行一次，即使 Web 容器在其内部中多次实例化该方法所在的 bean。
   - @PostConstruct : 用来修饰方法，标记在项目启动的时候执行这个方法,一般用来执行某些初始化操作比如全局配置。PostConstruct 注解的方法会在构造函数之后执行,Servlet 的init()方法之前执行。
   - @PreDestroy : 当 bean 被 Web 容器的时候被调用，一般用来释放 bean 所持有的资源。。@PreDestroy 注解的方法会在Servlet 的destroy()方法之前执行。
   - 实现Spring 提供的 InitializingBean和 DisposableBean接口的效果和使用@PostConstruct和@PreDestroy 注解的效果一样
@@ -167,7 +175,7 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
   }
   ```
 #### Spring 的异常处理
-- 使用 @ControllerAdvice和@ExceptionHandler处理全局异常
+使用 @ControllerAdvice和@ExceptionHandler处理全局异常
   - ```
     @RestControllerAdvice(basePackages = {"com.design.apidesign.controller"}) 
     public class ExceptionControllerAdvice { 
@@ -178,7 +186,7 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
     }
     
     ```
-- @ResponseStatusException：通过 ResponseStatus注解简单处理异常的方法（将异常映射为状态码）。
+@ResponseStatusException：通过 ResponseStatus注解简单处理异常的方法（将异常映射为状态码）。
   - ```
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public class ResourseNotFoundException2 extends RuntimeException {
@@ -243,6 +251,6 @@ https://www.cnblogs.com/zhangxufeng/p/9160869.html
   ```
   
 ####  @Component 和 @Bean 的区别是什么？
-- 作用对象不同: @Component 注解作用于类，而@Bean注解作用于方法。
+作用对象不同: @Component 注解作用于类，而@Bean注解作用于方法。
   - @Component通常是通过类路径扫描来自动侦测以及自动装配到Spring容器中（我们可以使用 @ComponentScan 注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中）。@Bean 注解通常是我们在标有该注解的方法中定义产生这个 bean,@Bean告诉了Spring这是某个类的示例，当我需要用它的时候还给我。
   - @Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册bean。比如当我们引用第三方库中的类需要装配到 Spring容器时，则只能通过 @Bean来实现。

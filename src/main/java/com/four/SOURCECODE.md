@@ -1,8 +1,7 @@
 # Spring源码
 
-
 ## Spring IOC初始化
-- 构造方法：this.reader = new AnnotatedBeanDefinitionReader(this);
+构造方法：this.reader = new AnnotatedBeanDefinitionReader(this);
   - AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
   - 默认添加几个Processor：
     - internalConfigurationAnnotationProcessor
@@ -11,7 +10,7 @@
     - internalEventListenerProcessor
     - internalEventListenerFactory
 ### invokeBeanFactoryPostProcessors(beanFactory);
-- PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
+PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
   - 获取到ConfigurationClassPostProcessor， 并调用postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) 方法
   - ConfigurationClassParser.doProcessConfigurationClass ：扫描注解的地方
     - // Process any @Import annotations // processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
@@ -43,12 +42,12 @@
 - AutoConfigurationImportSelector 加载配置，先看Exclude注解有没有需要过滤的，在执行过滤器过滤出需要加载的autoConfiguration
 
 ## Spring transaction
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/transaction/picture/springTransaction.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/springTransaction.jpg)
 
-- Spring 框架中，事务管理相关最重要的 3 个接口如下：
-    - PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心。
-    - TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
-    - TransactionStatus： 事务运行状态。
+Spring 框架中，事务管理相关最重要的 3 个接口如下：
+- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心。
+- TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
+- TransactionStatus： 事务运行状态。
 - 注解@EnableTransactionManagement 实现事务相关的Bean加载（现在自动配置使用AutoConfiguration实现）
 - TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
 - 实现原理为使用AOP+Threadlocal实现。
