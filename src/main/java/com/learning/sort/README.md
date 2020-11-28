@@ -16,7 +16,8 @@
   - 基数排序
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/sort/picture/basicSort.jpg)
-
+- In-place: 内部排序
+- out-place: 外部排序
 - 相关资料：https://www.jianshu.com/p/47170b1ced23
 
 ## 冒泡排序
@@ -46,7 +47,7 @@
 
 ## 快速排序
 
-- 挖坑法
+### 挖坑法
 ```
 public void quickSort(int[] arr, int start, int end) {
         if (start> end){
@@ -69,6 +70,33 @@ public void quickSort(int[] arr, int start, int end) {
         quickSort(arr,start, i-1);
         quickSort(arr, i+1, end);
     }
+```
+### 左右指针交换
+```
+/**
+ * 左右指针法
+ * @param arr
+ * @param left
+ * @param right
+ */
+public static void sort(int[] arr, int left, int right) {
+    if (left > right) return;
+    int pos = partition(arr, left, right);
+    sort(arr, left, pos - 1);
+    sort(arr, pos + 1, right);
+}
+
+public static int partition(int[] arr, int left, int right) {
+    int tmp = arr[left];
+    int i = left, j = right;
+    while (i < j) {
+        while (i < j && arr[i] <= tmp) i++;
+        while (i < j && arr[j] >= tmp) j--;
+        swap(arr, i, j);
+    }
+    swap(arr, i, left);
+    return i;
+}
 ```
 
 ### 快排常见优化
@@ -540,3 +568,13 @@ for (int i = left, j = i; i < right; j = ++i) {
         }
     }
 ```
+
+## 双轴快排、二分插入排序、TimeSort(TODO)
+TimeSort： 一个稳定的具有自适应性的MergeSort算法
+- [参考资料](https://mp.weixin.qq.com/s?__biz=MzI2MTY0OTg2Nw==&mid=2247483816&idx=1&sn=079af3d70efcb68efa7400f09decb59c&chksm=ea56650cdd21ec1ace7c8fd168d62feb636e4b32f9a4d90329fe479489d8e7a70e612df8920b&token=2074049324&lang=zh_CN#rd)
+
+二路插入排序：
+ - [参考资料](https://mp.weixin.qq.com/s/TRO3FOKT90Mpvn3hQWVBAQ)
+
+双轴快排：
+- [参考资料](https://www.cnblogs.com/nullzx/p/5880191.html)
