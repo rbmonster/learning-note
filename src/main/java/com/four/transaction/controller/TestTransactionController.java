@@ -45,7 +45,7 @@ public class TestTransactionController implements ApplicationContextAware {
         return jdbcTemplate.queryForList(sql);
     }
 
-    @Transactional(propagation = Propagation.NEVER)
+    @Transactional(propagation = Propagation.REQUIRED)
     @GetMapping("/update")
     public String update() {
         Object testTransactionController = applicationContext.getBean("testTransactionController");
@@ -55,8 +55,8 @@ public class TestTransactionController implements ApplicationContextAware {
         String sql = "INSERT INTO `demo` (`demo_id`, `demo_code`, `demo_name`, `status`, `status_desc`, `demo_qty`, `demo_rate`, `start_date`, `end_date`, `create_time`, `create_by`, `create_by_name`, `update_time`, `update_by`, `update_by_name`, `version`) VALUES (?, 11, ?, '1', '123', '12', '12.000', '2020-11-19 19:36:07', '2020-11-07 19:36:11', '2020-11-07 19:36:18', '123', '123', NULL, NULL, NULL, '0') ";
         Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
         jdbcTemplate.update(sql, objects);
-        throw new RuntimeException();
-//        return "123";
+//        throw new RuntimeException();
+        return "123";
 //        testTransaction();F
 //        throw new RuntimeException("123123");
     }

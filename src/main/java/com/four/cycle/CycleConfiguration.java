@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * <pre>
  * @Description:
- * TODO
+ * 循环引用
  * </pre>
  *
  * @version v1.0

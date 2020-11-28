@@ -76,7 +76,9 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 2. TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
 3. 实现原理为使用AOP+ThreadLocal实现。
 
-#### 注解 @Transactional 的声明式事务管理
+> 详细可见spring 源码部分
+
+### @Transactional 的声明式事务管理
 - Propagation.REQUIRED：如果当前存在事务，则加入该事务，如果当前不存在事务，则创建一个新的事务。
 - Propagation.SUPPORTS：如果当前存在事务，则加入该事务；如果当前不存在事务，则以非事务的方式继续运行。
 - Propagation.MANDATORY：如果当前存在事务，则加入该事务；如果当前不存在事务，则抛出异常。
@@ -86,14 +88,14 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 - Propagation.NEVER：以非事务的方式运行，如果当前存在事务，则抛出异常。
 - Propagation.NESTED：如果没有，就新建一个事务；如果有，就在当前事务中嵌套其他事务。
   
-#### spring transaction的隔离级别
+### spring transaction的隔离级别
 - TransactionDefinition.ISOLATION_DEFAULT :使用后端数据库默认的隔离级别，MySQL 默认采用的 REPEATABLE_READ 隔离级别 Oracle 默认采用的 READ_COMMITTED 隔离级别.
 - TransactionDefinition.ISOLATION_READ_UNCOMMITTED :最低的隔离级别，使用这个隔离级别很少，因为它允许读取尚未提交的数据变更，可能会导致脏读、幻读或不可重复读
 - TransactionDefinition.ISOLATION_READ_COMMITTED : 允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复读仍有可能发生
 - TransactionDefinition.ISOLATION_REPEATABLE_READ : 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。
 - TransactionDefinition.ISOLATION_SERIALIZABLE : 最高的隔离级别，完全服从 ACID 的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会用到该级别。
 
-####  同一个方法无事务的方法调用有事务的方法会出现什么情况？
+###  同一个方法无事务的方法调用有事务的方法会出现什么情况？
 - 当这个方法被同一个类调用的时候，spring无法将这个方法加到事务管理中。只有在代理对象之间进行调用时，可以触发切面逻辑。
 1. 使用 ApplicationContext 上下文对象获取该对象;
 2. 使用 AopContext.currentProxy() 获取代理对象,但是需要配置exposeProxy=true

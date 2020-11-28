@@ -21,6 +21,13 @@ public class MergeSort {
         System.out.println(Arrays.toString(result));
     }
 
+    /**
+     * 递归归并排序
+     * @param nums
+     * @param start
+     * @param end
+     * @return
+     */
     public static int[] sort(int[] nums, int start, int end){
         if (start == end){
             return new int[]{nums[start]};
@@ -42,6 +49,11 @@ public class MergeSort {
         return result;
     }
 
+    /**
+     * 非递归归并
+     * @param array
+     * @return
+     */
     public static  int[] sort2(int[] array) {
         int len = array.length;
         int[] result = new int[len];

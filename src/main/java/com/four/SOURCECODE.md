@@ -1,6 +1,6 @@
 # Spring源码
 
-## Spring IOC初始化
+## Spring IOC初始化(暂时不看)
 构造方法：this.reader = new AnnotatedBeanDefinitionReader(this);
   - AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
   - 默认添加几个Processor：
@@ -53,8 +53,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 - 实现原理为使用AOP+Threadlocal实现。
 
 ### TransactionAspectSupport
-
-- transactionInfoHolder：定义一个ThreadLocal，Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
+transactionInfoHolder：定义一个ThreadLocal，Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
 - @Transaction方法调用链条：
 ```
 // 方法拦截器：TransactionInterceptor.invoke
@@ -147,30 +146,44 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 - Spring 事务处理 中，可以通过设计一个 TransactionProxyFactoryBean 来使用 AOP 功能，通过这个 TransactionProxyFactoryBean 可以生成 Proxy 代理对象
 
 ### @Transactional失效场景
-- private方法不会生效，JDK中必须是接口，接口中不可能有private方法，protect方法的话，也不生效。原因是spring内部判断方法修饰符如果不是public不生成事务拦截代理类。
-- CGLib代理的时候，final方法不会生效，抛NullPointException，cglib与JDK内部机制。
+1. 注解导致的事务失效：
+    1. @Transactional 注解属性 propagation 设置错误，设置了以非事务的状态运行
+    2. @Transactional  注解属性 rollbackFor 设置错误，实际抛出的错误跟设置不一致
+2. 方法修饰符导致的事务失效
+    1. @Transactional 应用在非 public 修饰的方法上，在事务方法拦截执行中，非public方法不执行。
+       -  ```
+            @Nullable
+            protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
+                // Don't allow no-public methods as required.
+                if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
+                    return null;
+                }
+            ...
+            }
+            ```
+    2. 在动态代理层面，若为也需要代理的方法为public才能正常代理。如JDK动态代理，通过接口代理，接口方法默认都是public。而Cglib基于类的代理中会默认判断是否为public方法。
+      - ```
+         public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+            ...
+            TargetSource targetSource = this.advised.getTargetSource();
+            try {
+                ...
+                // 拦截链为空，且方法为public 直接调用
+                if (chain.isEmpty() && Modifier.isPublic(method.getModifiers())) {
+                    Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
+                    retVal = methodProxy.invoke(target, argsToUse);
+                }
+            ···
+         }
+        ```
+3. 同一个类中方法调用，导致@Transactional失效，在当前的bean中非事务方法调用事务方法为什么不生效？
+    - 当进行方法拦截的时候，方法拦截器首先获取当前动态代理的对象所代理的原始对象。如果判断当前的方法比如save方法没有Advice(增强)，则直接调用原对象的方法，即这个时候调用的是FirstApp.save方法。
+4. 异常被 catch 导致@Transactional失效
+5. 数据库引擎不支持事务
 
-- @Transactional 应用在非 public 修饰的方法上
-  - ```
-    @Nullable
-    protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
-        // Don't allow no-public methods as required.
-        if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
-            return null;
-        }
-    ...
-    }
-    ```
-    
-    
-- 同一个类中方法调用，导致@Transactional失效，在当前的bean中非事务方法调用事务方法为什么不生效？
-  - 当进行方法拦截的时候，方法拦截器首先获取当前动态代理的对象所代理的原始对象。如果判断当前的方法比如save方法没有Advice(增强)，则直接调用原对象的方法，即这个时候调用的是FirstApp.save方法。
+### 相关文章
+- https://juejin.cn/post/6844903779188342798
 
-
-- @Transactional 注解属性 propagation 设置错误，设置了以非事务的状态运行
-- @Transactional  注解属性 rollbackFor 设置错误，实际抛出的错误跟设置不一致
-- 异常被 catch 导致@Transactional失效
-- 数据库引擎不支持事务
 
 ## Spring AOP
 ### HandlerAdapter与InvocableHandlerMethod

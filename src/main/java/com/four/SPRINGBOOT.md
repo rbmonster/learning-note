@@ -3,7 +3,7 @@
 ## Spring boot start
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/springBootLoadother.png)
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/springLoad.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/spingLoad.jpg)
 
 ## spring 构造方法
 ```

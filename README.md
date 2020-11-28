@@ -26,6 +26,7 @@
 
 ### 算法
 - [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/algorithm)
+- [排序算法](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/sort)
 
 ### 其他
 - [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/MYBATIS.md)

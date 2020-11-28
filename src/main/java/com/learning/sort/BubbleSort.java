@@ -19,31 +19,36 @@ import java.util.Arrays;
 public class BubbleSort {
 
     public static void main(String[] args) {
-        int [] array = {12,28,83,4,25,26,25,2,25,25,25,12};
-        new BubbleSort().bubbleSort2(array);
+        int[] array = {12, 28, 83, 4, 25, 26, 25, 2, 25, 25, 25, 12};
+        bubbleSort2(array);
         System.out.println(Arrays.toString(array));
     }
 
-
-    public void bubbleSort(int[] array) {
-        for (int i = 0; i< array.length ;i++) {
-            for (int j=0; j<array.length -i -1; j++) {
-                if (array[j]> array[j+1]){
-                    int temp = array[j];
-                    array[j] = array[j+1];
-                    array[j+1] = temp;
+    /**
+     * 外层循环表示当前获取第几个最大的数
+     * 内层循环表示进行排序的区间
+     * @param nums
+     */
+    public static void sort(int[] nums) {
+        int len = nums.length;
+        for (int i = 1; i <= len; i++) {
+            for (int j = 0; j < len - i; j++) {
+                if (nums[j] > nums[j + 1]) {
+                    int tmp = nums[j];
+                    nums[j] = nums[j + 1];
+                    nums[j + 1] = tmp;
                 }
             }
         }
     }
 
-    public void bubbleSort2(int [] array){
-        for(int i= array.length -1;i>=0 ;i--){
-            for (int j=0; j < i; j++) {
-                if (array[j]> array[j+1]){
+    public static void bubbleSort2(int[] array) {
+        for (int i = array.length - 1; i >= 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (array[j] > array[j + 1]) {
                     int temp = array[j];
-                    array[j] = array[j+1];
-                    array[j+1] = temp;
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
                 }
             }
         }

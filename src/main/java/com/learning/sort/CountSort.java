@@ -42,12 +42,10 @@ public class CountSort {
             countArray[array[i]-min]++;
         }
         int[] sortArray = new int[array.length];
-        for (int i = 0; i < sortArray.length; i++) {
-            for (int j = 0; j < countArray.length; j++) {
-                while (countArray[j] >0){
-                    sortArray[i++] = j + min;
-                    countArray[j]--;
-                }
+        for (int j = 0,i = 0; j < countArray.length; j++) {
+            while (countArray[j] >0){
+                sortArray[i++] = j + min;
+                countArray[j]--;
             }
         }
         return sortArray;

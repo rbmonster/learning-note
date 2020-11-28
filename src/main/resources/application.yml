@@ -1,12 +1,37 @@
-spring:
-  application:
-    name:  test
 
 server:
   port: 8090
   servlet:
     context-path: /learning
 
+spring:
+  application:
+    name:  test
+  messages:
+    basename: messages,messages_sys,messages_mst
+    encoding: UTF-8
+  datasource:
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: stat
+      testOnReturn: false
+      testWhileIdle: true
+      maxActive: 1
+      removeAbandoned: true
+      removeAbandonedTimeoutMillis: 1
+      name: datasource
+      testOnBorrow: false
+      minIdle: 1
+      initialSize: 1
+      poolPreparedStatements: true
+      url: jdbc:mysql://47.103.206.18:3306/cus-portal-dev?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+      type: com.alibaba.druid.pool.DruidDataSource
+      validationQuery: select 1
+      maxOpenPreparedStatements: 300
+      username: root
+      password: 'aliyun1003qwer'
+  jackson:
+    default-property-inclusion: non_null
 #logging:
 #  level:
 #    root: trace

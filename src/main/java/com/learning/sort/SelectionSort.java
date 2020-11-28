@@ -19,11 +19,17 @@ import java.util.Arrays;
 public class SelectionSort {
     public static void main(String[] args) {
         int [] array = {3,1,2,5,7,23,123,45,2,15,12};
-        new SelectionSort().selectionSort(array);
+        sort(array);
         System.out.println(Arrays.toString(array));
     }
 
-    public void selectionSort(int[] arr) {
+    /**
+     * 选择一个最小的元素交换至第一位
+     * 选择一个次小的元素交换至第二位
+     * 以此类推
+     * @param arr
+     */
+    public static void sort(int[] arr) {
         for (int i = 0; i< arr.length-1; i++) {
             int min = i;
             for (int j = i+1; j< arr.length; j++){
