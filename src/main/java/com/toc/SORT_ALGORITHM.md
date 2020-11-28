@@ -1,24 +1,24 @@
 <a name="index">**Index**</a>
 
 <a href="#0">排序算法</a>  
-&emsp;<a href="#1">冒泡排序</a>  
-&emsp;<a href="#2">快速排序</a>  
-&emsp;&emsp;<a href="#3">挖坑法</a>  
-&emsp;&emsp;<a href="#4">左右指针交换</a>  
-&emsp;&emsp;<a href="#5">快排常见优化</a>  
-&emsp;&emsp;<a href="#6">Arrays.sort()的算法</a>  
-&emsp;&emsp;&emsp;<a href="#7">对于小的数据排序使用插入排序</a>  
-&emsp;&emsp;&emsp;<a href="#8">对于中等的数据使用快排</a>  
-&emsp;&emsp;&emsp;<a href="#9">具备结构化的数组使用归并排序</a>  
-&emsp;<a href="#10">插入排序</a>  
-&emsp;<a href="#11">希尔排序</a>  
-&emsp;<a href="#12">简单选择排序</a>  
-&emsp;<a href="#13">堆排序</a>  
-&emsp;<a href="#14">归并排序</a>  
-&emsp;<a href="#15">桶排序</a>  
-&emsp;<a href="#16">计数排序</a>  
-&emsp;<a href="#17">基数排序</a>  
-&emsp;<a href="#18">双轴快排、二分插入排序、TimeSort(TODO)</a>  
+&emsp;<a href="#1">1. 冒泡排序</a>  
+&emsp;<a href="#2">2. 快速排序</a>  
+&emsp;&emsp;<a href="#3">2.1. 挖坑法</a>  
+&emsp;&emsp;<a href="#4">2.2. 左右指针交换</a>  
+&emsp;&emsp;<a href="#5">2.3. 快排常见优化</a>  
+&emsp;&emsp;<a href="#6">2.4. Arrays.sort()的算法</a>  
+&emsp;&emsp;&emsp;<a href="#7">2.4.1. 对于小的数据排序使用插入排序</a>  
+&emsp;&emsp;&emsp;<a href="#8">2.4.2. 对于中等的数据使用快排</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.4.3. 具备结构化的数组使用归并排序</a>  
+&emsp;<a href="#10">3. 插入排序</a>  
+&emsp;<a href="#11">4. 希尔排序</a>  
+&emsp;<a href="#12">5. 简单选择排序</a>  
+&emsp;<a href="#13">6. 堆排序</a>  
+&emsp;<a href="#14">7. 归并排序</a>  
+&emsp;<a href="#15">8. 桶排序</a>  
+&emsp;<a href="#16">9. 计数排序</a>  
+&emsp;<a href="#17">10. 基数排序</a>  
+&emsp;<a href="#18">11. 双轴快排、二分插入排序、TimeSort(TODO)</a>  
 # <a name="0">排序算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 交换

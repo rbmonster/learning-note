@@ -1,15 +1,15 @@
 <a name="index">**Index**</a>
 
-&emsp;&emsp;<a href="#0"> 读已提交和可重复读是如何实现的？</a>  
-&emsp;&emsp;<a href="#1">读已提交和可重复读区别。</a>  
-&emsp;&emsp;<a href="#2"> 数据库数据库一致性是如何实现的？</a>  
-&emsp;&emsp;<a href="#3"> redolog、undolog、binlog区别？</a>  
-&emsp;&emsp;<a href="#4"> 两种日志有以下三点不同。</a>  
-&emsp;&emsp;<a href="#5">主键索引和非主键索引有什么区别？</a>  
-&emsp;&emsp;<a href="#6">索引失效有哪些？</a>  
-&emsp;&emsp;<a href="#7">如何优化SQL</a>  
-&emsp;&emsp;<a href="#8">联合索引 </a>  
-&emsp;&emsp;<a href="#9">数据库什么情况会出现死锁？如何处理死锁？</a>  
+&emsp;&emsp;<a href="#0">6.1.  读已提交和可重复读是如何实现的？</a>  
+&emsp;&emsp;<a href="#1">6.2. 读已提交和可重复读区别。</a>  
+&emsp;&emsp;<a href="#2">6.3.  数据库数据库一致性是如何实现的？</a>  
+&emsp;&emsp;<a href="#3">6.4.  redolog、undolog、binlog区别？</a>  
+&emsp;&emsp;<a href="#4">6.5.  两种日志有以下三点不同。</a>  
+&emsp;&emsp;<a href="#5">6.6. 主键索引和非主键索引有什么区别？</a>  
+&emsp;&emsp;<a href="#6">6.7. 索引失效有哪些？</a>  
+&emsp;&emsp;<a href="#7">6.8. 如何优化SQL</a>  
+&emsp;&emsp;<a href="#8">6.9. 联合索引 </a>  
+&emsp;&emsp;<a href="#9">6.10. 数据库什么情况会出现死锁？如何处理死锁？</a>  
  ### <a name="0">读已提交和可重复读是如何实现的？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - ReadView：刚才说了更新操作，那查询操作呢？这才是实现不同隔离级别的关键地方
   - 当进行查询操作时，事务会生成一个ReadView，ReadView是一个事务快照，准确来说是当前时间点系统内活跃的事务列表，也就是说系统内所有未提交的事务，都会记录在这个Readview内，事务就根据它来判断哪些数据是可见的，哪些是不可见的。

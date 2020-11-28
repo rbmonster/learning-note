@@ -1,6 +1,6 @@
 <a name="index">**Index**</a>
 
-&emsp;&emsp;<a href="#0">适配器模式</a>  
+&emsp;&emsp;<a href="#0">2.11. 适配器模式</a>  
 ### <a name="0">适配器模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 适配器模式，作为连接两个接口的桥梁,把一个类的接口变换成客户端所期待的另一种接口，从而使原本接口不匹配而无法一起工作的两个类能够在一起工作。
 

@@ -1,20 +1,20 @@
 <a name="index">**Index**</a>
 
 <a href="#0">MyBatis </a>  
-&emsp;&emsp;<a href="#1">执行流程</a>  
-&emsp;&emsp;<a href="#2">1、#{}和${}的区别是什么？</a>  
-&emsp;&emsp;<a href="#3">2.Xml 映射文件中，除了常见的 select|insert|updae|delete 标签之外，还有哪些标签？</a>  
-&emsp;&emsp;<a href="#4">3.通常一个 Xml 映射文件，都会写一个 Dao 接口与之对应，请问，这个 Dao 接口的工作原理是什么？Dao 接口里的方法，参数不同时，方法能重载吗？</a>  
-&emsp;&emsp;<a href="#5">4.MyBatis的分页</a>  
-&emsp;&emsp;<a href="#6">5.MyBatis 是如何将 sql 执行结果封装为目标对象并返回的？都有哪些映射形式？</a>  
-&emsp;&emsp;<a href="#7">6.MyBatis 的关联查询？</a>  
-&emsp;&emsp;<a href="#8">7.MyBatis 的 Xml 映射文件中，不同的 Xml 映射文件，id 是否可以重复？</a>  
-&emsp;&emsp;<a href="#9">8.MyBatis 都有哪些 Executor 执行器？它们之间的区别是什么？</a>  
-&emsp;&emsp;<a href="#10">9.MyBatis xml文件与内部数据结构之间的关系？</a>  
-&emsp;&emsp;<a href="#11">10.为什么说 MyBatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？</a>  
-&emsp;&emsp;<a href="#12">11.mybatis与Hibernate区别</a>  
-&emsp;&emsp;<a href="#13">12. mybatis的一二级缓存</a>  
-&emsp;&emsp;<a href="#14">13.千万级数据查询方案---- 流式查询</a>  
+&emsp;&emsp;<a href="#1">0.1. 执行流程</a>  
+&emsp;&emsp;<a href="#2">0.2. 1、#{}和${}的区别是什么？</a>  
+&emsp;&emsp;<a href="#3">0.3. 2.Xml 映射文件中，除了常见的 select|insert|updae|delete 标签之外，还有哪些标签？</a>  
+&emsp;&emsp;<a href="#4">0.4. 3.通常一个 Xml 映射文件，都会写一个 Dao 接口与之对应，请问，这个 Dao 接口的工作原理是什么？Dao 接口里的方法，参数不同时，方法能重载吗？</a>  
+&emsp;&emsp;<a href="#5">0.5. 4.MyBatis的分页</a>  
+&emsp;&emsp;<a href="#6">0.6. 5.MyBatis 是如何将 sql 执行结果封装为目标对象并返回的？都有哪些映射形式？</a>  
+&emsp;&emsp;<a href="#7">0.7. 6.MyBatis 的关联查询？</a>  
+&emsp;&emsp;<a href="#8">0.8. 7.MyBatis 的 Xml 映射文件中，不同的 Xml 映射文件，id 是否可以重复？</a>  
+&emsp;&emsp;<a href="#9">0.9. 8.MyBatis 都有哪些 Executor 执行器？它们之间的区别是什么？</a>  
+&emsp;&emsp;<a href="#10">0.10. 9.MyBatis xml文件与内部数据结构之间的关系？</a>  
+&emsp;&emsp;<a href="#11">0.11. 10.为什么说 MyBatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？</a>  
+&emsp;&emsp;<a href="#12">0.12. 11.mybatis与Hibernate区别</a>  
+&emsp;&emsp;<a href="#13">0.13. 12. mybatis的一二级缓存</a>  
+&emsp;&emsp;<a href="#14">0.14. 13.千万级数据查询方案---- 流式查询</a>  
 # <a name="0">MyBatis </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一个demo
 ```

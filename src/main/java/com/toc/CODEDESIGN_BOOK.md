@@ -1,30 +1,30 @@
 <a name="index">**Index**</a>
 
 <a href="#0">head first 设计模式</a>  
-&emsp;&emsp;<a href="#1">设计原则： </a>  
-&emsp;&emsp;<a href="#2">策略模式</a>  
-&emsp;&emsp;<a href="#3">观察者模式</a>  
-&emsp;&emsp;<a href="#4">装饰者模式</a>  
-&emsp;&emsp;<a href="#5">工厂模式</a>  
-&emsp;&emsp;<a href="#6">抽象工厂模式</a>  
-&emsp;&emsp;<a href="#7">单件模式（单例）</a>  
-&emsp;&emsp;<a href="#8">命令模式</a>  
-&emsp;&emsp;<a href="#9">适配器模式</a>  
-&emsp;&emsp;<a href="#10">外观模式</a>  
-&emsp;&emsp;<a href="#11">模板方法模式</a>  
-&emsp;&emsp;<a href="#12">迭代器模式</a>  
-&emsp;&emsp;<a href="#13">组合模式</a>  
-&emsp;&emsp;<a href="#14">状态模式</a>  
-&emsp;&emsp;<a href="#15">代理模式</a>  
-&emsp;&emsp;<a href="#16">建造者模式</a>  
-&emsp;&emsp;<a href="#17">责任链模式</a>  
-&emsp;&emsp;<a href="#18">原型模式</a>  
-&emsp;&emsp;<a href="#19">桥接模式</a>  
-&emsp;&emsp;<a href="#20">蝇量模式（享元模式）</a>  
-&emsp;&emsp;<a href="#21">解释器模式</a>  
-&emsp;&emsp;<a href="#22">中介者模式</a>  
-&emsp;&emsp;<a href="#23">备忘录模式</a>  
-&emsp;&emsp;<a href="#24">访问者模式</a>  
+&emsp;&emsp;<a href="#1">0.12. 设计原则： </a>  
+&emsp;&emsp;<a href="#2">0.13. 策略模式</a>  
+&emsp;&emsp;<a href="#3">0.14. 观察者模式</a>  
+&emsp;&emsp;<a href="#4">0.15. 装饰者模式</a>  
+&emsp;&emsp;<a href="#5">0.16. 工厂模式</a>  
+&emsp;&emsp;<a href="#6">0.17. 抽象工厂模式</a>  
+&emsp;&emsp;<a href="#7">0.18. 单件模式（单例）</a>  
+&emsp;&emsp;<a href="#8">0.19. 命令模式</a>  
+&emsp;&emsp;<a href="#9">0.20. 适配器模式</a>  
+&emsp;&emsp;<a href="#10">0.21. 外观模式</a>  
+&emsp;&emsp;<a href="#11">0.22. 模板方法模式</a>  
+&emsp;&emsp;<a href="#12">0.23. 迭代器模式</a>  
+&emsp;&emsp;<a href="#13">0.24. 组合模式</a>  
+&emsp;&emsp;<a href="#14">0.25. 状态模式</a>  
+&emsp;&emsp;<a href="#15">0.26. 代理模式</a>  
+&emsp;&emsp;<a href="#16">0.27. 建造者模式</a>  
+&emsp;&emsp;<a href="#17">0.28. 责任链模式</a>  
+&emsp;&emsp;<a href="#18">0.29. 原型模式</a>  
+&emsp;&emsp;<a href="#19">0.30. 桥接模式</a>  
+&emsp;&emsp;<a href="#20">0.31. 蝇量模式（享元模式）</a>  
+&emsp;&emsp;<a href="#21">0.32. 解释器模式</a>  
+&emsp;&emsp;<a href="#22">0.33. 中介者模式</a>  
+&emsp;&emsp;<a href="#23">0.34. 备忘录模式</a>  
+&emsp;&emsp;<a href="#24">0.35. 访问者模式</a>  
 # <a name="0">head first 设计模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="1">设计原则： </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 多用组合少用继承。

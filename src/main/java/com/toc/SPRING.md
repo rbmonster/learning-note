@@ -1,30 +1,30 @@
 <a name="index">**Index**</a>
 
 <a href="#0">Spring </a>  
-&emsp;<a href="#1">Spring IOC & AOP</a>  
-&emsp;&emsp;<a href="#2">Spring IOC</a>  
-&emsp;&emsp;<a href="#3">AOP</a>  
-&emsp;&emsp;&emsp;<a href="#4">aop切面的相关方法   </a>  
-&emsp;&emsp;<a href="#5">Spring AOP 和 AspectJ AOP 有什么区别？</a>  
-&emsp;<a href="#6">Spring 中的 bean 的作用域有哪些?</a>  
-&emsp;<a href="#7">Spring 中的 bean 生命周期</a>  
-&emsp;<a href="#8">Spring 循环依赖</a>  
-&emsp;&emsp;<a href="#9">相关问题(加深理解)</a>  
-&emsp;&emsp;<a href="#10">相关文章</a>  
-&emsp;<a href="#11">Spring Transaction</a>  
-&emsp;&emsp;<a href="#12">@Transactional 的声明式事务管理</a>  
-&emsp;&emsp;<a href="#13">spring transaction的隔离级别</a>  
-&emsp;&emsp;<a href="#14"> 同一个方法无事务的方法调用有事务的方法会出现什么情况？</a>  
-&emsp;<a href="#15">Spring boot 自动配置的加载流程</a>  
-&emsp;<a href="#16">Spring mvc 工作原理</a>  
-&emsp;<a href="#17">@RestController vs @Controller</a>  
-&emsp;<a href="#18">spring中的设计模式</a>  
-&emsp;<a href="#19">零散的一些面试题</a>  
-&emsp;&emsp;&emsp;<a href="#20">@Autowired和@Resource的区别是什么？</a>  
-&emsp;&emsp;&emsp;<a href="#21">@PostConstruct和@PreDestroy</a>  
-&emsp;&emsp;&emsp;<a href="#22">Spring 的异常处理</a>  
-&emsp;&emsp;&emsp;<a href="#23"> json 数据处理</a>  
-&emsp;&emsp;&emsp;<a href="#24"> @Component 和 @Bean 的区别是什么？</a>  
+&emsp;<a href="#1">1. Spring IOC & AOP</a>  
+&emsp;&emsp;<a href="#2">1.1. Spring IOC</a>  
+&emsp;&emsp;<a href="#3">1.2. AOP</a>  
+&emsp;&emsp;&emsp;<a href="#4">1.2.1. aop切面的相关方法   </a>  
+&emsp;&emsp;<a href="#5">1.3. Spring AOP 和 AspectJ AOP 有什么区别？</a>  
+&emsp;<a href="#6">2. Spring 中的 bean 的作用域有哪些?</a>  
+&emsp;<a href="#7">3. Spring 中的 bean 生命周期</a>  
+&emsp;<a href="#8">4. Spring 循环依赖</a>  
+&emsp;&emsp;<a href="#9">4.1. 相关问题(加深理解)</a>  
+&emsp;&emsp;<a href="#10">4.2. 相关文章</a>  
+&emsp;<a href="#11">5. Spring Transaction</a>  
+&emsp;&emsp;<a href="#12">5.1. @Transactional 的声明式事务管理</a>  
+&emsp;&emsp;<a href="#13">5.2. spring transaction的隔离级别</a>  
+&emsp;&emsp;<a href="#14">5.3.  同一个方法无事务的方法调用有事务的方法会出现什么情况？</a>  
+&emsp;<a href="#15">6. Spring boot 自动配置的加载流程</a>  
+&emsp;<a href="#16">7. Spring mvc 工作原理</a>  
+&emsp;<a href="#17">8. @RestController vs @Controller</a>  
+&emsp;<a href="#18">9. spring中的设计模式</a>  
+&emsp;<a href="#19">10. 零散的一些面试题</a>  
+&emsp;&emsp;&emsp;<a href="#20">10.0.1. @Autowired和@Resource的区别是什么？</a>  
+&emsp;&emsp;&emsp;<a href="#21">10.0.2. @PostConstruct和@PreDestroy</a>  
+&emsp;&emsp;&emsp;<a href="#22">10.0.3. Spring 的异常处理</a>  
+&emsp;&emsp;&emsp;<a href="#23">10.0.4.  json 数据处理</a>  
+&emsp;&emsp;&emsp;<a href="#24">10.0.5.  @Component 和 @Bean 的区别是什么？</a>  
 # <a name="0">Spring </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">Spring IOC & AOP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

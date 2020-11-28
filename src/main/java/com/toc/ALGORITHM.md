@@ -1,25 +1,25 @@
 <a name="index">**Index**</a>
 
 <a href="#0">算法</a>  
-&emsp;<a href="#1">哈希表</a>  
-&emsp;<a href="#2">数组与字符串</a>  
-&emsp;&emsp;<a href="#3">数组</a>  
-&emsp;&emsp;<a href="#4">字符串</a>  
-&emsp;<a href="#5">链表</a>  
-&emsp;<a href="#6">队列与栈</a>  
-&emsp;&emsp;<a href="#7">广度优先搜索</a>  
-&emsp;&emsp;<a href="#8">栈</a>  
-&emsp;<a href="#9">树</a>  
-&emsp;&emsp;<a href="#10">二叉树</a>  
-&emsp;&emsp;<a href="#11">二叉搜索树</a>  
-&emsp;<a href="#12">算法归类</a>  
-&emsp;&emsp;<a href="#13">树</a>  
-&emsp;<a href="#14">二分法</a>  
-&emsp;<a href="#15">DFS & BFS</a>  
-&emsp;&emsp;<a href="#16">BFS & DFS：</a>  
-&emsp;&emsp;<a href="#17">拓扑排序</a>  
-&emsp;&emsp;<a href="#18">dfs+回溯</a>  
-&emsp;&emsp;<a href="#19">并查集</a>  
+&emsp;<a href="#1">1. 哈希表</a>  
+&emsp;<a href="#2">2. 数组与字符串</a>  
+&emsp;&emsp;<a href="#3">2.1. 数组</a>  
+&emsp;&emsp;<a href="#4">2.2. 字符串</a>  
+&emsp;<a href="#5">3. 链表</a>  
+&emsp;<a href="#6">4. 队列与栈</a>  
+&emsp;&emsp;<a href="#7">4.1. 广度优先搜索</a>  
+&emsp;&emsp;<a href="#8">4.2. 栈</a>  
+&emsp;<a href="#9">5. 树</a>  
+&emsp;&emsp;<a href="#10">5.1. 二叉树</a>  
+&emsp;&emsp;<a href="#11">5.2. 二叉搜索树</a>  
+&emsp;<a href="#12">6. 算法归类</a>  
+&emsp;&emsp;<a href="#13">6.1. 树</a>  
+&emsp;<a href="#14">7. 二分法</a>  
+&emsp;<a href="#15">8. DFS & BFS</a>  
+&emsp;&emsp;<a href="#16">8.1. BFS & DFS：</a>  
+&emsp;&emsp;<a href="#17">8.2. 拓扑排序</a>  
+&emsp;&emsp;<a href="#18">8.3. dfs+回溯</a>  
+&emsp;&emsp;<a href="#19">8.4. 并查集</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

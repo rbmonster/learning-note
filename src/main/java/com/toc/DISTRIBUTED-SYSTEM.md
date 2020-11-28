@@ -1,18 +1,18 @@
 <a name="index">**Index**</a>
 
 <a href="#0">分布式系统</a>  
-&emsp;<a href="#1">经典基础理论</a>  
-&emsp;&emsp;<a href="#2">系统设计理念</a>  
-&emsp;&emsp;<a href="#3">CAP理论</a>  
-&emsp;&emsp;<a href="#4">BASE理论</a>  
-&emsp;<a href="#5">分布式事务</a>  
-&emsp;&emsp;<a href="#6">两阶段提交 2PC(phase-commit)</a>  
-&emsp;&emsp;&emsp;<a href="#7">两阶段提交的问题</a>  
-&emsp;&emsp;<a href="#8">三阶段提交 3PC(phase-commit)</a>  
-&emsp;&emsp;<a href="#9">paxos算法</a>  
-&emsp;&emsp;<a href="#10">Raft算法</a>  
-&emsp;&emsp;&emsp;<a href="#11">选举流程</a>  
-&emsp;&emsp;&emsp;<a href="#12">数据同步</a>  
+&emsp;<a href="#1">1. 经典基础理论</a>  
+&emsp;&emsp;<a href="#2">1.1. 系统设计理念</a>  
+&emsp;&emsp;<a href="#3">1.2. CAP理论</a>  
+&emsp;&emsp;<a href="#4">1.3. BASE理论</a>  
+&emsp;<a href="#5">2. 分布式事务</a>  
+&emsp;&emsp;<a href="#6">2.1. 两阶段提交 2PC(phase-commit)</a>  
+&emsp;&emsp;&emsp;<a href="#7">2.1.1. 两阶段提交的问题</a>  
+&emsp;&emsp;<a href="#8">2.2. 三阶段提交 3PC(phase-commit)</a>  
+&emsp;&emsp;<a href="#9">2.3. paxos算法</a>  
+&emsp;&emsp;<a href="#10">2.4. Raft算法</a>  
+&emsp;&emsp;&emsp;<a href="#11">2.4.1. 选举流程</a>  
+&emsp;&emsp;&emsp;<a href="#12">2.4.2. 数据同步</a>  
 # <a name="0">分布式系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">经典基础理论</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="2">系统设计理念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

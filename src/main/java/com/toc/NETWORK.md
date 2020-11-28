@@ -1,21 +1,21 @@
 <a name="index">**Index**</a>
 
 <a href="#0">计算机网络</a>  
-&emsp;<a href="#1">网络模型</a>  
-&emsp;<a href="#2">TCP 三次握手和四次挥手</a>  
-&emsp;&emsp;<a href="#3">三次握手</a>  
-&emsp;&emsp;<a href="#4">四次挥手</a>  
-&emsp;<a href="#5">TCP与UDP</a>  
-&emsp;<a href="#6">浏览器访问网站的数据传输过程</a>  
-&emsp;<a href="#7">http 长连接与短连接</a>  
-&emsp;<a href="#8">http 无状态、无连接</a>  
-&emsp;<a href="#9">Cookies与 Session （TODO）</a>  
-&emsp;&emsp;<a href="#10">Cookies</a>  
-&emsp;&emsp;<a href="#11">Session</a>  
-&emsp;<a href="#12">https</a>  
-&emsp;&emsp;<a href="#13">加密方式</a>  
-&emsp;<a href="#14">证书认证</a>  
-&emsp;<a href="#15">Http2.0</a>  
+&emsp;<a href="#1">1. 网络模型</a>  
+&emsp;<a href="#2">2. TCP 三次握手和四次挥手</a>  
+&emsp;&emsp;<a href="#3">2.1. 三次握手</a>  
+&emsp;&emsp;<a href="#4">2.2. 四次挥手</a>  
+&emsp;<a href="#5">3. TCP与UDP</a>  
+&emsp;<a href="#6">4. 浏览器访问网站的数据传输过程</a>  
+&emsp;<a href="#7">5. http 长连接与短连接</a>  
+&emsp;<a href="#8">6. http 无状态、无连接</a>  
+&emsp;<a href="#9">7. Cookies与 Session （TODO）</a>  
+&emsp;&emsp;<a href="#10">7.1. Cookies</a>  
+&emsp;&emsp;<a href="#11">7.2. Session</a>  
+&emsp;<a href="#12">8. https</a>  
+&emsp;&emsp;<a href="#13">8.1. 加密方式</a>  
+&emsp;<a href="#14">9. 证书认证</a>  
+&emsp;<a href="#15">10. Http2.0</a>  
 # <a name="0">计算机网络</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">网络模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 5层模型应用层，运输层，网络层，数据链路层，物理层组成。

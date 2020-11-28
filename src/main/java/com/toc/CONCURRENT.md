@@ -1,26 +1,26 @@
 <a name="index">**Index**</a>
 
 <a href="#0">java并发</a>  
-&emsp;<a href="#1">基本概念</a>  
-&emsp;&emsp;&emsp;<a href="#2">分工</a>  
-&emsp;&emsp;&emsp;<a href="#3">同步/协作</a>  
-&emsp;&emsp;&emsp;<a href="#4">互斥</a>  
-&emsp;&emsp;<a href="#5">三大问题</a>  
-&emsp;&emsp;&emsp;<a href="#6">可见性</a>  
-&emsp;&emsp;&emsp;<a href="#7">原子性</a>  
-&emsp;&emsp;&emsp;<a href="#8">有序性</a>  
-&emsp;<a href="#9"> volatile变量特殊规则</a>  
-&emsp;<a href="#10">synchronized</a>  
-&emsp;&emsp;<a href="#11">基本概念</a>  
-&emsp;&emsp;<a href="#12">synchronized关键字JVM底层原理 解析</a>  
-&emsp;&emsp;&emsp;<a href="#13">synchronized 同步语句块的情况</a>  
-&emsp;&emsp;&emsp;<a href="#14">synchronized 修饰方法的的情况</a>  
-&emsp;&emsp;<a href="#15">synchronize 的锁优化</a>  
-&emsp;&emsp;<a href="#16">synchronize锁升级(锁膨胀)</a>  
-&emsp;&emsp;&emsp;<a href="#17">偏向锁</a>  
-&emsp;&emsp;&emsp;<a href="#18">轻量级锁</a>  
-&emsp;&emsp;&emsp;<a href="#19">重量级锁</a>  
-&emsp;&emsp;&emsp;<a href="#20">相关资料</a>  
+&emsp;<a href="#1">1. 基本概念</a>  
+&emsp;&emsp;&emsp;<a href="#2">1.0.1. 分工</a>  
+&emsp;&emsp;&emsp;<a href="#3">1.0.2. 同步/协作</a>  
+&emsp;&emsp;&emsp;<a href="#4">1.0.3. 互斥</a>  
+&emsp;&emsp;<a href="#5">1.1. 三大问题</a>  
+&emsp;&emsp;&emsp;<a href="#6">1.1.1. 可见性</a>  
+&emsp;&emsp;&emsp;<a href="#7">1.1.2. 原子性</a>  
+&emsp;&emsp;&emsp;<a href="#8">1.1.3. 有序性</a>  
+&emsp;<a href="#9">2.  volatile变量特殊规则</a>  
+&emsp;<a href="#10">3. synchronized</a>  
+&emsp;&emsp;<a href="#11">3.1. 基本概念</a>  
+&emsp;&emsp;<a href="#12">3.2. synchronized关键字JVM底层原理 解析</a>  
+&emsp;&emsp;&emsp;<a href="#13">3.2.1. synchronized 同步语句块的情况</a>  
+&emsp;&emsp;&emsp;<a href="#14">3.2.2. synchronized 修饰方法的的情况</a>  
+&emsp;&emsp;<a href="#15">3.3. synchronize 的锁优化</a>  
+&emsp;&emsp;<a href="#16">3.4. synchronize锁升级(锁膨胀)</a>  
+&emsp;&emsp;&emsp;<a href="#17">3.4.1. 偏向锁</a>  
+&emsp;&emsp;&emsp;<a href="#18">3.4.2. 轻量级锁</a>  
+&emsp;&emsp;&emsp;<a href="#19">3.4.3. 重量级锁</a>  
+&emsp;&emsp;&emsp;<a href="#20">3.4.4. 相关资料</a>  
 # <a name="0">java并发</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 并发编程可以抽象成三个核心问题: 分工、同步/协作、互斥

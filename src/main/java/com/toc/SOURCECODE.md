@@ -1,20 +1,20 @@
 <a name="index">**Index**</a>
 
 <a href="#0">Spring源码</a>  
-&emsp;<a href="#1">Spring IOC初始化(暂时不看)</a>  
-&emsp;&emsp;<a href="#2">invokeBeanFactoryPostProcessors(beanFactory);</a>  
-&emsp;&emsp;<a href="#3">Spring自动配置加载</a>  
-&emsp;<a href="#4">Spring transaction</a>  
-&emsp;&emsp;<a href="#5">TransactionAspectSupport</a>  
-&emsp;&emsp;<a href="#6">@Transactional失效场景</a>  
-&emsp;&emsp;<a href="#7">相关文章</a>  
-&emsp;<a href="#8">Spring AOP</a>  
-&emsp;&emsp;<a href="#9">HandlerAdapter与InvocableHandlerMethod</a>  
-&emsp;&emsp;<a href="#10">整体的调用流程</a>  
-&emsp;&emsp;<a href="#11">判断使用JDK代理还是Cglib代理</a>  
-&emsp;&emsp;<a href="#12">CglibAopProxy的代理方法</a>  
-&emsp;&emsp;<a href="#13">JdkDynamicAopProxy的代理方法</a>  
-&emsp;&emsp;<a href="#14">AspectJ的方法织入</a>  
+&emsp;<a href="#1">1. Spring IOC初始化(暂时不看)</a>  
+&emsp;&emsp;<a href="#2">1.1. invokeBeanFactoryPostProcessors(beanFactory);</a>  
+&emsp;&emsp;<a href="#3">1.2. Spring自动配置加载</a>  
+&emsp;<a href="#4">2. Spring transaction</a>  
+&emsp;&emsp;<a href="#5">2.1. TransactionAspectSupport</a>  
+&emsp;&emsp;<a href="#6">2.2. @Transactional失效场景</a>  
+&emsp;&emsp;<a href="#7">2.3. 相关文章</a>  
+&emsp;<a href="#8">3. Spring AOP</a>  
+&emsp;&emsp;<a href="#9">3.1. HandlerAdapter与InvocableHandlerMethod</a>  
+&emsp;&emsp;<a href="#10">3.2. 整体的调用流程</a>  
+&emsp;&emsp;<a href="#11">3.3. 判断使用JDK代理还是Cglib代理</a>  
+&emsp;&emsp;<a href="#12">3.4. CglibAopProxy的代理方法</a>  
+&emsp;&emsp;<a href="#13">3.5. JdkDynamicAopProxy的代理方法</a>  
+&emsp;&emsp;<a href="#14">3.6. AspectJ的方法织入</a>  
 # <a name="0">Spring源码</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">Spring IOC初始化(暂时不看)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

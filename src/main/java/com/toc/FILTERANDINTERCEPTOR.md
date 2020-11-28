@@ -1,10 +1,10 @@
 <a name="index">**Index**</a>
 
 <a href="#0">MVC 拦截器与过滤器</a>  
-&emsp;<a href="#1">过滤器 servlet</a>  
-&emsp;<a href="#2">拦截器</a>  
-&emsp;&emsp;<a href="#3">HandlerInterceptor</a>  
-&emsp;&emsp;<a href="#4">MethodInterceptor</a>  
+&emsp;<a href="#1">1. 过滤器 servlet</a>  
+&emsp;<a href="#2">2. 拦截器</a>  
+&emsp;&emsp;<a href="#3">2.1. HandlerInterceptor</a>  
+&emsp;&emsp;<a href="#4">2.2. MethodInterceptor</a>  
 # <a name="0">MVC 拦截器与过滤器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/filter2intercept.jpg)

@@ -1,18 +1,18 @@
 <a name="index">**Index**</a>
 
 <a href="#0">Netty</a>  
-&emsp;&emsp;<a href="#1">netty 是什么</a>  
-&emsp;&emsp;<a href="#2">Reactor 模式</a>  
-&emsp;&emsp;&emsp;<a href="#3">单线程Reactor</a>  
-&emsp;&emsp;&emsp;<a href="#4">多线程Reactor</a>  
-&emsp;&emsp;&emsp;<a href="#5">主从多线程Reactor</a>  
-&emsp;&emsp;<a href="#6">Netty的核心组件</a>  
-&emsp;&emsp;&emsp;<a href="#7">Channel</a>  
-&emsp;&emsp;&emsp;<a href="#8">EventLoop</a>  
-&emsp;&emsp;&emsp;<a href="#9">ChannelHandler 和 ChannelPipeline</a>  
-&emsp;&emsp;&emsp;<a href="#10">Bootstrap 和 ServerBootstrap 引导类</a>  
-&emsp;&emsp;<a href="#11">什么是 TCP 粘包/拆包</a>  
-&emsp;&emsp;<a href="#12"> 其他</a>  
+&emsp;&emsp;<a href="#1">0.7. netty 是什么</a>  
+&emsp;&emsp;<a href="#2">0.8. Reactor 模式</a>  
+&emsp;&emsp;&emsp;<a href="#3">0.8.1. 单线程Reactor</a>  
+&emsp;&emsp;&emsp;<a href="#4">0.8.2. 多线程Reactor</a>  
+&emsp;&emsp;&emsp;<a href="#5">0.8.3. 主从多线程Reactor</a>  
+&emsp;&emsp;<a href="#6">0.9. Netty的核心组件</a>  
+&emsp;&emsp;&emsp;<a href="#7">0.9.1. Channel</a>  
+&emsp;&emsp;&emsp;<a href="#8">0.9.2. EventLoop</a>  
+&emsp;&emsp;&emsp;<a href="#9">0.9.3. ChannelHandler 和 ChannelPipeline</a>  
+&emsp;&emsp;&emsp;<a href="#10">0.9.4. Bootstrap 和 ServerBootstrap 引导类</a>  
+&emsp;&emsp;<a href="#11">0.10. 什么是 TCP 粘包/拆包</a>  
+&emsp;&emsp;<a href="#12">0.11.  其他</a>  
 # <a name="0">Netty</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ### <a name="1">netty 是什么</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

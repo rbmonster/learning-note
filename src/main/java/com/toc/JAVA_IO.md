@@ -1,28 +1,28 @@
 <a name="index">**Index**</a>
 
-&emsp;&emsp;<a href="#0"><a name="0">策略模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a></a>  
+&emsp;&emsp;<a href="#0">0.37. <a name="0">策略模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a></a>  
 <a href="#1">Java IO </a>  
-&emsp;<a href="#2">基本概念</a>  
-&emsp;&emsp;<a href="#3">编码与解码</a>  
-&emsp;<a href="#4">操作系统中的IO</a>  
-&emsp;&emsp;<a href="#5">常见I/O模型对比</a>  
-&emsp;&emsp;<a href="#6">BIO</a>  
-&emsp;&emsp;<a href="#7">NIO</a>  
-&emsp;&emsp;<a href="#8">IO复用模型</a>  
-&emsp;&emsp;&emsp;<a href="#9">epoll</a>  
-&emsp;&emsp;&emsp;<a href="#10">水平触发与边缘触发</a>  
-&emsp;&emsp;<a href="#11">信号驱动IO</a>  
-&emsp;&emsp;<a href="#12">AIO</a>  
-&emsp;&emsp;<a href="#13">相关资料</a>  
-&emsp;<a href="#14">Java 中的网络支持</a>  
-&emsp;&emsp;<a href="#15">java BIO(Blocking IO 阻塞)</a>  
-&emsp;&emsp;<a href="#16">java NIO(Non-blocking/New I/O)</a>  
-&emsp;&emsp;&emsp;<a href="#17">零拷贝</a>  
-&emsp;&emsp;&emsp;<a href="#18">事件驱动模型</a>  
-&emsp;&emsp;<a href="#19">NIO与BIO区别</a>  
-&emsp;&emsp;<a href="#20">Proactor与Reactor</a>  
-&emsp;&emsp;<a href="#21">RMI 远程方法调用</a>  
-&emsp;&emsp;<a href="#22">netty</a>  
+&emsp;<a href="#2">1. 基本概念</a>  
+&emsp;&emsp;<a href="#3">1.1. 编码与解码</a>  
+&emsp;<a href="#4">2. 操作系统中的IO</a>  
+&emsp;&emsp;<a href="#5">2.1. 常见I/O模型对比</a>  
+&emsp;&emsp;<a href="#6">2.2. BIO</a>  
+&emsp;&emsp;<a href="#7">2.3. NIO</a>  
+&emsp;&emsp;<a href="#8">2.4. IO复用模型</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.4.1. epoll</a>  
+&emsp;&emsp;&emsp;<a href="#10">2.4.2. 水平触发与边缘触发</a>  
+&emsp;&emsp;<a href="#11">2.5. 信号驱动IO</a>  
+&emsp;&emsp;<a href="#12">2.6. AIO</a>  
+&emsp;&emsp;<a href="#13">2.7. 相关资料</a>  
+&emsp;<a href="#14">3. Java 中的网络支持</a>  
+&emsp;&emsp;<a href="#15">3.1. java BIO(Blocking IO 阻塞)</a>  
+&emsp;&emsp;<a href="#16">3.2. java NIO(Non-blocking/New I/O)</a>  
+&emsp;&emsp;&emsp;<a href="#17">3.2.1. 零拷贝</a>  
+&emsp;&emsp;&emsp;<a href="#18">3.2.2. 事件驱动模型</a>  
+&emsp;&emsp;<a href="#19">3.3. NIO与BIO区别</a>  
+&emsp;&emsp;<a href="#20">3.4. Proactor与Reactor</a>  
+&emsp;&emsp;<a href="#21">3.5. RMI 远程方法调用</a>  
+&emsp;&emsp;<a href="#22">3.6. netty</a>  
 ###抽象工厂模式
 ![Image text](https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628164001258-637961514.png)### <a name="0"><a name="0">策略模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a></a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Context是上下文，用一个ConcreteStrategy来配置，维护一个对Strategy对象的引用；Strategy是策略类，用于定义所有支持算法的公共接口；ConcreteStrategy是具体策略类，封装了具体的算法或行为，继承于Strategy。

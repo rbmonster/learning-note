@@ -1,16 +1,16 @@
 <a name="index">**Index**</a>
 
 <a href="#0">bean初始化流程</a>  
-&emsp;<a href="#1">接口介绍</a>  
-&emsp;&emsp;<a href="#2">Bean的完整生命周期及方法调用</a>  
-&emsp;&emsp;<a href="#3">Bean 声明周期级别的接口及方法</a>  
-&emsp;&emsp;<a href="#4">BeanDefinitionRegistryPostProcessor接口</a>  
-&emsp;&emsp;<a href="#5">BeanFactoryPostProcessor接口</a>  
-&emsp;&emsp;<a href="#6">InstantiationAwareBeanPostProcessor接口</a>  
-&emsp;&emsp;<a href="#7">BeanPostProcessor接口：</a>  
-&emsp;<a href="#8">Bean初始化顺序</a>  
-&emsp;&emsp;<a href="#9">初始化Bean的所有接口调用流程</a>  
-&emsp;&emsp;<a href="#10">BeanProcessor 调用流程</a>  
+&emsp;<a href="#1">1. 接口介绍</a>  
+&emsp;&emsp;<a href="#2">1.1. Bean的完整生命周期及方法调用</a>  
+&emsp;&emsp;<a href="#3">1.2. Bean 声明周期级别的接口及方法</a>  
+&emsp;&emsp;<a href="#4">1.3. BeanDefinitionRegistryPostProcessor接口</a>  
+&emsp;&emsp;<a href="#5">1.4. BeanFactoryPostProcessor接口</a>  
+&emsp;&emsp;<a href="#6">1.5. InstantiationAwareBeanPostProcessor接口</a>  
+&emsp;&emsp;<a href="#7">1.6. BeanPostProcessor接口：</a>  
+&emsp;<a href="#8">2. Bean初始化顺序</a>  
+&emsp;&emsp;<a href="#9">2.1. 初始化Bean的所有接口调用流程</a>  
+&emsp;&emsp;<a href="#10">2.2. BeanProcessor 调用流程</a>  
 # <a name="0">bean初始化流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">接口介绍</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 

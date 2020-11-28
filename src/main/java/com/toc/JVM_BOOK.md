@@ -1,29 +1,29 @@
 <a name="index">**Index**</a>
 
 <a href="#0">Java虚拟机</a>  
-&emsp;<a href="#1">一、虚拟机数据区说明</a>  
-&emsp;<a href="#2">二、垃圾收集器与内存分配策略</a>  
-&emsp;&emsp;&emsp;<a href="#3">5.11 内存分配策略</a>  
-&emsp;<a href="#4">七、虚拟机类加载机制</a>  
-&emsp;&emsp;&emsp;<a href="#5">7.1 类加载的时机</a>  
-&emsp;&emsp;&emsp;<a href="#6">7.2 类与类加载器</a>  
-&emsp;<a href="#7">八、虚拟机字节码执行引擎</a>  
-&emsp;&emsp;&emsp;<a href="#8">8.1 栈帧结构</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#9">8.1.1 局部变量表</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#10">8.1.2 操作数栈</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#11">8.1.3 方法返回地址</a>  
-&emsp;&emsp;&emsp;<a href="#12">8.2 方法调用</a>  
-&emsp;<a href="#13">十二、Java 内存模型</a>  
-&emsp;&emsp;&emsp;<a href="#14">12.1. 硬件的效率与一致性</a>  
-&emsp;&emsp;&emsp;<a href="#15">12.2. java内存模型</a>  
-&emsp;&emsp;&emsp;<a href="#16">12.3. 内存交互的操作</a>  
-&emsp;&emsp;&emsp;<a href="#17">12.4 volatile变量特殊规则</a>  
-&emsp;&emsp;&emsp;<a href="#18">12.5 happen-before 先行发生原则</a>  
-&emsp;&emsp;&emsp;<a href="#19">12.6 Java 与线程</a>  
-&emsp;<a href="#20">十三、线程安全与锁安全</a>  
-&emsp;&emsp;&emsp;<a href="#21">13.1 java中的线程安全</a>  
-&emsp;&emsp;&emsp;<a href="#22">13.2 线程安全实现(虚拟机)</a>  
-&emsp;&emsp;&emsp;<a href="#23">13.3 锁优化</a>  
+&emsp;<a href="#1">1. 一、虚拟机数据区说明</a>  
+&emsp;<a href="#2">2. 二、垃圾收集器与内存分配策略</a>  
+&emsp;&emsp;&emsp;<a href="#3">2.0.1. 5.11 内存分配策略</a>  
+&emsp;<a href="#4">3. 七、虚拟机类加载机制</a>  
+&emsp;&emsp;&emsp;<a href="#5">3.0.2. 7.1 类加载的时机</a>  
+&emsp;&emsp;&emsp;<a href="#6">3.0.3. 7.2 类与类加载器</a>  
+&emsp;<a href="#7">4. 八、虚拟机字节码执行引擎</a>  
+&emsp;&emsp;&emsp;<a href="#8">4.0.4. 8.1 栈帧结构</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#9">4.0.4.1. 8.1.1 局部变量表</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#10">4.0.4.2. 8.1.2 操作数栈</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#11">4.0.4.3. 8.1.3 方法返回地址</a>  
+&emsp;&emsp;&emsp;<a href="#12">4.0.5. 8.2 方法调用</a>  
+&emsp;<a href="#13">5. 十二、Java 内存模型</a>  
+&emsp;&emsp;&emsp;<a href="#14">5.0.6. 12.1. 硬件的效率与一致性</a>  
+&emsp;&emsp;&emsp;<a href="#15">5.0.7. 12.2. java内存模型</a>  
+&emsp;&emsp;&emsp;<a href="#16">5.0.8. 12.3. 内存交互的操作</a>  
+&emsp;&emsp;&emsp;<a href="#17">5.0.9. 12.4 volatile变量特殊规则</a>  
+&emsp;&emsp;&emsp;<a href="#18">5.0.10. 12.5 happen-before 先行发生原则</a>  
+&emsp;&emsp;&emsp;<a href="#19">5.0.11. 12.6 Java 与线程</a>  
+&emsp;<a href="#20">6. 十三、线程安全与锁安全</a>  
+&emsp;&emsp;&emsp;<a href="#21">6.0.12. 13.1 java中的线程安全</a>  
+&emsp;&emsp;&emsp;<a href="#22">6.0.13. 13.2 线程安全实现(虚拟机)</a>  
+&emsp;&emsp;&emsp;<a href="#23">6.0.14. 13.3 锁优化</a>  
 # <a name="0">Java虚拟机</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/jvm/picture/heap-detail.jpg)
