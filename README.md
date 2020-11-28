@@ -1,45 +1,45 @@
 # learning-note
 ## day by day
 #### Java相关
-- [Java基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic)
-- [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/COLLECTION.md)
-- [Java IO](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/io/)
-- [Java虚拟机](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/JVM.md)
+- [Java基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JAVA_BASE.md)
+- [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/COLLECTION.md)
+- [Java IO](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JAVA_IO.md)
+- [Java虚拟机](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JVM.md)
 
 #### Java并发相关
-- [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/THREAD.md)
-- [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENT.md)
-- [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/CONCURRENTTOOL.md)
+- [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/THREAD.md)
+- [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENT.md)
+- [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENTTOOL.md)
 
 ### Spring
-- [Spring Basic(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four)
-- [Bean生命周期](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/LIFECYCLE.md)
-- [Spring 源码](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/SOURCECODE.md)
-- [拦截器与过滤器](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/FILTERANDINTERCEPTOR.md)
-- [Spring Boot加载流程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/SPRINGBOOT.md)
+- [Spring Basic(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING.md)
+- [Bean生命周期](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LIFECYCLE.md)
+- [Spring 源码](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SOURCECODE.md)
+- [拦截器与过滤器](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FILTERANDINTERCEPTOR.md)
+- [Spring Boot加载流程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRINGBOOT.md)
 
 ### 中间件
-- [Redis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/REDIS.md)
-- [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/DISTRIBUTED-SYSTEM.md)
-- [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/ZOOKEEPER.md)
-- [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/MESSAGEQUEUE.md)
+- [Redis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/REDIS.md)
+- [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
+- [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ZOOKEEPER.md)
+- [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGEQUEUE.md)
 
 ### 算法
-- [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/algorithm)
-- [排序算法](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/sort)
+- [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/ALGORITHM.md)
+- [排序算法](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/SORT_ALGORITHM.md)
 
 ### 其他
-- [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/MYBATIS.md)
-- [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/NETWORK.md)
-- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/apidesign)
+- [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYBATIS.md)
+- [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
+- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/INTERFACE_DESIGN.md)
 
 ## 记录平常学习java 的一些知识点
-- [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/design)
-- [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/jvm)
-- [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/redis)
-- [MySql45讲](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/mysql)
-- [java集合类(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/collection)
-- [java并发(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/concurrent)
+- [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CODEDESION_BOOK.md)
+- [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
+- [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
+- [MySql45讲](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
+- [java集合类(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/COLLECTION_BOOK.md)
+- [java并发(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CONCURRENT_BOOK.md)
 
 
 ### 分布式文件存储系统
