@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,9 +35,12 @@ public class TestTransactionController implements ApplicationContextAware {
 
     Random random = new Random();
 
+    final TransactionService transactionService;
+
     @Autowired
-    public TestTransactionController(JdbcTemplate jdbcTemplate) {
+    public TestTransactionController(JdbcTemplate jdbcTemplate, TransactionService transactionService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.transactionService = transactionService;
     }
 
     @GetMapping("/{id}")
@@ -45,30 +49,36 @@ public class TestTransactionController implements ApplicationContextAware {
         return jdbcTemplate.queryForList(sql);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = RuntimeException.class, readOnly = false, timeout = -1)
     @GetMapping("/update")
     public String update() {
-        Object testTransactionController = applicationContext.getBean("testTransactionController");
         Thread thread = Thread.currentThread();
-        ThreadLocal threadLocal = new ThreadLocal();
-//        Object obj = threadLocal.get();
         String sql = "INSERT INTO `demo` (`demo_id`, `demo_code`, `demo_name`, `status`, `status_desc`, `demo_qty`, `demo_rate`, `start_date`, `end_date`, `create_time`, `create_by`, `create_by_name`, `update_time`, `update_by`, `update_by_name`, `version`) VALUES (?, 11, ?, '1', '123', '12', '12.000', '2020-11-19 19:36:07', '2020-11-07 19:36:11', '2020-11-07 19:36:18', '123', '123', NULL, NULL, NULL, '0') ";
         Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
         jdbcTemplate.update(sql, objects);
-//        throw new RuntimeException();
         return "123";
-//        testTransaction();F
 //        throw new RuntimeException("123123");
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.NEVER)
     void testTransaction() {
         String sql = "INSERT INTO `demo_detail` (`detail_id`, `demo_id`, `detail_remark`, `detail_start`, `detail_end`, `min_value`, `max_value`, `rage`) VALUES (?, 123, ?, '2020-11-07', '2020-11-07', '2', '1', '12')";
         Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
         jdbcTemplate.update(sql, objects);
     }
 
+    @GetMapping("private")
+    @Transactional
+    public String testPrivate() {
+        String sql = "INSERT INTO `demo_detail` (`detail_id`, `demo_id`, `detail_remark`, `detail_start`, `detail_end`, `min_value`, `max_value`, `rage`) VALUES (?, 123, ?, '2020-11-07', '2020-11-07', '2', '1', '12')";
+        Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
+        jdbcTemplate.update(sql, objects);
+        transactionService.testTransaction();
+        return "111";
+    }
+
     private ApplicationContext applicationContext;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;

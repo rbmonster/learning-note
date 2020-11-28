@@ -12,19 +12,24 @@
 &emsp;&emsp;<a href="#9">4.1. 相关问题(加深理解)</a>  
 &emsp;&emsp;<a href="#10">4.2. 相关文章</a>  
 &emsp;<a href="#11">5. Spring Transaction</a>  
-&emsp;&emsp;<a href="#12">5.1. @Transactional 的声明式事务管理</a>  
-&emsp;&emsp;<a href="#13">5.2. spring transaction的隔离级别</a>  
-&emsp;&emsp;<a href="#14">5.3.  同一个方法无事务的方法调用有事务的方法会出现什么情况？</a>  
-&emsp;<a href="#15">6. Spring boot 自动配置的加载流程</a>  
-&emsp;<a href="#16">7. Spring mvc 工作原理</a>  
-&emsp;<a href="#17">8. @RestController vs @Controller</a>  
-&emsp;<a href="#18">9. spring中的设计模式</a>  
-&emsp;<a href="#19">10. 零散的一些面试题</a>  
-&emsp;&emsp;&emsp;<a href="#20">10.0.1. @Autowired和@Resource的区别是什么？</a>  
-&emsp;&emsp;&emsp;<a href="#21">10.0.2. @PostConstruct和@PreDestroy</a>  
-&emsp;&emsp;&emsp;<a href="#22">10.0.3. Spring 的异常处理</a>  
-&emsp;&emsp;&emsp;<a href="#23">10.0.4.  json 数据处理</a>  
-&emsp;&emsp;&emsp;<a href="#24">10.0.5.  @Component 和 @Bean 的区别是什么？</a>  
+&emsp;&emsp;<a href="#12">5.1. 基础知识</a>  
+&emsp;&emsp;<a href="#13">5.2. 编程式事务</a>  
+&emsp;&emsp;<a href="#14">5.3. @Transactional 声明式事务管理</a>  
+&emsp;&emsp;<a href="#15">5.4. 声明式事务相关属性</a>  
+&emsp;&emsp;<a href="#16">5.5. 事务传播行为</a>  
+&emsp;&emsp;<a href="#17">5.6. spring transaction的隔离级别</a>  
+&emsp;&emsp;<a href="#18">5.7. 事务失效场景</a>  
+&emsp;&emsp;&emsp;<a href="#19">5.7.1.  同一个方法调用无事务的解决方案</a>  
+&emsp;<a href="#20">6. Spring boot 自动配置的加载流程</a>  
+&emsp;<a href="#21">7. Spring mvc 工作原理</a>  
+&emsp;<a href="#22">8. @RestController vs @Controller</a>  
+&emsp;<a href="#23">9. spring中的设计模式</a>  
+&emsp;<a href="#24">10. 零散的一些面试题</a>  
+&emsp;&emsp;&emsp;<a href="#25">10.0.2. @Autowired和@Resource的区别是什么？</a>  
+&emsp;&emsp;&emsp;<a href="#26">10.0.3. @PostConstruct和@PreDestroy</a>  
+&emsp;&emsp;&emsp;<a href="#27">10.0.4. Spring 的异常处理</a>  
+&emsp;&emsp;&emsp;<a href="#28">10.0.5.  json 数据处理</a>  
+&emsp;&emsp;&emsp;<a href="#29">10.0.6.  @Component 和 @Bean 的区别是什么？</a>  
 # <a name="0">Spring </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">Spring IOC & AOP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -94,42 +99,147 @@ getSingleton(beanName, true)这个方法实际上就是到缓存中尝试去获�
 - https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ
 
 ## <a name="11">Spring Transaction</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="12">基础知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Spring 框架中，事务管理相关最重要的 3 个接口如下：
-- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心。
+- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心，约束了事务常用的方法。
+  - > 通过这个接口，Spring 为各个平台如 JDBC(DataSourceTransactionManager)、Hibernate(HibernateTransactionManager)、JPA(JpaTransactionManager)等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。
+  - ```
+    public interface PlatformTransactionManager {
+        //获得事务
+        TransactionStatus getTransaction(@Nullable TransactionDefinition var1) throws TransactionException;
+        //提交事务
+        void commit(TransactionStatus var1) throws TransactionException;
+        //回滚事务
+        void rollback(TransactionStatus var1) throws TransactionException;
+    }
+    ```
 - TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
 - TransactionStatus： 事务运行状态。
+  - ```
+    public interface TransactionStatus{
+        boolean isNewTransaction(); // 是否是新的事务
+        boolean hasSavepoint(); // 是否有恢复点
+        void setRollbackOnly();  // 设置为只回滚
+        boolean isRollbackOnly(); // 是否为只回滚
+        boolean isCompleted; // 是否已完成
+    }
+    ```
 
 1. 注解@EnableTransactionManagement 实现事务相关的Bean加载（现在自动配置使用AutoConfiguration实现）
 2. TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
 3. 实现原理为使用AOP+ThreadLocal实现。
 
+- **事务能否生效数据库引擎是否支持事务是关键。比如常用的 MySQL 数据库默认使用支持事务的innodb引擎。但是，如果把数据库引擎变为 myisam，那么程序也就不再支持事务了！**
 > 详细可见spring 源码部分
 
-### <a name="12">@Transactional 的声明式事务管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- Propagation.REQUIRED：如果当前存在事务，则加入该事务，如果当前不存在事务，则创建一个新的事务。
-- Propagation.SUPPORTS：如果当前存在事务，则加入该事务；如果当前不存在事务，则以非事务的方式继续运行。
-- Propagation.MANDATORY：如果当前存在事务，则加入该事务；如果当前不存在事务，则抛出异常。
+### <a name="13">编程式事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 使用 TransactionManager 进行编程式事务管理
+2. 使用TransactionTemplate 进行编程式事务管理
+```
+    private PlatformTransactionManager transactionManager;
 
-- Propagation.REQUIRES_NEW：重新创建一个新的事务，如果当前存在事务，延缓当前的事务。
+    private TransactionTemplate transactionTemplate;
+
+    private JdbcTemplate jdbcTemplate;
+  /**
+     * 使用transaction manager实现编程性事务
+     */
+    @GetMapping("/manager")
+    public void testManager() {
+        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            String sql = "INSERT INTO `demo` (`demo_id`, `demo_code`, `demo_name`, `status`, `status_desc`, `demo_qty`, `demo_rate`, `start_date`, `end_date`, `create_time`, `create_by`, `create_by_name`, `update_time`, `update_by`, `update_by_name`, `version`) VALUES (?, 11, ?, '1', '123', '12', '12.000', '2020-11-19 19:36:07', '2020-11-07 19:36:11', '2020-11-07 19:36:18', '123', '123', NULL, NULL, NULL, '0') ";
+            Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
+            jdbcTemplate.update(sql, objects);
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+        }
+    }
+
+    /**
+     * 使用transaction Template 实现编程性事务
+     */
+    @GetMapping("/template")
+    public void testTemplate() {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                try {
+                    String sql = "INSERT INTO `demo` (`demo_id`, `demo_code`, `demo_name`, `status`, `status_desc`, `demo_qty`, `demo_rate`, `start_date`, `end_date`, `create_time`, `create_by`, `create_by_name`, `update_time`, `update_by`, `update_by_name`, `version`) VALUES (?, 11, ?, '1', '123', '12', '12.000', '2020-11-19 19:36:07', '2020-11-07 19:36:11', '2020-11-07 19:36:18', '123', '123', NULL, NULL, NULL, '0') ";
+                    Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
+                    jdbcTemplate.update(sql, objects);
+                    // ....  业务代码
+                } catch (Exception e){
+                    //回滚
+                    transactionStatus.setRollbackOnly();
+                }
+
+            }
+        });
+    }
+```
+### <a name="14">@Transactional 声明式事务管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```
+@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = RuntimeException.class, readOnly = false, timeout = -1)
+@GetMapping("/update")
+public String update() {
+... 
+}
+```
+### <a name="15">声明式事务相关属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+| 属性名      | 说明                                                                                         |
+| :---------- | :------------------------------------------------------------------------------------------- |
+| propagation | 事务的传播行为，默认值为 REQUIRED，可选的值在上面介绍过                                      |
+| isolation   | 事务的隔离级别，默认值采用 DEFAULT，可选的值在上面介绍过                                     |
+| timeout     | 事务的超时时间，默认值为-1（不会超时）。如果超过该时间限制但事务还没有完成，则自动回滚事务。 |
+| readOnly    | 指定事务是否为只读事务，默认值为 false。                                                     |
+| rollbackFor | 用于指定能够触发事务回滚的异常类型，并且可以指定多个异常类型。                               |
+
+
+### <a name="16">事务传播行为</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+**事务传播行为是为了解决业务层方法之间互相调用的事务问题。**
+
+汇总：
+- **Propagation.REQUIRED**：如果当前存在事务，则加入该事务，如果当前不存在事务，则创建一个新的事务。
+- Propagation.SUPPORTS：如果当前存在事务，则加入该事务；如果当前不存在事务，则以非事务的方式继续运行。
+- **Propagation.MANDATORY**：如果当前存在事务，则加入该事务；如果当前不存在事务，则抛出异常IllegalTransactionStateException。
+
+- **Propagation.REQUIRES_NEW**：重新创建一个新的事务，如果当前存在事务，延缓当前的事务。
+- **Propagation.NESTED**：如果没有，就新建一个事务；如果有，就在当前事务中嵌套其他事务。
+
 - Propagation.NOT_SUPPORTED：以非事务的方式运行，如果当前存在事务，暂停当前的事务。
 - Propagation.NEVER：以非事务的方式运行，如果当前存在事务，则抛出异常。
-- Propagation.NESTED：如果没有，就新建一个事务；如果有，就在当前事务中嵌套其他事务。
   
-### <a name="13">spring transaction的隔离级别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="17">spring transaction的隔离级别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - TransactionDefinition.ISOLATION_DEFAULT :使用后端数据库默认的隔离级别，MySQL 默认采用的 REPEATABLE_READ 隔离级别 Oracle 默认采用的 READ_COMMITTED 隔离级别.
 - TransactionDefinition.ISOLATION_READ_UNCOMMITTED :最低的隔离级别，使用这个隔离级别很少，因为它允许读取尚未提交的数据变更，可能会导致脏读、幻读或不可重复读
 - TransactionDefinition.ISOLATION_READ_COMMITTED : 允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复读仍有可能发生
 - TransactionDefinition.ISOLATION_REPEATABLE_READ : 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。
 - TransactionDefinition.ISOLATION_SERIALIZABLE : 最高的隔离级别，完全服从 ACID 的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会用到该级别。
 
-### <a name="14"> 同一个方法无事务的方法调用有事务的方法会出现什么情况？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="18">事务失效场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 注解导致的事务失效：
+    1. @Transactional 注解属性 propagation 设置错误，设置了以非事务的状态运行
+    2. @Transactional  注解属性 rollbackFor 设置错误，实际抛出的错误跟设置不一致
+2. 方法修饰符导致的事务失效
+    1. @Transactional 应用在非 public 修饰的方法上，在事务方法拦截执行中，非public方法不执行。
+    2. 在动态代理层面，若为也需要代理的方法为public才能正常代理。如JDK动态代理，通过接口代理，接口方法默认都是public。而Cglib基于类的代理中会默认判断是否为public方法。
+3. 同一个类中方法调用，导致@Transactional失效，在当前的bean中非事务方法调用事务方法为什么不生效？
+    - 当进行**方法拦截**的时候，方法拦截器首先获取当前动态代理的对象所代理的原始对象。如果判断当前的方法比如save方法没有Advice(增强)，则直接调用原对象的方法，即这个时候调用的是FirstApp.save方法。
+4. 异常被 catch 导致@Transactional失效
+5. 数据库引擎不支持事务
+
+#### <a name="19"> 同一个方法调用无事务的解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 当这个方法被同一个类调用的时候，spring无法将这个方法加到事务管理中。只有在代理对象之间进行调用时，可以触发切面逻辑。
 1. 使用 ApplicationContext 上下文对象获取该对象;
 2. 使用 AopContext.currentProxy() 获取代理对象,但是需要配置exposeProxy=true
 
 
-
-## <a name="15">Spring boot 自动配置的加载流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="20">Spring boot 自动配置的加载流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 在上下文初始化中invoke**PostProcessor是有执行等级之分的。
 > 自动配置加载主要在上下文初始化的invokeBeanFactoryPostProcessors(beanFactory);
 1. Spring boot的配置自动加载主要通过@SpringBootApplication 中的 @EnableAutoConfiguration注解实现
@@ -138,7 +248,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 4. 通过@ConditionOn的系列注解并对比过滤符合当前配置的配置项，重新进行config的注解扫描添加需要的bean配置到BenDefinition中
 5. 再执行初始化方法。
 
-## <a name="16">Spring mvc 工作原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="21">Spring mvc 工作原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 流程说明（重要）：
 1. 客户端（浏览器）发送请求，直接请求到 DispatcherServlet。
 2. DispatcherServlet 根据请求信息调用 HandlerMapping，解析请求对应的 Handler。
@@ -151,7 +261,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 
 
 
-## <a name="17">@RestController vs @Controller</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="22">@RestController vs @Controller</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 @RestController
   - ```
     @Controller
@@ -161,7 +271,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 > 单独使用 @Controller 不加 @ResponseBody的话返回一个视图，这种情况属于比较传统的Spring MVC 的应用
 - @ResponseBody 注解的作用是将 Controller 的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中，通常用来返回 JSON 或者 XML 数据，返回 JSON 数据的情况比较多。
 
-## <a name="18">spring中的设计模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="23">spring中的设计模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 工厂设计模式 : Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
 - 代理设计模式 : Spring AOP 功能的实现。
 - 单例设计模式 : Spring 中的 Bean 默认都是单例的。
@@ -170,16 +280,16 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 - 观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。
 - 适配器模式 :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。
 
-## <a name="19">零散的一些面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="24">零散的一些面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="20">@Autowired和@Resource的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="25">@Autowired和@Resource的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. @Autowired注解是按类型装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它required属性为false。可以结合@Qualifier注解一起使用。
 2. @Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上，但它默认按名称装配。默认按byName自动注入，也提供按照byType 注入；
 3. @Resources按名字，是JDK的，@Autowired按类型，是Spring的。
 4. 处理这2个注解的BeanPostProcessor不一样CommonAnnotationBeanPostProcessor是处理@Resource注解的，AutoWiredAnnotationBeanPostProcessor是处理@AutoWired注解的
 
 
-#### <a name="21">@PostConstruct和@PreDestroy</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="26">@PostConstruct和@PreDestroy</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 @PostConstruct和@PreDestroy 是两个作用于 Servlet 生命周期的注解，被这两个注解修饰的方法可以保证在整个 Servlet 生命周期只被执行一次，即使 Web 容器在其内部中多次实例化该方法所在的 bean。
   - @PostConstruct : 用来修饰方法，标记在项目启动的时候执行这个方法,一般用来执行某些初始化操作比如全局配置。PostConstruct 注解的方法会在构造函数之后执行,Servlet 的init()方法之前执行。
   - @PreDestroy : 当 bean 被 Web 容器的时候被调用，一般用来释放 bean 所持有的资源。。@PreDestroy 注解的方法会在Servlet 的destroy()方法之前执行。
@@ -203,7 +313,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
       }
   }
   ```
-#### <a name="22">Spring 的异常处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">Spring 的异常处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用 @ControllerAdvice和@ExceptionHandler处理全局异常
   - ```
     @RestControllerAdvice(basePackages = {"com.design.apidesign.controller"}) 
@@ -239,7 +349,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
     }
     ```
 
-#### <a name="23"> json 数据处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="28"> json 数据处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - @JsonIgnoreProperties 作用在类上用于过滤掉特定字段不返回或者不解析
 - @JsonIgnore一般用于类的属性上，作用和上面的@JsonIgnoreProperties 一样。
 - @JsonFormat一般用来格式化 json 数据。
@@ -279,7 +389,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
   }
   ```
   
-#### <a name="24"> @Component 和 @Bean 的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="29"> @Component 和 @Bean 的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 作用对象不同: @Component 注解作用于类，而@Bean注解作用于方法。
   - @Component通常是通过类路径扫描来自动侦测以及自动装配到Spring容器中（我们可以使用 @ComponentScan 注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中）。@Bean 注解通常是我们在标有该注解的方法中定义产生这个 bean,@Bean告诉了Spring这是某个类的示例，当我需要用它的时候还给我。
   - @Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册bean。比如当我们引用第三方库中的类需要装配到 Spring容器时，则只能通过 @Bean来实现。

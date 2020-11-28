@@ -67,26 +67,119 @@ getSingleton(beanName, true)这个方法实际上就是到缓存中尝试去获�
 - https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ
 
 ## Spring Transaction
+
+### 基础知识
 Spring 框架中，事务管理相关最重要的 3 个接口如下：
-- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心。
+- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心，约束了事务常用的方法。
+  - > 通过这个接口，Spring 为各个平台如 JDBC(DataSourceTransactionManager)、Hibernate(HibernateTransactionManager)、JPA(JpaTransactionManager)等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。
+  - ```
+    public interface PlatformTransactionManager {
+        //获得事务
+        TransactionStatus getTransaction(@Nullable TransactionDefinition var1) throws TransactionException;
+        //提交事务
+        void commit(TransactionStatus var1) throws TransactionException;
+        //回滚事务
+        void rollback(TransactionStatus var1) throws TransactionException;
+    }
+    ```
 - TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
 - TransactionStatus： 事务运行状态。
+  - ```
+    public interface TransactionStatus{
+        boolean isNewTransaction(); // 是否是新的事务
+        boolean hasSavepoint(); // 是否有恢复点
+        void setRollbackOnly();  // 设置为只回滚
+        boolean isRollbackOnly(); // 是否为只回滚
+        boolean isCompleted; // 是否已完成
+    }
+    ```
 
 1. 注解@EnableTransactionManagement 实现事务相关的Bean加载（现在自动配置使用AutoConfiguration实现）
 2. TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
 3. 实现原理为使用AOP+ThreadLocal实现。
 
+- **事务能否生效数据库引擎是否支持事务是关键。比如常用的 MySQL 数据库默认使用支持事务的innodb引擎。但是，如果把数据库引擎变为 myisam，那么程序也就不再支持事务了！**
 > 详细可见spring 源码部分
 
-### @Transactional 的声明式事务管理
-- Propagation.REQUIRED：如果当前存在事务，则加入该事务，如果当前不存在事务，则创建一个新的事务。
-- Propagation.SUPPORTS：如果当前存在事务，则加入该事务；如果当前不存在事务，则以非事务的方式继续运行。
-- Propagation.MANDATORY：如果当前存在事务，则加入该事务；如果当前不存在事务，则抛出异常。
+### 编程式事务
+1. 使用 TransactionManager 进行编程式事务管理
+2. 使用TransactionTemplate 进行编程式事务管理
+```
+    private PlatformTransactionManager transactionManager;
 
-- Propagation.REQUIRES_NEW：重新创建一个新的事务，如果当前存在事务，延缓当前的事务。
+    private TransactionTemplate transactionTemplate;
+
+    private JdbcTemplate jdbcTemplate;
+  /**
+     * 使用transaction manager实现编程性事务
+     */
+    @GetMapping("/manager")
+    public void testManager() {
+        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            String sql = "INSERT INTO `demo` (`demo_id`, `demo_code`, `demo_name`, `status`, `status_desc`, `demo_qty`, `demo_rate`, `start_date`, `end_date`, `create_time`, `create_by`, `create_by_name`, `update_time`, `update_by`, `update_by_name`, `version`) VALUES (?, 11, ?, '1', '123', '12', '12.000', '2020-11-19 19:36:07', '2020-11-07 19:36:11', '2020-11-07 19:36:18', '123', '123', NULL, NULL, NULL, '0') ";
+            Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
+            jdbcTemplate.update(sql, objects);
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+        }
+    }
+
+    /**
+     * 使用transaction Template 实现编程性事务
+     */
+    @GetMapping("/template")
+    public void testTemplate() {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                try {
+                    String sql = "INSERT INTO `demo` (`demo_id`, `demo_code`, `demo_name`, `status`, `status_desc`, `demo_qty`, `demo_rate`, `start_date`, `end_date`, `create_time`, `create_by`, `create_by_name`, `update_time`, `update_by`, `update_by_name`, `version`) VALUES (?, 11, ?, '1', '123', '12', '12.000', '2020-11-19 19:36:07', '2020-11-07 19:36:11', '2020-11-07 19:36:18', '123', '123', NULL, NULL, NULL, '0') ";
+                    Object[] objects = new Object[]{String.valueOf(random.nextInt(1000000)), "test"};
+                    jdbcTemplate.update(sql, objects);
+                    // ....  业务代码
+                } catch (Exception e){
+                    //回滚
+                    transactionStatus.setRollbackOnly();
+                }
+
+            }
+        });
+    }
+```
+### @Transactional 声明式事务管理
+```
+@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = RuntimeException.class, readOnly = false, timeout = -1)
+@GetMapping("/update")
+public String update() {
+... 
+}
+```
+### 声明式事务相关属性
+
+| 属性名      | 说明                                                                                         |
+| :---------- | :------------------------------------------------------------------------------------------- |
+| propagation | 事务的传播行为，默认值为 REQUIRED，可选的值在上面介绍过                                      |
+| isolation   | 事务的隔离级别，默认值采用 DEFAULT，可选的值在上面介绍过                                     |
+| timeout     | 事务的超时时间，默认值为-1（不会超时）。如果超过该时间限制但事务还没有完成，则自动回滚事务。 |
+| readOnly    | 指定事务是否为只读事务，默认值为 false。                                                     |
+| rollbackFor | 用于指定能够触发事务回滚的异常类型，并且可以指定多个异常类型。                               |
+
+
+### 事务传播行为
+**事务传播行为是为了解决业务层方法之间互相调用的事务问题。**
+
+汇总：
+- **Propagation.REQUIRED**：如果当前存在事务，则加入该事务，如果当前不存在事务，则创建一个新的事务。
+- Propagation.SUPPORTS：如果当前存在事务，则加入该事务；如果当前不存在事务，则以非事务的方式继续运行。
+- **Propagation.MANDATORY**：如果当前存在事务，则加入该事务；如果当前不存在事务，则抛出异常IllegalTransactionStateException。
+
+- **Propagation.REQUIRES_NEW**：重新创建一个新的事务，如果当前存在事务，延缓当前的事务。
+- **Propagation.NESTED**：如果没有，就新建一个事务；如果有，就在当前事务中嵌套其他事务。
+
 - Propagation.NOT_SUPPORTED：以非事务的方式运行，如果当前存在事务，暂停当前的事务。
 - Propagation.NEVER：以非事务的方式运行，如果当前存在事务，则抛出异常。
-- Propagation.NESTED：如果没有，就新建一个事务；如果有，就在当前事务中嵌套其他事务。
   
 ### spring transaction的隔离级别
 - TransactionDefinition.ISOLATION_DEFAULT :使用后端数据库默认的隔离级别，MySQL 默认采用的 REPEATABLE_READ 隔离级别 Oracle 默认采用的 READ_COMMITTED 隔离级别.
@@ -95,11 +188,23 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 - TransactionDefinition.ISOLATION_REPEATABLE_READ : 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。
 - TransactionDefinition.ISOLATION_SERIALIZABLE : 最高的隔离级别，完全服从 ACID 的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会用到该级别。
 
-###  同一个方法无事务的方法调用有事务的方法会出现什么情况？
+
+### 事务失效场景
+1. 注解导致的事务失效：
+    1. @Transactional 注解属性 propagation 设置错误，设置了以非事务的状态运行
+    2. @Transactional  注解属性 rollbackFor 设置错误，实际抛出的错误跟设置不一致
+2. 方法修饰符导致的事务失效
+    1. @Transactional 应用在非 public 修饰的方法上，在事务方法拦截执行中，非public方法不执行。
+    2. 在动态代理层面，若为也需要代理的方法为public才能正常代理。如JDK动态代理，通过接口代理，接口方法默认都是public。而Cglib基于类的代理中会默认判断是否为public方法。
+3. 同一个类中方法调用，导致@Transactional失效，在当前的bean中非事务方法调用事务方法为什么不生效？
+    - 当进行**方法拦截**的时候，方法拦截器首先获取当前动态代理的对象所代理的原始对象。如果判断当前的方法比如save方法没有Advice(增强)，则直接调用原对象的方法，即这个时候调用的是FirstApp.save方法。
+4. 异常被 catch 导致@Transactional失效
+5. 数据库引擎不支持事务
+
+####  同一个方法调用无事务的解决方案
 - 当这个方法被同一个类调用的时候，spring无法将这个方法加到事务管理中。只有在代理对象之间进行调用时，可以触发切面逻辑。
 1. 使用 ApplicationContext 上下文对象获取该对象;
 2. 使用 AopContext.currentProxy() 获取代理对象,但是需要配置exposeProxy=true
-
 
 
 ## Spring boot 自动配置的加载流程
