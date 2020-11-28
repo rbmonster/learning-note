@@ -1,4 +1,5 @@
 <a name="index">**Index**</a>
+
 <a href="#0">head first 设计模式</a>  
 &emsp;&emsp;<a href="#1">设计原则： </a>  
 &emsp;&emsp;<a href="#2">策略模式</a>  

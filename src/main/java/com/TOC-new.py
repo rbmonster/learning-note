@@ -8,7 +8,7 @@ lines_in_file = []
 """生成目录列表中的某一项"""
 def creat_directory_line(line,headline_mark,i):
     if headline_mark == '#':
-        return '<a href="#' + str(i) + '">' + line[2:-1] + "</a>  \n"
+        return '<a href="#' + str(i) + '">' +line[2:-1] + "</a>  \n"
     elif headline_mark == '##':
         #&emsp;为Markdown中的一种缩进，这里不直接用空格作为缩进是因为多个空格一起出现可能会生成代码块，引发歧义
         return '&emsp;<a href="#' + str(i) + '">' + line[3:-1] + "</a>  \n"
@@ -25,7 +25,7 @@ def creat_directory_line(line,headline_mark,i):
 def creat_directory(f):
     i = 0
     directory = []
-    directory.append('<a name="index">**Index**</a>\n')
+    directory.append('<a name="index">**Index**</a>\n\n')
     for line in f:
         lines_in_file.append(line)
     f.close()

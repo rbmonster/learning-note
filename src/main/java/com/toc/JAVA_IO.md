@@ -1,4 +1,5 @@
 <a name="index">**Index**</a>
+
 &emsp;&emsp;<a href="#0"><a name="0">策略模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a></a>  
 <a href="#1">Java IO </a>  
 &emsp;<a href="#2">基本概念</a>  

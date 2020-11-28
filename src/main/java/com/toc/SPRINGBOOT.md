@@ -1,18 +1,20 @@
 <a name="index">**Index**</a>
-&emsp;<a href="#0">Spring boot start</a>  
-&emsp;<a href="#1">spring 构造方法</a>  
-&emsp;<a href="#2">Spring boot的run方法</a>  
-&emsp;<a href="#3">prepare准备上下文</a>  
-&emsp;<a href="#4">refresh方法</a>  
-&emsp;<a href="#5">spring boot相关知识</a>  
-#Spring boot 
 
-## <a name="0">Spring boot start</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+<a href="#0">Spring boot </a>  
+&emsp;<a href="#1">Spring boot start</a>  
+&emsp;<a href="#2">spring 构造方法</a>  
+&emsp;<a href="#3">Spring boot的run方法</a>  
+&emsp;<a href="#4">prepare准备上下文</a>  
+&emsp;<a href="#5">refresh方法</a>  
+&emsp;<a href="#6">spring boot相关知识</a>  
+# <a name="0">Spring boot </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+## <a name="1">Spring boot start</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/springBootLoadother.png)
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/spingLoad.jpg)
 
-## <a name="1">spring 构造方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="2">spring 构造方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
@@ -28,7 +30,7 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
     this.mainApplicationClass = deduceMainApplicationClass();
 }
 ```
-## <a name="2">Spring boot的run方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="3">Spring boot的run方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     // spring boot start
 	public ConfigurableApplicationContext run(String... args) {
@@ -81,7 +83,7 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 	}
 ```
 
-## <a name="3">prepare准备上下文</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="4">prepare准备上下文</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
@@ -126,7 +128,7 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 	}
 ```
 
-## <a name="4">refresh方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="5">refresh方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 调用上下文的refresh方法
   - AbstractRefreshableApplicationContext:这个类在每次调用refresh方法的时候都会产生一个新的beanfactory实例(通常是，但是不是必须的)。这个应用上下文会通过一系列的配置文件去加载BeanDefinition。在调用refresh方法的时候才会创建内部持有的BeanFacoty实例(可以参见该类中的refreshBeanFactory方法）
   - GenericApplicationContext:这个类内部持有唯一的一个DefaultListableBeanFactory实例，而且相较于其它ApplicationContext的实现类，这个类在创建的时候就会有一个BeanFactory的实例，意思就是在refresh方法调用前，内部持有的BeanFactory实例就已经创建，且这个类从开始到最终都是一个BeanFacoty实例。
@@ -225,7 +227,7 @@ public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySourc
 
 ---
 
-## <a name="5">spring boot相关知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="6">spring boot相关知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/BootStrapLoad.png)
 Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application,
 - application 配置文件这个容易理解，主要用于 Spring Boot 项目的自动化配置。
