@@ -125,18 +125,33 @@ HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets Layer）�
 通过使用 SSL，HTTPS 具有了加密（防窃听）、认证（防伪装）和完整性保护（防篡改）。
 
 Https采用混合的加密机制。
-1. 第一阶段使用非对称加密方式，传递对称加密所需的secret Key。
-2. 第二阶段使用对称加密的方式，进行消息传输
+1. 第一阶段使用非对称加密方式，**传递对称加密**所需的客户端及服务端的会话秘钥。
+   1. 客户端收到非对称加密公钥，经过CA认证。生成客户端的RSA非对称加密**公私钥**及客户端会话秘钥。
+   2. 客户端使用服务端非对称公钥(asymmetric-public-sever)加密: 客户端RSA公钥 + 客户端会话秘钥
+   3. 服务器使用私钥解密获取客户端RSA公钥 + 客户端会话秘钥，服务器生成 服务器会话秘钥。
+   4. 服务端使用客户端RSA公钥加密，传输：服务端会话秘钥
+   5. 客户端使用自己的RSA秘钥解密，获取服务端会话秘钥。
+2. 第二阶段使用对称加密的方式，进行消息传输。第一阶段通过非对称加密传输的方式，客户端及服务端都获取了对称加密所需的秘钥。
 
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/HttpsFlow.png)
+
+
+- 相关资料：https://blog.csdn.net/user11223344abc/article/details/83658812#1Https_1
 ### 加密方式
 对称密钥加密：加密和解密使用同一密钥。
 - 优点：运算速度快；
 - 缺点：无法安全地将密钥传输给通信方。
+> - DES（Data Encryption Standard）：数据加密标准，速度较快，适用于加密大量数据的场合。
+> - 3DES（Triple DES）：是基于DES，对一块数据用三个不同的密钥进行三次加密，强度更高。
+> - AES（Advanced Encryption Standard）：高级加密标准，是下一代的加密算法标准，速度快，安全级别高；
+
 非对称密钥加密，又称公开密钥加密，加密和解密使用不同的密钥。
   - 接收方发送公开的秘钥，公开的秘钥用于加密。接收到消息之后，接收方使用私有秘钥进行解密。
   - 优点：可以更安全地将公开密钥传输给通信发送方；
   - 缺点：运算速度慢。
-  
+> - RSA：由 RSA 公司发明，是一个支持变长密钥的公共密钥算法，需要加密的文件块的长度也是可变的;
+> - DSA（Digital Signature Algorithm）：数字签名算法，是一种标准的 DSS（数字签名标准）;
+> - ECC（Elliptic Curves Cryptography）：椭圆曲线密码编码学。
   
 ## 证书认证
 数字证书认证机构（CA，Certificate Authority）是客户端与服务器双方都可信赖的第三方机构。

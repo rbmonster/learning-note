@@ -69,6 +69,7 @@ public class QuickSort {
         while (i < j) {
             while (i < j && arr[i] <= tmp) i++;
             while (i < j && arr[j] >= tmp) j--;
+            if(i>=j) break;
             swap(arr, i, j);
         }
         swap(arr, i, left);

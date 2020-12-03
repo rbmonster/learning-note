@@ -1,6 +1,8 @@
 package com.learning.algorithm;
 
+import com.learning.algorithm.basic.treeNode.TreeNode;
 import javafx.util.Pair;
+import org.bouncycastle.asn1.cmc.PKIResponse;
 import org.omg.PortableInterceptor.INACTIVE;
 
 import java.util.*;
@@ -58,7 +60,15 @@ public class Demo {
          Scanner scanner = new Scanner(System.in);
         Demo demo = new Demo();
          demo.canCompleteCircuit(new int[]{1,2,3,4,5}, new int[]{3,4,5,1,2});
-
+        List<Integer> result = new ArrayList<>();
+        Integer[] re = new Integer[123];
+         result.toArray(re);
+         TreeSet<Integer> treeSet = new TreeSet<>();
+         treeSet.add(1);
+         treeSet.add(2);
+         treeSet.add(3);
+         treeSet.add(4);
+        System.out.println(treeSet.last());
     }
     Map<String, Integer> note = new HashMap<>();
 
