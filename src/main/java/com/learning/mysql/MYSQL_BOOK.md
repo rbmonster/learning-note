@@ -2,8 +2,7 @@
 ## mysql整体的架构
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/mysqlprocess.jpg)
 - MySQL可以分为Server层和存储引擎层两部分
-  - Server层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在
-这一层实现，比如存储过程、触发器、视图等。
+  - Server层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。
   - 存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持InnoDB、MyISAM、Memory等多个存储引擎。现在最常用的存储引擎是InnoDB，它从MySQL5.5.5版本开始成为了默认存储引擎
 
 ### 连接器
@@ -36,11 +35,9 @@
 
 ### 优化器
 在开始执行之前， 还要先经过优化器的处理。
-- 优化器是在表里面有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）
-的时候， 决定各个表的连接顺序。比如你执行下面这样的语句，这个语句是执行两个表的join：
+- 优化器是在表里面有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候， 决定各个表的连接顺序。比如你执行下面这样的语句，这个语句是执行两个表的join：
 ```mysql> select * from t1 join t2 using(ID) where t1.c=10 and t2.d=20;```
-- 既可以先从表t1里面取出c=10的记录的ID值，再根据ID值关联到表t2，再判断t2里面d的值是
-否等于20。
+- 既可以先从表t1里面取出c=10的记录的ID值，再根据ID值关联到表t2，再判断t2里面d的值是否等于20。
 - 也可以先从表t2里面取出d=20的记录的ID值，再根据ID值关联到t1，再判断t1里面c的值是否
 等于10。
 这两种执行方法的逻辑结果是一样的，但是执行的效率会有不同，而优化器的作用就是决定选择效率高的方案。
@@ -56,76 +53,79 @@ mysql> select * from T where ID=10;
   2.调用引擎接口取“下一行”，重复相同的判断逻辑，直到取到这个表的最后一行。
   3.执行器将上述遍历过程中所有满足条件的行组成的记录集作为结果集返回给客户端。
 
-- 对于有索引的表，执行的逻辑也差不多。第一次调用的是“取满足条件的第一行”这个接口，之后循环取“满足条件的下一行”这个接口，这些接口都是引擎中已经定义好的。
-- 你会在数据库的慢查询日志中看到一个rows_examined的字段，表示这个语句执行过程中扫描了多少行。这个值就是在执行器每次调用引擎获取数据行的时候累加的。
+对于有索引的表，执行的逻辑也差不多。第一次调用的是“取满足条件的第一行”这个接口，之后循环取“满足条件的下一行”这个接口，这些接口都是引擎中已经定义好的。
+你会在数据库的慢查询日志中看到一个rows_examined的字段，表示这个语句执行过程中扫描了多少行。这个值就是在执行器每次调用引擎获取数据行的时候累加的。
 - 在有些场景下，执行器调用一次，在引擎内部则扫描了多行，因此引擎扫描行数跟rows_examined并不是完全相同的。
 
 
 ## redo log 与 binlog
 ### redo log
-- MySQL里经常说到的WAL技术，WAL的全称是WriteAheadLogging，它的关键点就是先写日志，再写磁盘，也就是先写粉板，等不忙的时候再写账本。
+
+MySQL里经常说到的WAL技术，WAL的全称是WriteAheadLogging，它的关键点就是先写日志，再写磁盘，也就是先写粉板，等不忙的时候再写账本。
 - 当有一条记录需要更新的时候， InnoDB引擎就会先把记录写到redo log（粉板） 里面， 并更新内存， 这个时候更新就算完成了。 同时， InnoDB引擎会在适当的时候， 将这个操作记录更新到磁盘里面， 而这个更新往往是在系统比较空闲的时候做， 这就像打烊以后掌柜做的事。(由于磁盘连接开销大，)
 - InnoDB的redo log是固定大小的， 比如可以配置为一组4个文件， 每个文件的大小是1GB， 那么这块“粉板”总共就可以记录4GB的操作。 从头开始写， 写到末尾就又回到开头循环写， 如下面这个图所示
 
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologwrite.jpg)
 
-- redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志的。 在执行事务的时候，如insert、update会先存在buffer中。等事务commit，再一起写入redo log
+redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志的。 在执行事务的时候，如insert、update会先存在buffer中。等事务commit，再一起写入redo log
 
 #### redo log 写入机制
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologwrite.png)
-- 这三种状态分别是：
-    1. 存在redo log buffer中， 物理上是在MySQL进程内存中， 就是图中的红色部分；
-    2. 写到磁盘(write)， 但是没有持久化（fsync)， 物理上是在文件系统的page cache里面， 也就是图中的黄色部分；
-    3. 持久化到磁盘， 对应的是hard disk， 也就是图中的绿色部分。
+这三种状态分别是：
+1. 存在redo log buffer中， 物理上是在MySQL进程内存中， 就是图中的红色部分；
+2. 写到磁盘(write)， 但是没有持久化（fsync)， 物理上是在文件系统的page cache里面， 也就是图中的黄色部分；
+3. 持久化到磁盘， 对应的是hard disk， 也就是图中的绿色部分。
     
-- 为了控制redo log的写入策略， InnoDB提供了innodb_flush_log_at_trx_commit参数， 它有三种可能取值：
-  1. 设置为0的时候， 表示每次事务提交时都只是把redo log留在redo log buffer中;
-  2. 设置为1的时候， 表示每次事务提交时都将redo log直接持久化到磁盘；
-  3. 设置为2的时候， 表示每次事务提交时都只是把redo log写到page cache。
-- InnoDB写盘的三种情况：
-    1. InnoDB有一个后台线程， 每隔1秒， 就会把redo log buffer中的日志， 调用write写到文件系统的page cache， 然后调用fsync持久化到磁盘。
-    2. redo log buffer占用的空间即将达到 innodb_log_buffer_size一半的时候，后台线程会主动写盘。
-    3. 并行的事务提交的时候， 顺带将这个事务的redo log buffer持久化到磁盘。 
+为了控制redo log的写入策略， InnoDB提供了innodb_flush_log_at_trx_commit参数， 它有三种可能取值：
+1. 设置为0的时候， 表示每次事务提交时都只是把redo log留在redo log buffer中;
+2. 设置为1的时候， 表示每次事务提交时都将redo log直接持久化到磁盘；
+3. 设置为2的时候， 表示每次事务提交时都只是把redo log写到page cache。
+
+InnoDB写盘的三种情况：
+1. InnoDB有一个后台线程， 每隔1秒， 就会把redo log buffer中的日志， 调用write写到文件系统的page cache， 然后调用fsync持久化到磁盘。
+2. redo log buffer占用的空间即将达到 innodb_log_buffer_size一半的时候，后台线程会主动写盘。
+3. 并行的事务提交的时候， 顺带将这个事务的redo log buffer持久化到磁盘。 
 
 ### binlog
-- MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
+MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
 
 #### bin log写入机制
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/binlogwrite.jpg)
-- 每个线程有自己binlog cache， 但是共用同一份binlog文件。
-  1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
-  2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下， 我们认为fsync才占磁盘的IOPS
+每个线程有自己binlog cache， 但是共用同一份binlog文件。
+1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
+2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下， 我们认为fsync才占磁盘的IOPS
 
-- write 和fsync的时机， 是由参数sync_binlog控制的：
-  1. sync_binlog=0的时候， 表示每次提交事务都只write， 不fsync；
-  2. sync_binlog=1的时候， 表示每次提交事务都会执行fsync；
-  3. sync_binlog=N(N>1)的时候， 表示每次提交事务都write， 但累积N个事务后才fsync。
+write 和fsync的时机， 是由参数sync_binlog控制的：
+1. sync_binlog=0的时候， 表示每次提交事务都只write， 不fsync；
+2. sync_binlog=1的时候， 表示每次提交事务都会执行fsync；
+3. sync_binlog=N(N>1)的时候， 表示每次提交事务都write， 但累积N个事务后才fsync。
   
-- bin log 三种数据格式，主要区别于在存储bin log 的格式区别  越来越多的场景要求把MySQL的binlog格式设置成row，有利于恢复数据。
-  1. statement 
-  2. row
-  3. mix 上面两种的混合
+bin log 三种数据格式，主要区别于在存储bin log 的格式区别  越来越多的场景要求把MySQL的binlog格式设置成row，有利于恢复数据。
+1. statement 
+2. row
+3. mix 上面两种的混合
 
 ### 两种日志有以下三点不同。
-  1. redo log是InnoDB引擎特有的； binlog是MySQL的Server层实现的， 所有引擎都可以使用。
-  2. redo log是物理日志， 记录的是“在某个数据页上做了什么修改”； binlog是逻辑日志， 记录的是这个语句的原始逻辑， 比如“给ID=2这一行的c字段加1 ”。
-  3. redo log是循环写的， 空间固定会用完； binlog是可以追加写入的。 “追加写”是指binlog文件写到一定大小后会切换到下一个， 并不会覆盖以前的日志。
-  4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
+1. redo log是InnoDB引擎特有的； binlog是MySQL的Server层实现的， 所有引擎都可以使用。
+2. redo log是物理日志， 记录的是“在某个数据页上做了什么修改”； binlog是逻辑日志， 记录的是这个语句的原始逻辑， 比如“给ID=2这一行的c字段加1 ”。
+3. redo log是循环写的， 空间固定会用完； binlog是可以追加写入的。 “追加写”是指binlog文件写到一定大小后会切换到下一个， 并不会覆盖以前的日志。
+4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
 
 ### 一条update语句的执行流程
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/updateProcess.jpg)
 
 ### 两阶段提交
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/twocommit.jpg)
-- 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
-- 图中 两个“commit”的概念：
-  - “commit语句”， 是指MySQL语法中， 用于提交一个事务的命令。 一般跟begin/start transaction 配对使用。
-  - 图中用到的这个“commit步骤”， 指的是事务提交过程中的一个小步骤， 也是最后一步。 当这个步骤执行完成后， 这个事务就提交完成了。
-  - “commit语句”执行的时候， 会包含“commit 步骤
+两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
 
-- 崩溃后的数据恢复阶段
-  - 如果在更新或写入数据的过程中，机器出现崩溃。那么在机器在重启后，MySQL会首先去验证redolog的完整性，如果redolog中没有prepare状态的记录，则记录是完整的，就日记提交。如果redolog中存在prepare记录，那么就去验证这条redolog对应的binlog记录，如果这条binlog是完整的，那么完整提交redolog，否则执行回滚逻辑
-  - 崩溃恢复时的判断规则。
+图中 两个“commit”的概念：
+- “commit语句”， 是指MySQL语法中， 用于提交一个事务的命令。 一般跟begin/start transaction 配对使用。
+- 图中用到的这个“commit步骤”， 指的是事务提交过程中的一个小步骤， 也是最后一步。 当这个步骤执行完成后， 这个事务就提交完成了。
+- “commit语句”执行的时候， 会包含“commit 步骤
+
+崩溃后的数据恢复阶段
+- 如果在更新或写入数据的过程中，机器出现崩溃。那么在机器在重启后，MySQL会首先去验证redolog的完整性，如果redolog中没有prepare状态的记录，则记录是完整的，就日记提交。如果redolog中存在prepare记录，那么就去验证这条redolog对应的binlog记录，如果这条binlog是完整的，那么完整提交redolog，否则执行回滚逻辑
+- 崩溃恢复时的判断规则。
     1. 如果redo log里面的事务是完整的， 也就是已经有了commit标识， 则直接提交；
     2. 如果redo log里面的事务只有完整的prepare， 则判断对应的事务binlog是否存在并完整：
        - 如果是， 则提交事务；
@@ -133,21 +133,21 @@ mysql> select * from T where ID=10;
     - 如果碰到既有prepare、 又有commit的redo log， 就直接提交；
     - 如果碰到只有parepare、 而没有commit的redo log， 就拿着XID去binlog找对应的事务。
          
-- 一个事务的binlog是有完整格式的：
-  - statement格式的binlog， 最后会有COMMIT；
-  - row格式的binlog， 最后会有一个XID event
+一个事务的binlog是有完整格式的：
+- statement格式的binlog， 最后会有COMMIT；
+- row格式的binlog， 最后会有一个XID event
  
-- 为何需要两个日志
-  - 只使用binlog的话，相当于一个update语句： => binlog write ->commit ->binlog write -> commit
+为何需要两个日志
+- 只使用binlog的话，相当于一个update语句： => binlog write ->commit ->binlog write -> commit
     - 若崩溃在binlog write的阶段，就是crash-unsafe
-  - 只使用redo log，可以保证crash-safe。
+- 只使用redo log，可以保证crash-safe。
     - binlog作为MySQL一开始就有的功能， 被用在了很多地方。其中， MySQL系统高可用的基础， 就是binlog复制
     - 很多公司有异构系统（比如一些数据分析系统） ， 这些系统就靠消费MySQL的binlog来更新自己的数据。 
     
     
 #### 两阶段提交的实际执行流程
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/actualWrite.jpg)
-- WAL机制主要得益于两个方面：
+WAL机制主要得益于两个方面：
 1. redo log 和 binlog都是顺序写， 磁盘的顺序写比随机写速度要快；
 2. 组提交机制， 可以大幅度降低磁盘的IOPS消耗。
 
@@ -215,12 +215,13 @@ MySQL的事务启动方式有以下几种：
 ## 索引
 - 索引的出现其实就是为了提高数据查询的效率， 就像书的目录一样。 一本500页的书，对于数据库的表而言， 索引其实就是它的“目录”。
 - 若一张表中无主键索引，mysql会默认创建一个长度为6字节的rowid主键。
-- InnoDB里面索引对应一棵B+树
+
+InnoDB里面索引对应一棵B+树
   - 使用B+树而不是二叉搜索树的原因是，由于存储介质的特性，磁盘本身存取就比主存慢很多，每次搜索的磁盘IO的开销过大，而B+树可以使用较少次的磁盘IO搜索到对象。
   - B-Tree中一次检索最多需要h-1次I/O（根节点常驻内存），渐进复杂度为O(h)=O(logdN)。
   - 红黑树这种结构，h明显要深的多。效率明显比B-Tree差很多。
 
-- 基于主键索引和普通索引的查询有什么区别？
+基于主键索引和普通索引的查询有什么区别？
   - 如果语句是select * from T where ID=500， 即主键查询方式， 则只需要搜索ID这棵B+树。
   - 如果语句是select * from T where k=5， 即普通索引查询方式， 则需要先搜索k索引树， 得到ID的值为500， 再到ID索引树搜索一次。 这个过程称为回表。
   - 回到主键索引树搜索的过程， 我们称为回表。
@@ -235,8 +236,8 @@ MySQL的事务启动方式有以下几种：
   - 由于没有其他索引， 所以也就不用考虑其他索引的叶子节点大小的问题。
  
 ### 唯一索引与普通索引的选择
-- 两者查询性能差不多。
-- 主要区别在于，这个记录要更新的目标页不在内存中时。普通索引更新会使用change Buffer。唯一索引，由于需要校验数据的唯一性，因此每次更新操作都需要读磁盘把数据载进内存，涉及IO操作。
+1. 两者查询性能差不多。
+2. 主要区别在于，这个记录要更新的目标页不在内存中时。普通索引更新会使用change Buffer。唯一索引，由于需要校验数据的唯一性，因此每次更新操作都需要读磁盘把数据载进内存，涉及IO操作。
 - 在不影响数据一致性的前提下， InooDB会将这些更新操作缓存在change buffer中， 这样就不需要从磁盘中读入这个数据页了。 在下次查询需要访问这个数据页的时候， 将数据页读入内存， 然后执行change buffer中与这个页有关的操作。 通过这种方式就能保证这个数据逻辑的正确性
 - change buffer中的操作应用到原数据页， 得到最新结果的过程称为merge。 
   - 访问这个数据页会触发merge。
@@ -246,63 +247,61 @@ MySQL的事务启动方式有以下几种：
 - change buffer的大小， 可以通过参数innodb_change_buffer_max_size来动态设置。 这个参数设置为50的时候， 表示change buffer的大小最多只能占用buffer pool的50%。
 - 应用： 写多读少的业务来说， 页面在写完以后马上被访问到的概率比较小， 此时change buffer的使用效果最好。若频繁读写场景，则失去了优势。
 
-- change Buffer与redo log 区别
+change Buffer与redo log 区别
   - change Buffer主要用于减少读磁盘的次数，在必要读磁盘时再更新数据。
   - redo log 则是减少内存更新后，写磁盘的次数。
  
 ### B树与B+树的特征
 ### B树
 - B树和平衡二叉树稍有不同的是，B树属于多叉树又名平衡多路查找树
-- 规律：
-（1）排序方式：所有节点关键字是按递增次序排列，并遵循左小右大原则；
 
-（2）子节点数：非叶节点的子节点数>1，且<=M ，且M>=2，空树除外（注：M阶代表一个树节点最多有多少个查找路径，M=M路,当M=2则是2叉树,M=3则是3叉）；
-
-（3）所有叶子节点均在同一层、叶子节点除了包含了关键字和关键字记录的指针外也有指向其子节点的指针只不过其指针地址都为null对应下图最后一层节点的空格子;
-
-（4）关键字数：枝节点的关键字数量大于等于ceil(m/2)-1个且小于等于M-1个（注：ceil()是个朝正无穷方向取整的函数 如ceil(1.1)结果为2);
+规律：
+1. 排序方式：所有节点关键字是按递增次序排列，并遵循左小右大原则；
+2. 子节点数：非叶节点的子节点数>1，且<=M ，且M>=2，空树除外（注：M阶代表一个树节点最多有多少个查找路径，M=M路,当M=2则是2叉树,M=3则是3叉）；
+3. 所有叶子节点均在同一层、叶子节点除了包含了关键字和关键字记录的指针外也有指向其子节点的指针只不过其指针地址都为null对应下图最后一层节点的空格子;
+4. 关键字数：枝节点的关键字数量大于等于ceil(m/2)-1个且小于等于M-1个（注：ceil()是个朝正无穷方向取整的函数 如ceil(1.1)结果为2);
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/Btree.jpg)
 
 - B树插入与删除操作：https://zhuanlan.zhihu.com/p/27700617
 
 ### B+树
-- 与B树的区别
+与B树的区别
   1. 非叶子节点不保存关键字记录的指针，只进行数据索引，这样使得B+树每个非叶子节点所能保存的关键字大大增加；
   2. 叶子节点保存了父节点的所有关键字记录的指针，所有数据地址必须要到叶子节点才能获取到。所以每次数据查询的次数都一样；
   3. B+树叶子节点的关键字从小到大有序排列，左边结尾数据都会保存右边节点开始数据的指针。
   4. 非叶子节点的子节点数=关键字数（节点里面的关键字）
   
-- 特点
+特点
 1. B+树的层级更少：相较于B树B+每个非叶子节点存储的关键字数更多，同样大小的磁盘页可以容纳更多的节点元素。树的层级更少所以查询数据更快。（非叶子节点不保存数据）
-2、B+树查询速度更稳定：每次查找都要找到子节点
+2. B+树查询速度更稳定：每次查找都要找到子节点
 3. B+树天然具备排序功能：B+树所有的叶子节点数据构成了一个有序链表，在查询大小区间的数据时候更方便，数据紧密性很高，缓存的命中率也会比B树高
 
-- B+树的插入与删除：https://www.cnblogs.com/nullzx/p/8729425.html
+B+树的插入与删除：https://www.cnblogs.com/nullzx/p/8729425.html
   - B+树的插入均在叶子节点上进行。
   - B+树删除子节点上进行，若存在于父节点，那么会删除父节点数据
 
 ### 索引规则
 #### 覆盖索引
-- InnoDB存储引擎支持覆盖索引，即从辅助索引中就可以得到查询的记录，而不需要查询聚集索引中的记录。
-  - 如： ``` select id, b from t where b = xxx   (id为主键，b为索引)```
-- 由于覆盖索引可以减少树的搜索次数（减少IO）， 显著提升查询性能， 所以使用覆盖索引是一个常用的性能优化手段。
+InnoDB存储引擎支持覆盖索引，即从辅助索引中就可以得到查询的记录，而不需要查询聚集索引中的记录。
+- 如： ``` select id, b from t where b = xxx   (id为主键，b为索引)```
+由于覆盖索引可以减少树的搜索次数（减少IO）， 显著提升查询性能， 所以使用覆盖索引是一个常用的性能优化手段。
 
 
 #### 最左前缀原则
-- B+树这种索引结构， 可以利用索引的“最左前缀”， 来定位记录。  
-- 只要满足最左前缀， 就可以利用索引来加速检索。 
-  - 这个最左前缀可以是联合索引的最左N个字段， 也可以是字符串索引的最左M个字符
+B+树这种索引结构，可以利用索引的“最左前缀”， 来定位记录。  
+只要满足最左前缀， 就可以利用索引来加速检索。 这个最左前缀可以是联合索引的最左N个字段， 也可以是字符串索引的最左M个字符
 
-- 如何安排索引内的字段顺序
-  - 第一原则是， 优先考虑采用如果通过调整顺序， 可以少维护一个索引的方案。
-  - 第二原则空间。比如name字段是比age字段打，那建议创建一个（name,age)的联合索引和一个(age)的单字段索引
+如何安排索引内的字段顺序
+- 第一原则是优先考虑采用如果通过调整顺序，可以少维护一个索引的方案。
+- 第二原则是空间，比如name字段是比age字段大，那建议创建一个（name,age)的联合索引和一个(age)的单字段索引
 
 #### 索引下推
 ``` 
 mysql> select * from tuser where name like '张%' and age=10 and ismale=1; 
 ```
-- mysql 5.6 后引入索引下推。
-- 索引遍历过程中， 对索引中包含的字段先做判断， 直接过滤掉不满足条件的记录， 减少回表次数
+mysql 5.6 后引入索引下推。
+- 索引遍历过程中，对**索引中包含的字段先做判断**，直接过滤掉不满足条件的记录，减少回表次数
+- 旧版本中会进行回表操作，取得相关信息再做判断。
 
 ### 索引选错及优化器执行逻辑
 - 下面是一个索引走错的例子，图二为慢查询日志的结果，红框内容为实际扫描行数。
@@ -317,23 +316,23 @@ select * from t where a between 10000 and 20000; /*Q1*/
 select * from t force index(a) where a between 10000 and 20000;/*Q2*/
 ```
 
-- 优化器选择索引的目的是找一个最优方案，用最小的代价执行语句。其中扫描行数、是否使用临时表、是否排序等因素都会影响优化器对索引的选择判断。
+优化器选择索引的目的是找一个最优方案，用最小的代价执行语句。其中扫描行数、是否使用临时表、是否排序等因素都会影响优化器对索引的选择判断。
 
-- 扫描行数判断，mysql使用采样统计的方式来获取索引的统计信息基数。采样统计的方式可以减少磁盘的IO次数
-  - InnoDB默认会选择N个数据页， 统计这些页面上的不同值， 得到一个平均值， 然后乘以这个索引的页面数， 就得到了这个索引的基数。
-  - 一个索引上不同的值的个数， 我们称之为“基数”（cardinality） 
-  - 当变更的数据行数超过1/M的时候， 会自动触发重新做一次索引统计。
+扫描行数判断，mysql使用采样统计的方式来获取索引的统计信息基数。采样统计的方式可以减少磁盘的IO次数
+- InnoDB默认会选择N个数据页， 统计这些页面上的不同值， 得到一个平均值， 然后乘以这个索引的页面数， 就得到了这个索引的基数。
+- 一个索引上不同的值的个数， 我们称之为“基数”（cardinality） 
+- 当变更的数据行数超过1/M的时候， 会自动触发重新做一次索引统计。
   
-- 在MySQL中， 有两种存储索引统计的方式， 可以通过设置参数innodb_stats_persistent的值来选择：
-  - 设置为on的时候， 表示统计信息会持久化存储。 这时， 默认的N是20， M是10。
-  - 设置为off的时候， 表示统计信息只存储在内存中。 这时， 默认的N是8， M是16
-  - 由于是采样统计， 所以不管N是20还是8， 这个基数都是很容易不准的。
-  - analyze table t 命令， 可以用来重新统计索引信息。 
+在MySQL中， 有两种存储索引统计的方式， 可以通过设置参数innodb_stats_persistent的值来选择：
+- 设置为on的时候， 表示统计信息会持久化存储。 这时， 默认的N是20， M是10。
+- 设置为off的时候， 表示统计信息只存储在内存中。 这时， 默认的N是8， M是16
+- 由于是采样统计， 所以不管N是20还是8， 这个基数都是很容易不准的。
+- analyze table t 命令， 可以用来重新统计索引信息。 
 
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/errorIndex2.jpg)
-- 使用explain 语句分析SQL的扫描行数信息，rows的结果为根据采样结果预计的扫描行数。
-  - 选错索引的根本原因为采样统计信息有误统计成了37116行，而由于查询所有字段，使用索引还需要根据ID回表查询其他信息，经过优化器估算，全表扫描代价低。
-  - 优化器的选择方案时，使用普通索引会把回表的代价也算进去。
+使用explain 语句分析SQL的扫描行数信息，rows的结果为根据采样结果预计的扫描行数。
+- 选错索引的根本原因为采样统计信息有误统计成了37116行，而由于查询所有字段，使用索引还需要根据ID回表查询其他信息，经过优化器估算，全表扫描代价低。
+- 优化器的选择方案时，使用普通索引会把回表的代价也算进去。
 
 #### 解决索引选择异常方案
 - 使用force index
@@ -378,31 +377,35 @@ from SUser;
 
 ## Mysql的锁
 ### 全局锁
-- 根据加锁的范围， MySQL里面的锁大致可以分成全局锁、 表级锁和行锁三类。
-- 全局锁就是对整个数据库实例加锁。 MySQL提供了一个加全局读锁的方法， 命令是Flush tables with read lock (FTWRL)。 
-  - 全局锁的典型使用场景是， 做全库逻辑备份。 
-  - 官方自带的逻辑备份工具是mysqldump。 当mysqldump使用参数–single-transaction的时候， 导数据之前就会启动一个事务， 来确保拿到一致性视图。 而由于MVCC的支持， 这个过程中数据是可以正常更新的。
+根据加锁的范围， MySQL里面的锁大致可以分成全局锁、 表级锁和行锁三类。
+
+全局锁就是对整个数据库实例加锁。MySQL提供了一个加全局读锁的方法， 命令是Flush tables with read lock (FTWRL)。 
+- 全局锁的典型使用场景是， 做全库逻辑备份。 
+- 官方自带的逻辑备份工具是mysqldump。 当mysqldump使用参数–single-transaction的时候， 导数据之前就会启动一个事务， 来确保拿到一致性视图。 而由于MVCC的支持， 这个过程中数据是可以正常更新的。
     - single-transaction方法只适用于所有的表都可以使用事务引擎的库。 
     - 对于MyISAM这种不支持事务的引擎， 就需要使用FTWRL命令。
 
 ### 表级锁
-- MySQL里面表级别的锁有两种： 一种是表锁， 一种是元数据锁（meta data lock，MDL)。
-- 表锁的语法是 lock tables …read/write。 
-  - 举个例子, 如果在某个线程A中执行lock tables t1 read, t2 write; 这个语句， 则其他线程写t1、 读写t2的语句都会被阻塞。 同时， 线程A在执行unlock tables之前， 也只能执行读t1、 读写t2的操作。 连写t1都不允许， 自然也不能访问其他表
-  - InnoDB这种支持行锁的引擎， 一般不使用lock tables命令来控制并发， 毕竟锁住整个表的影响面还是太大。
+MySQL里面表级别的锁有两种： 一种是表锁， 一种是元数据锁（meta data lock，MDL)。
+
+表锁的语法是 lock tables …read/write。 
+- 举个例子, 如果在某个线程A中执行lock tables t1 read, t2 write; 这个语句， 则其他线程写t1、 读写t2的语句都会被阻塞。 同时， 线程A在执行unlock tables之前， 也只能执行读t1、 读写t2的操作。 连写t1都不允许， 自然也不能访问其他表
+- InnoDB这种支持行锁的引擎， 一般不使用lock tables命令来控制并发， 毕竟锁住整个表的影响面还是太大。
   
-- 另一类表级的锁是MDL（ metadata lock)。 
-  - 当对一个表做增删改查操作的时候， 加MDL读锁； 
-  - 当要对表做结构变更操作的时候， 加MDL写锁。
-  - 读锁之间不互斥， 因此可以有多个线程同时对一张表增删改查。
-  - 读写锁之间、 写锁之间是互斥的， 用来保证变更表结构操作的安全性。 因此， 如果有两个线程要同时给一个表加字段， 其中一个要等另一个执行完才能开始执行。
-  - 而当读写锁阻塞时，则后序的读锁也无法正常共享。
+另一类表级的锁是MDL（metadata lock)。 
+- 当对一个表做增删改查操作的时候， 加MDL读锁； 
+- 当要对表做结构变更操作的时候， 加MDL写锁。
+- 读锁之间不互斥， 因此可以有多个线程同时对一张表增删改查。
+- 读写锁之间、 写锁之间是互斥的， 用来保证变更表结构操作的安全性。 因此， 如果有两个线程要同时给一个表加字段， 其中一个要等另一个执行完才能开始执行。
+- 而当读写锁阻塞时，则后序的读锁也无法正常共享。
   
-- 如何安全地给小表加字段？
-  - 在alter table语句里面设定等待时间， 如果在这个指定的等待时间里面能够拿到MDL写锁最好， 拿不到也不要阻塞后面的业务语句， 先放弃。 之后开发人员或者DBA再通过重试命令重复这个过程。
+如何安全地给小表加字段？
+- 在alter table语句里面设定等待时间， 如果在这个指定的等待时间里面能够拿到MDL写锁最好， 拿不到也不要阻塞后面的业务语句， 先放弃。 之后开发人员或者DBA再通过重试命令重复这个过程。
   
 ### 行级锁
-- MySQL的行锁是在引擎层由各个引擎自己实现的。 MyISAM引擎就不支持行锁，InnoDB是支持行锁的。
+MySQL的行锁是在引擎层由各个引擎自己实现的。 MyISAM引擎就不支持行锁，InnoDB是支持行锁的。
+
+InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且该索引不能失效，否则都会从行锁升级为表锁
 
 #### 两阶段锁
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/linelock.jpg)
@@ -412,9 +415,9 @@ from SUser;
 
 ### 死锁
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/deadlock.jpg)
-- 事务A在等待事务B释放id=2的行锁， 而事务B在等待事务A释放id=1的行锁。 事务A和事务B在互相等待对方的资源释放， 就是进入了死锁状态。 
-  - 一种策略是， 直接进入等待， 直到超时。 这个超时时间可以通过参数innodb_lock_wait_timeout来设置。在InnoDB中， innodb_lock_wait_timeout的默认值是50s
-  - 另一种策略是， 发起死锁检测， 发现死锁后， 主动回滚死锁链条中的某一个事务， 让其他事务得以继续执行。 将参数innodb_deadlock_detect设置为on， 表示开启这个逻辑。
+事务A在等待事务B释放id=2的行锁， 而事务B在等待事务A释放id=1的行锁。 事务A和事务B在互相等待对方的资源释放， 就是进入了死锁状态。 
+- 一种策略是， 直接进入等待， 直到超时。 这个超时时间可以通过参数innodb_lock_wait_timeout来设置。在InnoDB中， innodb_lock_wait_timeout的默认值是50s
+- 另一种策略是， 发起死锁检测， 发现死锁后， 主动回滚死锁链条中的某一个事务， 让其他事务得以继续执行。 将参数innodb_deadlock_detect设置为on， 表示开启这个逻辑。
     - 弊端：判断是否存在死锁的成本会随着数据量的增长，而大量消耗CPU。假设有1000个并发线程要同时更新同一行， 那么死锁检测操作就是100万这个量级的。
     - 解决方案：1.确定不会出现死锁，关闭死锁检测。2.控制并发度。3.改写mysql源码。
     
@@ -432,12 +435,13 @@ from SUser;
 #### 如何解决幻读？
 - InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过程中， 不仅将给行加上了行锁， 还给行两边的空隙， 也加上了间隙锁。
 
-- 间隙锁之间的冲突：跟间隙锁存在冲突关系的， 是“往这个间隙中插入一个记录”这个操作。 间隙锁之间都不存在冲突关系。
-- 间隙锁和行锁合称next-key lock， 每个next-key lock是前开后闭区间。 
-  - 如果用select * from t for update要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
-  - InnoDB给每个索引加了一个不存在的最大值supremum。
+间隙锁之间的冲突：跟间隙锁存在冲突关系的， 是“往这个间隙中插入一个记录”这个操作。 间隙锁之间都不存在冲突关系。
 
-- 间隙锁的引入， 可能会导致同样的语句锁住更大的范围， 这其实是影响了并发度的。
+间隙锁和行锁合称next-key lock， 每个next-key lock是前开后闭区间。 
+- 如果用select * from t for update要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
+- InnoDB给每个索引加了一个不存在的最大值supremum。
+
+间隙锁的引入， 可能会导致同样的语句锁住更大的范围， 这其实是影响了并发度的。
 
 #### 加锁原则
 总结的加锁规则里面， 包含了两个“原则”、 两个“优化”和一个“bug”。
