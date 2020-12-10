@@ -10,6 +10,7 @@
 - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/THREAD.md)
 - [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENT.md)
 - [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENTTOOL.md)
+- [Java并发应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURREN_APPLICATION.md)
 
 ### Spring
 - [Spring Basic(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING.md)
@@ -29,9 +30,17 @@
 - [排序算法](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/SORT_ALGORITHM.md)
 
 ### 其他
+- [MySQL](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYSQL.md) 
 - [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYBATIS.md)
 - [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
+
+### 系统设计
 - [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/INTERFACE_DESIGN.md)
+- [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDS_KILL_DESIGN.md)
+- [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/TINYURL.md)
+- [抢红包(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDKILL_REDPACKAGE.md)
+- [扫码登陆](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SCAN_LOGIN.md)
+
 
 ## 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CODEDESION_BOOK.md)

@@ -41,12 +41,12 @@ spring初始化bean有两种方式：
 ### <a name="6">InstantiationAwareBeanPostProcessor接口</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 主要作用：作用在于目标对象的实例化过程中需要处理的事情，包括实例化对象的前后过程以及实例的属性设置
 - postProcessBeforeInstantiation(Class<?> beanClass, String beanName)：实例化、依赖注入前，在调用显示的初始化之前完成一些定制的初始化任务。
-    - 如AbstractAutoProxyCreator创建代理对象，其返回值将替代原始的Bean对象；
+    - 如**AbstractAutoProxyCreator创建代理对象**，其返回值将替代原始的Bean对象；
 - postProcessAfterInstantiation(Object bean, String beanName)：对象初始化方法调用完成后，对对象的修改；
 - postProcessProperties(PropertyValues pvs, Object bean, String beanName)：对象值修改触发的方法。
   
 ### <a name="7">BeanPostProcessor接口：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- postProcessBeforeInitialization(Object bean, String beanName)：实例化完成对对象的修改，如BeanValidationPostProcessor的@Valid验证对象数据
+- postProcessBeforeInitialization(Object bean, String beanName)：实例化完成对对象的修改，如**BeanValidationPostProcessor的@Valid验证对象数据**
 - postProcessAfterInitialization(Object bean, String beanName) : 对象所有初始化方法调用完成后，对对象的修改。
 
 

@@ -18,7 +18,9 @@
 &emsp;<a href="#15">8. 桶排序</a>  
 &emsp;<a href="#16">9. 计数排序</a>  
 &emsp;<a href="#17">10. 基数排序</a>  
-&emsp;<a href="#18">11. 双轴快排、二分插入排序、TimeSort(TODO)</a>  
+&emsp;<a href="#18">11. Top K 问题</a>  
+&emsp;&emsp;<a href="#19">11.1. 三路快排 + 二分</a>  
+&emsp;<a href="#20">12. 双轴快排、二分插入排序、TimeSort(TODO)</a>  
 # <a name="0">排序算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 交换
@@ -126,11 +128,11 @@ public static int partition(int[] arr, int left, int right) {
 3. **当待排序序列的长度分割到一定大小后，使用插入排序**。在子序列比较小的时候，直接插入排序性能较好，因为对于有序的序列，插排可以达到O(n)的复杂度，如果序列比较小，使用插排效率要比快排高。可以设置一个阈值n，之后使用插排。
    - ```
      if(right - left > 5){
-        int pos = partition(array, left, right);
-        Quicksort(array, left, pos - 1);
-        Quicksort(array, pos + 1, right);
+          int pos = partition(array, left, right);
+          Quicksort(array, left, pos - 1);
+          Quicksort(array, pos + 1, right);
      }else{
-        insertionSort(array);
+          insertionSort(array);
      }
      ```
 4. 优化四：三路划分。如果待排序列中重复元素过多，也会大大影响排序的性能，这是因为大量相同元素参与快排时，**左右序列规模相差极大**，快排将退化为冒泡排序，时间复杂度接近O(n2)。
@@ -245,7 +247,6 @@ for (int i = left, j = i; i < right; j = ++i) {
     int o = ao; ao = bo; bo = o;
 }
 ```
-
 
 
 ## <a name="10">插入排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -590,7 +591,66 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="18">双轴快排、二分插入排序、TimeSort(TODO)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="18">Top K 问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="19">三路快排 + 二分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```
+    public static void main(String[] args) {
+        int[] array = {12, 3, 12, 3, 1, 12, 12, 12, 1,  5, 7, 23, 123, 45, 2, 15, 12};
+        List<Integer> topK = getTopK(array, 5);
+        System.out.println(Arrays.toString(topK.toArray()));
+    }
+
+    public static List<Integer> getTopK(int[] nums, int target) {
+        List<Integer> list = new ArrayList<>();
+        int start = 0, end = nums.length - 1;
+        int point = -1;
+        while (start < end) {
+            int[] partition = partition(nums, start, end);
+            if (partition[1] < target) {
+                start = partition[1];
+            } else if (partition[0] > target) {
+                end = partition[0];
+            } else {
+                point = target;
+                break;
+            }
+        }
+        for (int i = 0; i < point; i++) {
+            list.add(nums[i]);
+        }
+        return list;
+    }
+
+
+    public static int[] partition(int[] nums, int start, int end) {
+        int i = start-1, j = end+1;
+        int index = start+1;
+        int pivot = nums[start];
+        while (index < j) {
+            if(nums[index]< pivot){
+                swap(nums,index, ++i);
+                index++;
+            } else if(nums[index] > pivot) {
+                swap(nums,index, --j);
+            }else {
+                index++;
+            }
+
+        }
+        return new int[]{i,j};
+    }
+
+    public static void swap(int[] nums, int i ,int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+```
+- 相关资料：https://zhuanlan.zhihu.com/p/76734219
+
+
+## <a name="20">双轴快排、二分插入排序、TimeSort(TODO)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 TimeSort： 一个稳定的具有自适应性的MergeSort算法
 - [参考资料](https://mp.weixin.qq.com/s?__biz=MzI2MTY0OTg2Nw==&mid=2247483816&idx=1&sn=079af3d70efcb68efa7400f09decb59c&chksm=ea56650cdd21ec1ace7c8fd168d62feb636e4b32f9a4d90329fe479489d8e7a70e612df8920b&token=2074049324&lang=zh_CN#rd)
 

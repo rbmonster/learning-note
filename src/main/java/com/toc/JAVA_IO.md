@@ -1,52 +1,30 @@
 <a name="index">**Index**</a>
 
-&emsp;&emsp;<a href="#0">0.37. <a name="0">策略模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a></a>  
-<a href="#1">Java IO </a>  
-&emsp;<a href="#2">1. 基本概念</a>  
-&emsp;&emsp;<a href="#3">1.1. 编码与解码</a>  
-&emsp;<a href="#4">2. 操作系统中的IO</a>  
-&emsp;&emsp;<a href="#5">2.1. 常见I/O模型对比</a>  
-&emsp;&emsp;<a href="#6">2.2. BIO</a>  
-&emsp;&emsp;<a href="#7">2.3. NIO</a>  
-&emsp;&emsp;<a href="#8">2.4. IO复用模型</a>  
-&emsp;&emsp;&emsp;<a href="#9">2.4.1. epoll</a>  
-&emsp;&emsp;&emsp;<a href="#10">2.4.2. 水平触发与边缘触发</a>  
-&emsp;&emsp;<a href="#11">2.5. 信号驱动IO</a>  
-&emsp;&emsp;<a href="#12">2.6. AIO</a>  
-&emsp;&emsp;<a href="#13">2.7. 相关资料</a>  
-&emsp;<a href="#14">3. Java 中的网络支持</a>  
-&emsp;&emsp;<a href="#15">3.1. java BIO(Blocking IO 阻塞)</a>  
-&emsp;&emsp;<a href="#16">3.2. java NIO(Non-blocking/New I/O)</a>  
-&emsp;&emsp;&emsp;<a href="#17">3.2.1. 零拷贝</a>  
-&emsp;&emsp;&emsp;<a href="#18">3.2.2. 事件驱动模型</a>  
-&emsp;&emsp;<a href="#19">3.3. NIO与BIO区别</a>  
-&emsp;&emsp;<a href="#20">3.4. Proactor与Reactor</a>  
-&emsp;&emsp;<a href="#21">3.5. RMI 远程方法调用</a>  
-&emsp;&emsp;<a href="#22">3.6. netty</a>  
-###抽象工厂模式
-![Image text](https://img2018.cnblogs.com/blog/1419489/201906/1419489-20190628164001258-637961514.png)### <a name="0"><a name="0">策略模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a></a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- Context是上下文，用一个ConcreteStrategy来配置，维护一个对Strategy对象的引用；Strategy是策略类，用于定义所有支持算法的公共接口；ConcreteStrategy是具体策略类，封装了具体的算法或行为，继承于Strategy。
+<a href="#0">Java IO </a>  
+&emsp;<a href="#1">1. 基本概念</a>  
+&emsp;&emsp;<a href="#2">1.1. 编码与解码</a>  
+&emsp;<a href="#3">2. 操作系统中的IO</a>  
+&emsp;&emsp;<a href="#4">2.1. 常见I/O模型对比</a>  
+&emsp;&emsp;<a href="#5">2.2. BIO</a>  
+&emsp;&emsp;<a href="#6">2.3. NIO</a>  
+&emsp;&emsp;<a href="#7">2.4. IO复用模型</a>  
+&emsp;&emsp;&emsp;<a href="#8">2.4.1. epoll</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.4.2. 水平触发与边缘触发</a>  
+&emsp;&emsp;<a href="#10">2.5. 信号驱动IO</a>  
+&emsp;&emsp;<a href="#11">2.6. AIO</a>  
+&emsp;&emsp;<a href="#12">2.7. 相关资料</a>  
+&emsp;<a href="#13">3. Java 中的网络支持</a>  
+&emsp;&emsp;<a href="#14">3.1. java BIO(Blocking IO 阻塞)</a>  
+&emsp;&emsp;<a href="#15">3.2. java NIO(Non-blocking/New I/O)</a>  
+&emsp;&emsp;&emsp;<a href="#16">3.2.1. 零拷贝</a>  
+&emsp;&emsp;&emsp;<a href="#17">3.2.2. 事件驱动模型</a>  
+&emsp;&emsp;<a href="#18">3.3. NIO与BIO区别</a>  
+&emsp;&emsp;<a href="#19">3.4. Proactor与Reactor</a>  
+&emsp;&emsp;<a href="#20">3.5. RMI 远程方法调用</a>  
+&emsp;&emsp;<a href="#21">3.6. netty</a>  
+# <a name="0">Java IO </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-
-    1. 何时使用
- 一个系统有许多类，而区分它们的只是他们直接的行为时
- 
- 　　2. 方法
- 将这些算法封装成一个一个的类，任意的替换
- 
- 　　3. 优点
- 算法可以自由切换
- 避免使用多重条件判断（如果不用策略模式我们可能会使用多重条件语句，不利于维护）
- 扩展性良好，增加一个策略只需实现接口即可
- 
- 　　4. 缺点
- 策略类数量会增多，每个策略都是一个类，复用的可能性很小
- 所有的策略类都需要对外暴露
- 
-- 实际应用中的例子，spring中的Listener
-- TODO待补充# <a name="1">Java IO </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
-## <a name="2">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Java 的 I/O 大概可以分成以下几类：
 
 1. 磁盘操作：File
@@ -76,7 +54,7 @@ Reader 与 Writer
   - InputStreamReader 实现从字节流解码成字符流；
   - OutputStreamWriter 实现字符流编码成为字节流。
   
-### <a name="3">编码与解码</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="2">编码与解码</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 编码就是把字符转换为字节，而解码是把字节重新组合成字符。如果编码和解码过程使用不同的编码方式那么就出现了乱码。
     - GBK 编码中，中文字符占 2 个字节，英文字符占 1 个字节；
     - UTF-8 编码中，中文字符占 3 个字节，英文字符占 1 个字节；
@@ -91,9 +69,9 @@ System.out.println(str2);
 ```
   
   
-## <a name="4">操作系统中的IO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="3">操作系统中的IO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="5">常见I/O模型对比</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="4">常见I/O模型对比</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/io/picture/ioModel.jpg)
 
 所有的系统I/O都分为两个阶段：等待就绪和操作。
@@ -103,9 +81,9 @@ System.out.println(str2);
 需要说明的是**等待就绪的阻塞是不使用CPU的，是在“空等”**；
 而**真正的读写操作的阻塞是使用CPU的**，真正在”干活”，而且这个过程非常快，属于memory copy，带宽通常在1GB/s级别以上，可以理解为基本不耗时。
 
-### <a name="6">BIO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="5">BIO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 传统的BIO中，read去读取网络的数据时，是无法预知对方是否已经发送数据的。因此在收到数据之前，能做的只有等待，直到对方把数据发过来，或者等到网络超时。
-### <a name="7">NIO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="6">NIO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 NIO模式下，系统调用read，如果发现没数据已经到达，就会立刻返回-1。使用轮询的方式，不断的尝试有没有数据到达。没有得到数据就等一小会再试继续轮询。
 
 NIO解决了线程阻塞的问题 ，但是会带来两个新问题：
@@ -114,7 +92,7 @@ NIO解决了线程阻塞的问题 ，但是会带来两个新问题：
 
 
 
-### <a name="8">IO复用模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="7">IO复用模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **定义**：多个进程的IO可以注册到同一个管道上，这个管道会统一和内核进行交互，告诉操作系统要监视这些IO是否有事件发生。阻塞读取操作系统epoll方法回调的通知消息。
  
 特点及相关说明：
@@ -126,7 +104,7 @@ NIO解决了线程阻塞的问题 ，但是会带来两个新问题：
 - **IO多路复用和NIO一起仅仅是解决了调度的问题，避免CPU在这个过程中的浪费**，使系统的瓶颈更容易触达到网络带宽，而非CPU或者内存。要提高IO吞吐，还是提高硬件的容量（例如，用支持更大带宽的网线、网卡和交换机）和依靠并发传输（例如HDFS的数据多副本并发传输）。
 
 
-#### <a name="9">epoll</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="8">epoll</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 操作系统级别提供了一些接口来支持IO多路复用，最早的是select、poll，其后epoll是Linux下的IO多路复用的实现。
 - select接口最早实现存在需要调用多次、线程不安全以及限制只能监视1024个链接的问题
 - poll接口修复了select函数的一些问题，但是依然不是线程安全的。
@@ -134,7 +112,7 @@ NIO解决了线程阻塞的问题 ，但是会带来两个新问题：
   - epoll通过epoll_ctl()来注册一个文件描述符,一旦基于某个文件描述符就绪时,内核会采用类似**callback的回调机制**,迅速激活这个文件描述符,当进程调用epoll_wait()时便得到通知(不再需要遍历文件描述符,通过监听回调的机制,也是epoll的魅力)
 
 
-#### <a name="10">水平触发与边缘触发</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="9">水平触发与边缘触发</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 epoll除了性能优势，还有一个优点——同时支持水平触发(Level Trigger)和边沿触发(Edge Trigger)。
 - 水平触发只关心文件描述符中是否还有没完成处理的数据，如果有，不管怎样epoll_wait，总是会被返回。简单说——水平触发代表了一种“状态”。
 - 边沿触发只关心文件描述符是否有新的事件产生，如果有，则返回；如果返回过一次，不管程序是否处理了，只要没有新的事件产生，epoll_wait不会再认为这个fd被“触发”了。简单说——边沿触发代表了一个“事件”。
@@ -142,19 +120,19 @@ epoll除了性能优势，还有一个优点——同时支持水平触发(Level
 边沿触发把如何处理数据的控制权完全交给了开发者，提供了巨大的灵活性。比如，读取一个http的请求，开发者可以决定只读取http中的headers数据就停下来。在边沿触发下，开发者有机会更精细的定制这里的控制逻辑。
 
 
-### <a name="11">信号驱动IO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">信号驱动IO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 在通道中安装一个信号器：映射到Linux操作系统中，这就是信号驱动IO。应用进程在读取文件时通知内核，如果某个 socket 的某个事件发生时，请向我发一个信号。
 
 - 阻塞IO模型、非阻塞IO模型、IO复用模型和信号驱动IO模型都是同步的IO模型。原因是因为，无论以上那种模型，真正的数据拷贝过程，都是同步进行的。
 
 
-### <a name="12">AIO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="11">AIO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 用了AIO可以废弃select，poll，epoll。
 linux的AIO的实现方式是内核和应用共享一片内存区域，应用通过检测这个内存区域（避免调用nonblocking的read、write函数来测试是否来数据，因为即便调用nonblocking的read和write由于进程要切换用户态和内核态，仍旧效率不高）来得知fd是否有数据，可是检测内存区域毕竟不是实时的，你需要在线程里构造一个监控内存的循环，设置sleep，总的效率不如epoll这样的实时通知。
 
 
 
-### <a name="13">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 操作系统层面理解IO：https://www.cnblogs.com/twoheads/p/10712094.html
 - 图解IO：https://mp.weixin.qq.com/s?__biz=Mzg3MjA4MTExMw==&mid=2247484746&idx=1&sn=c0a7f9129d780786cabfcac0a8aa6bb7&source=41#wechat_redirect
 - 把钓鱼过程，可以拆分为两个步骤：1、鱼咬钩（数据准备）。2、把鱼钓起来放进鱼篓里（数据拷贝）。
@@ -162,7 +140,7 @@ linux的AIO的实现方式是内核和应用共享一片内存区域，应用通
   - 钓鱼的报警器一响，只能说明鱼儿已经咬钩了，但是还没有真正的钓上来。
 
 
-## <a name="14">Java 中的网络支持</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="13">Java 中的网络支持</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 基本概念
 - InetAddress：用于表示网络上的硬件资源，即 IP 地址；
 - URL：统一资源定位符；
@@ -170,7 +148,7 @@ linux的AIO的实现方式是内核和应用共享一片内存区域，应用通
 - Datagram：使用 UDP 协议实现网络通信。
 
 
-### <a name="15">java BIO(Blocking IO 阻塞)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">java BIO(Blocking IO 阻塞)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/io/picture/socket.png)
 - 在不考虑多线程的情况下，BIO是无法处理多个客户端请求的。
 - BIO 通信模型 的服务端，通常由一个独立的 Acceptor 线程负责监听客户端的连接。
@@ -182,7 +160,7 @@ BIO多线程情况下的缺点：内存消耗、线程上下文切换
 3. 线程的切换成本是很高的。操作系统发生线程切换的时候，需要保留线程的上下文，然后执行系统调用。如果线程数过高，可能执行线程切换的时间甚至会大于线程执行的时间，这时候带来的表现往往是系统load偏高、CPU 使用率特别高（超过20%以上)，导致系统几乎陷入不可用的状态。 
 4. 容易造成锯齿状的系统负载。因为系统负载是用活动线程数或CPU核心数，一旦线程数量高但外部网络环境不是很稳定，就很容易造成大量请求的结果同时返回，激活大量阻塞线程从而使系统负载压力过大。
 
-### <a name="16">java NIO(Non-blocking/New I/O)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="15">java NIO(Non-blocking/New I/O)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  NIO的主要事件有几个：读就绪、写就绪、有新连接到来。
   1. 首先需要注册当这几个事件到来的时候所对应的处理器，事件处理完毕移除SelectKey，若未移除，selector不会检查这些key是否有事件到来。
   2. 然后在合适的时机告诉事件选择器：对这个事件感兴趣。
@@ -192,7 +170,7 @@ BIO多线程情况下的缺点：内存消耗、线程上下文切换
 > select会进行系统调用（Linux 2.6之前是select、poll，2.6之后是epoll，Windows是IOCP），还会阻塞的等待新事件的到来。新事件到来的时候，会在selector上注册标记位，标示可读、可写或者有连接到来。
  
 - NIO由原来的阻塞读写（占用线程）变成了**单线程轮询事件**，找到可以进行读写的网络描述符进行读写。除了事件的轮询是阻塞的（没有可干的事情必须要阻塞），剩余的I/O操作都是纯CPU操作，没有必要开启多线程。
-#### <a name="17">零拷贝</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="16">零拷贝</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 IO的拷贝：
 1. 硬件（网卡）拷贝内核缓冲区 （读）
 2. 内核缓冲区拷贝到用户缓冲区 （读）
@@ -204,7 +182,7 @@ IO的拷贝：
 
 - 相关资料：https://blog.csdn.net/weixin_38950807/article/details/91374912
 
-#### <a name="18">事件驱动模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="17">事件驱动模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  
 Java的Selector对于Linux系统来说，有一个致命限制：同一个channel的select不能被并发的调用。因此，如果有多个I/O线程，必须保证：一个socket只能属于一个IoThread，而一个IoThread可以管理多个socket。另外连接的处理和读写的处理通常可以选择分开，这样对于海量连接的注册和读写就可以分发。虽然read()和write()是比较高效无阻塞的函数，但毕竟会占用CPU，如果面对更高的并发则无能为力。
 
@@ -245,7 +223,7 @@ interface ChannelHandler{
  - NIO selectKey原理：https://blog.csdn.net/qq_32331073/article/details/81132937
  - 美团NIO浅析: https://tech.meituan.com/2016/11/04/nio.html
 
-### <a name="19">NIO与BIO区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">NIO与BIO区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 通讯方式：NIO 通过Channel（通道） 进行读写，通道是双向的，可读也可写。而BIO使用的流读写是单向的。
 - BIO流是阻塞的，NIO流是不阻塞的。
 - BIO 面向流(Stream oriented)，而 NIO 面向缓冲区(Buffer oriented)。
@@ -262,7 +240,7 @@ NIO 带来了什么
 - IO多路复用大大提高了Java网络应用的可伸缩性和实用性
 
 
-### <a name="20">Proactor与Reactor</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">Proactor与Reactor</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 在Reactor中实现读
 1. 注册读就绪事件和相应的事件处理器。
@@ -281,13 +259,13 @@ NIO 带来了什么
 - 不同点在于，异步情况下（Proactor)，当回调handler时，表示I/O操作已经完成；同步情况下（Reactor)，回调handler时，表示I/O设备可以进行某个操作（can read 或 can write)。
 
 
-### <a name="21">RMI 远程方法调用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">RMI 远程方法调用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - java支持，最早的远程调用，使用Remote接口，同时实现类别需要继承UnicastRemoteObject 
 - 通过Registry，注册发现远程方法，并调用接口。
 
 
 
-### <a name="22">netty</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">netty</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Netty 是一个 基于 NIO 的 client-server(客户端服务器)框架，使用它可以快速简单地开发网络应用程序。
   - 它极大地简化并优化了 TCP 和 UDP 套接字服务器等网络编程,并且性能以及安全性等很多方面甚至都要更好。
   - 支持多种协议 如 FTP，SMTP，HTTP 以及各种二进制和基于文本的传统协议。

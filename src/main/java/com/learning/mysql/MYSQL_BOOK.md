@@ -375,7 +375,7 @@ from SUser;
 4. 创建hash字段索引， 查询性能稳定， 有额外的存储和计算消耗， 跟第三种方式一样， 都不支
 持范围扫描
 
-## Mysql的锁
+## MySql的锁
 ### 全局锁
 根据加锁的范围， MySQL里面的锁大致可以分成全局锁、 表级锁和行锁三类。
 
@@ -511,24 +511,25 @@ select id from t where c in(5,20,10) order by c desc for update;
 ## SQL 语句执行流程
 
 ### count(*)实现
-- 不同引擎中的实现
-  - MyISAM引擎把一个表的总行数存在了磁盘上， 因此执行count(*)的时候会直接返回这个数，效率很高；
-  - 而InnoDB引擎就麻烦了， 它执行count(*)的时候， 需要把数据一行一行地从引擎里面读出来， 然后累积计数
+不同引擎中的实现
+- MyISAM引擎把一个表的总行数存在了磁盘上， 因此执行count(*)的时候会直接返回这个数，效率很高；
+- 而InnoDB引擎就麻烦了， 它执行count(*)的时候， 需要把数据一行一行地从引擎里面读出来， 然后累积计数
   
-- InnoDB中Mysql对于count(*)的优化：InnoDB是索引组织表， 主键索引树的叶子节点是数据， 而普通索引树的叶子节点是主键值。 所以， 普通索引树比主键索引树小很多。 通索引树比主键索引树小很多。 对于count(*)这样的操作， 遍历哪个索引树得到的结果逻辑上都是一样的。 因此， MySQL优化器会找到最小的那棵树来遍历。 在保证逻辑正确的前提下， 尽量减少扫描的数据量， 是数据库系统设计的通用法则之一。
+InnoDB中Mysql对于count(*)的优化：InnoDB是索引组织表， 主键索引树的叶子节点是数据， 而普通索引树的叶子节点是主键值。 所以， 普通索引树比主键索引树小很多。 通索引树比主键索引树小很多。 对于count(*)这样的操作， 遍历哪个索引树得到的结果逻辑上都是一样的。 因此， MySQL优化器会找到最小的那棵树来遍历。 在保证逻辑正确的前提下， 尽量减少扫描的数据量， 是数据库系统设计的通用法则之一。
 
-- show table status 命令也可以显示行数，这里的行数是基于采样统计的，并不准确。
-- 使用Redis缓存记录的行数，由于无法控制并发的执行时刻，会出现，读取的行数不一致的情况。比如数据库已插入，而Redis未增加计数。
+show table status 命令也可以显示行数，这里的行数是基于采样统计的，并不准确。
 
-- 不同count的用法：count(*)、 count(主键id)、 count(字段)和count(1)
-  - count()是一个聚合函数， 对于返回的结果集， 一行行地判断， 如果count函数的参数不是NULL， 累计值就加1， 否则不加。 最后返回累计值
-  - 对于count(主键id)来说， InnoDB引擎会遍历整张表， 把每一行的id值都取出来， 返回给server层。 server层拿到id后， 判断是不可能为空的， 就按行累加。
-  - 对于count(1)来说， InnoDB引擎遍历整张表， 但不取值。 server层对于返回的每一行， 放一个数字“1”进去， 判断是不可能为空的， 按行累加。
-  - 对于count(字段)来说：
+使用Redis缓存记录的行数，由于无法控制并发的执行时刻，会出现，读取的行数不一致的情况。比如数据库已插入，而Redis未增加计数。
+
+不同count的用法：count(*)、 count(主键id)、 count(字段)和count(1)
+- count()是一个聚合函数， 对于返回的结果集， 一行行地判断， 如果count函数的参数不是NULL， 累计值就加1， 否则不加。 最后返回累计值
+- 对于count(主键id)来说， InnoDB引擎会遍历整张表， 把每一行的id值都取出来， 返回给server层。 server层拿到id后， 判断是不可能为空的， 就按行累加。
+- 对于count(1)来说， InnoDB引擎遍历整张表， 但不取值。 server层对于返回的每一行， 放一个数字“1”进去， 判断是不可能为空的， 按行累加。
+- 对于count(字段)来说：
     1. 如果这个“字段”是定义为not null的话， 一行行地从记录里面读出这个字段， 判断不能为null， 按行累加；
     2. 如果这个“字段”定义允许为null， 那么执行的时候， 判断到有可能是null， 还要把值取出来再判断一下， 不是null才累加。
-  - count(*)是例外， 并不会把全部字段取出来， 而是专门做了优化， 不取值。 count(*)肯定不是null， 按行累加。
-  - 按照效率排序的话， count(字段)<count(主键id)<count(1)≈count(*)
+- count(*)是例外， 并不会把全部字段取出来， 而是专门做了优化， 不取值。 count(*)肯定不是null， 按行累加。
+- 按照效率排序的话， count(字段)<count(主键id)<count(1)≈count(*)
   
 ### order by 处理流程
 #### 全字段排序
@@ -546,9 +547,9 @@ KEY `city` (`city`)
 select city,name,age from t where city='杭州' order by name limit 1000 ;
 ```
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby1.jpg)
-- Extra这个字段中的“Using filesort”表示的就是需要排序， MySQL会给每个线程分配一块内存用于排序， 称为sort_buffer。
+Extra这个字段中的“Using filesort”表示的就是需要排序， MySQL会给每个线程分配一块内存用于排序， 称为sort_buffer。
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby2.jpg)
-- 这个语句执行流程如下所示 ：
+这个语句执行流程如下所示 ：
   1. 初始化sort_buffer， 确定放入name、 city、 age这三个字段；
   2. 从索引city找到第一个满足city='杭州’条件的主键id， 也就是图中的ID_X；
   3. 到主键id索引取出整行， 取name、 city、 age三个字段的值， 存入sort_buffer中；
@@ -556,49 +557,52 @@ select city,name,age from t where city='杭州' order by name limit 1000 ;
   5. 重复步骤3、 4直到city的值不满足查询条件为止， 对应的主键id也就是图中的ID_Y；
   6. 对sort_buffer中的数据按照字段name做快速排序；
   7. 按照排序结果取前1000行返回给客户端
-- sort_buffer_size， 是MySQL为排序开辟的内存（sort_buffer） 的大小。 如果要排序的数据量小于sort_buffer_size， 排序就在内存中完成。 但如果排序数据量太大， 内存放不下， 则不得不利用磁盘临时文件辅助排序。
+  
+sort_buffer_size， 是MySQL为排序开辟的内存（sort_buffer） 的大小。 如果要排序的数据量小于sort_buffer_size， 排序就在内存中完成。 但如果排序数据量太大， 内存放不下， 则不得不利用磁盘临时文件辅助排序。
   - sort_buffer_size大于了需要排序的数据量的大小， number_of_tmp_files就是0，排序直接在内存完成。
-- optimizer_trace 是一个跟踪功能，跟踪执行的语句的解析优化执行的过程，比explain更详细。
+  
+optimizer_trace 是一个跟踪功能，跟踪执行的语句的解析优化执行的过程，比explain更详细。
   - number_of_tmp_files表示的是， 排序过程中使用的临时文件数。
   - sort_mode: 表示参与排序的只有name和id这两个字段
   - ```
     /* 打开optimizer_trace， 只对本线程有效 */
     SET optimizer_trace='enabled=on';
     ```
-- 这里的排序使用的是归并排序
+这里的排序使用的是归并排序
 
 #### rowId排序
-- max_length_for_sort_data :是MySQL中专门控制用于排序的行数据的长度的一个参数。 它的意思是， 如果单行的长度超过这个值， MySQL就认为单行太大， 要换一个算法。
+max_length_for_sort_data :是MySQL中专门控制用于排序的行数据的长度的一个参数。 它的意思是， 如果单行的长度超过这个值， MySQL就认为单行太大， 要换一个算法。
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby3.jpg)
 - 主要体现在内存排序完毕之后要多一次查询。
 
-- 对于InnoDB表来说， 执行全字段排序会减少磁盘访问， 因此会被优先选择。
-- 在“InnoDB表”中， 对于内存表， 回表过程只是简单地根据数据行的位置， 直接访问内存得到数据， 根本不会导致多访问磁盘。 
-  - 优化器会优先考虑的，就是用于排序的行越少越好。
-  
-- order by rand()使用了内存临时表， 内存临时表排序的时候使用了rowid排序方法。
+对于InnoDB表来说， 执行全字段排序会减少磁盘访问， 因此会被优先选择。
 
-- 内存临时表与磁盘临时表
-  - tmp_table_size这个配置限制了内存临时表的大小， 默认值是16M。 如果临时表大小超过了tmp_table_size， 那么内存临时表就会转成磁盘临时表
+在“InnoDB表”中，对于内存表，回表过程只是简单地根据数据行的位置， 直接访问内存得到数据， 根本不会导致多访问磁盘。 
+> 优化器会优先考虑的，就是用于排序的行越少越好。
   
-- 直接使用order byrand()， 这个语句需要Using temporary和 Using filesort， 查询的执行代价往往是比较大的
+order by rand()使用了内存临时表， 内存临时表排序的时候使用了rowid排序方法。
+
+内存临时表与磁盘临时表
+- tmp_table_size这个配置限制了内存临时表的大小， 默认值是16M。 如果临时表大小超过了tmp_table_size， 那么内存临时表就会转成磁盘临时表
+  
+直接使用order byrand()， 这个语句需要Using temporary和 Using filesort， 查询的执行代价往往是比较大的
 
 ### join的执行过程
 #### Index Nested-Loop Join
 ```
 select * from t1 straight_join t2 on (t1.a=t2.a);
 ```
-- 执行流程是这样的：
-    1. 从表t1中读入一行数据 R；
-    2. 从数据行R中， 取出a字段到表t2里去查找；
-    3. 取出表t2中满足条件的行， 跟R组成一行， 作为结果集的一部分；
-    4. 重复执行步骤1到3， 直到表t1的末尾循环结束
-    - 实际执行的时候使用了BAK优化，将尽可能多的驱动表数据取出放Join Buffer中，再关联查询。
+执行流程是这样的：
+1. 从表t1中读入一行数据 R；
+2. 从数据行R中， 取出a字段到表t2里去查找；
+3. 取出表t2中满足条件的行， 跟R组成一行， 作为结果集的一部分；
+4. 重复执行步骤1到3， 直到表t1的末尾循环结束
+- 实际执行的时候使用了BAK优化，将尽可能多的驱动表数据取出放Join Buffer中，再关联查询。
 
-- 流程中：
-    1. 对驱动表t1做了全表扫描， 这个过程需要扫描100行；
-    2. 而对于每一行R， 根据a字段去表t2查找， 走的是树搜索过程。 由于我们构造的数据都是一一对应的， 因此每次的搜索过程都只扫描一行， 也是总共扫描100行；
-    3. 所以， 整个执行流程， 总扫描行数是200。
+流程中：
+1. 对驱动表t1做了全表扫描， 这个过程需要扫描100行；
+2. 而对于每一行R， 根据a字段去表t2查找， 走的是树搜索过程。 由于我们构造的数据都是一一对应的， 因此每次的搜索过程都只扫描一行， 也是总共扫描100行；
+3. 所以， 整个执行流程， 总扫描行数是200。
 
 #### Simple Nested-Loop Join
 ```
@@ -608,17 +612,16 @@ select * from t1 straight_join t2 on (t1.a=t2.b);
 - SQL请求就要扫描表t2多达100次， 总共扫描100*1000=10万行。
 
 #### Block Nested-Loop Join
-- 将驱动表数据读入线程内存join_buffer中，同样以全表扫描，但是因为使用内存操作，速度比上述方法快。
-
+将驱动表数据读入线程内存join_buffer中，同样以全表扫描，但是因为使用内存操作，速度比上述方法快。
 
 #### join语句mysql的优化
-- Multi-Range Read优化
-  - 大多数的数据都是按照主键递增顺序插入得到的， 所以可以认为， 如果按照主键的递增顺序查询的话， 对磁盘的读比较接近顺序读， 能够提升读性能
-  - MRR优化思路即将查询的关联集合排序，再关联查询，提高查询效率。将随机访问改成范围访问。
+Multi-Range Read优化
+- 大多数的数据都是按照主键递增顺序插入得到的， 所以可以认为， 如果按照主键的递增顺序查询的话， 对磁盘的读比较接近顺序读， 能够提升读性能
+- MRR优化思路即将查询的关联集合排序，再关联查询，提高查询效率。将随机访问改成范围访问。
 
-- Batched Key Access （BAK）
-  - 将驱动表数据取出放join_buffer中，进行排序再关联查询。
-  - join_buffer内存不够大时，进行多次的重复操作。
+Batched Key Access （BAK）
+- 将驱动表数据取出放join_buffer中，进行排序再关联查询。
+- join_buffer内存不够大时，进行多次的重复操作。
 
 #### 总结
 1. 尽量使用被驱动表的索引，即关联表的字段为索引。
@@ -648,26 +651,27 @@ select * from t1 straight_join t2 on (t1.a=t2.b);
 ```
 select id%10 as m, count(*) as c from t1 group by m;
 ```
-- 使用explain分析sql
-    - Using index， 表示这个语句使用了覆盖索引， 选择了索引a， 不需要回表；
-    - Using temporary， 表示使用了临时表；
-    - Using filesort， 表示需要文件排序。
-- 这个语句的执行流程是这样的：
+使用explain分析sql
+- Using index， 表示这个语句使用了覆盖索引， 选择了索引a， 不需要回表；
+- Using temporary， 表示使用了临时表；
+- Using filesort， 表示需要文件排序。
+
+这个语句的执行流程是这样的：
 1. 创建内存临时表， 表里有两个字段m和c， 主键是m；
 2. 扫描表t1的索引a， 依次取出叶子节点上的id值， 计算id%10的结果， 记为x；
-  （1）如果临时表中没有主键为x的行， 就插入一个记录(x,1);
-  （2）如果表中有主键为x的行， 就将x这一行的c值加1；
+   1. 如果临时表中没有主键为x的行， 就插入一个记录(x,1);
+   2. 如果表中有主键为x的行， 就将x这一行的c值加1；
 3. 遍历完成后， 再根据字段m做排序， 得到结果集返回给客户端。
 
-- group by语句默认都会对语句进行排序，可以使用order by null 避免group by 排序。
+group by语句默认都会对语句进行排序，可以使用order by null 避免group by 排序。
 ```
 select id%10 as m, count(*) as c from t1 group by m order by null;
 ```
 #### group by 优化 ——索引
-- 索引保证了数据有序，在group by时候，分组计数计算时一片区域的id都是连续的，整个表扫描结束时便可以拿到结果，不需要临时表也不需要排序。
+索引保证了数据有序，在group by时候，分组计数计算时一片区域的id都是连续的，整个表扫描结束时便可以拿到结果，不需要临时表也不需要排序。
 
 #### group by 优化 —— 直接排序
-- 确保数据量确实超过了sort buffer，可以直接强制mysql直接使用磁盘文件排序。
+确保数据量确实超过了sort buffer，可以直接强制mysql直接使用磁盘文件排序。
 ```
 select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 ```
@@ -679,18 +683,18 @@ select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 - 在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
 
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologFlush.jpg)
-- Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（flush）的方法
-  - 第一种：对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
-  - 第二种：系统的内存需要新的内存页，这时候需要淘汰一些内存也。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
+Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（flush）的方法
+- 第一种：对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
+- 第二种：系统的内存需要新的内存页，这时候需要淘汰一些内存也。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
     - 为什么不直接淘汰脏页，等新数据读取的时候再应用redo log？ 主要为了保证状态统一，内存的数据存在则肯定是最新的，内存没有则文件肯定是最新的。
-  - 第三种：Mysql认为系统空闲时，刷脏页。
-  - 第四种：MySql关闭时刷脏页。
+- 第三种：Mysql认为系统空闲时，刷脏页。
+- 第四种：MySql关闭时刷脏页。
   
 #### 内存不足刷脏页的情况
-- 缓冲池中的内存页有三种状态：
-  - 第一种是， 还没有使用的；
-  - 第二种是， 使用了并且是干净页；
-  - 第三种是， 使用了并且是脏页。
+缓冲池中的内存页有三种状态：
+- 第一种是， 还没有使用的；
+- 第二种是， 使用了并且是干净页；
+- 第三种是， 使用了并且是脏页。
   
 - 如果要淘汰的是一个干净页， 就直接释放出来复用； 但如果是脏页呢， 就必须将脏页先刷到磁盘， 变成干净页后才能复用。
   
@@ -708,27 +712,28 @@ select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 
 
 ### 数据库表数据删除
-- 参数innodb_file_per_table
-  - OFF表示的是， 表的数据放在系统共享表空间， 也就是跟数据字典放在一起.
-  - ON表示的是， 每个InnoDB表数据存储在一个以 .ibd为后缀的文件中。
-  - 将innodb_file_per_table设置为ON，文件的存储形式便于管理。
+参数innodb_file_per_table
+- OFF表示的是， 表的数据放在系统共享表空间， 也就是跟数据字典放在一起.
+- ON表示的是， 每个InnoDB表数据存储在一个以 .ibd为后缀的文件中。
+- 将innodb_file_per_table设置为ON，文件的存储形式便于管理。
   
-- delete命令其实只是把记录的位置， 或者数据页标记为了“可复用”， 但磁盘文件的大小是不会变的。 通过delete命令是不能回收表空间的
-- 删除数据会造成空洞， 插入数据也会。主要体现在插入数据出现页分裂，那么分裂完成的页势必存在空洞位置。
+delete命令其实只是把记录的位置， 或者数据页标记为了“可复用”， 但磁盘文件的大小是不会变的。 通过delete命令是不能回收表空间的
+
+删除数据会造成空洞， 插入数据也会。主要体现在插入数据出现页分裂，那么分裂完成的页势必存在空洞位置。
 
 #### 重建表消除数据空洞
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/rebuildTable.jpg)
 ```
 alter table A engine=InnoDB
 ```
-- Online DDL重建表的流程:
-    1. 建立一个临时文件， 扫描表A主键的所有数据页；
-    2. 用数据页中表A的记录生成B+树， 存储到临时文件中；
-    3. 生成临时文件的过程中， 将所有对A的操作记录在一个日志文件（row log） 中， 对应的是图中state2的状态；
-    4. 临时文件生成后， 将日志文件中的操作应用到临时文件， 得到一个逻辑数据上与表A相同的数据文件， 对应的就是图中state3的状态；
-    5. 用临时文件替换表A的数据文件。
-  - alter语句在启动的时候需要获取MDL写锁， 但是这个写锁在真正拷贝数据之前就退化成读锁了。同时禁止其他线程对这个表同时做DDL。
-  - 在图4中， 根据表A重建出来的数据是放在“tmp_file”里的， 这个临时文件是InnoDB在内部创建出来的。 整个DDL过程都在InnoDB内部完成。 对于server层来说， 没有把数据挪动到临时表， 是一个“原地”操作， 这就是“inplace”名称的来源。
+Online DDL重建表的流程:
+1. 建立一个临时文件， 扫描表A主键的所有数据页；
+2. 用数据页中表A的记录生成B+树， 存储到临时文件中；
+3. 生成临时文件的过程中， 将所有对A的操作记录在一个日志文件（row log） 中， 对应的是图中state2的状态；
+4. 临时文件生成后， 将日志文件中的操作应用到临时文件， 得到一个逻辑数据上与表A相同的数据文件， 对应的就是图中state3的状态；
+5. 用临时文件替换表A的数据文件。
+- alter语句在启动的时候需要获取MDL写锁， 但是这个写锁在真正拷贝数据之前就退化成读锁了。同时禁止其他线程对这个表同时做DDL。
+- 在图4中， 根据表A重建出来的数据是放在“tmp_file”里的， 这个临时文件是InnoDB在内部创建出来的。 整个DDL过程都在InnoDB内部完成。 对于server层来说， 没有把数据挪动到临时表， 是一个“原地”操作， 这就是“inplace”名称的来源。
 
 
 ### MySQL执行语句的一些坑
@@ -736,8 +741,9 @@ alter table A engine=InnoDB
 ```
 mysql> select count(*) from tradelog where month(t_modified)=7;
 ```
-- 对索引字段做函数操作， 可能会破坏索引值的有序性， 因此优化器就决定放弃走树搜索功能。
-- 例子里， 放弃了树搜索功能， 优化器可以选择遍历主键索引， 也可以选择遍历索引t_modified， 优化器对比索引大小后发现， 索引t_modified更小， 遍历这个索引比遍历主键索引来得更快。 因此最终还是会选择索引t_modified。
+对索引字段做函数操作， 可能会破坏索引值的有序性， 因此优化器就决定放弃走树搜索功能。
+
+例子里， 放弃了树搜索功能， 优化器可以选择遍历主键索引， 也可以选择遍历索引t_modified， 优化器对比索引大小后发现， 索引t_modified更小， 遍历这个索引比遍历主键索引来得更快。 因此最终还是会选择索引t_modified。
 
 #### 隐式类型转换
 ```
@@ -746,24 +752,27 @@ mysql> select * from tradelog where tradeid=110717;
 // 对于优化器会变成
 mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;
 ```
-- 这条语句触发了我们上面说到的规则： 对索引字段做函数操作， 优化器会放弃走树搜索功能。
+这条语句触发了我们上面说到的规则： 对索引字段做函数操作， 优化器会放弃走树搜索功能。
 
 #### 隐式字符集编码转换
-- 表间字符集不同导致索引失效，连接过程中要求在被驱动表的索引字段上加函数操作
-  - 如两个表的字符集不同， 一个是utf8， 一个是utf8mb4， 所以做表连接查询的时候用不上关联字段的索引。 utf8mb4是utf8的超集。
-  - 较常见的优化方法是， 把trade_detail表上的tradeid字段的字符集也改成utf8mb4
-  - 如果数据量比较大， 或者业务上暂时不能做这个DDL的话， 那就只能采用修改SQL语句的方法了
+表间字符集不同导致索引失效，连接过程中要求在被驱动表的索引字段上加函数操作
+- 如两个表的字符集不同， 一个是utf8， 一个是utf8mb4， 所以做表连接查询的时候用不上关联字段的索引。 utf8mb4是utf8的超集。
+- 较常见的优化方法是， 把trade_detail表上的tradeid字段的字符集也改成utf8mb4
+- 如果数据量比较大， 或者业务上暂时不能做这个DDL的话， 那就只能采用修改SQL语句的方法了
     - 如转换集合CONVERT($R4.tradeid.value USING utf8mb4);
     - 或者将转换函数作用在连接的值上，解决了函数作用于索引上导致索引失效的。
     
 #### 简单查询长时间不返回
-- 等MDL锁。
-  - 使用show processlist命令查看Waiting for table metadata lock
-  - 通过查询sys.schema_table_lock_waits这张表， 我们就可以直接找出造成阻塞的process id， 把这个连接用kill 命令断开即可
+
+##### 等MDL锁。
+
+- 使用show processlist命令查看Waiting for table metadata lock
+- 通过查询sys.schema_table_lock_waits这张表， 我们就可以直接找出造成阻塞的process id， 把这个连接用kill 命令断开即可
     - ```
       mysql> select blocking_pid from sys.schema_table_lock_waits 
       ```
-- 等flush
+
+##### 等flush
   - ```
     flush tables t with read lock;
     flush tables with read lock;
@@ -771,15 +780,16 @@ mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;
   - 两个flush table的语句
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/longquery.jpg)
 
-- 等行锁
-  - ```
-    mysql> select * from t where id=1 lock in share mode;
-    ```
-  - Session A 开启事务执行更新还未提交事务。Session B 使用该语句查询时就会等待行锁释放。
-  - sys.innodb_lock_waits 表：可以用来查询行锁的占用情况
-    - ```
-      mysql> select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'`\G
-      ```
+##### 等行锁
+```
+mysql> select * from t where id=1 lock in share mode;
+```
+Session A 开启事务执行更新还未提交事务。Session B 使用该语句查询时就会等待行锁释放。
+
+sys.innodb_lock_waits 表：可以用来查询行锁的占用情况
+```
+mysql> select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'`\G
+```
 
 #### 查询慢
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/slowquery1.jpg)
@@ -792,21 +802,21 @@ select * from t where id=1
 //session B
 select * from t where id=1 lock in share mode
 ```
-- session B更新完100万次， 生成了100万个回滚日志(undo log)。带lock in share mode的SQL语句， 是当前读， 因此会直接读到1000001这个结果， 所以速度很快； 而select * from t where id=1这个语句， 是一致性读， 因此需要从1000001开始， 依次执行undo log， 执行了100万次以后， 才将1这个结果返回。
+session B更新完100万次， 生成了100万个回滚日志(undo log)。带lock in share mode的SQL语句， 是当前读， 因此会直接读到1000001这个结果， 所以速度很快； 而select * from t where id=1这个语句， 是一致性读， 因此需要从1000001开始， 依次执行undo log， 执行了100万次以后， 才将1这个结果返回。
 
 
 ### Mysql 短时间提升性能方法
-- 使用短连接的风险：短时间连接暴增
-  - 第一种方法： 先处理掉那些占着连接但是不工作的线程
-  - 第二种方法： 减少连接过程的消耗。（让数据库跳过权限验证阶段） 不推荐
+使用短连接的风险：短时间连接暴增
+- 第一种方法： 先处理掉那些占着连接但是不工作的线程
+- 第二种方法： 减少连接过程的消耗。（让数据库跳过权限验证阶段） 不推荐
 
-- 慢查询导致的性能问题
-  1. 索引未设计好。若使用主从可以再从库执行索引，再进行主从切换。
-  2. 另一种查询问题，语句没写好
-    - 应急方案使用：使用查询重写功能， 给原来的语句加上force index，
-    - 提前发现：在上线前回归测试，使用slow log 记录
+慢查询导致的性能问题
+1. 索引未设计好。若使用主从可以再从库执行索引，再进行主从切换。
+2. 另一种查询问题，语句没写好
+- 应急方案使用：使用查询重写功能， 给原来的语句加上force index，
+- 提前发现：在上线前回归测试，使用slow log 记录
     
-- QPS突增
+QPS突增
  1. 一种是由全新业务的bug导致的。 假设你的DB运维是比较规范的，从数据库端直接把白名单去掉
  2. 如果这个新功能使用的是单独的数据库用户， 可以用管理员账号把这个用户删掉， 然后断开现有连接。 这样， 这个新功能的连接不成功， 由它引发的QPS就会变成0。
  3. 如果这个新增的功能跟主体功能是部署在一起的， 那么我们只能通过处理语句来限制。可能造成“误伤”。
@@ -829,10 +839,13 @@ InnoDB管理Buffer Pool的LRU算法， 是用链表来实现的。
 2. 状态2 表示刚访问过P3，移到表头
 3. 若有新数据则添加到表头，若内存已满，移除表尾的数据。
 
-- innoDB对LRU改进，防止大数据量查询导致，内存的数据命中率突然下降过快。
+innoDB对LRU改进，防止大数据量查询导致，内存的数据命中率突然下降过快。
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/LRU2.jpg)
-- 在InnoDB实现上， 按照5:3的比例把整个LRU链表分成了young区域和old区域。 图中LRU_old指向的就是old区域的第一个位置， 是整个链表的5/8处。 也就是说， 靠近链表头部的5/8是young区域， 靠近链表尾部的3/8是old区域。
-- young区域的数据和之前的算法一致，而针对新数据都是插入到old区域，因此young区域的数据不受影响，保证了业务的数据命中率。
-- 处于old区域的数据页， 每次被访问的时候都要做下面这个判断：
+在InnoDB实现上， 按照5:3的比例把整个LRU链表分成了young区域和old区域。 图中LRU_old指向的就是old区域的第一个位置， 是整个链表的5/8处。 也就是说， 靠近链表头部的5/8是young区域， 靠近链表尾部的3/8是old区域。
+
+young区域的数据和之前的算法一致，而针对新数据都是插入到old区域，因此young区域的数据不受影响，保证了业务的数据命中率。
+
+处于old区域的数据页， 每次被访问的时候都要做下面这个判断：
   - 若这个数据页在LRU链表中存在的时间超过了1秒， 就把它移动到链表头部；
   - 如果这个数据页在LRU链表中存在的时间短于1秒， 位置保持不变。 1秒这个时间， 是由参数innodb_old_blocks_time控制的。 其默认值是1000， 单位毫秒
+

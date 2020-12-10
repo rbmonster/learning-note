@@ -246,6 +246,7 @@
     ```
 ### <a name="14">有序集合 zset</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 使用场景： 打赏排行榜
+
 #### <a name="15">底层结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 有序集合的编码可以是ziplist或者skiplist
   - ziplist按分值从小到大的进行排序，分值小的元素放在靠近表头方向，对象在前值在后，两者紧凑。
@@ -262,6 +263,7 @@
   - zcount 'zsetName' 'scoreMin' 'scoreMax'   // 计算范围内的有的值
   - zcard 'zsetName'  // 计算zset元素的数量
   - zrem 'zsetName' 'key'  // 删除zset 里面的key
+  - zrangebyscore delay 0  1606996111  // 获取按score 范围内的key
   - ```
     127.0.0.1:6379> ZADD blah 1.0 www
     1
@@ -280,6 +282,15 @@
     
     127.0.0.1:6379> zrem blah www
     1
+    
+    127.0.0.1:6379> zadd delay 1606996039 message1
+    (integer) 1
+    127.0.0.1:6379> zadd delay 1606996064 message2
+    (integer) 1
+    127.0.0.1:6379> zrangebyscore delay 0  1606996111
+    1) "xiaoxiao"
+    2) "xxiaoming"
+    3) "message1"
     ```
 
   
@@ -364,7 +375,7 @@
   - 向布隆过滤器中添加数据时，会使用 多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
   - 判断数据是否存在时，同样使用多个hash函数计算key，只要有一个位为 0，说明key不存在。但是都是1，并不能说明key必定存在，可能位置都是其他元素添加导致的，因此说存在一定的误判率。
   - 布隆过滤器有两关键的参数，一个是元素大小，一个是误差率。当误差率设置越小，布隆过滤器需要的空间越大。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/bloomFilter.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/bloomFilter.png)
   
 - 数据结构： bitmap 比特位的集合。bitmap是一个以比特为基本单位的数组，如一个int类型32个比特，那我们使用比特来应用就可以节省很大的空间。
 

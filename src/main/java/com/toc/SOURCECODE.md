@@ -175,7 +175,7 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
                 if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
                     return null;
                 }
-            ...
+                ...
             }
             ```
     2. 在动态代理层面，若为也需要代理的方法为public才能正常代理。如JDK动态代理，通过接口代理，接口方法默认都是public。而Cglib基于类的代理中会默认判断是否为public方法。
@@ -219,7 +219,7 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 1. 对于web的调用，首先通过InvocationHandlerMethod，设置方法可见，强制调用方法。
 2. 调用方法后，判断方法是否使用代理，若没使用代理，直接调用方法。若使用了代理，进入代理方法的invoke方法。
 3. 区分JDK代理、Cglib代理，获取Advisor的对应拦截链，分别进入到拦截类的proceed()方法执行中。
-4. 
+
 ### <a name="11">判断使用JDK代理还是Cglib代理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 对于实际的Method调用，如果是代理对象的调用会分别进入各自的代理的invoke方法中，主要分为Cglib（CglibAopProxy）和JDK代理（JdkDynamicAopProxy）
 - DefaultAopProxyFactory：如何判断使用JDK代理还是Cglib代理

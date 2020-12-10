@@ -2,7 +2,7 @@
 
 <a href="#0">MyBatis </a>  
 &emsp;&emsp;<a href="#1">0.1. 执行流程</a>  
-&emsp;&emsp;<a href="#2">0.2. 1、#{}和${}的区别是什么？</a>  
+&emsp;&emsp;<a href="#2">0.2. 1.#{}和${}的区别是什么？</a>  
 &emsp;&emsp;<a href="#3">0.3. 2.Xml 映射文件中，除了常见的 select|insert|updae|delete 标签之外，还有哪些标签？</a>  
 &emsp;&emsp;<a href="#4">0.4. 3.通常一个 Xml 映射文件，都会写一个 Dao 接口与之对应，请问，这个 Dao 接口的工作原理是什么？Dao 接口里的方法，参数不同时，方法能重载吗？</a>  
 &emsp;&emsp;<a href="#5">0.5. 4.MyBatis的分页</a>  
@@ -135,7 +135,7 @@
 ### <a name="1">执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mybatisProcess.jpg)
 - 四大组件:StatementHandler、Executor、ParameterHandler、ResultSetHandler
-### <a name="2">1、#{}和${}的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="2">1.#{}和${}的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - ${}是 Properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如${driver}会被静态替换为com.mysql.jdbc.Driver。
 - \#{}是 sql 的参数占位符，MyBatis 会将 sql 中的#{}替换为?号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的?号占位符设置参数值，比如 ps.setInt(0, parameterValue).

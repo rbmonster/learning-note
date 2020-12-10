@@ -2,7 +2,7 @@
 - Context是上下文，用一个ConcreteStrategy来配置，维护一个对Strategy对象的引用；Strategy是策略类，用于定义所有支持算法的公共接口；ConcreteStrategy是具体策略类，封装了具体的算法或行为，继承于Strategy。
 
 
-    1. 何时使用
+   1. 何时使用
  一个系统有许多类，而区分它们的只是他们直接的行为时
  
  　　2. 方法
