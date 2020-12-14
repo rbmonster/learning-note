@@ -1,5 +1,7 @@
 package com.learning.algorithm.basic.listNode;
 
+import java.util.List;
+
 /**
  * <pre>
  * @Description:
@@ -30,4 +32,9 @@ public class ReverseList {
         head.next = null;
         return newHead;
     }
+
+
+
+
+
 }

@@ -48,20 +48,20 @@ ZooKeeper 是 Hadoop 生态系统的一员；
 以下为客户端获取znode节点信息的内容：
 - ```
   [zk: 127.0.0.1:2181(CONNECTED) 6] get /dubbo
-  # 该数据节点关联的数据内容为空
+  // 该数据节点关联的数据内容为空
   null
-  # 下面是该数据节点的一些状态信息，其实就是 Stat 对象的格式化输出
+  // 下面是该数据节点的一些状态信息，其实就是 Stat 对象的格式化输出
   cZxid = 0x2
   ctime = Tue Nov 27 11:05:34 CST 2018
-  mZxid = 0x2   # 即该节点最后一次更新时的事务 id
+  mZxid = 0x2   // 即该节点最后一次更新时的事务 id
   mtime = Tue Nov 27 11:05:34 CST 2018
   pZxid = 0x3
-  cversion = 1    # 子节点版本号，当前节点的子节点每次变化时值增加 1
-  dataVersion = 0  # 数据节点内容版本号，节点创建时为 0，每更新一次节点内容(不管内容有无变化)该版本号的值增加 1
-  aclVersion = 0   # 节点的 ACL 版本号，表示该节点 ACL 信息变更次数
+  cversion = 1    // 子节点版本号，当前节点的子节点每次变化时值增加 1
+  dataVersion = 0  // 数据节点内容版本号，节点创建时为 0，每更新一次节点内容(不管内容有无变化)该版本号的值增加 1
+  aclVersion = 0   // 节点的 ACL 版本号，表示该节点 ACL 信息变更次数
   ephemeralOwner = 0x0
   dataLength = 0
-  numChildren = 1   # 当前节点的子节点个数
+  numChildren = 1   // 当前节点的子节点个数
   ```
 
 ### ACL权限控制
@@ -100,7 +100,7 @@ Session 可以看作是 ZooKeeper 服务器与客户端的之间的一个 TCP �
 ## ZooKeeper集群
 - 为了保证高可用，最好是以集群形态来部署 ZooKeeper，这样只要集群中大部分机器是可用的（能够容忍一定的机器故障）。通常 3 台服务器就可以构成一个 ZooKeeper 集群了
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/zookeeperCluster.png)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/zookeeperCluster.jpg)
 
 Server为ZooKeeper服务器，集群间通过 ZAB 协议（ZooKeeper Atomic Broadcast）来保持数据的一致性。
 - 最典型集群模式： Master/Slave 模式（主备模式）。在这种模式中，通常 Master 服务器作为主服务器提供写服务，其他的 Slave 服务器从服务器通过异步复制的方式获取 Master 服务器最新的数据提供读服务。

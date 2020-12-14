@@ -1,5 +1,5 @@
 # JVM 
-##
+## 面试题
 - 基本问题
   - 介绍下 Java 内存区域（运行时数据区）
   - Java 对象的创建过程（五步，建议能默写出来并且要知道每一步虚拟机做了什么）
@@ -244,13 +244,14 @@
     -XX:-PrintGC
     ```
 ### jmap 和 jhat
-- jmap (Memory Map for Java) :生成堆转储快照;
+jmap (Memory Map for Java) :生成堆转储快照;
   - ```
     [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jmap -dump:format=b,file=elasticfoam.bin 2903
     Dumping heap to /usr/local/apache-tomcat-8.5.31/elasticfoam.bin ...
     Heap dump file created
     ```
-- jhat (JVM Heap Dump Browser ) : 用于分析 heapdump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果;
+
+jhat (JVM Heap Dump Browser ) : 用于分析 heapdump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果;
   - 与上面的jmap配合使用，分析heapdump的堆信息，会生成具体的服务器。
   - ```
     [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jhat elasticfoam.bin 
@@ -265,7 +266,7 @@
     Server is ready.
     ```
 ### jstack
-- jstack (Stack Trace for Java):生成虚拟机当前时刻的线程快照，线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合。
+jstack (Stack Trace for Java):生成虚拟机当前时刻的线程快照，线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合。
   - ```
     Found one Java-level deadlock:
     =============================
@@ -301,7 +302,7 @@
   cat filename| grep '线程ID（16进制）' -C 8     // 查找匹配线程，-C 查看前后多少行数据
   ```
 ### jconsole
-- JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看堆的内存释放情况。
+JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看堆的内存释放情况。
 - 如果需要使用 JConsole 连接远程进程，可以在远程 Java 程序启动时加上下面这些参数:
 ```
 -Djava.rmi.server.hostname=外网访问 ip 地址 

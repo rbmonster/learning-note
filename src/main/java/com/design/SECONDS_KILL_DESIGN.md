@@ -144,4 +144,3 @@ return true;
 
 ## 相关资料
 - redis 秒杀：https://blog.csdn.net/cong____cong/article/details/105566983
-- 
