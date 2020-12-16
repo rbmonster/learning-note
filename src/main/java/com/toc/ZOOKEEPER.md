@@ -9,28 +9,26 @@
 &emsp;&emsp;<a href="#6">2.1. Data model（数据模型）</a>  
 &emsp;&emsp;<a href="#7">2.2. znode（数据节点）</a>  
 &emsp;&emsp;&emsp;<a href="#8">2.2.1. znode数据结构</a>  
-<a href="#9"># 该数据节点关联的数据内容为空</a>  
-<a href="#10"># 下面是该数据节点的一些状态信息，其实就是 Stat 对象的格式化输出</a>  
-&emsp;&emsp;<a href="#11">0.3. ACL权限控制</a>  
-&emsp;&emsp;<a href="#12">0.4. Watcher（事件监听器）</a>  
-&emsp;&emsp;<a href="#13">0.5. 会话</a>  
-&emsp;<a href="#14">1. ZooKeeper集群</a>  
-&emsp;&emsp;<a href="#15">1.1. 集群中角色及节点选择</a>  
-&emsp;&emsp;&emsp;<a href="#16">1.1.1. ZooKeeper 集群中的服务器状态</a>  
-&emsp;&emsp;<a href="#17">1.2. ZooKeeper 集群为啥最好奇数台？</a>  
-&emsp;&emsp;<a href="#18">1.3. ZAB 协议</a>  
-&emsp;&emsp;&emsp;<a href="#19">1.3.1. 消息广播</a>  
-&emsp;&emsp;&emsp;<a href="#20">1.3.2. 崩溃恢复</a>  
-&emsp;<a href="#21">2. 实际应用实现</a>  
-&emsp;&emsp;<a href="#22">2.1. 分布式锁</a>  
-&emsp;&emsp;&emsp;<a href="#23">2.1.1. ZK在分布式锁中实践的一些缺点</a>  
-&emsp;&emsp;&emsp;<a href="#24">2.1.2. zookeeper 同时实现 共享锁和独占锁</a>  
-&emsp;&emsp;<a href="#25">2.2. 命名服务</a>  
-&emsp;&emsp;<a href="#26">2.3. 注册中心实现</a>  
-&emsp;&emsp;<a href="#27">2.4. 配置中心</a>  
-&emsp;&emsp;<a href="#28">2.5. 分布式队列</a>  
-&emsp;&emsp;<a href="#29">2.6. 栅栏</a>  
-&emsp;<a href="#30">3. 命令行操作</a>  
+&emsp;&emsp;<a href="#9">2.3. ACL权限控制</a>  
+&emsp;&emsp;<a href="#10">2.4. Watcher（事件监听器）</a>  
+&emsp;&emsp;<a href="#11">2.5. 会话</a>  
+&emsp;<a href="#12">3. ZooKeeper集群</a>  
+&emsp;&emsp;<a href="#13">3.1. 集群中角色及节点选择</a>  
+&emsp;&emsp;&emsp;<a href="#14">3.1.1. ZooKeeper 集群中的服务器状态</a>  
+&emsp;&emsp;<a href="#15">3.2. ZooKeeper 集群为啥最好奇数台？</a>  
+&emsp;&emsp;<a href="#16">3.3. ZAB 协议</a>  
+&emsp;&emsp;&emsp;<a href="#17">3.3.1. 消息广播</a>  
+&emsp;&emsp;&emsp;<a href="#18">3.3.2. 崩溃恢复</a>  
+&emsp;<a href="#19">4. 实际应用实现</a>  
+&emsp;&emsp;<a href="#20">4.1. 分布式锁</a>  
+&emsp;&emsp;&emsp;<a href="#21">4.1.1. ZK在分布式锁中实践的一些缺点</a>  
+&emsp;&emsp;&emsp;<a href="#22">4.1.2. zookeeper 同时实现 共享锁和独占锁</a>  
+&emsp;&emsp;<a href="#23">4.2. 命名服务</a>  
+&emsp;&emsp;<a href="#24">4.3. 注册中心实现</a>  
+&emsp;&emsp;<a href="#25">4.4. 配置中心</a>  
+&emsp;&emsp;<a href="#26">4.5. 分布式队列</a>  
+&emsp;&emsp;<a href="#27">4.6. 栅栏</a>  
+&emsp;<a href="#28">5. 命令行操作</a>  
 # <a name="0">zookeeper</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -81,23 +79,23 @@ ZooKeeper 是 Hadoop 生态系统的一员；
 以下为客户端获取znode节点信息的内容：
 - ```
   [zk: 127.0.0.1:2181(CONNECTED) 6] get /dubbo
-  # <a name="9">该数据节点关联的数据内容为空</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+  // 该数据节点关联的数据内容为空
   null
-  # <a name="10">下面是该数据节点的一些状态信息，其实就是 Stat 对象的格式化输出</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+  // 下面是该数据节点的一些状态信息，其实就是 Stat 对象的格式化输出
   cZxid = 0x2
   ctime = Tue Nov 27 11:05:34 CST 2018
-  mZxid = 0x2   # 即该节点最后一次更新时的事务 id
+  mZxid = 0x2   // 即该节点最后一次更新时的事务 id
   mtime = Tue Nov 27 11:05:34 CST 2018
   pZxid = 0x3
-  cversion = 1    # 子节点版本号，当前节点的子节点每次变化时值增加 1
-  dataVersion = 0  # 数据节点内容版本号，节点创建时为 0，每更新一次节点内容(不管内容有无变化)该版本号的值增加 1
-  aclVersion = 0   # 节点的 ACL 版本号，表示该节点 ACL 信息变更次数
+  cversion = 1    // 子节点版本号，当前节点的子节点每次变化时值增加 1
+  dataVersion = 0  // 数据节点内容版本号，节点创建时为 0，每更新一次节点内容(不管内容有无变化)该版本号的值增加 1
+  aclVersion = 0   // 节点的 ACL 版本号，表示该节点 ACL 信息变更次数
   ephemeralOwner = 0x0
   dataLength = 0
-  numChildren = 1   # 当前节点的子节点个数
+  numChildren = 1   // 当前节点的子节点个数
   ```
 
-### <a name="11">ACL权限控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="9">ACL权限控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ZooKeeper 采用 ACL（AccessControlLists）策略来进行权限控制，类似于 UNIX 文件系统的权限控制。
 
 对于 znode 操作的权限，ZooKeeper 提供了以下 5 种：
@@ -115,12 +113,12 @@ ZooKeeper 采用 ACL（AccessControlLists）策略来进行权限控制，类似
 - digest :用户名:密码认证方式： username:password 。
 - ip : 对指定 ip 进行限制。
   
-### <a name="12">Watcher（事件监听器）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">Watcher（事件监听器）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ZooKeeper 允许用户在指定节点上注册一些 Watcher，并且在一些特定事件触发的时候，ZooKeeper 服务端会将事件通知到感兴趣的客户端上去，该机制是 **ZooKeeper 实现分布式协调服务的重要特性**。
   - 特定事件如：监听Znode节点的数据变化、监听子节点的增减变化
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/zookeeperWatcher.png)
 
-### <a name="13">会话</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="11">会话</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Session 可以看作是 ZooKeeper 服务器与客户端的之间的一个 TCP 长连接。通过session
  - 客户端能够通过心跳检测与服务器保持有效的会话。
  - 能够向 ZooKeeper 服务器发送请求并接受响应。
@@ -130,16 +128,16 @@ Session 可以看作是 ZooKeeper 服务器与客户端的之间的一个 TCP �
 - sessionTimeout 代表会话的超时时间。只要在sessionTimeout规定的时间内能够重新连接上集群中任意一台服务器，那么之前创建的会话仍然有效。
 - sessionID是 ZooKeeper 会话的一个重要标识，保证全局唯一。
 
-## <a name="14">ZooKeeper集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="12">ZooKeeper集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 为了保证高可用，最好是以集群形态来部署 ZooKeeper，这样只要集群中大部分机器是可用的（能够容忍一定的机器故障）。通常 3 台服务器就可以构成一个 ZooKeeper 集群了
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/zookeeperCluster.png)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/zookeeperCluster.jpg)
 
 Server为ZooKeeper服务器，集群间通过 ZAB 协议（ZooKeeper Atomic Broadcast）来保持数据的一致性。
 - 最典型集群模式： Master/Slave 模式（主备模式）。在这种模式中，通常 Master 服务器作为主服务器提供写服务，其他的 Slave 服务器从服务器通过异步复制的方式获取 Master 服务器最新的数据提供读服务。
 
 
-### <a name="15">集群中角色及节点选择</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="13">集群中角色及节点选择</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Leader：为客户端提供读和写的服务，负责投票的发起和决议，更新系统状态。
 - Follower：为客户端提供读服务，如果是写服务则转发给 Leader。在选举过程中参与投票。
 - Observer：为客户端提供读服务器，如果是写服务则转发给 Leader。不参与选举过程中的投票，也不参与“过半写成功”策略。在不影响写性能的情况下提升集群的读性能。此角色于 ZooKeeper3.3 系列新增的角色。
@@ -147,35 +145,35 @@ Server为ZooKeeper服务器，集群间通过 ZAB 协议（ZooKeeper Atomic Broa
 具体选举的流程为Raft算法：
 
 
-#### <a name="16">ZooKeeper 集群中的服务器状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="14">ZooKeeper 集群中的服务器状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 LOOKING ：寻找 Leader。
 LEADING ：Leader 状态，对应的节点为 Leader。
 FOLLOWING ：Follower 状态，对应的节点为 Follower。
 OBSERVING ：Observer 状态，对应节点为 Observer，该节点不参与 Leader 选举。
 
-### <a name="17">ZooKeeper 集群为啥最好奇数台？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="15">ZooKeeper 集群为啥最好奇数台？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ZooKeeper 集群在宕掉几个 ZooKeeper 服务器之后，如果剩下的 ZooKeeper 服务器个数大于宕掉的个数的话整个 ZooKeeper 才依然可用。那么2n 和 2n-1 的容忍度是一样的，都是 n-1，因此使用奇数台服务器。
 
 
-### <a name="18">ZAB 协议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">ZAB 协议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。**ZooKeeper 中主要依赖 ZAB 协议来实现分布式数据一致性**，而并没有直接使用Paxos协议。
 
  ZAB协议包含两种基本的模式
 - 消息广播 ：当集群中已经有过半的Follower服务器完成了和Leader服务器的状态同步，那么整个服务框架就可以进入消息广播模式了。 
 - 崩溃恢复 ：当整个服务框架在运行过程中，当 Leader 服务器出现异常情况时，ZAB 协议就会进入恢复模式并选举产生新的Leader服务器。新Leader产生，集群其他机器就要与该服务器进行状态同步，保持数据一致。当过半服务器完成状态同步就退出恢复模式。
 
-#### <a name="19">消息广播</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="17">消息广播</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/zabSend.jpg)
 - 使用节点队列，保证follower和observer的顺序性。同时针对每个节点server也建立来了一个消息队列，使用TCP传输，保证消息的顺序性，避免消息因网络原因而导致处理顺序不一致，进而避免数据不一致问题。
 - 在 ZAB 中还定义了一个 全局单调递增的事务ID ZXID，同样也是为了保证顺序性。每个消息在leader中通过其 ZXID 来进行排序 ，才能得到处理。
 
-#### <a name="20">崩溃恢复</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="18">崩溃恢复</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 类似于Raft选举 
 - 接着就是数据同步。
 - https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/distributed-system/zookeeper/zookeeper-plus.md#1-%E5%A5%BD%E4%B9%85%E4%B8%8D%E8%A7%81
 
-## <a name="21">实际应用实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="22">分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="19">实际应用实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - ZooKeeper保证无法重复创建同样的节点，进而保证了在高并发的情况下保证节点创建的全局唯一性 
 
 流程：
@@ -188,21 +186,21 @@ ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服�
 2. 获取锁节点下的子节点并排序，如果创建节点为第一个子节点获得锁。
 3. 若不是第一个节点，监听当前节点的前序节点，等待释放消息。
 
-#### <a name="23">ZK在分布式锁中实践的一些缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="21">ZK在分布式锁中实践的一些缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 在创建锁和释放锁的过程中，都要动态创建、销毁瞬时节点来实现锁功能，性能没有缓存高。
 - ZK中创建和删除节点只能通过Leader服务器来执行，然后将数据同步到所有的Follower机器上。
 - （较少见，zk有重试机制）网络抖动可能导致ZK服务器认为连接断开，就释放临时节点，导致其他客户端获取到锁，实际连接并未断开。
 
-#### <a name="24">zookeeper 同时实现 共享锁和独占锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="22">zookeeper 同时实现 共享锁和独占锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 规定所有创建节点必须有序。
 2. 当你是读请求（要获取共享锁）的话，如果 没有比自己更小的节点，或比自己小的节点都是读请求 ，则可以获取到读锁，然后就可以开始读了。若存在写锁阻塞。
 3. 如果是写请求，要等节点及其子节点读或写锁释放后才能获取到锁。
 
-### <a name="25">命名服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="23">命名服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 zookeeper 是通过 树形结构 来存储数据节点的，那也就是说，对于每个节点的 全路径，它必定是唯一的，我们可以使用节点的全路径作为命名方式了。
   - 路径是我们可以自己定义的，这对于我们对有些有语意的对象的ID设置可以更加便于理解。
  
-### <a name="26">注册中心实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="24">注册中心实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 实现：
 1. 让 服务提供者 在 zookeeper 中创建一个临时节点并且将自己的**ip、port、调用方式**写入节点。
 2. 当 服务消费者 需要进行调用的时候会 通过注册中心找到相应的服务的地址列表(IP端口什么的) ，并缓存到本地(方便以后调用)
@@ -213,19 +211,19 @@ zookeeper 是通过 树形结构 来存储数据节点的，那也就是说，�
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/ZooKeeperConfiguration.png)
 
 
-### <a name="27">配置中心</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">配置中心</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 现在有三个系统A、B、C，他们有三份配置，分别是ASystem.yml、BSystem.yml、CSystem.yml，抽取公共配置common.yml。
 - 将common.yml这份配置放在ZooKeeper的Znode节点中，系统A、B、C监听着这个Znode节点有无变更，如果变更了，及时响应。
 
-### <a name="28">分布式队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">分布式队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 入队操作就是在 queue_fifo 下创建自增序的子节点，并把数据（队列大小）放入节点内。出队操作就是先找到 queue_fifo 下序号最下的那个节点，取出数据，然后删除此节点。
 
-### <a name="29">栅栏</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="27">栅栏</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 线程启动时在 ZooKeeper 节点 /queue_barrier 下插入顺序临时节点，然后检查 /queue/barrier 下所有 children 节点的数量是否为所有的线程数，如果不是，则等待，如果是，则开始执行。
 
 - 相关文章：https://zhuanlan.zhihu.com/p/59669985
 
-## <a name="30">命令行操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="28">命令行操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 临时节点都是会话级别的，会话断开之后，节点就删除了。
 ```
 create /test laogong // 创建永久节点 

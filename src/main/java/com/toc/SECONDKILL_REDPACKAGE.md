@@ -1,5 +1,78 @@
 <a name="index">**Index**</a>
 
 <a href="#0">抢红包</a>  
-
+&emsp;<a href="#1">1. 确定问题的规模</a>  
+&emsp;<a href="#2">2. 方案</a>  
+&emsp;&emsp;<a href="#3">2.1. 数据初始化</a>  
+&emsp;&emsp;<a href="#4">2.2. 针对小的抢红包场景</a>  
+&emsp;&emsp;&emsp;<a href="#5">2.2.1. 数据初始化</a>  
+&emsp;&emsp;&emsp;<a href="#6">2.2.2. 业务流程</a>  
+&emsp;&emsp;<a href="#7">2.3. 针对大数据量的抢红包场景</a>  
+&emsp;&emsp;&emsp;<a href="#8">2.3.1. 数据初始化</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.3.2. 业务流程</a>  
+&emsp;<a href="#10">3. 系统设计</a>  
+&emsp;<a href="#11">4. 资源评估</a>  
 # <a name="0">抢红包</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+https://blog.csdn.net/liao0801_123/article/details/87921250
+
+qps 计算：https://mp.weixin.qq.com/s/S6xc3_0NVCo8wc_mMapX3Q
+
+## <a name="1">确定问题的规模</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 抢红包的人数
+2. 抢红包只要抢成功与不成功两种，不存在重复抢。（悲观锁）
+
+
+## <a name="2">方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="3">数据初始化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. redis插入红包个数
+2. 数据库插入红包数据
+3. 初始化Redis的抢红包的用户集
+
+### <a name="4">针对小的抢红包场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+#### <a name="5">数据初始化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. redis插入红包个数
+2. 数据库插入红包数据
+3. 初始化Redis的抢红包的用户集
+
+#### <a name="6">业务流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. redis判断是否已抢过红包，判断红包是否还有，如果小于0直接返回红包完了。
+2. 若存在可以使用decr原子递减，返回大于零的数，表示抢红包成功。进入拆红包。
+3. 分布式环境使用分布式锁，并发等锁。
+4. 红包数据实时生成返回
+5. 消息队列异步插数据库与零钱转账
+
+### <a name="7">针对大数据量的抢红包场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="8">数据初始化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 预先设置发放红包的时间
+2. 生成红包ID，插数据库红包记录
+3. 红包数据预热，就是预先在redis中生成红包数据，将红包数据放到一个list中。
+4. 初始化redis抢红包的用户集
+
+#### <a name="9">业务流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 判断是否已抢过红包，已抢过红包直接返回抢红包记录。
+2. 抢红包的时候，使用pop弹出红包数据。若为空表示红包已经抢完
+3. 正常的弹出红包数据表示抢红包成功，抢红包数据实时返回。
+4. 消息队列异步插红包明细表数据与零钱转账。
+
+
+进一步优化
+1. 使用lua脚本处理逻辑
+2. 将红包金额进行根据红包数量进行等量平分，根据红包算法计算红包数据并分摊到不同的redis上。使用负载均衡，让用户通过不同的服务器请求数据。   
+
+
+## <a name="10">系统设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 单独抽离红包系统，保证其他业务不受影响。
+2. 使用高可用的redis
+3. 另外数据库针对旧数据可以进行数据归档，毕竟红包基本三四天后就没人会点开了。
+
+## <a name="11">资源评估</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. app月活用户数
+2. 监控 请求响应时间
+3.  网络影响
+
+假设平均请求50ms ，单机支持1w qps
+1000/50 * 1w(qps) = 20w 红包请求
+

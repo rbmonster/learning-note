@@ -210,7 +210,8 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
 - Executors.newCachedThreadPool()：new SynchronousQueue<Runnable>()
   - 不推荐用newCacheThreadPool的原因是因为最大线程数设置为Integer.MAX_VALUE,如果主线程提交任务的速度高于 maximumPool 中线程处理任务的速度时，会耗尽CUP及内存。
 - Executors.newScheduledThreadPool(): new DelayedWorkQueue() 中封装了一个 PriorityQueue
-  - 任务队列 DelayQueue 封装了一个 PriorityQueue，PriorityQueue 会对队列中的任务进行排序，执行所需时间短的放在前面先被执行(ScheduledFutureTask 的 time 变量小的先执行)，如果执行所需时间相同则先提交的任务将被先执行(ScheduledFutureTask 的 squenceNumber 变量小的先执行)。
+  - 任务队列 DelayedWorkQueue 封装了一个 PriorityQueue，PriorityQueue 会对队列中的任务进行排序，执行所需时间短的放在前面先被执行(ScheduledFutureTask 的 time 变量小的先执行)，如果执行所需时间相同则先提交的任务将被先执行(ScheduledFutureTask 的 squenceNumber 变量小的先执行)。
+  - 队列原理与 DelayQueue 基本一致
 - Executors.newWorkStealingPool()：内部会构建ForkJoinPool，利用Work-Stealing算法，并行地处理任务，不保证处理顺序。
   - 工作窃取算法：工作窃取(work-stealing)算法是指某个线程从其他队列里窃取任务来执行。一个大任务分割为若干个互不依赖的子任务，为了减少线程间的竞争，把这些子任务分别放到不同的队列里，并未每个队列创建一个单独的线程来执行队列里的任务，线程和队列一一对应。比如线程1负责处理1队列里的任务，2线程负责2队列的。但是有的线程会先把自己队列里的任务干完，而其他线程对应的队列里还有任务待处理。干完活的线程与其等着，不如帮其他线程干活，于是它就去其他线程的队列里窃取一个任务来执行。默认从其他队列的队尾开始窃取任务执行。
   - 思想为：充分利用线程进行并行计算，减少线程间的竞争。在某些情况下还是会存在竞争，比如双端队列里只有一个任务时。并且该算法会消耗更多的系统资源， 比如创建多个线程和多个双端队列。
@@ -362,7 +363,7 @@ set元素逻辑：
   - 若不一致，向后一次找一个空位。
   
 TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收的情况
-  - 在set的时如果遇到Entry是被回收的值，则触发探测性清理。
+- 在set的时如果遇到Entry是被回收的值，则触发探测性清理。
     - 探测性清理：以当前Entry 向后迭代查找，遇到为null则结束清理，遇到entry为空的值，清空数组位置，size--。非空的entry计算重哈希的位置。
     - 启发性清理：向后递归查找一个过期的位置，找到过期的位置触发探测性清理。
 - 扩容： 扩容后的tab的大小为oldLen * 2，然后遍历老的散列表，重新计算hash位置，然后放到新的tab数组中，
@@ -372,12 +373,12 @@ TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收�
 ##### <a name="16">父线程与子线程传递threadLocal的方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 阿里巴巴提供TransmittableThreadLocal组件：父线程与子线程传递threadLocal的方案
 InheritableThreadLocal： 父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
-    - 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
+- 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
     
 ##### <a name="17">ThreadLocal应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Spring 事务应用
-    - Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
-    - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
+- Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
+- Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
   
 > 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文（Context），它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
 

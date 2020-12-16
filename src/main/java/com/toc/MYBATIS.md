@@ -15,6 +15,7 @@
 &emsp;&emsp;<a href="#12">0.12. 11.mybatis与Hibernate区别</a>  
 &emsp;&emsp;<a href="#13">0.13. 12. mybatis的一二级缓存</a>  
 &emsp;&emsp;<a href="#14">0.14. 13.千万级数据查询方案---- 流式查询</a>  
+&emsp;&emsp;<a href="#15">0.15. MyBatis的设计模式</a>  
 # <a name="0">MyBatis </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一个demo
 ```
@@ -133,6 +134,14 @@
     </update>
 ```
 ### <a name="1">执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mybatisgo.png)
+1. mapper.xml中的配置⽂件⾥的每条sql语句，每一个`<select>、<insert>、<update>、<delete>`标签，都会被解析为带有Id信息的一个个MappedStatement对象，再通过⼀个HashMap集合保存起来。
+2. Mapper接口是没有实现类的，当调用接口方法时，接口全限名+方法名拼接字符串作为 key 值，可唯一定位一个MappedStatement。
+3. 执⾏getMapper()⽅法，判断是否注册过mapper接⼝，注册了就会使⽤mapperProxyFactory去⽣成代理类MapperProxy执⾏⽬标⽅法时，会调⽤MapperProxy代理类的invoke()⽅法
+4. 此时会使用boundSql和对应的mapperStatement构造cacheKey,先进行缓存查询，命中直接返回。
+5. 缓存无命中则，创建connect连接，通过statement对象执行execute方法。
+6. 执⾏execute()⽅法返回结果使用resultSetHandler进行结果集的封装，添加到缓存中，最后返回结果。
+
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mybatisProcess.jpg)
 - 四大组件:StatementHandler、Executor、ParameterHandler、ResultSetHandler
 ### <a name="2">1.#{}和${}的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -142,16 +151,16 @@
 - 不转义字符串，有风险，同时存在sql注入.
 
 ### <a name="3">2.Xml 映射文件中，除了常见的 select|insert|updae|delete 标签之外，还有哪些标签？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- <resultMap>、<parameterMap>、<sql>、<include>、<selectKey>，加上动态 sql 的 9 个标签，trim|where|set|foreach|if|choose|when|otherwise|bind等，其中为 sql 片段标签，通过<include>标签引入 sql 片段
+- `<resultMap>、<parameterMap>、<sql>、<include>、<selectKey>`，加上动态 sql 的 9 个标签，trim|where|set|foreach|if|choose|when|otherwise|bind等，其中为 sql 片段标签，通过<include>标签引入 sql 片段
 
 ### <a name="4">3.通常一个 Xml 映射文件，都会写一个 Dao 接口与之对应，请问，这个 Dao 接口的工作原理是什么？Dao 接口里的方法，参数不同时，方法能重载吗？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 在 MyBatis 中，每一个<select>、<insert>、<update>、<delete>标签，都会被解析为带有Id信息的一个个MappedStatement对象。
+- 在 MyBatis 中，每一个`<select>、<insert>、<update>、<delete>`标签，都会被解析为带有Id信息的一个个MappedStatement对象。
 - Mapper接口是没有实现类的，当调用接口方法时，接口全限名+方法名拼接字符串作为 key 值，可唯一定位一个MappedStatement。举例：com.mybatis3.mappers.StudentDao.findStudentById，可以唯一找到 namespace 为com.mybatis3.mappers.StudentDao下面id = findStudentById的MappedStatement。
 - Dao 接口里的方法，是不能重载的，因为是全限名+方法名的保存和寻找策略。
 - Dao 接口的工作原理是 JDK 动态代理，MyBatis 运行时会使用 JDK 动态代理为 Dao 接口生成代理 proxy 对象，代理对象 proxy 会拦截接口方法，转而执行MappedStatement所代表的 sql，然后将 sql 执行结果返回。
 
 ### <a name="5">4.MyBatis的分页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- MyBatis的分页有两种，一种是使用 RowBounds 对象进行分页，另一种是使用PageHelper进行分页
+MyBatis的分页有两种，一种是使用 RowBounds 对象进行分页，另一种是使用PageHelper进行分页
   - 使用 RowBounds 对象分页，它是针对 ResultSet 结果集执行的内存分页，而非物理分页，对于数据量大的情况，使用这种分页方式会浪费内存
   - 使用PageHelper 进行分页，它是在StatementHandler之前进行拦截，对MappedStatement进行分页sql的拼接操作，PageHelper只对紧跟着的第一个SQL语句起作用.
   - 另外可以使用mybatis插件，声明拦截器进行sql的处理
@@ -168,12 +177,12 @@
       public class DataPermissionInterceptor implements Interceptor  {}  
       ```
 ### <a name="6">5.MyBatis 是如何将 sql 执行结果封装为目标对象并返回的？都有哪些映射形式？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 答：第一种是使用<resultMap>标签，逐一定义列名和对象属性名之间的映射关系。第二种是使用 sql 列的别名功能，将列别名书写为对象属性名，比如 T_NAME AS NAME，对象属性名一般是 name，小写，但是列名不区分大小写
+答：第一种是使用<resultMap>标签，逐一定义列名和对象属性名之间的映射关系。第二种是使用 sql 列的别名功能，将列别名书写为对象属性名，比如 T_NAME AS NAME，对象属性名一般是 name，小写，但是列名不区分大小写
 
 ### <a name="7">6.MyBatis 的关联查询？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 关联对象查询，有两种实现方式：
+关联对象查询，有两种实现方式：
   1. 一种是使用嵌套查询，在resultMap中使用association标签关联嵌套查询的sql语句。
-     - > <association property="way" column="wayId" javaType="com.whx.bus.entity.Way" select="selectWayById">\
+     - `<association property="way" column="wayId" javaType="com.whx.bus.entity.Way" select="selectWayById">`
   2. 另一种是使用<collection> 标签指定resultMapId，将关联查询的记录映射到集合List中
     - 去重复的原理是<resultMap>标签内的<id>子标签，指定了唯一确定一条记录的 id 列，MyBatis 根据列值来完成 100 条记录的去重复功能，<id>可以有多个，代表了联合主键的语意。
     
@@ -181,21 +190,24 @@
 - 答：不同的 Xml 映射文件，如果配置了 namespace,那么 id 可以重复；如果没有配置 namespace，那么 id 不能重复
 
 ### <a name="9">8.MyBatis 都有哪些 Executor 执行器？它们之间的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- MyBatis 有三种基本的 Executor 执行器，SimpleExecutor、ReuseExecutor、BatchExecutor。
-    - **SimpleExecutor**：每执行一次 update 或 select，就开启一个 Statement 对象，用完立刻关闭 Statement 对象。
-    - **ReuseExecutor**：执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放置于 Map<String, Statement>内，供下一次使用。简言之，就是重复使用 Statement 对象。
-    - **BatchExecutor**：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sql 都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch()完毕后，等待逐一执行 executeBatch()批处理。与 JDBC 批处理相同。
+MyBatis 有三种基本的 Executor 执行器，SimpleExecutor、ReuseExecutor、BatchExecutor。
+- **SimpleExecutor**：每执行一次 update 或 select，就开启一个 Statement 对象，用完立刻关闭 Statement 对象。
+- **ReuseExecutor**：执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放置于 Map<String, Statement>内，供下一次使用。简言之，就是重复使用 Statement 对象。
+- **BatchExecutor**：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sql 都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch()完毕后，等待逐一执行 executeBatch()批处理。与 JDBC 批处理相同。
 - 作用范围：Executor 的这些特点，都严格限制在 SqlSession 生命周期范围内。
 - Mybatis的默认执行器是SimpleExecutor，需要配置在创建SqlSession对象的时候指定执行器的类型即可。
 
 ### <a name="10">9.MyBatis xml文件与内部数据结构之间的关系？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- <resultMap>标签会被解析为 ResultMap 对象，其每个子元素会被解析为 ResultMapping 对象。
-- 每一个<select>、<insert>、<update>、<delete>标签均会被解析为 MappedStatement 对象。
-- 标签内的 sql 会被解析为 BoundSql 对象。
+<resultMap>标签会被解析为 ResultMap 对象，其每个子元素会被解析为 ResultMapping 对象。
+
+每一个<select>、<insert>、<update>、<delete>标签均会被解析为 MappedStatement 对象。
+
+标签内的 sql 会被解析为 BoundSql 对象。
 
 ### <a name="11">10.为什么说 MyBatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象或者关联集合对象时，可以根据对象关系模型直接获取
-- 而 MyBatis 在查询关联对象或关联集合对象时，需要手动编写 sql 来完成，所以，称之为半自动 ORM 映射工具。
+Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象或者关联集合对象时，可以根据对象关系模型直接获取
+
+而 MyBatis 在查询关联对象或关联集合对象时，需要手动编写 sql 来完成，所以，称之为半自动 ORM 映射工具。
 
 
 ### <a name="12">11.mybatis与Hibernate区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -208,18 +220,19 @@
    - hibernate一级缓存session级别的。Hibernate二级缓存是SessionFactory级的缓存。 SessionFactory的缓存分为内置缓存和外置缓存
    
 ### <a name="13">12. mybatis的一二级缓存</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 一级缓存的作用域是SQlSession, Mabits默认开启一级缓存。 在同一个SqlSession中，执行相同的SQL查询时；第一次会去查询数据库，并写在缓存中，第二次会直接从缓存中取。 当执行SQL时候两次查询中间发生了增删改的操作，则SQLSession的缓存会被清空。 
+一级缓存的作用域是SQlSession, Mabits默认开启一级缓存。 在同一个SqlSession中，执行相同的SQL查询时；第一次会去查询数据库，并写在缓存中，第二次会直接从缓存中取。 当执行SQL时候两次查询中间发生了增删改的操作，则SQLSession的缓存会被清空。 
   - Mybatis的内部缓存使用一个HashMap，key为Statement Id + Offset + Limit + Sql + Params语句。Value为查询出来的结果集映射成的java对象。 SqlSession执行insert、update、delete等操作commit后会清空该SQLSession缓存。
     - ① select * from table limit 2,1; //含义是跳过2条取出1条数据
     - ② select * from table limit 2 offset 1; //含义是从第1条数据开始取出2条数据,limit后面跟的是2条数据,offset后面是从第1条开始读取,即读取第2,3条。
   - 一级缓存脏读：对于不同的sqlsession A与B, A做update操作，只能刷新A自己的一级缓存，无法刷新B的一级缓存。所以，如果A与B操作同一条记录，就会有脏读。
     - 一级缓存最大范围是SqlSession内部，有多个SqlSession或者分布式的环境下，数据库写操作会引起脏数据，建议设定缓存级别为Statement。
-- 二级缓存作用域是Mapper级别的，默认是没有开启。MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别。
+二级缓存作用域是Mapper级别的，默认是没有开启。MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别。
   - 二级缓存脏读：在两个不同的mapper中都涉及到**同一个表**的增删改查操作，当其中一个mapper对这张表进行查询操作，此时另一个mapper进行了更新操作刷新缓存，然后第一个mapper又查询了一次，那么这次查询出的数据是脏数据。
     - MyBatis在多表查询时，极大可能会出现脏数据，有设计上的缺陷，安全使用二级缓存的条件比较苛刻。
   - mybatis：查询时，先进行二级缓存执行流程后，就会进入一级缓存的执行流程。（mapper级别的缓存可能是其他旧的sqlsession更新的，自己的sqlsession若存在缓存，则为较新的缓存。）
   
-- 总结：在分布式环境下，由于默认的MyBatis Cache实现都是基于本地的，分布式环境下必然会出现读取到脏数据
+
+总结：在分布式环境下，由于默认的MyBatis Cache实现都是基于本地的，分布式环境下必然会出现读取到脏数据
 - 美团技术团队mybatis缓存分析：https://tech.meituan.com/2018/01/19/mybatis-cache.html
 
 ### <a name="14">13.千万级数据查询方案---- 流式查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -244,3 +257,15 @@
   // 方案2，使用编程式事务 TransactionTemplate
   // 方案3，使用声明式事务 @Transaction
   ```
+  
+### <a name="15">MyBatis的设计模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- Builder模式，例如SqlSessionFactoryBuilder、XMLConfigBuilder、XMLMapperBuilder、XMLStatementBuilder、CacheBuilder；
+    -  > SqlSessionFactoryBuilder会调用XMLConfigBuilder读取所有的MybatisMapConfig.xml和所有的*Mapper.xml文件，构建Mybatis运行的核心对象Configuration对象，然后将该Configuration对象作为参数构建一个SqlSessionFactory对象。
+- 模板方法模式，例如BaseExecutor和SimpleExecutor，还有BaseTypeHandler和所有的子类例如IntegerTypeHandler；
+- 工厂模式，例如SqlSessionFactory、ObjectFactory、MapperProxyFactory；
+- 单例模式，例如ErrorContext和LogFactory；
+- 代理模式，Mybatis实现的核心，比如MapperProxy、ConnectionLogger，用的jdk的动态代理；还有executor.loader包使用了cglib或者javassist达到延迟加载的效果；
+- 组合模式，例如SqlNode和各个子类ChooseSqlNode等；
+- 适配器模式，例如Log的Mybatis接口和它对jdbc、log4j等各种日志框架的适配实现；
+- 装饰者模式，例如Cache包中的cache.decorators子包中等各个装饰者的实现；
+- 迭代器模式，例如迭代器模式PropertyTokenizer；

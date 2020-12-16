@@ -1,0 +1,94 @@
+<a name="index">**Index**</a>
+
+<a href="#0">Redis 相关设计场景</a>  
+&emsp;<a href="#1">1. 缓存预热</a>  
+&emsp;&emsp;<a href="#2">1.1. 秒杀场景</a>  
+&emsp;&emsp;<a href="#3">1.2. 冷数据场景</a>  
+&emsp;<a href="#4">2. zset应用场景</a>  
+&emsp;&emsp;<a href="#5">2.1. 延迟队列</a>  
+&emsp;&emsp;<a href="#6">2.2. 排行榜</a>  
+&emsp;&emsp;<a href="#7">2.3. 限流</a>  
+&emsp;&emsp;<a href="#8">2.4. 次数限制 —— 登陆、短信通知、密码尝试</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.4.1. 数据过大占用过多内存如何处理？</a>  
+&emsp;&emsp;<a href="#10">2.5. 相关文章</a>  
+&emsp;<a href="#11">3. list应用场景</a>  
+&emsp;&emsp;<a href="#12">3.1. 消息队列</a>  
+&emsp;<a href="#13">4. HyperLogLog</a>  
+&emsp;<a href="#14">5. Geo</a>  
+&emsp;<a href="#15">6. bloomFilter</a>  
+# <a name="0">Redis 相关设计场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+## <a name="1">缓存预热</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+对于有未来有预知的大量请求进行准备，准备好相关的缓存数据，防止数据库崩溃。
+
+### <a name="2">秒杀场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+秒杀时间到前对库存数据进行预热。
+
+
+### <a name="3">冷数据场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+存在大量死用户也就是冷数据，需要在某个时刻点进行消息推送，召回他们回来使用app或参加活动。
+
+死用户平常在系统中因为无活跃数据，因此也没有相应的缓存数据。而作为通知系统，需要在某一个时刻点大量访问本系统，访问本系统的冷用户数据通知短信。
+
+## <a name="4">zset应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="5">延迟队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+zset 可以把score 当成延迟数据通知的时间戳。 使用 `zrangebyscore key  0  1606996111 ` 过滤出到期元素。
+> 简单的使用的话，可以使用一个死循环线程通过zrangebyscore去遍历 过期元素，并异步分发到消费线程。
+
+
+但是实际在系统使用中，常使用Redission 的延迟队列。Redission的延迟队列，使用zset、list及发布订阅模型，通过lua脚本使用发布订阅模式延迟发布元素过期消息，将zset的数据转移到list中。
+
+获取list的数据可以使用Redission的 getBlockingQueue(), 通过blpop 命令阻塞弹出延迟元素进行对应的消费任务。
+
+### <a name="6">排行榜</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+经常浏览技术社区的话，应该对 “1小时最热门” 这类榜单不陌生。
+
+当前小时的时间戳作为 zset 的 key，把贴子ID作为 member ，点击数评论数等作为 score，当 score 发生变化时更新 score。利用 ZREVRANGE 或者 ZRANGE 查到对应数量的记录。
+
+
+### <a name="7">限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+如果我们把一个用户的 ID 作为 key 来定义一个 zset ，member 或者 score 都为访问时的时间戳。我们只需统计某个 key 下在指定时间戳区间内的个数，就能得到这个用户滑动窗口内访问频次，与最大通过次数比较，来决定是否允许通过。
+
+思路是每一个请求到来时，将时间窗口外的记录全部清理掉，只保留窗口内的记录。zset 中只有 score 值非常重要，**value 值没有特别的意义**，只需要保证它是唯一的就可以了
+
+### <a name="8">次数限制 —— 登陆、短信通知、密码尝试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+在常见的密码限制场景，比如密码输错超过5次则需等待多少分钟。以及不同系统营销短信通知用户，不能半小时内重复发送之类的次数及时间限制的场景。
+
+使用zset记录登陆的时间，值可以记录登陆的方式。使用zrangbyscore 获取当前时间点前的登陆数据。
+
+#### <a name="9">数据过大占用过多内存如何处理？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+定时任务归档，可以使用每小时的定时任务，结合zrangbyscore的 min max 过滤一小时前的登陆数据，进行数据归档。
+
+
+
+### <a name="10">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+- https://zhuanlan.zhihu.com/p/147912757
+
+## <a name="11">list应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">消息队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+实现消息队列，使用blpush、rlpop的阻塞入队出队消息，实现队列的尾进头出的消费顺序
+
+## <a name="13">HyperLogLog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 统计系统中每个按钮的使用情况 
+- 统计注册 IP 数
+- 统计每日访问 IP 数
+- 统计页面实时 UV 数
+- 统计在线用户数
+- 统计用户每天搜索不同词条的个数
+
+## <a name="14">Geo</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+附近的人定位查找功能
+
+
+## <a name="15">bloomFilter</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+主要的应用场景都是判断数据是否存在：
+
+- 大数据判断是否存在：这就可以实现出上述的去重功能，如果你的服务器内存足够大的话，那么使用 HashMap 可能是一个不错的解决方案，理论上时间复杂度可以达到 O(1 的级别，但是当数据量起来之后，还是只能考虑布隆过滤器。
+- 解决缓存穿透：我们经常会把一些热点数据放在 Redis 中当作缓存，例如产品详情。通常一个请求过来之后我们会先查询缓存，而不用直接读取数据库，这是提升性能最简单也是最普遍的做法，但是 如果一直请求一个不存在的缓存，那么此时一定不存在缓存，那就会有 大量请求直接打到数据库 上，造成 缓存穿透，布隆过滤器也可以用来解决此类问题。
+  - 布隆过滤器有一个可以预判误判率的公式，查询缓存可能误判的名单存在，进行正常的查询。
+- 爬虫/ 邮箱等系统的过滤：平时不知道你有没有注意到有一些正常的邮件也会被放进垃圾邮件目录中，这就是使用布隆过滤器 误判 导致的。 
+- 应用介绍：在查询缓存的前面加一层布隆过滤器的过滤判断，判断缓存是否存在。

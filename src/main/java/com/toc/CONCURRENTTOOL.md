@@ -26,7 +26,10 @@
 &emsp;&emsp;&emsp;<a href="#23">3.1.1. ArrayBlockingQueue</a>  
 &emsp;&emsp;&emsp;<a href="#24">3.1.2. LinkedBlockingQueue</a>  
 &emsp;&emsp;&emsp;<a href="#25">3.1.3. PriorityBlockingQueue</a>  
-&emsp;<a href="#26">4. 相关文章</a>  
+&emsp;&emsp;<a href="#26">3.2. DelayQueue </a>  
+&emsp;&emsp;&emsp;<a href="#27">3.2.1. 实现</a>  
+&emsp;&emsp;&emsp;<a href="#28">3.2.2. 相关资料</a>  
+&emsp;<a href="#29">4. 相关文章</a>  
 # <a name="0">Java并发相关工具类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">AQS 相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -575,12 +578,60 @@ ArrayBlockingQueue 是 BlockingQueue 接口的有界队列实现类，底层采�
 ArrayBlockingQueue 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
 
 #### <a name="24">LinkedBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。
+LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做**无界队列也可以当做有界队列**来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。
   - 使用两个ReentrantLock，takeLock和putLock两把锁，分别用于阻塞队列的读写线程，也就是说，读线程和写线程可以同时运行，在多线程高并发场景，应该可以有更高的吞吐量，性能比单锁更高。
   
 #### <a name="25">PriorityBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
   - PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为无界队列
   
-## <a name="26">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">DelayQueue </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+DelayQueue 延迟队列实现使用数据结构使用PriorityQueue，**线程安全协作**使用的是ReentrantLock 与 Condition 条件队列实现。关键的实现在take方法的 available.awaitNanos(delay);
+- 队列中的元素必须是Delayed的实现类
+
+- take() 方法源码
+```
+ public E take() throws InterruptedException {
+        final ReentrantLock lock = this.lock;
+        lock.lockInterruptibly();
+        try {
+            for (;;) {
+                E first = q.peek();
+                if (first == null)     // 一开始队列为空或者队列消费为空
+                    available.await();
+                else {
+                    // 获取队头的延迟元素的等待时间
+                    long delay = first.getDelay(NANOSECONDS);
+                    if (delay <= 0)
+                        return q.poll();   // 自旋方法的返回出口
+                    first = null; // don't retain ref while waiting
+                    if (leader != null)    // leader
+                        available.await();
+                    else {
+                        Thread thisThread = Thread.currentThread();
+                        leader = thisThread;
+                        try {
+                            // 关键实现 结合一开始获取的等待时间，唤醒使用
+                            available.awaitNanos(delay);
+                        } finally {
+                            if (leader == thisThread)
+                                leader = null;
+                        }
+                    }
+                }
+            }
+        } finally {
+            // 当返回元素退出自旋的时候 唤醒条件队列下一个节点
+            if (leader == null && q.peek() != null)
+                available.signal();
+            lock.unlock();
+        }
+    }
+```
+#### <a name="28">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- https://segmentfault.com/a/1190000016388106
+
+## <a name="29">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - https://www.javadoop.com/post/AbstractQueuedSynchronizer-3
