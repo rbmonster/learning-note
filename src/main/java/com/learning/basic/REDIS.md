@@ -471,6 +471,62 @@ QUEUED
 8. no-enviction（驱逐）：禁止驱逐数据，这也是默认策略。意思是当内存不足以容纳新入数据时，新写入操作就会报错，请求可以继续进行，线上任务也不能持续进行，采用no-enviction策略可以保证数据不被丢失。
 
 
+
+## 发布订阅模型
+
+```
+//查看服务器目前订阅的通道
+>PUBSUB CHANNELS
+//正则匹配服务器通道
+>PUBSUB CHANNELS "new.[is]"
+
+// 订阅 new.it 通道
+>SUBSCRIBE "new.it"
+
+//取消订阅
+>UNSUBSCRIBE "new.it"
+
+//发布消息
+>PUBLISH "new.it" "hello"
+```
+发送消息
+1. 将消息发送给channel频道的所有订阅者。
+2. 如果有一个或者多个模式patten与channel匹配，那么将message发送给patten的订阅者。
+  
+
+### 发布订阅key事件案例
+客户端1：
+```
+127.0.0.1:6379> PSUBSCRIBE '__key*__:*'
+Reading messages... (press Ctrl-C to quit)
+1) "psubscribe"
+2) "__key*__:*"
+3) (integer) 1
+1) "pmessage"
+2) "__key*__:*"
+3) "__keyevent@0__:expired"
+4) "aa"
+
+
+```
+
+客户端2：
+```
+127.0.0.1:6379> PSUBSCRIBE '__key*__:*'
+Reading messages... (press Ctrl-C to quit)
+1) "psubscribe"
+2) "__key*__:*"
+3) (integer) 1
+1) "pmessage"
+2) "__key*__:*"
+3) "__keyevent@0__:expired"
+4) "aa"
+
+```
+  
+相关文章：
+- https://github.com/redis/redis/issues/1855
+- https://redis.io/commands/subscribe
 ## redis实现队列
 
 ### 异步队列
@@ -483,6 +539,8 @@ QUEUED
 ### 延迟队列实现
 - 使用zSet实现，拿时间戳当score，消息当成key，使用zadd指令生产消息。
   - 而消费者使用zrangebyscore来获取N秒之前数据进行轮询处理。
+
+
 
 ## 主从结构
 - 设置主服务器指令： **SLAVEOF 127.0.0.1 6379**

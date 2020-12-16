@@ -447,6 +447,7 @@ private int maximum_depth(TreeNode root) {
   - 子集 II（review）：https://leetcode-cn.com/problems/subsets-ii/
   - 解数独：https://leetcode-cn.com/problems/sudoku-solver/
   - 单词搜索：https://leetcode-cn.com/problems/word-search/
+  - 二叉树路径：https://leetcode-cn.com/problems/binary-tree-paths/
   
   ```
   回溯中常常使用的避免重复解的条件：

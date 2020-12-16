@@ -38,9 +38,11 @@
 - [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/INTERFACE_DESIGN.md)
 - [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDS_KILL_DESIGN.md)
 - [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/TINYURL.md)
-- [抢红包(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDKILL_REDPACKAGE.md)
+- [抢红包](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDKILL_REDPACKAGE.md)
 - [扫码登陆](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SCAN_LOGIN.md)
-
+- [延迟队列](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/DELAYQUEUE_DESIGN.md)
+- [本地缓存](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/LOCALCACHE.md)
+- [Redis数据结构的设计应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/REDIS_APPLICATION.md)
 
 ## 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CODEDESION_BOOK.md)

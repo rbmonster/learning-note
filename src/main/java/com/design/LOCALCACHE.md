@@ -20,3 +20,6 @@
    - 懒清除：使用softReference 或 weakReference，让jvm清除。
    - 主动清除：LRU、LFU、FIFO
    
+
+## 相关资料
+- https://chenssy.blog.csdn.net/article/details/107421033
