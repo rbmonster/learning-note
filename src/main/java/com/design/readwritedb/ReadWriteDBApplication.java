@@ -1,25 +1,28 @@
-package com.four.transaction;
+package com.design.readwritedb;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * <pre>
  * @Description:
- * transaction
+ * 读写分离Application
  * </pre>
  *
  * @version v1.0
- * @ClassName: TransactionApplication
+ * @ClassName: ReadWriteDBApplication
  * @Author: sanwu
- * @Date: 2020/11/7 19:07
+ * @Date: 2020/12/17 14:54
  */
 @SpringBootApplication
-public class TransactionApplication {
+public class ReadWriteDBApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(TransactionApplication.class, args);
+        SpringApplication.run(ReadWriteDBApplication.class);
     }
 }

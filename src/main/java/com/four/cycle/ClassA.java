@@ -17,8 +17,12 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ClassA {
+    private  ClassB classB;
+
     @Autowired
-    private ClassB classB;
+    public ClassA(ClassB classB) {
+        this.classB = classB;
+    }
 
     public ClassB getClassB() {
         return classB;
