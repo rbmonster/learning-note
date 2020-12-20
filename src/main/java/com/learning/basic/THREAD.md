@@ -360,7 +360,33 @@ Spring 事务应用
   
 > 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文（Context），它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
 
+读写分离实现
+- 使用theadLocal获取当前需要执行的数据源，结合AbstractDataSourceRouter执行需要执行的数据库。
 
+ThreadLocalRandom 是ThreadLocal与 Random的结合，在Random的基础上进行性能的优化，在并发的情况下提供较大的性能提升。
+> Random 也是线程安全的类，内部使用AtomLong 结合 CAS技术实现，但是CAS技术在并发的情况下，性能比较糟糕。
+> ThreadLocalRandom 是通过为每个线程实例化一个随机数生成器，来减少系统开销和对资源的争用。
+
+
+跨方法传递：
+- 常规web服务接收到request的时候，经常有一些用户信息需要传递到service层。此时就可以使用ThreadLocal存储用户信息，每个service方法就不用写传递参数。
+#### TheadLocal 与 SimpleDateFormat的应用
+使用SimpleDataFormat的parse()方法，内部有一个Calendar对象，调用SimpleDataFormat的parse()方法会先调用Calendar.clear（），然后调用Calendar.add()，如果一个线程先调用了add()然后另一个线程又调用了clear()，这时候parse()方法解析的时间就不对了。
+
+解决：使用了线程池加上ThreadLocal包装SimpleDataFormat，再调用initialValue让每个线程有一个SimpleDataFormat的副本，从而解决了线程安全的问题，也提高了性能。
+```
+private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.withInitial(() ->
+    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+);
+```
+
+**如果是Java8应用，可以使用DateTimeFormatter代替SimpleDateFormat, 线程安全**
+
+
+#### 相关资料
+- https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ
+
+待补充资料：netty的fastThreadLocal
 ### spring 中的线程池
 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。

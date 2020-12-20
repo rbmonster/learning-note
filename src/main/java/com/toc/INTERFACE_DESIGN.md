@@ -1,19 +1,19 @@
 <a name="index">**Index**</a>
 
-&emsp;&emsp;<a href="#0">5.1. 接口设计</a>  
-&emsp;&emsp;&emsp;<a href="#1">5.1.1. 一些概念</a>  
-&emsp;&emsp;<a href="#2">5.2. URL 设计</a>  
-&emsp;&emsp;&emsp;<a href="#3">5.2.1. 错误的设计</a>  
-&emsp;&emsp;&emsp;<a href="#4">5.2.2. HTTP 方法，对应我们常见的 CRUD 操作：</a>  
-&emsp;&emsp;&emsp;<a href="#5">5.2.3. URL 层级</a>  
-&emsp;&emsp;&emsp;<a href="#6">5.2.4. URL 版本号</a>  
-&emsp;&emsp;&emsp;<a href="#7">5.2.5. 响应数据形式</a>  
-&emsp;&emsp;&emsp;<a href="#8">5.2.6. 正确使用响应状态码</a>  
-&emsp;&emsp;<a href="#9">5.3. API接口设计 三板斧</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#10">5.3.0.1. 1. entity对象使用@Valid 简化参数判断</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#11">5.3.0.2. 2. @RestControllerAdvice +   @ExceptionHandler(MethodArgumentNotValidException.class)</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#12">5.3.0.3. 3. 使用统一的数据返回结构JsonResponse 包括异常类型</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#13">5.3.0.4. 使用swagger暴露参数</a>  
+&emsp;&emsp;<a href="#0">4.1. 接口设计</a>  
+&emsp;&emsp;&emsp;<a href="#1">4.1.1. 一些概念</a>  
+&emsp;&emsp;<a href="#2">4.2. URL 设计</a>  
+&emsp;&emsp;&emsp;<a href="#3">4.2.1. 错误的设计</a>  
+&emsp;&emsp;&emsp;<a href="#4">4.2.2. HTTP 方法，对应我们常见的 CRUD 操作：</a>  
+&emsp;&emsp;&emsp;<a href="#5">4.2.3. URL 层级</a>  
+&emsp;&emsp;&emsp;<a href="#6">4.2.4. URL 版本号</a>  
+&emsp;&emsp;&emsp;<a href="#7">4.2.5. 响应数据形式</a>  
+&emsp;&emsp;&emsp;<a href="#8">4.2.6. 正确使用响应状态码</a>  
+&emsp;&emsp;<a href="#9">4.3. API接口设计 三板斧</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#10">4.3.0.1. 1. entity对象使用@Valid 简化参数判断</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#11">4.3.0.2. 2. @RestControllerAdvice +   @ExceptionHandler(MethodArgumentNotValidException.class)</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#12">4.3.0.3. 3. 使用统一的数据返回结构JsonResponse 包括异常类型</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#13">4.3.0.4. 使用swagger暴露参数</a>  
 ### <a name="0">接口设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Representational State Transfer（REST）。REST的概念是将API结构分离为操作和资源，使用HTTP方法GET、DELETE、POST和PUT操作资源。
 

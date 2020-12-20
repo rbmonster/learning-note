@@ -428,7 +428,9 @@ WAL机制主要得益于两个方面：
 
 
 ## <a name="45">实际sql的执行</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+一个sql 语句mysql的执行顺序：
 
+`from -- on  -- JOIN -- where -- group by -- having -- select -- distinct -- order by -- limit`
 ### <a name="46">count(*)实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 不同引擎中的实现
 - MyISAM引擎把一个表的总行数存在了磁盘上， 因此执行count(*)的时候会直接返回这个数，效率很高；

@@ -22,10 +22,10 @@ Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 
 
 ## Spring 中的 bean 的作用域有哪些?
 - singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。
-- prototype : 每次请求都会创建一个新的 bean 实例。
+- prototype : 每次请求都会创建一个新的 bean 实例。如跟请求状态有关的对象，就不能使用单例，需要使用多例保证线程安全。
 - request : 每一次HTTP请求都会产生一个新的bean，该bean仅在当前HTTP request内有效。
 - session : 每一次HTTP请求都会产生一个新的 bean，该bean仅在当前 HTTP session 内有效。
-- global-session： 全局session作用域，仅仅在基于portlet的web应用中才有意义，Spring5已经没有了。Portlet是能够生成语义代码(例如：HTML)片段的小型Java Web插件。它们基于portlet容器，可以像servlet一样处理HTTP请求。但是，与 servlet 不同，每个 portlet 都有不同的会话
+> - global-session： 全局session作用域，仅仅在基于portlet的web应用中才有意义，Spring5已经没有了。Portlet是能够生成语义代码(例如：HTML)片段的小型Java Web插件。它们基于portlet容器，可以像servlet一样处理HTTP请求。但是，与 servlet 不同，每个 portlet 都有不同的会话
    
 ## Spring 中的 bean 生命周期
 - 见声明周期详解
@@ -227,6 +227,23 @@ public String update() {
 7. DispatcherServlet 把返回的 Model 传给 View Resolver（视图渲染）。
 8. 把 View 返回给请求者（浏览器）
 
+## BeanFactory和ApplicationContext的区别
+
+BeanFactory：负责配置、创建、管理bean，IOC功能的实现主要就依赖于该接口子类实现。
+- 针对bean对象数据加载都是懒加载模式，只有在使用到某个Bean时(调用getBean())，才对该Bean进行加载实例化。
+
+ApplicationContext 是 Spring 应用程序中的中央接口，用于向应用程序提供配置信息。它继承了 BeanFactory 接口，所以 ApplicationContext 包含 BeanFactory 的所有功能以及更多功能
+其主要实现的接口与功能如下：
+- MessageSource，主要用于国际化数据资源的加载，如存在中文的配置文件。
+- ApplicationEventPublisher，提供了事件发布功能，事件驱动模型。
+- EnvironmentCapable，可以获取容器当前运行的环境
+- ResourceLoader，主要用于加载资源文件，提供底层资源的访问的能力
+- BeanFactory接口
+- 非延迟加载：ApplicationContext是在容器启动时，一次性创建了所有的Bean。这样，在容器启动时，我们就可以发现Spring中存在的配置错误。
+- 后置处理器注册方式：两者都支持BeanPostProcessor、BeanFactoryPostProcessor的使用，但两者之间的区别是：BeanFactory需要手动注册，而ApplicationContext则是自动注册
+- 提供Web及Aop的支持
+
+BeanFactory是Spring框架的基础设施，面向Spring本身；而ApplicationContext面向使用Spring的开发者，相比BeanFactory提供了更多面向实际应用的功能，几乎所有场合都可以直接使用ApplicationContext而不是底层的BeanFactory
 
 
 ## @RestController vs @Controller

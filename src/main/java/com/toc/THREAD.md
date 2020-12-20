@@ -18,8 +18,10 @@
 &emsp;&emsp;<a href="#15">0.7. ThreadLocal </a>  
 &emsp;&emsp;&emsp;&emsp;<a href="#16">0.7.0.1. 父线程与子线程传递threadLocal的方案</a>  
 &emsp;&emsp;&emsp;&emsp;<a href="#17">0.7.0.2. ThreadLocal应用</a>  
-&emsp;&emsp;<a href="#18">0.8. spring 中的线程池</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#19">0.8.0.3. 异步编程的例子：</a>  
+&emsp;&emsp;&emsp;<a href="#18">0.7.1. TheadLocal 与 SimpleDateFormat的应用</a>  
+&emsp;&emsp;&emsp;<a href="#19">0.7.2. 相关资料</a>  
+&emsp;&emsp;<a href="#20">0.8. spring 中的线程池</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#21">0.8.0.1. 异步编程的例子：</a>  
 # <a name="0">java 并发线程相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ### <a name="1">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -382,8 +384,34 @@ Spring 事务应用
   
 > 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文（Context），它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
 
+读写分离实现
+- 使用theadLocal获取当前需要执行的数据源，结合AbstractDataSourceRouter执行需要执行的数据库。
 
-### <a name="18">spring 中的线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+ThreadLocalRandom 是ThreadLocal与 Random的结合，在Random的基础上进行性能的优化，在并发的情况下提供较大的性能提升。
+> Random 也是线程安全的类，内部使用AtomLong 结合 CAS技术实现，但是CAS技术在并发的情况下，性能比较糟糕。
+> ThreadLocalRandom 是通过为每个线程实例化一个随机数生成器，来减少系统开销和对资源的争用。
+
+
+跨方法传递：
+- 常规web服务接收到request的时候，经常有一些用户信息需要传递到service层。此时就可以使用ThreadLocal存储用户信息，每个service方法就不用写传递参数。
+#### <a name="18">TheadLocal 与 SimpleDateFormat的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+使用SimpleDataFormat的parse()方法，内部有一个Calendar对象，调用SimpleDataFormat的parse()方法会先调用Calendar.clear（），然后调用Calendar.add()，如果一个线程先调用了add()然后另一个线程又调用了clear()，这时候parse()方法解析的时间就不对了。
+
+解决：使用了线程池加上ThreadLocal包装SimpleDataFormat，再调用initialValue让每个线程有一个SimpleDataFormat的副本，从而解决了线程安全的问题，也提高了性能。
+```
+private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.withInitial(() ->
+    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+);
+```
+
+**如果是Java8应用，可以使用DateTimeFormatter代替SimpleDateFormat, 线程安全**
+
+
+#### <a name="19">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ
+
+待补充资料：netty的fastThreadLocal
+### <a name="20">spring 中的线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
   - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
@@ -402,7 +430,7 @@ Spring 事务应用
         return executor;
       }
     ```
-##### <a name="19">异步编程的例子：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="21">异步编程的例子：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - ```
      @Async
       public CompletableFuture<List<String>> completableFutureTask(String start) {

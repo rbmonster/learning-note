@@ -33,6 +33,7 @@
 - [MySQL](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYSQL.md) 
 - [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYBATIS.md)
 - [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
+- [Elasticsearch 基本知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/ES.md)
 
 ### 系统设计
 - [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/INTERFACE_DESIGN.md)
@@ -43,6 +44,12 @@
 - [延迟队列](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/DELAYQUEUE_DESIGN.md)
 - [本地缓存](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/LOCALCACHE.md)
 - [Redis数据结构的设计应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/REDIS_APPLICATION.md)
+- [敏感数据过滤设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SENSITIVE_FILTER.md)
+
+## 分布式与微服务
+- [dubbo sample](https://github.com/rbmonster/sanwu-dubbo-demo)
+- [spring cloud 微服务 sample](https://github.com/rbmonster/sanwu-microservice)
+
 
 ## 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CODEDESION_BOOK.md)
