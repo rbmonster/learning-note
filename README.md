@@ -1,57 +1,58 @@
 # learning-note
-## day by day
-#### Java相关
+> Motivation、Passion、Evolution
+## Java相关
 - [Java基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JAVA_BASE.md)
 - [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/COLLECTION.md)
 - [Java IO](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JAVA_IO.md)
 - [Java虚拟机](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JVM.md)
 
-#### Java并发相关
+## Java并发相关
 - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/THREAD.md)
 - [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENT.md)
 - [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENTTOOL.md)
 - [Java并发应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURREN_APPLICATION.md)
 
-### Spring
-- [Spring Basic(TODO)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING.md)
+## Spring
+- [Spring 基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING.md)
 - [Bean生命周期](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LIFECYCLE.md)
 - [Spring 源码](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SOURCECODE.md)
 - [拦截器与过滤器](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FILTERANDINTERCEPTOR.md)
 - [Spring Boot加载流程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRINGBOOT.md)
 
-### 中间件
+## 中间件
 - [Redis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/REDIS.md)
 - [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
 - [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ZOOKEEPER.md)
 - [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGEQUEUE.md)
 
-### 算法
+## 算法
 - [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/ALGORITHM.md)
 - [排序算法](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/SORT_ALGORITHM.md)
 
-### 其他
+## 其他
 - [MySQL](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYSQL.md) 
 - [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYBATIS.md)
 - [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
 - [Elasticsearch 基本知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/ES.md)
 
-### 系统设计
+## 系统设计
 - [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/INTERFACE_DESIGN.md)
 - [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDS_KILL_DESIGN.md)
 - [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/TINYURL.md)
 - [抢红包](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDKILL_REDPACKAGE.md)
 - [扫码登陆](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SCAN_LOGIN.md)
 - [延迟队列](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/DELAYQUEUE_DESIGN.md)
-- [本地缓存](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/LOCALCACHE.md)
+- [本地缓存设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/LOCALCACHE.md)
 - [Redis数据结构的设计应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/REDIS_APPLICATION.md)
 - [敏感数据过滤设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SENSITIVE_FILTER.md)
+- [数据库读写分离](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/READ_WRITE_DB.md)
 
 ## 分布式与微服务
 - [dubbo sample](https://github.com/rbmonster/sanwu-dubbo-demo)
 - [spring cloud 微服务 sample](https://github.com/rbmonster/sanwu-microservice)
 
-
-## 记录平常学习java 的一些知识点
+## 其他
+### 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CODEDESION_BOOK.md)
 - [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
 - [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
