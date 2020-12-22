@@ -8,10 +8,10 @@
 &emsp;&emsp;<a href="#5">1.4. 扩容限流 —— nginx</a>  
 &emsp;&emsp;&emsp;<a href="#6">1.4.1. 扩容</a>  
 &emsp;&emsp;&emsp;<a href="#7">1.4.2. 限流</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#8">1.4.2.1. IP 限流</a>  
-<a href="#9">          # 一个地址最多可以存在10个链接</a>  
-&emsp;<a href="#10">1. 反作弊</a>  
-&emsp;&emsp;<a href="#11">1.1. 多个账号，一次性发送多个请求</a>  
+<a href="#8">          # 一个地址最多可以存在10个链接</a>  
+&emsp;<a href="#9">1. 反作弊</a>  
+&emsp;&emsp;<a href="#10">1.1. 风控</a>  
+&emsp;&emsp;<a href="#11">1.2. 多个账号，一次性发送多个请求</a>  
 &emsp;<a href="#12">2. 后端</a>  
 &emsp;&emsp;<a href="#13">2.1. 服务单一职责</a>  
 &emsp;&emsp;<a href="#14">2.2. 接口设计</a>  
@@ -47,8 +47,8 @@ CDN(Content Delivery Network)的本质上是将媒体资源，动静态图片（
 - 添加nginx机器及后端服务器，增加系统的并发能力
 
 #### <a name="7">限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+IP 限流
 
-##### <a name="8">IP 限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 实际上真正的企业架构中，在 Nginx 的上面一层还会有一层 lvs(Linux Virtual Server)，简单解释就是能够在网络第 4  层对 Nginx 服务的 ip 进行负载均衡
 nginx限制IP的连接和并发分别有两个模块：
 - limit_req_zone：用来限制单位时间内的请求数，即速率限制，采用的漏桶算法 "leaky bucket"。
@@ -83,7 +83,7 @@ server {
         location / {
             ... 
             
-            # <a name="9">一个地址最多可以存在10个链接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+            # <a name="8">一个地址最多可以存在10个链接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
             limit_req zone=req_one burst=50 nodelay;  # 每个地址每秒只能请求一次，burst=120 一共有120块令牌，并且每秒钟只新增1块令牌，120块令牌发完后，多出来的请求就会返回503
       
         }
@@ -96,8 +96,8 @@ server {
 - https://www.cnblogs.com/biglittleant/p/8979915.html
 - https://blog.csdn.net/u012416045/article/details/104981097
 
-## <a name="10">反作弊</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-###风控
+## <a name="9">反作弊</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">风控</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 针对黄牛养真实用户号进行秒杀的场景，如果使用风管分析出来这个用户是真实用户的概率没有其他用户概率大，那就认为他是机器了，丢弃他的请求。
 
 ### <a name="11">多个账号，一次性发送多个请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

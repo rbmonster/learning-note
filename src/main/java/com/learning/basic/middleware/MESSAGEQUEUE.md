@@ -138,7 +138,7 @@ Partition(分区)：为了提高一个队列(topic)的吞吐量，Kafka会把top
 
 offset(消费进度):表示消费者的消费进度，offset在broker以内部topic(__consumer_offsets)的方式来保存起来。
 
-#### 分布式的kafka解决节点宕机或者抖动问题
+## 分布式的kafka解决节点宕机或者抖动问题
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/kafkaStructure.jpg)
 - 红色块的partition代表的是主分区，紫色的partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
 - 备份分区仅仅用作于备份，不做读写。如果某个Broker挂了，那就会选举出其他Broker的partition来作为主分区，这就实现了高可用。
@@ -146,7 +146,7 @@ offset(消费进度):表示消费者的消费进度，offset在broker以内部to
 **partition持久化**(解决宕机消息丢失)：Kafka是将partition的数据写在磁盘的(消息日志)，不过Kafka只允许追加写入(顺序访问)，避免缓慢的随机 I/O 操作。写入时先缓存一部分，等到足够多数据量或等待一定的时间再批量写入(flush)。
 
 
-#### 消息消费细节
+## 消息消费细节
 Kafka 使用拉取得方式消费消息。通过建立`长轮询`的模式来拉取消费。
 
 消费者去 Broker 拉消息，定义了一个超时时间，也就是说消费者去请求消息，如果有的话马上返回消息，如果没有的话消费者等着直到超时，然后再次发起拉消息请求。
@@ -276,7 +276,8 @@ spring.kafka.consumer.enable-auto-commit=false
 
 ---
 
-### 数据写到消息队列，可能会存在数据丢失问题，数据在消息队列需要持久化(磁盘？数据库？Redis？分布式文件系统？)
+### kafka会存在数据丢失问题
+> 数据在消息队列是如何持久化(磁盘？数据库？Redis？分布式文件系统？)
 - Kafka会将partition以消息日志的方式(落磁盘)存储起来，通过 顺序访问IO和缓存(等到一定的量或时间)才真正把数据写到磁盘上，来提高速度。
 
 ### 想要保证消息（数据）是有序的，怎么做？

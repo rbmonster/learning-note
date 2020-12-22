@@ -14,16 +14,21 @@
 &emsp;&emsp;<a href="#11">5.2. 二叉搜索树</a>  
 &emsp;<a href="#12">6. 算法归类</a>  
 &emsp;&emsp;<a href="#13">6.1. 树</a>  
-&emsp;<a href="#14">7. 二分法</a>  
-&emsp;<a href="#15">8. DFS & BFS</a>  
-&emsp;&emsp;<a href="#16">8.1. BFS & DFS：</a>  
-&emsp;&emsp;<a href="#17">8.2. 拓扑排序</a>  
-&emsp;&emsp;<a href="#18">8.3. dfs+回溯</a>  
-&emsp;&emsp;<a href="#19">8.4. 并查集</a>  
+&emsp;&emsp;&emsp;<a href="#14">6.1.1. 树的遍历</a>  
+&emsp;&emsp;&emsp;<a href="#15">6.1.2. 树的高度</a>  
+&emsp;&emsp;&emsp;<a href="#16">6.1.3. 树的构建</a>  
+&emsp;&emsp;&emsp;<a href="#17">6.1.4. 树的基本操作</a>  
+&emsp;&emsp;&emsp;<a href="#18">6.1.5. 其他</a>  
+&emsp;<a href="#19">7. 二分法</a>  
+&emsp;<a href="#20">8. DFS & BFS</a>  
+&emsp;&emsp;<a href="#21">8.1. BFS & DFS：</a>  
+&emsp;&emsp;<a href="#22">8.2. 拓扑排序</a>  
+&emsp;&emsp;<a href="#23">8.3. dfs+回溯</a>  
+&emsp;&emsp;<a href="#24">8.4. 并查集</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 哈希表的关键思想是使用哈希函数将键映射到存储桶。
+哈希表的关键思想是使用哈希函数将键映射到存储桶。
 - HashMap常见操作
 ```
 Map<Integer, Integer> hashmap = new HashMap<>();
@@ -69,14 +74,13 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 }
 ```
 
-- 使用哈希映射的第一个场景是，我们需要更多的信息，而不仅仅是键。然后通过哈希映射建立密钥与信息之间的映射关系。
-  - 例题：
-    - 同构字符串：https://leetcode-cn.com/problems/isomorphic-strings/
-- 另一个常见的场景是按键聚合所有信息。我们也可以使用哈希映射来实现这一目标。
-  - 例题：
-    - 存在重复元素：https://leetcode-cn.com/problems/contains-duplicate-ii/
-    - 字符串中的第一个唯一字符;https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/
-    - 寻找重复的子树（hash表与树的结合）：https://leetcode-cn.com/problems/find-duplicate-subtrees/
+使用哈希映射的第一个场景是，我们需要更多的信息，而不仅仅是键。然后通过哈希映射建立密钥与信息之间的映射关系。
+- 同构字符串：https://leetcode-cn.com/problems/isomorphic-strings/
+
+另一个常见的场景是按键聚合所有信息。我们也可以使用哈希映射来实现这一目标。
+- 存在重复元素：https://leetcode-cn.com/problems/contains-duplicate-ii/
+- 字符串中的第一个唯一字符;https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/
+- 寻找重复的子树（hash表与树的结合）：https://leetcode-cn.com/problems/find-duplicate-subtrees/
     
 ## <a name="2">数组与字符串</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="3">数组</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -87,34 +91,34 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 
 
 ### <a name="4">字符串</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 公共前缀问题
-  - 最长公共前缀：https://leetcode-cn.com/problems/longest-common-prefix/
+公共前缀问题
+- 最长公共前缀：https://leetcode-cn.com/problems/longest-common-prefix/
   
-- 回文问题（包含子串与子序列问题）
-  - 最长回文子串：https://leetcode-cn.com/problems/longest-palindromic-substring/
+回文问题（包含子串与子序列问题）
+- 最长回文子串：https://leetcode-cn.com/problems/longest-palindromic-substring/
 
-- 双指针问题
-  - 反转字符串
-  - 两数之和 II - 输入有序数组（最基础问题） ：https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/
-  - 快慢指针：
+双指针问题
+- 反转字符串
+- 两数之和 II - 输入有序数组（最基础问题） ：https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/
+- 快慢指针：
     - 移除数组
     - 移动零
     
 
 ## <a name="5">链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 链表双指针：
-  - 环形链表：https://leetcode-cn.com/problems/linked-list-cycle/
-  - 环形链表2：https://leetcode-cn.com/problems/linked-list-cycle-ii/
-  - 相交链表：https://leetcode-cn.com/problems/intersection-of-two-linked-lists/
+链表双指针：
+- 环形链表：https://leetcode-cn.com/problems/linked-list-cycle/
+- 环形链表2：https://leetcode-cn.com/problems/linked-list-cycle-ii/
+- 相交链表：https://leetcode-cn.com/problems/intersection-of-two-linked-lists/
     - 两链表相接最后一段common
-  - 删除链表的倒数第N个节点
-  - 移除链表元素
-  - 旋转链表：https://leetcode-cn.com/problems/rotate-list/
+- 删除链表的倒数第N个节点
+- 移除链表元素
+- 旋转链表：https://leetcode-cn.com/problems/rotate-list/
   
-- 经典问题：
-  - 反转链表：栈、头插法、递归
-  - 回文链表：https://leetcode-cn.com/problems/palindrome-linked-list/
-  - 合并两有序链表：https://leetcode-cn.com/problems/merge-two-sorted-lists/
+经典问题：
+- 反转链表：栈、头插法、递归
+- 回文链表：https://leetcode-cn.com/problems/palindrome-linked-list/
+- 合并两有序链表：https://leetcode-cn.com/problems/merge-two-sorted-lists/
 
   
 反转链表递归写法:
@@ -132,10 +136,14 @@ public ListNode reverseList(ListNode head) {
 
 ## <a name="6">队列与栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="7">广度优先搜索</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
- - 注意点： 1.初始入队列。 2.是否需要层级访问。3.记录已访问节点的信息防止重复访问。
- - 相关例题：
-   - 打开转盘锁：https://leetcode-cn.com/problems/open-the-lock/
-   - 岛屿数量；https://leetcode-cn.com/problems/number-of-islands/
+注意点： 
+1. 初始入队列。 
+2. 是否需要层级访问。
+3. 记录已访问节点的信息防止重复访问。
+
+相关例题：
+- 打开转盘锁：https://leetcode-cn.com/problems/open-the-lock/
+- 岛屿数量；https://leetcode-cn.com/problems/number-of-islands/
 
 代码模板：
 ```
@@ -170,10 +178,11 @@ int BFS2(Node root, Node target) {
 
 ### <a name="8">栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 TODO 待补充代码模板
+
 - 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
 
-- 20. 有效的括号：https://leetcode-cn.com/problems/valid-parentheses/ 
-- 739. 每日温度（单调栈）：https://leetcode-cn.com/problems/daily-temperatures/
+- 有效的括号：https://leetcode-cn.com/problems/valid-parentheses/ 
+- 每日温度（单调栈）：https://leetcode-cn.com/problems/daily-temperatures/
 
 ## <a name="9">树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="10">二叉树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -250,10 +259,10 @@ public List<Integer> postorderTraversal(TreeNode root) {
 }
 ```
 
-- 递归的运用
-  - 自顶而下：通过全局变量传递递归值
-  - 自底而上：带返回值的递归，依次叠加
-  - 下面以二叉树深度为例
+递归的运用
+- 自顶而下：通过全局变量传递递归值
+- 自底而上：带返回值的递归，依次叠加
+- 下面以二叉树深度为例
 ```
 // 自顶而下 通过全局变量传递值
 private int answer;		
@@ -280,24 +289,24 @@ private int maximum_depth(TreeNode root) {
 }
 ```
 
-- 构造二叉树问题：
-  - 105. 从前序与中序遍历序列构造二叉树:https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
-  - 106. 从中序与后序遍历序列构造二叉树:https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/
+构造二叉树问题：
+- 从前序与中序遍历序列构造二叉树:https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+- 从中序与后序遍历序列构造二叉树:https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/
   
-- 公共祖先问题：
-  - 236. 二叉树的最近公共祖先：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
+公共祖先问题：
+- 二叉树的最近公共祖先：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
  
 ### <a name="11">二叉搜索树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-  - 基本操作：
-    - 验证二叉搜索树：https://leetcode-cn.com/problems/validate-binary-search-tree/
-    - 二叉搜索树中的搜索：https://leetcode-cn.com/problems/search-in-a-binary-search-tree/
-    - 二叉搜索树中的插入操作：https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/
-    - 删除二叉搜索树中的节点
-      - 如果目标节点没有子节点，我们可以直接移除该目标节点。
-      - 如果目标节只有一个子节点，我们可以用其子节点作为替换。
-      - 如果目标节点有两个子节点，我们需要用其中序后继节点或者前驱节点来替换，再删除该目标节点。
-      - https://leetcode-cn.com/problems/delete-node-in-a-bst/
-      - ```
+基本操作：
+- 验证二叉搜索树：https://leetcode-cn.com/problems/validate-binary-search-tree/
+- 二叉搜索树中的搜索：https://leetcode-cn.com/problems/search-in-a-binary-search-tree/
+- 二叉搜索树中的插入操作：https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/
+- 删除二叉搜索树中的节点
+  - 如果目标节点没有子节点，我们可以直接移除该目标节点。
+  - 如果目标节只有一个子节点，我们可以用其子节点作为替换。
+  - 如果目标节点有两个子节点，我们需要用其中序后继节点或者前驱节点来替换，再删除该目标节点。
+  - 例题：https://leetcode-cn.com/problems/delete-node-in-a-bst/
+  - ```
         public TreeNode deleteNode(TreeNode root, int key) {
             if (root ==null) {
                 return null;
@@ -330,56 +339,58 @@ private int maximum_depth(TreeNode root) {
             while(root.right != null) root = root.right;
             return root.val;
         }
-        ```
-  - 二叉搜索树的最近公共祖先(与树的公共祖先有区别) ：使用了二叉搜索树的特点
-    - https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
-  - 二叉搜索树构建：
-    - 将有序数组转换为二叉搜索树：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
+    ```
+    
+二叉搜索树的最近公共祖先(与树的公共祖先有区别) ：使用了二叉搜索树的特点
+- https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+
+二叉搜索树构建：
+- 将有序数组转换为二叉搜索树：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
     
     
     
 ## <a name="12">算法归类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ### <a name="13">树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 树的遍历
-  - 二叉树的中序遍历：https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
-  - 二叉树的后序遍历：https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
-  - 二叉树的前序遍历：https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
-  - 二叉树的层平均值：https://leetcode-cn.com/problems/average-of-levels-in-binary-tree/
-  - 二叉树的层序遍历：https://leetcode-cn.com/problems/binary-tree-level-order-traversal/
-  - 二叉树的层次遍历 II：https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/  
-  - 二叉树的锯齿形层次遍历：https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
+#### <a name="14">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 二叉树的中序遍历：https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
+- 二叉树的后序遍历：https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
+- 二叉树的前序遍历：https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
+- 二叉树的层平均值：https://leetcode-cn.com/problems/average-of-levels-in-binary-tree/
+- 二叉树的层序遍历：https://leetcode-cn.com/problems/binary-tree-level-order-traversal/
+- 二叉树的层次遍历 II：https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/  
+- 二叉树的锯齿形层次遍历：https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
   
-  - 二叉搜索树的最小绝对差：https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/
-  - 翻转二叉树：https://leetcode-cn.com/problems/invert-binary-tree/
-  - 对称二叉树：https://leetcode-cn.com/problems/symmetric-tree/
-  - 二叉树的所有路径：https://leetcode-cn.com/problems/binary-tree-paths/
-  - 二叉树中第二小的节点：https://leetcode-cn.com/problems/second-minimum-node-in-a-binary-tree/
-  - 另一个树的子树：https://leetcode-cn.com/problems/subtree-of-another-tree/
-  - 修剪二叉搜索树（review）：https://leetcode-cn.com/problems/trim-a-binary-search-tree/
-  - 左叶子之和（review）：https://leetcode-cn.com/problems/sum-of-left-leaves/
-  - 二叉树的右视图（review）：https://leetcode-cn.com/problems/binary-tree-right-side-view/
-  - 把二叉搜索树转换为累加树（review）：https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
-  - 找树左下角的值（review）：https://leetcode-cn.com/problems/find-bottom-left-tree-value/
-  - 寻找重复的子树（review）：https://leetcode-cn.com/problems/find-duplicate-subtrees/solution/
-  - 二叉搜索树中的众数：https://leetcode-cn.com/problems/find-mode-in-binary-search-tree/
-  - 打家劫舍 III：https://leetcode-cn.com/problems/house-robber-iii/
-  - 二叉搜索树中第K小的元素：https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/
-  - 合并二叉树（review）：https://leetcode-cn.com/problems/merge-two-binary-trees/
-  - 路径总和：https://leetcode-cn.com/problems/path-sum/
-  - 路径总和 II（review）：https://leetcode-cn.com/problems/path-sum-ii/
-  - 填充每个节点的下一个右侧节点指针（review）：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/
-  - 两数之和 IV - 输入 BST（review）：https://leetcode-cn.com/problems/two-sum-iv-input-is-a-bst/
-  - 验证二叉搜索树：https://leetcode-cn.com/problems/validate-binary-search-tree/   
+- 二叉搜索树的最小绝对差：https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/
+- 翻转二叉树：https://leetcode-cn.com/problems/invert-binary-tree/
+- 对称二叉树：https://leetcode-cn.com/problems/symmetric-tree/
+- 二叉树的所有路径：https://leetcode-cn.com/problems/binary-tree-paths/
+- 二叉树中第二小的节点：https://leetcode-cn.com/problems/second-minimum-node-in-a-binary-tree/
+- 另一个树的子树：https://leetcode-cn.com/problems/subtree-of-another-tree/
+- 修剪二叉搜索树（review）：https://leetcode-cn.com/problems/trim-a-binary-search-tree/
+- 左叶子之和（review）：https://leetcode-cn.com/problems/sum-of-left-leaves/
+- 二叉树的右视图（review）：https://leetcode-cn.com/problems/binary-tree-right-side-view/
+- 把二叉搜索树转换为累加树（review）：https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
+- 找树左下角的值（review）：https://leetcode-cn.com/problems/find-bottom-left-tree-value/
+- 寻找重复的子树（review）：https://leetcode-cn.com/problems/find-duplicate-subtrees/solution/
+- 二叉搜索树中的众数：https://leetcode-cn.com/problems/find-mode-in-binary-search-tree/
+- 打家劫舍 III：https://leetcode-cn.com/problems/house-robber-iii/
+- 二叉搜索树中第K小的元素：https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/
+- 合并二叉树（review）：https://leetcode-cn.com/problems/merge-two-binary-trees/
+- 路径总和：https://leetcode-cn.com/problems/path-sum/
+- 路径总和 II（review）：https://leetcode-cn.com/problems/path-sum-ii/
+- 填充每个节点的下一个右侧节点指针（review）：https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/
+- 两数之和 IV - 输入 BST（review）：https://leetcode-cn.com/problems/two-sum-iv-input-is-a-bst/
+- 验证二叉搜索树：https://leetcode-cn.com/problems/validate-binary-search-tree/   
 
   
-- 树的高度
-  - 平衡二叉树：https://leetcode-cn.com/problems/balanced-binary-tree/
-  - 二叉树的直径：https://leetcode-cn.com/problems/diameter-of-binary-tree/
-  - 二叉树的最大深度：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
-  - 二叉树的最小深度：https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
+#### <a name="15">树的高度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 平衡二叉树：https://leetcode-cn.com/problems/balanced-binary-tree/
+- 二叉树的直径：https://leetcode-cn.com/problems/diameter-of-binary-tree/
+- 二叉树的最大深度：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+- 二叉树的最小深度：https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
   
-- 树的构建
+#### <a name="16">树的构建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - 从中序与后序遍历序列构造二叉树：https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/
   - 从前序与中序遍历序列构造二叉树：https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
   - 将有序数组转换为二叉搜索树：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/  
@@ -388,15 +399,15 @@ private int maximum_depth(TreeNode root) {
   - 不同的二叉搜索树：https://leetcode-cn.com/problems/unique-binary-search-trees/
   - 不同的二叉搜索树 II：https://leetcode-cn.com/problems/unique-binary-search-trees-ii/
   
-- 树的基本操作
+#### <a name="17">树的基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - 删除二叉搜索树中的节点：https://leetcode-cn.com/problems/delete-node-in-a-bst/
   - 二叉树展开为链表：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/
   
-- 其他
+#### <a name="18">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - 二叉搜索树的最近公共祖先：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
   - 二叉树的最近公共祖先：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
   
-## <a name="14">二分法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="19">二分法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 搜索旋转排序数组：https://leetcode-cn.com/problems/search-in-rotated-sorted-array/
 - 寻找旋转排序数组中的最小值：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/
 - 寻找旋转排序数组中的最小值 II：https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/
@@ -407,27 +418,27 @@ private int maximum_depth(TreeNode root) {
 - 在排序数组中查找元素的第一个和最后一个位置:https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 
 
-## <a name="15">DFS & BFS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="20">DFS & BFS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="16">BFS & DFS：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-  - 01 矩阵：https://leetcode-cn.com/problems/01-matrix/
-  - 朋友圈：https://leetcode-cn.com/problems/friend-circles/
-  - 判断二分图（review）：https://leetcode-cn.com/problems/is-graph-bipartite/
-    - 判断方法很特别，通过节点染色
-  - 岛屿的最大面积：https://leetcode-cn.com/problems/max-area-of-island/
-  - 打开转盘锁（经典问题）：https://leetcode-cn.com/problems/open-the-lock/
-  - 太平洋大西洋水流问题：https://leetcode-cn.com/problems/pacific-atlantic-water-flow/
-  - 二进制矩阵中的最短路径：https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/
-  - 被围绕的区域：https://leetcode-cn.com/problems/surrounded-regions/
+### <a name="21">BFS & DFS：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 01 矩阵：https://leetcode-cn.com/problems/01-matrix/
+- 朋友圈：https://leetcode-cn.com/problems/friend-circles/
+- 判断二分图（review）：https://leetcode-cn.com/problems/is-graph-bipartite/
+    - > 判断方法很特别，通过节点染色
+- 岛屿的最大面积：https://leetcode-cn.com/problems/max-area-of-island/
+- 打开转盘锁（经典问题）：https://leetcode-cn.com/problems/open-the-lock/
+- 太平洋大西洋水流问题：https://leetcode-cn.com/problems/pacific-atlantic-water-flow/
+- 二进制矩阵中的最短路径：https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/
+- 被围绕的区域：https://leetcode-cn.com/problems/surrounded-regions/
   
   
-### <a name="17">拓扑排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-  - 课程表：https://leetcode-cn.com/problems/course-schedule/
-  - 课程表 II：https://leetcode-cn.com/problems/course-schedule-ii/
+### <a name="22">拓扑排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 课程表：https://leetcode-cn.com/problems/course-schedule/
+- 课程表 II：https://leetcode-cn.com/problems/course-schedule-ii/
 
-### <a name="18">dfs+回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-  - 全排列（review）：https://leetcode-cn.com/problems/permutations/
-  - 全排列 II（review）：https://leetcode-cn.com/problems/permutations-ii/
+### <a name="23">dfs+回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 全排列（review）：https://leetcode-cn.com/problems/permutations/
+- 全排列 II（review）：https://leetcode-cn.com/problems/permutations-ii/
     - 重点看区别重复元素的条件
     - ```   public List<List<Integer>> permute(int[] nums) {
               List<List<Integer>> res = new ArrayList<>();
@@ -438,21 +449,21 @@ private int maximum_depth(TreeNode root) {
           }
           
           
-              public void dfs(int[]nums, List<Integer>path,boolean[] used, List<List<Integer>> res ){
-                  if(path.size() == nums.length) {
-                      res.add(new ArrayList<>(path));
-                      return;
-                  }
-          
-                  for (int i = 0; i < nums.length; i++) {
-                      if (used[i]|| i>0&& nums[i] == nums[i-1] && !used[i-1]) continue;
-                      path.add(nums[i]);
-                      used[i] = true;
-                      dfs(nums,path,used,res);
-                      path.remove(path.size()-1);
-                      used[i] = false;
-                  }
+          public void dfs(int[]nums, List<Integer>path,boolean[] used, List<List<Integer>> res ){
+              if(path.size() == nums.length) {
+                  res.add(new ArrayList<>(path));
+                  return;
               }
+      
+              for (int i = 0; i < nums.length; i++) {
+                  if (used[i]|| i>0&& nums[i] == nums[i-1] && !used[i-1]) continue;
+                  path.add(nums[i]);
+                  used[i] = true;
+                  dfs(nums,path,used,res);
+                  path.remove(path.size()-1);
+                  used[i] = false;
+              }
+          }
       ```
   - 组合：https://leetcode-cn.com/problems/combinations/submissions/
   - 组合总和（review）：https://leetcode-cn.com/problems/combination-sum/
@@ -479,7 +490,7 @@ private int maximum_depth(TreeNode root) {
   ```
 
 
-### <a name="19">并查集</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="24">并查集</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 class UnionFindSet {
         int[] rank;

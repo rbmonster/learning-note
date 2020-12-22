@@ -1,14 +1,14 @@
 <a name="index">**Index**</a>
 
-&emsp;<a href="#0">1. 集合容器</a>  
-&emsp;&emsp;<a href="#1">1.1. list相关</a>  
-&emsp;&emsp;<a href="#2">1.2. Set相关：</a>  
-&emsp;&emsp;<a href="#3">1.3. Map 相关：</a>  
-&emsp;&emsp;<a href="#4">1.4. 快速报错机制</a>  
-&emsp;&emsp;<a href="#5">1.5. 散列</a>  
-&emsp;&emsp;<a href="#6">1.6. 持有引用(java.lang.ref)</a>  
-&emsp;&emsp;<a href="#7">1.7. 性能测试</a>  
-&emsp;<a href="#8">2. 面试相关</a>  
+&emsp;<a href="#0">8. 集合容器</a>  
+&emsp;&emsp;<a href="#1">8.1. list相关</a>  
+&emsp;&emsp;<a href="#2">8.2. Set相关：</a>  
+&emsp;&emsp;<a href="#3">8.3. Map 相关：</a>  
+&emsp;&emsp;<a href="#4">8.4. 快速报错机制</a>  
+&emsp;&emsp;<a href="#5">8.5. 散列</a>  
+&emsp;&emsp;<a href="#6">8.6. 持有引用(java.lang.ref)</a>  
+&emsp;&emsp;<a href="#7">8.7. 性能测试</a>  
+&emsp;<a href="#8">9. 面试相关</a>  
 -  记录一下在Thinking in java 里面的一些方法
 ## <a name="0">集合容器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="1">list相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

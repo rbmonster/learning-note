@@ -1,14 +1,14 @@
-### 接口设计
+# 接口设计
 - Representational State Transfer（REST）。REST的概念是将API结构分离为操作和资源，使用HTTP方法GET、DELETE、POST和PUT操作资源。
 
 
-#### 一些概念
+## 一些概念
 - 资源：资源是某种东西的对象或表示，它具有一些与之相关的数据，并且可以有一组方法对其进行操作。 例如, 动物，学校和员工是资源; 删除，添加，更新是对这些资源执行的相关操作
 - 集合：集合是资源集合，例如，公司是公司资源的集合
 - URL：URL（统一资源定位符）是可以通过其定位资源的路径，并且可以对其执行某些操作
  
-### URL 设计
-#### 错误的设计
+## URL 设计
+### 错误的设计
 >  /getAllUsers
    /createNewCompany
    /updateUserInfo
@@ -21,7 +21,7 @@
 > 4. 请求方法动词如 POST GET 随意使用
 > 5. 完成当前业务接口对接，前端人员经常会询问下一步业务流程的接口定义在哪里，对接形式是什么样的
 
-#### HTTP 方法，对应我们常见的 CRUD 操作：
+### HTTP 方法，对应我们常见的 CRUD 操作：
   1. POST：新建（Create）
   2. GET：读取（Read）
   3. PUT：更新（Update）
@@ -54,7 +54,7 @@ PUT /users/12
 DELETE /users/12
 ```
 
-#### URL 层级
+### URL 层级
 - 查找 id 是 12 的用户的所有帖子， 如何设计这个 URL?
 ```
 GET /users/12/posts
@@ -62,7 +62,7 @@ GET /posts?userId=12
 ```
 - 推荐第二种方式，主体名词 posts 资源明显，其他过滤条件也更容易扩展，比如 /posts?userName=zhangsan，我们可以复用同样的接口
 
-#### URL 版本号
+### URL 版本号
 
 - 例如下面两个版本地址：
 > http://api.yourservice.com/v1/schools/清华
@@ -70,10 +70,10 @@ GET /posts?userId=12
 
 在API上加入版本信息可以有效的使用户访问正确的API，v2是新开发功能，开发阶段让所有用户访问v1，等开发完成统一切到v2。这样可以有效地跨版本访问，例如在v2版本，还需要访问v1版本的一些接口。
 
-#### 响应数据形式
+### 响应数据形式
 HTTP 头的ACCEPT属性也要设成application/json- API 返回的数据格式，不应该是纯文本，而应该是一个 JSON 对象，因为这样才能返回标准的结构化数据。所以，服务器回应的 HTTP 头的Content-Type属性要设为application/json。同时客户端也应作出相应的配合，客户端请求时，也要明确告诉服务器，可以接受 JSON 格式，即请求的 
 
-#### 正确使用响应状态码
+## 正确使用响应状态码
 - 错误示范， 返回200 实际状态表示出差
 ```
 HTTP/1.1 200 OK
@@ -135,18 +135,18 @@ Content-Type: application/json
 | 204 No Content表示请求已成功处理，但未返回任何内容    |     | 403 禁止访问     | 504 网关超时    |
 |           |                | 404 未找到       |                 |
 |           |                | 405 请求方法不对 |                 |
-### API接口设计 三板斧
+## API接口设计 三板斧
 
-##### 1. entity对象使用@Valid 简化参数判断
+### 1. entity对象使用@Valid 简化参数判断
   - BindingResult 获取参数的错误类型
   
-##### 2. @RestControllerAdvice +   @ExceptionHandler(MethodArgumentNotValidException.class)
+### 2. @RestControllerAdvice +   @ExceptionHandler(MethodArgumentNotValidException.class)
   - 封装异常的返回类型
   
-##### 3. 使用统一的数据返回结构JsonResponse 包括异常类型
+### 3. 使用统一的数据返回结构JsonResponse 包括异常类型
  - 继承接口ResponseBodyAdvice+ @RestControllerAdvice 指定包范围
  - 根据HttpMethodType 和 统一返回对象的code 生成对应的HttpStatus
  - RestControllerAdvice顾名思义，就是声明了范围内的RestController的建议处理控制
  
-##### 使用swagger暴露参数
+### 使用swagger暴露参数
  - Swagger是一种广泛使用的工具来用来记录与呈现 REST API，它提供了一种探索特定 API 使用的方法，因此允许开发人员理解底层的语义行为。

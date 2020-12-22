@@ -22,25 +22,25 @@
 &emsp;&emsp;&emsp;<a href="#19">3.1.2. 发布订阅模型</a>  
 <a href="#20">Kafka</a>  
 &emsp;<a href="#21">1. 基本概念</a>  
-&emsp;&emsp;&emsp;<a href="#22">1.0.3. 分布式的kafka解决节点宕机或者抖动问题</a>  
-&emsp;&emsp;&emsp;<a href="#23">1.0.4. 消息消费细节</a>  
-&emsp;<a href="#24">2. 与ZooKeeper的依赖</a>  
-&emsp;&emsp;<a href="#25">2.1. Broker 注册 </a>  
-&emsp;&emsp;<a href="#26">2.2. Topic 注册 </a>  
-&emsp;&emsp;<a href="#27">2.3. 负载均衡 </a>  
-&emsp;&emsp;<a href="#28">2.4. 消息 消费进度Offset 记录</a>  
-&emsp;<a href="#29">3. 面试题</a>  
-&emsp;&emsp;<a href="#30">3.1. Kafka 是什么？主要应用场景有哪些？</a>  
-&emsp;&emsp;&emsp;<a href="#31">3.1.1. kafka优点</a>  
-&emsp;&emsp;<a href="#32">3.2. kafka 为什么快</a>  
-&emsp;&emsp;&emsp;<a href="#33">3.2.1. 顺序写磁盘</a>  
-&emsp;&emsp;&emsp;<a href="#34">3.2.2. 大量使用内存页</a>  
-&emsp;&emsp;&emsp;<a href="#35">3.2.3. 零拷贝技术</a>  
-&emsp;&emsp;&emsp;<a href="#36">3.2.4. 消息压缩、批量发送</a>  
-&emsp;&emsp;<a href="#37">3.3. Kafka 如何保证消息队列不丢失</a>  
-&emsp;&emsp;<a href="#38">3.4. 数据写到消息队列，可能会存在数据丢失问题，数据在消息队列需要持久化(磁盘？数据库？Redis？分布式文件系统？)</a>  
-&emsp;&emsp;<a href="#39">3.5. 想要保证消息（数据）是有序的，怎么做？</a>  
-&emsp;&emsp;<a href="#40">3.6. 为什么在消息队列中重复消费了数据</a>  
+&emsp;<a href="#22">2. 分布式的kafka解决节点宕机或者抖动问题</a>  
+&emsp;<a href="#23">3. 消息消费细节</a>  
+&emsp;<a href="#24">4. 与ZooKeeper的依赖</a>  
+&emsp;&emsp;<a href="#25">4.1. Broker 注册 </a>  
+&emsp;&emsp;<a href="#26">4.2. Topic 注册 </a>  
+&emsp;&emsp;<a href="#27">4.3. 负载均衡 </a>  
+&emsp;&emsp;<a href="#28">4.4. 消息 消费进度Offset 记录</a>  
+&emsp;<a href="#29">5. 面试题</a>  
+&emsp;&emsp;<a href="#30">5.1. Kafka 是什么？主要应用场景有哪些？</a>  
+&emsp;&emsp;&emsp;<a href="#31">5.1.1. kafka优点</a>  
+&emsp;&emsp;<a href="#32">5.2. kafka 为什么快</a>  
+&emsp;&emsp;&emsp;<a href="#33">5.2.1. 顺序写磁盘</a>  
+&emsp;&emsp;&emsp;<a href="#34">5.2.2. 大量使用内存页</a>  
+&emsp;&emsp;&emsp;<a href="#35">5.2.3. 零拷贝技术</a>  
+&emsp;&emsp;&emsp;<a href="#36">5.2.4. 消息压缩、批量发送</a>  
+&emsp;&emsp;<a href="#37">5.3. Kafka 如何保证消息队列不丢失</a>  
+&emsp;&emsp;<a href="#38">5.4. kafka会存在数据丢失问题</a>  
+&emsp;&emsp;<a href="#39">5.5. 想要保证消息（数据）是有序的，怎么做？</a>  
+&emsp;&emsp;<a href="#40">5.6. 为什么在消息队列中重复消费了数据</a>  
 <a href="#41">RocketMQ</a>  
 &emsp;<a href="#42">1. 基本概念</a>  
 &emsp;<a href="#43">2. 基本架构</a>  
@@ -186,7 +186,7 @@ Partition(分区)：为了提高一个队列(topic)的吞吐量，Kafka会把top
 
 offset(消费进度):表示消费者的消费进度，offset在broker以内部topic(__consumer_offsets)的方式来保存起来。
 
-#### <a name="22">分布式的kafka解决节点宕机或者抖动问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="22">分布式的kafka解决节点宕机或者抖动问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/kafkaStructure.jpg)
 - 红色块的partition代表的是主分区，紫色的partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
 - 备份分区仅仅用作于备份，不做读写。如果某个Broker挂了，那就会选举出其他Broker的partition来作为主分区，这就实现了高可用。
@@ -194,7 +194,7 @@ offset(消费进度):表示消费者的消费进度，offset在broker以内部to
 **partition持久化**(解决宕机消息丢失)：Kafka是将partition的数据写在磁盘的(消息日志)，不过Kafka只允许追加写入(顺序访问)，避免缓慢的随机 I/O 操作。写入时先缓存一部分，等到足够多数据量或等待一定的时间再批量写入(flush)。
 
 
-#### <a name="23">消息消费细节</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="23">消息消费细节</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Kafka 使用拉取得方式消费消息。通过建立`长轮询`的模式来拉取消费。
 
 消费者去 Broker 拉消息，定义了一个超时时间，也就是说消费者去请求消息，如果有的话马上返回消息，如果没有的话消费者等着直到超时，然后再次发起拉消息请求。
@@ -324,7 +324,8 @@ spring.kafka.consumer.enable-auto-commit=false
 
 ---
 
-### <a name="38">数据写到消息队列，可能会存在数据丢失问题，数据在消息队列需要持久化(磁盘？数据库？Redis？分布式文件系统？)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">kafka会存在数据丢失问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+> 数据在消息队列是如何持久化(磁盘？数据库？Redis？分布式文件系统？)
 - Kafka会将partition以消息日志的方式(落磁盘)存储起来，通过 顺序访问IO和缓存(等到一定的量或时间)才真正把数据写到磁盘上，来提高速度。
 
 ### <a name="39">想要保证消息（数据）是有序的，怎么做？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

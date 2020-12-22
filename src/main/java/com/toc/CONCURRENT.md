@@ -2,54 +2,54 @@
 
 <a href="#0">java并发</a>  
 &emsp;<a href="#1">1. 基本概念</a>  
-&emsp;&emsp;&emsp;<a href="#2">1.0.1. 分工</a>  
-&emsp;&emsp;&emsp;<a href="#3">1.0.2. 同步/协作</a>  
-&emsp;&emsp;&emsp;<a href="#4">1.0.3. 互斥</a>  
-&emsp;&emsp;<a href="#5">1.1. 三大问题</a>  
-&emsp;&emsp;&emsp;<a href="#6">1.1.1. 可见性</a>  
-&emsp;&emsp;&emsp;<a href="#7">1.1.2. 原子性</a>  
-&emsp;&emsp;&emsp;<a href="#8">1.1.3. 有序性</a>  
-&emsp;<a href="#9">2.  volatile变量特殊规则</a>  
-&emsp;<a href="#10">3. synchronized</a>  
-&emsp;&emsp;<a href="#11">3.1. 基本概念</a>  
-&emsp;&emsp;<a href="#12">3.2. synchronized关键字JVM底层原理 解析</a>  
-&emsp;&emsp;&emsp;<a href="#13">3.2.1. synchronized 同步语句块的情况</a>  
-&emsp;&emsp;&emsp;<a href="#14">3.2.2. synchronized 修饰方法的的情况</a>  
-&emsp;&emsp;<a href="#15">3.3. synchronize 的锁优化</a>  
-&emsp;&emsp;<a href="#16">3.4. synchronize锁升级(锁膨胀)</a>  
-&emsp;&emsp;&emsp;<a href="#17">3.4.1. 偏向锁</a>  
-&emsp;&emsp;&emsp;<a href="#18">3.4.2. 轻量级锁</a>  
-&emsp;&emsp;&emsp;<a href="#19">3.4.3. 重量级锁</a>  
-&emsp;&emsp;&emsp;<a href="#20">3.4.4. 相关资料</a>  
+&emsp;&emsp;<a href="#2">1.1. 分工</a>  
+&emsp;&emsp;<a href="#3">1.2. 同步/协作</a>  
+&emsp;&emsp;<a href="#4">1.3. 互斥</a>  
+&emsp;<a href="#5">2. 三大问题</a>  
+&emsp;&emsp;<a href="#6">2.1. 可见性</a>  
+&emsp;&emsp;<a href="#7">2.2. 原子性</a>  
+&emsp;&emsp;<a href="#8">2.3. 有序性</a>  
+&emsp;<a href="#9">3.  volatile变量特殊规则</a>  
+&emsp;<a href="#10">4. synchronized</a>  
+&emsp;&emsp;<a href="#11">4.1. 基本概念</a>  
+&emsp;&emsp;<a href="#12">4.2. synchronized关键字JVM底层原理 解析</a>  
+&emsp;&emsp;&emsp;<a href="#13">4.2.1. synchronized 同步语句块的情况</a>  
+&emsp;&emsp;&emsp;<a href="#14">4.2.2. synchronized 修饰方法的的情况</a>  
+&emsp;&emsp;<a href="#15">4.3. synchronize 的锁优化</a>  
+&emsp;&emsp;<a href="#16">4.4. synchronize锁升级(锁膨胀)</a>  
+&emsp;&emsp;&emsp;<a href="#17">4.4.1. 偏向锁</a>  
+&emsp;&emsp;&emsp;<a href="#18">4.4.2. 轻量级锁</a>  
+&emsp;&emsp;&emsp;<a href="#19">4.4.3. 重量级锁</a>  
+&emsp;&emsp;&emsp;<a href="#20">4.4.4. 相关资料</a>  
 # <a name="0">java并发</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 并发编程可以抽象成三个核心问题: 分工、同步/协作、互斥
-#### <a name="2">分工</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="2">分工</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 将当前 Sprint 的 Story 拆分成「合适」大小的 Task，并且安排给「合适」的 Team Member 去完成
   - 拆分的粒度太粗，导致这个任务完成难度变高，耗时长，不易与其他人配合；拆分的粒度太细，又导致任务太多，不好管理与追踪，浪费精力和资源。
   - 关于分工，常见的 Executor，生产者-消费者模式，Fork/Join 等，这都是分工思想的体现
 
-#### <a name="3">同步/协作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="3">同步/协作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一个线程执行完任务，如何通知后续线程执行
 -  Java SDK 中 CountDownLatch 和 CyclicBarrier 就是用来解决线程协作问题的
 
-#### <a name="4">互斥</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="4">互斥</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 互斥：同一时刻，只允许一个线程访问共享变量。分工和同步强调的是性能，但是互斥是强调正确性
 - 当多个线程同时访问一个共享变量/成员变量时，就可能发生不确定性，造成不确定性主要是有可见性、原子性、有序性这三大问题，而解决这些问题的核心就是互斥
 
-### <a name="5">三大问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="6">可见性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="5">三大问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="6">可见性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义： 一个线程对共享变量的修改，另外一个线程能够立刻看到，我们称为可见性
 
 - Java 内存模型规定，将所有的变量都存放在 主内存中，当线程使用变量时，会把主内存里面的变量 复制 到自己的工作空间或者叫作 私有内存
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/workingmemory.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/workingmemory.jpg)
 - 刷新的场景:
 >1. 主内存中有变量 x，初始值为 0
 >2. 线程 A 要将 x 加 1，先将 x=0 拷贝到自己的私有内存中，然后更新 x 的值
 >3. 线程 A 将更新后的 x 值回刷到主内存的时间是不固定的
 >4. 刚好在线程 A 没有回刷 x 到主内存时，线程 B 同样从主内存中读取 x，此时为 0，和线程 A 一样的操作，最后期盼的 x=2 就会编程 x=1
 
-#### <a name="7">原子性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="7">原子性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 原子性：原子（atom）指化学反应不可再分的基本微粒，原子性操作你应该能感受到其含义:
 
 count++ 分解为四步，解释一下字节码的指令，
@@ -60,7 +60,7 @@ count++ 分解为四步，解释一下字节码的指令，
 
 -  JDK 的 rt.jar 包中的 Unsafe 类提供了 硬件级别 的原子性操作
 
-#### <a name="8">有序性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="8">有序性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对于编译期可能对语句的执行进行了优化。
 - 如双重加锁检查的 instance = new Singleton()
  - 这 1 行代码转换成了 CPU 指令后又变成了 3 个，我们理解 new 对象应该是这样的:

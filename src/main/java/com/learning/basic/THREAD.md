@@ -1,6 +1,6 @@
 # java 并发线程相关
 
-### 线程状态
+## 线程状态
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState.jpg)
 
 - 新建（NEW）：创建后尚未启动。
@@ -30,7 +30,7 @@
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadstate.png)
 
-#### 创建一个线程的开销
+## 创建一个线程的开销
 JVM 在背后帮我们做了哪些事情：
 
 1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
@@ -49,7 +49,7 @@ JVM 在背后帮我们做了哪些事情：
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState2.jpg)
 
 
-### 创建线程的几种方式
+## 创建线程的方式
 - callable 接口继承：可以获取线程的返回值。
 - Future接口 相当于 Runnable接口
 - FutureTask类 类似于Thread类
@@ -81,6 +81,7 @@ class CallableThread implements Callable<String> {
 }
 
 ```
+
 - Runnable接口实现与 继承Thread
 ```
 public void test1(){
@@ -102,7 +103,7 @@ class RunnableThread implements Runnable{
 }
 ```
 
-### 退出线程的方法
+## 退出线程的方法
 1. 线程中使用一个静态的volatile的标志判断退出。
 2. 调用Executors的submit方法，获取线程上下文对象Future，调用cancel方法。（注：无法中断正在试图获取synchronized锁或者试图执行I/O操作的线程）IO的中断，关闭底层资源之后，任务将解除阻塞。如socket连接，调用socket的close 或者 system.in 的输入连接调用in.close().
 3. 调用ExecutorService的shutdown的方法。
@@ -121,10 +122,10 @@ ReentrantLock调用锁的lockInterruptibly()方法，
   - 结论：lockInterruptibly()和上面的第一种情况是一样的， 线程在请求lock并被阻塞时，如果被interrupt，则“此线程会被唤醒并被要求处理InterruptedException”。并且如果线程已经被interrupt，再使用lockInterruptibly的时候，此线程也会被要求处理interruptedException
  
 
-### 线程池
-#### 线程池状态
+## 线程池
+### 线程池状态
 线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPool.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPool.png)
 
 - RUNNING
   1. 状态说明：线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
@@ -146,7 +147,7 @@ ReentrantLock调用锁的lockInterruptibly()方法，
   1. 状态说明：线程池彻底终止，就变成TERMINATED状态。 
   2. 状态切换：线程池处在TIDYING状态时，执行完terminated()之后，就会由 TIDYING -> TERMINATED当线程池在STOP状态下，线程池中执行的任务为空时，就会由STOP -> TIDYING。
   
-#### 线程池创建
+### 线程池创建
 - 线程池的初始化：
 ```
 /**
@@ -180,7 +181,7 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
 
 
-#### 线程池的队列 五种
+### 线程池的队列 五种
 - Executors.newFixedThreadPool()：new LinkedBlockingQueue<Runnable>()
 - Executors.newSingleThreadExecutor()：new LinkedBlockingQueue()
   - 以上两种创建的方式不推荐，因为使用了linkedBlockingQueue的无界队列，会导致最大线程数以及多余核心的keepalive的参数失效。
@@ -209,7 +210,7 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
 3. ArrayBlockingQueue
   - ArrayBlockingQueue是一个有界缓存等待队列，可以指定缓存队列的大小，当正在执行的线程数等于corePoolSize时，多余的元素缓存在ArrayBlockingQueue队列中等待有空闲的线程时继续执行，当ArrayBlockingQueue已满时，加入ArrayBlockingQueue失败，会开启新的线程去执行，当线程数已经达到最大的maximumPoolSizes时，再有新的元素尝试加入ArrayBlockingQueue时会报错
 
-#### 线程池相关方法
+### 线程池相关方法
 execute() vs submit()
 - execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
 - submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，
@@ -220,8 +221,8 @@ isTerminated() VS isShutdown()
 - isShutDown 当调用 shutdown() 方法后返回为 true。
 - isTerminated 当调用 shutdown() 方法后，并且所有提交的任务完成后返回为 true
   
-#### 线上线程池的配置
-##### 常规思路
+### 线上线程池的配置
+#### 常规思路
 CPU密集: CPU密集的意思是该任务需要大量的运算，而没有阻塞，CPU一直全速运行。
 - CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
   
@@ -253,14 +254,14 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
 
 > 增加服务器核心数，与线程间的关系
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadpool1.jpg)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadpool1.jpg)
 
 > 假设： 1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。
 
 > 临界区都是串行的，非临界区都是并行的，用单线程执行 临界区的时间/用单线程执行(临界区+非临界区)的时间 就是串行百分比
 
 
-##### 实际执行解决方案：动态配置线程池核心线程数和最大线程数
+#### 实际执行解决方案：动态配置线程池核心线程数和最大线程数
 ```
   ThreadPoolExecutor threadPoolExecutor =  new ThreadPoolExecutor(
                 2,5,60,
@@ -291,9 +292,9 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
   - CAT
   - zipkin
   
-##### 相关资料
+#### 相关资料
 美团线程池：https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html
-#### ThreadFactory 线程工厂
+### ThreadFactory 线程工厂
 ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
   - 对于区分业务的线程池，就可以用到到命名线程工厂的实现，针对不同线程池资源定义不同的线程名
   - 或者设置一个创建守护线程的线程工厂。
@@ -327,7 +328,7 @@ public final class NamingThreadFactory implements ThreadFactory {
 }
 ```
 
-### ThreadLocal 
+## ThreadLocal 
 Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
   - key key视作ThreadLocal，value为代码中放入的值（实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference）.
   - ThreadLocalMap的key 为每个新建的ThreadLocal private void set(ThreadLocal<?> key, Object value) { }
@@ -348,12 +349,12 @@ TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收�
 
 - 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
 
-##### 父线程与子线程传递threadLocal的方案
+### 父线程与子线程传递threadLocal的方案
 阿里巴巴提供TransmittableThreadLocal组件：父线程与子线程传递threadLocal的方案
 InheritableThreadLocal： 父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
 - 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
     
-##### ThreadLocal应用
+### ThreadLocal应用
 Spring 事务应用
 - Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
 - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
@@ -370,7 +371,7 @@ ThreadLocalRandom 是ThreadLocal与 Random的结合，在Random的基础上进�
 
 跨方法传递：
 - 常规web服务接收到request的时候，经常有一些用户信息需要传递到service层。此时就可以使用ThreadLocal存储用户信息，每个service方法就不用写传递参数。
-#### TheadLocal 与 SimpleDateFormat的应用
+### TheadLocal 与 SimpleDateFormat的应用
 使用SimpleDataFormat的parse()方法，内部有一个Calendar对象，调用SimpleDataFormat的parse()方法会先调用Calendar.clear（），然后调用Calendar.add()，如果一个线程先调用了add()然后另一个线程又调用了clear()，这时候parse()方法解析的时间就不对了。
 
 解决：使用了线程池加上ThreadLocal包装SimpleDataFormat，再调用initialValue让每个线程有一个SimpleDataFormat的副本，从而解决了线程安全的问题，也提高了性能。
@@ -383,11 +384,11 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
 **如果是Java8应用，可以使用DateTimeFormatter代替SimpleDateFormat, 线程安全**
 
 
-#### 相关资料
+### 相关资料
 - https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ
 
 待补充资料：netty的fastThreadLocal
-### spring 中的线程池
+## spring 中的线程池
 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
   - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
@@ -406,7 +407,7 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
         return executor;
       }
     ```
-##### 异步编程的例子：
+### 异步编程的例子：
   - ```
      @Async
       public CompletableFuture<List<String>> completableFutureTask(String start) {

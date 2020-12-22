@@ -36,16 +36,16 @@
 - [Elasticsearch 基本知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/ES.md)
 
 ## 系统设计
-- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/INTERFACE_DESIGN.md)
-- [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDS_KILL_DESIGN.md)
-- [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/TINYURL.md)
-- [抢红包](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SECONDKILL_REDPACKAGE.md)
-- [扫码登陆](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SCAN_LOGIN.md)
-- [延迟队列](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/DELAYQUEUE_DESIGN.md)
-- [本地缓存设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/LOCALCACHE.md)
-- [Redis数据结构的设计应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/REDIS_APPLICATION.md)
-- [敏感数据过滤设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/SENSITIVE_FILTER.md)
-- [数据库读写分离](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/READ_WRITE_DB.md)
+- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/INTERFACE_DESIGN.md)
+- [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SECONDS_KILL_DESIGN.md)
+- [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TINYURL.md)
+- [抢红包](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SECONDKILL_REDPACKAGE.md)
+- [扫码登陆](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SCAN_LOGIN.md)
+- [延迟队列](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DELAYQUEUE_DESIGN.md)
+- [本地缓存设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LOCALCACHE.md)
+- [Redis数据结构的设计应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/REDIS_APPLICATION.md)
+- [敏感数据过滤设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SENSITIVE_FILTER.md)
+- [数据库读写分离](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/READ_WRITE_DB.md)
 
 ## 分布式与微服务
 - [dubbo sample](https://github.com/rbmonster/sanwu-dubbo-demo)
@@ -53,7 +53,7 @@
 
 ## 其他
 ### 记录平常学习java 的一些知识点
-- [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CODEDESION_BOOK.md)
+- [设计模式(head first)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
 - [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
 - [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
 - [MySql45讲](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
