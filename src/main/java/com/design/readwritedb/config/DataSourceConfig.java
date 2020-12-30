@@ -32,7 +32,6 @@ import java.util.Map;
  * @创建日期: 2019/12/31 15:56
  */
 @Slf4j
-@AutoConfigureBefore({DruidDataSourceAutoConfigure.class})
 @Configuration
 public class DataSourceConfig {
 

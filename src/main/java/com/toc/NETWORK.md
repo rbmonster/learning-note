@@ -29,8 +29,27 @@
 
 
 ## <a name="2">TCP 三次握手和四次挥手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+顺序号 seq（ 32 位）： 用来**标识从 TCP 源端向 TCP 目的端发送的数据字节流**，它表示在这个
+报文段中的第一个数据字节的顺序号。如果将字节流看作在两个应用程序间的单向流动，则
+TCP 用顺序号对每个字节进行计数。序号是 32bit 的无符号数， 序号到达 2 的 32 次方 － 1 后
+又从 0 开始。 当建立一个新的连接时， SYN 标志变 1 ，顺序号字段包含由这个主机选择的该
+连接的初始顺序号 ISN （ Initial Sequence Number ）。
+
+确认号 ack（ 32 位）： 包含**发送确认的一端所期望收到的下一个顺序号**。因此，确认序号应当
+是上次已成功收到数据字节顺序号加 1 。 只有 ACK 标志为 1 时确认序号字段才有效。 TCP 为
+应用层提供全双工服务，这意味数据能在两个方向上独立地进行传输。因此，连接的每一端必
+须保持每个方向上的传输数据顺序号。
+
 ### <a name="3">三次握手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/tcpconnect.png)
+
+第一次握手：主机 A 发送位码为 syn＝ 1,随机产生 seq number=1234567 的数据包到服务器，主机 B
+由 SYN=1 知道， A 要求建立联机；
+第 二 次 握 手 ： 主 机 B 收 到 请 求 后 要 确 认 联 机 信 息 ， 向 A 发 送 ack number=( 主 机 A 的
+seq+1),syn=1,ack=1,随机产生 seq=7654321 的包
+第三次握手： 主机 A 收到后检查 ack number 是否正确，即第一次发送的 seq number+1,以及位码
+ack 是否为 1，若正确， 主机 A 会再发送 ack number=(主机 B 的 seq+1),ack=1，主机 B 收到后确认seq 值与 ack=1 则连接建立成功。
 
 1. 客户端 – 发送带有 SYN 标志的数据包 – 一次握手 – 服务端
 2. 服务端 – 发送带有 SYN/ACK 标志的数据包 – 二次握手 – 客户端
@@ -51,7 +70,7 @@
 
 
 ### <a name="4">四次挥手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/tcpdisconnect.png)
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/tcpdisconnect.jpg)
 
 断开一个 TCP 连接需要“四次挥手”：
 - 客户端 - 发送一个 FIN、seq数据包，用来关闭客户端到服务器的数据传送
@@ -73,12 +92,13 @@ UDP协议（不可靠协议）：无连接的不可靠传输，以数据报文�
 ## <a name="6">浏览器访问网站的数据传输过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 几个过程:
 
-1. DNS解析
-2. TCP连接
+1. DNS解析。如用客户端浏览器请求这个页面： http://localhost.com:8080/index.htm 从中分解出协议名、主机名、端口、对象路径等部分
+2. TCP连接。把以上部分结合本机自己的信息，封装成一个 HTTP 请求数据包，进一步封装成TCP包，建立TCP连接。
 3. 发送HTTP请求
 4. 服务器处理请求并返回HTTP报文
 5. 浏览器解析渲染页面
-6. 连接结束
+6. 连接结束，服务器关闭 TCP 连接。
+> 一般情况下，一旦 Web 服务器向浏览器发送了请求数据，它就要关闭 TCP 连接，然后如果浏览器或者服务器在其头信息加入了这行代码 Connection:keep-alive， TCP 连接在发送后将仍然保持打开状态
 
 ## <a name="7">http 长连接与短连接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - HTTP/1.0中默认使用短连接。
@@ -107,6 +127,9 @@ UDP协议（不可靠协议）：无连接的不可靠传输，以数据报文�
 
 
 ## <a name="9">Cookies与 Session （TODO）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md
+
+http://www.ruanyifeng.com/blog/2019/04/github-oauth.html
 
 ### <a name="10">Cookies</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Cookies 是**服务器发送到用户浏览器并保存在本地的一小块数据**，它会在浏览器之后向同一服务器再次发起请求时被携带上，用于告知服务端两个请求是否来自同一浏览器。

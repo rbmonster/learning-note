@@ -174,13 +174,17 @@ public class SynchronizedDemo2 {
 
 
 ### synchronize 的锁优化
-自旋锁和自适应锁
-  - 自旋锁：对于锁状态很短的线程，挂起和恢复线程是开销很大的，因此让线程执行一个忙等待（自旋），这就是自旋锁的技术
-  - 自适应锁：自适应意味着自旋的时间不固定，由前一次在同一个锁上的自旋时间及锁的状态拥有者来决定。（如果之前自旋获得过锁，进而允许本次自旋更长时间。若很少成果获得锁，那么可能直接忽略跳过等待）
-  
-**锁消除**：执行的方法体所有数据都不会逃逸出去被其他线程访问到，认为是线程私有的，便可以消除锁。
+#### 自旋锁
+自旋锁：对于锁状态很短的线程，挂起和恢复线程是开销很大的，因此让线程执行一个忙等待（自旋），这就是自旋锁的技术
 
-**锁粗化**：同步块过于细化，导致多次获取锁，导致不必要的性能损耗，扩大锁的范围便可以解决这个问题。
+#### 自适应锁
+自适应锁：自适应意味着自旋的时间不固定，由前一次在同一个锁上的自旋时间及锁的状态拥有者来决定。（如果之前自旋获得过锁，进而允许本次自旋更长时间。若很少成果获得锁，那么可能直接忽略跳过等待）
+  
+#### 锁消除
+执行的方法体所有数据都不会逃逸出去被其他线程访问到，认为是线程私有的，便可以消除锁。
+
+#### 锁粗化
+同步块过于细化，导致多次获取锁，导致不必要的性能损耗，扩大锁的范围便可以解决这个问题。
 
 ### synchronize锁升级(锁膨胀)
 锁膨胀的方向：**无锁->偏向锁->轻量级锁->重量级锁**，并且膨胀方向不可逆。
@@ -201,11 +205,11 @@ public class SynchronizedDemo2 {
         - 如果不再需要这个锁对象，那么将锁对象设置为无锁状态，重新进行偏向锁竞争。
 
 第一次获取替换对象头TheadID：
-1. 当一个线程访问同步块并获取锁时, 会在锁对象的对象头和栈帧中的锁记录里存储锁偏向的线程ID, 以后该线程进入和退出同步块时不需要进行CAS操作来加锁和解锁。
-2. 需要简单的测试一下锁对象的对象头的MarkWord里是否存储着指向当前线程的偏向锁(线程ID是当前线程)。
-   - 如果测试成功, 表示线程已经获得了锁;
-   - 如果测试失败, 则需要再测试一下MarkWord中偏向锁的标识是否设置成1(表示当前是偏向锁)
-      - 如果没有设置, 则使用CAS竞争锁。
+                        1. 当一个线程访问同步块并获取锁时, 会在锁对象的对象头和栈帧中的锁记录里存储锁偏向的线程ID, 以后该线程进入和退出同步块时不需要进行CAS操作来加锁和解锁。
+                        2. 需要简单的测试一下锁对象的对象头的MarkWord里是否存储着指向当前线程的偏向锁(线程ID是当前线程)。
+                           - 如果测试成功, 表示线程已经获得了锁;
+                           - 如果测试失败, 则需要再测试一下MarkWord中偏向锁的标识是否设置成1(表示当前是偏向锁)
+                              - 如果没有设置, 则使用CAS竞争锁。
       - 如果设置了, 则尝试使用CAS将锁对象的对象头的偏向锁指向当前线程.
 
 偏向锁的撤销
@@ -233,8 +237,50 @@ public class SynchronizedDemo2 {
 
 重量级锁：阻塞所有等待竞争的线程，防止CPU空转，阻塞等待线程1释放锁后进入无锁状态重新竞争。
 
+##### 工作原理
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/synchronizeHeavyLock.jpg)
+
+```
+ContentionList：所有请求锁的线程将被首先放在该竞争队列。
+
+EntryList：ContentList中有资格成为候选人的线程被移到EntryList中。主要是为了减少对Contention List的并发访问，因为既会添加新线程到队尾，也会从队尾取线程。
+
+WaitSet：存放那些调用wait()方法被阻塞的线程
+
+OnDeck：任何时刻最多只能有一个线程竞争锁，该线程成为OnDeck
+
+Owner：获得锁的线程
+```
+步骤1是线程在进入Contention List时阻塞等待之前，程会先尝试自旋使用CAS操作获取锁，如果获取不到就进入Contention List队列的尾部。
+
+步骤2是Owner线程在解锁时，如果Entry List为空，那么会**先将Contention List中队列尾部的部分线程移动到Entry List**
+
+步骤3是Owner线程在解锁时，如果Entry List不为空，从Entry List中取一个线程，让它成为OnDeck线程，Owner线程并不直接把锁传递给OnDeck线程，而是把锁竞争的权利交给OnDeck，OnDeck需要重新竞争锁，JVM中这种选择行为称为 “竞争切换”。（主要是与还没有进入到ContentionList，还在自旋获取重量级锁的线程竞争）
+
+步骤4就是OnDeck线程获取到锁，成为Owner线程进行执行。
+
+步骤5就是Owner线程调用锁对象的wait（）方法进行等待，会移动到Wait Set中，并且会释放CPU资源，也同时释放锁，
+
+步骤6.就是当其他线程调用锁对象的notify（）方法，之前调用wait方法等待的这个线程才会从Wait Set移动到Entry List，等待获取锁。
+
+> Synchronized 是非公平锁。 Synchronized 在线程进入 ContentionList 时， 等待的线程会先尝试自旋获取锁，如果获取不到就进入 ContentionList，这明显对于已经进入队列的线程是不公平的，还有一个不公平的事情就是自旋获取锁的线程还可能直接抢占 OnDeck 线程的锁资源
+
+> 可重入锁：在Monitor中其实还有一个计数器，主要是用来记录重入次数的，当计数器为0时，表示没有任何线程持有锁，当某线程获取锁时，计算器则加1，若当前线程再次获取锁时，计数器则会再次递增，
+
+##### 与ReentrantLock区别
+1. synchronized是JVM层面的锁；ReentrantLock是JDK层面的锁，由java代码实现
+2. synchronized锁无法在代码中判断是否有所；ReentrantLock则可以通过【isLock()】判断是否获取到锁
+3. synchronized是一种非公平锁；ReentrantLock既可以实现公平锁，也可以实现非公平锁
+4. synchronized不可以被中断；ReentrantLock可以【lockInterruptibly】实现中断
+5. 发生异常时，synchronized会自动释放锁，有javac实现；ReentrantLock需要开发者在finally中显式释放锁
+6. ReentrantLock在加锁时会更灵活，可以使用【tryLock】尝试获取锁，从而避免线程阻塞
+
 #### 相关资料
 - https://mp.weixin.qq.com/s/WwOl8-4IAdcItWg63HI3tw
+
+重量级锁：
+- https://www.xiaoheidiannao.com/13829.html
+- https://www.cnblogs.com/boluopabo/archive/2004/01/13/13086172.html
 
 ```
 <dependency>

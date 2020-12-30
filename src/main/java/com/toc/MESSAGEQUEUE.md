@@ -109,7 +109,7 @@
 ##### <a name="12">典型原因</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 实时/消费任务挂掉
 2. Kafka分区数设置的不合理（太少）和消费者"消费能力"不足
-3. Kafka消息的发送不均匀，导致分区间数据不均衡。
+3. Kafka消息的**发送不均匀**，导致分区间数据不均衡。
     1. 在使用Kafka producer消息时，可以为消息指定key和分区。
     2. 若指定了分区，那么消息会发送指定分区。
     3. 如果未指定分区但是指定了key，那么就会使用key进行hash算法计算对应的分区。要求key要均匀，否则会出现Kafka分区间数据不均衡。
@@ -187,6 +187,7 @@ Partition(分区)：为了提高一个队列(topic)的吞吐量，Kafka会把top
 offset(消费进度):表示消费者的消费进度，offset在broker以内部topic(__consumer_offsets)的方式来保存起来。
 
 ## <a name="22">分布式的kafka解决节点宕机或者抖动问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/kafkaStructure.jpg)
 - 红色块的partition代表的是主分区，紫色的partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
 - 备份分区仅仅用作于备份，不做读写。如果某个Broker挂了，那就会选举出其他Broker的partition来作为主分区，这就实现了高可用。
@@ -218,6 +219,7 @@ Kafka 使用拉取得方式消费消息。通过建立`长轮询`的模式来拉
 Broker是分布式部署并且相互之间相互独立，但是需要有一个注册系统能够将整个集群中的Broker管理起来
 
 在 Zookeeper 上会有一个专门用来进行 **Broker 服务器列表记录的节点**。每个 Broker 在启动时，都会到 Zookeeper 上进行注册，即到/brokers/ids 下创建属于自己的节点。每个 Broker 就会将自己的 IP 地址和端口等信息记录到该节点中去
+
 ### <a name="26">Topic 注册 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在 Kafka 中，同一个Topic 的消息会被分成多个分区并将其分布在多个 Broker 上，这些分区信息及与 Broker 的对应关系也都是由 Zookeeper 在维护。比如我创建了一个名字为 my-topic 的主题并且它有两个分区，对应到 zookeeper 中会创建这些文件夹：/brokers/topics/my-topic/Partitions/0、/brokers/topics/my-topic/Partitions/1
 
@@ -334,8 +336,7 @@ spring.kafka.consumer.enable-auto-commit=false
 ### <a name="40">为什么在消息队列中重复消费了数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 凡是分布式就无法避免网络抖动/机器宕机等问题的发生，很有可能消费者A读取了数据，还没来得及消费，就挂掉了。Zookeeper发现消费者A挂了，让消费者B去消费原本消费者A的分区，等消费者A重连的时候，发现已经重复消费同一条数据了。(各种各样的情况，消费者超时等等都有可能…)
   
-  如果业务上不允许重复消费的问题，最好消费者那端做业务上的校验（如果已经消费过了，就不消费了）
-  
+如果业务上不允许重复消费的问题，最好消费者那端做业务上的校验（如果已经消费过了，就不消费了）
   
 # <a name="41">RocketMQ</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 

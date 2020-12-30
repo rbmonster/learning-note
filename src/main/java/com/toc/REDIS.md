@@ -17,55 +17,56 @@
 &emsp;&emsp;<a href="#14">1.5. 有序集合 zset</a>  
 &emsp;&emsp;&emsp;<a href="#15">1.5.1. 底层结构</a>  
 &emsp;&emsp;&emsp;<a href="#16">1.5.2. 相关指令</a>  
-&emsp;&emsp;<a href="#17">1.6. HyperLogLog </a>  
-&emsp;&emsp;&emsp;<a href="#18">1.6.1. 基数计数的演进</a>  
-&emsp;&emsp;&emsp;<a href="#19">1.6.2. 应用场景</a>  
-&emsp;&emsp;&emsp;<a href="#20">1.6.3. 相关指令</a>  
-&emsp;&emsp;<a href="#21">1.7. GeoHash </a>  
-&emsp;&emsp;&emsp;<a href="#22">1.7.1. 使用注意场景</a>  
-&emsp;&emsp;&emsp;<a href="#23">1.7.2. 相关指令</a>  
-&emsp;&emsp;<a href="#24">1.8. 布隆过滤器 bloomFilter</a>  
-&emsp;&emsp;&emsp;<a href="#25">1.8.1. 应用场景</a>  
-&emsp;&emsp;&emsp;<a href="#26">1.8.2.  相关指令</a>  
-&emsp;&emsp;<a href="#27">1.9. 其他命令</a>  
-&emsp;<a href="#28">2. 事务</a>  
-&emsp;<a href="#29">3. 持久化</a>  
-&emsp;&emsp;<a href="#30">3.1. RDB持久化 （快照）</a>  
-&emsp;&emsp;&emsp;<a href="#31">3.1.1. RDB文件创建与载入</a>  
-&emsp;&emsp;<a href="#32">3.2. AOF持久化</a>  
-&emsp;&emsp;<a href="#33">3.3. 混合持久化</a>  
-&emsp;<a href="#34">4. 数据过期清理策略</a>  
-&emsp;&emsp;<a href="#35">4.1. 过期键清理策略</a>  
-&emsp;&emsp;<a href="#36">4.2. 内存淘汰机制</a>  
-&emsp;<a href="#37">5. 发布订阅模型</a>  
-&emsp;&emsp;<a href="#38">5.1. 发布订阅key事件案例</a>  
-&emsp;<a href="#39">6. redis实现队列</a>  
-&emsp;&emsp;<a href="#40">6.1. 异步队列</a>  
-&emsp;&emsp;<a href="#41">6.2. 延迟队列实现</a>  
-&emsp;<a href="#42">7. 主从结构</a>  
-&emsp;<a href="#43">8. Sentinel 哨兵</a>  
-&emsp;<a href="#44">9. 集群</a>  
-&emsp;&emsp;<a href="#45">9.1. 哈希槽 槽指派</a>  
-&emsp;&emsp;&emsp;<a href="#46">9.1.1. 哈希槽</a>  
-&emsp;&emsp;<a href="#47">9.2. 故障转移</a>  
-&emsp;&emsp;<a href="#48">9.3. 一致性哈希</a>  
-&emsp;&emsp;&emsp;<a href="#49">9.3.1. 缺陷：Hash环的数据倾斜问题</a>  
-&emsp;<a href="#50">10. 项目使用Redis的场景</a>  
-&emsp;<a href="#51">11. 缓存一致性</a>  
-&emsp;&emsp;<a href="#52">11.1. 允许缓存与数据库存在偶尔不一致</a>  
-&emsp;&emsp;&emsp;<a href="#53">11.1.1. Cache Aside Pattern（旁路缓存模式）</a>  
-&emsp;&emsp;<a href="#54">11.2. Write Behind Pattern（异步缓存写入）</a>  
-&emsp;<a href="#55">12. 缓存雪崩</a>  
-&emsp;<a href="#56">13. 缓存穿透</a>  
-&emsp;<a href="#57">14. 缓存击穿</a>  
-&emsp;<a href="#58">15. LRU 实现</a>  
-&emsp;<a href="#59">16. 分布式锁</a>  
-&emsp;&emsp;<a href="#60">16.1. 独立实现分布式锁</a>  
-&emsp;&emsp;&emsp;<a href="#61">16.1.1. 加锁</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#62">16.1.1.1. value必须要具有唯一性</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#63">16.1.1.2. SET 命令的缺陷</a>  
-&emsp;&emsp;&emsp;<a href="#64">16.1.2. 释放锁</a>  
-&emsp;&emsp;<a href="#65">16.2. Redisson 分布式方案</a>  
+&emsp;&emsp;&emsp;<a href="#17">1.5.3. 保存固定行数的lua</a>  
+&emsp;&emsp;<a href="#18">1.6. HyperLogLog </a>  
+&emsp;&emsp;&emsp;<a href="#19">1.6.1. 基数计数的演进</a>  
+&emsp;&emsp;&emsp;<a href="#20">1.6.2. 应用场景</a>  
+&emsp;&emsp;&emsp;<a href="#21">1.6.3. 相关指令</a>  
+&emsp;&emsp;<a href="#22">1.7. GeoHash </a>  
+&emsp;&emsp;&emsp;<a href="#23">1.7.1. 使用注意场景</a>  
+&emsp;&emsp;&emsp;<a href="#24">1.7.2. 相关指令</a>  
+&emsp;&emsp;<a href="#25">1.8. 布隆过滤器 bloomFilter</a>  
+&emsp;&emsp;&emsp;<a href="#26">1.8.1. 应用场景</a>  
+&emsp;&emsp;&emsp;<a href="#27">1.8.2.  相关指令</a>  
+&emsp;&emsp;<a href="#28">1.9. 其他命令</a>  
+&emsp;<a href="#29">2. 事务</a>  
+&emsp;<a href="#30">3. 持久化</a>  
+&emsp;&emsp;<a href="#31">3.1. RDB持久化 （快照）</a>  
+&emsp;&emsp;&emsp;<a href="#32">3.1.1. RDB文件创建与载入</a>  
+&emsp;&emsp;<a href="#33">3.2. AOF持久化</a>  
+&emsp;&emsp;<a href="#34">3.3. 混合持久化</a>  
+&emsp;<a href="#35">4. 数据过期清理策略</a>  
+&emsp;&emsp;<a href="#36">4.1. 过期键清理策略</a>  
+&emsp;&emsp;<a href="#37">4.2. 内存淘汰机制</a>  
+&emsp;<a href="#38">5. 发布订阅模型</a>  
+&emsp;&emsp;<a href="#39">5.1. 发布订阅key事件案例</a>  
+&emsp;<a href="#40">6. redis实现队列</a>  
+&emsp;&emsp;<a href="#41">6.1. 异步队列</a>  
+&emsp;&emsp;<a href="#42">6.2. 延迟队列实现</a>  
+&emsp;<a href="#43">7. 主从结构</a>  
+&emsp;<a href="#44">8. Sentinel 哨兵</a>  
+&emsp;<a href="#45">9. 集群</a>  
+&emsp;&emsp;<a href="#46">9.1. 哈希槽 槽指派</a>  
+&emsp;&emsp;&emsp;<a href="#47">9.1.1. 哈希槽</a>  
+&emsp;&emsp;<a href="#48">9.2. 故障转移</a>  
+&emsp;&emsp;<a href="#49">9.3. 一致性哈希</a>  
+&emsp;&emsp;&emsp;<a href="#50">9.3.1. 缺陷：Hash环的数据倾斜问题</a>  
+&emsp;<a href="#51">10. 项目使用Redis的场景</a>  
+&emsp;<a href="#52">11. 缓存一致性</a>  
+&emsp;&emsp;<a href="#53">11.1. 允许缓存与数据库存在偶尔不一致</a>  
+&emsp;&emsp;&emsp;<a href="#54">11.1.1. Cache Aside Pattern（旁路缓存模式）</a>  
+&emsp;&emsp;<a href="#55">11.2. Write Behind Pattern（异步缓存写入）</a>  
+&emsp;<a href="#56">12. 缓存雪崩</a>  
+&emsp;<a href="#57">13. 缓存穿透</a>  
+&emsp;<a href="#58">14. 缓存击穿</a>  
+&emsp;<a href="#59">15. LRU 实现</a>  
+&emsp;<a href="#60">16. 分布式锁</a>  
+&emsp;&emsp;<a href="#61">16.1. 独立实现分布式锁</a>  
+&emsp;&emsp;&emsp;<a href="#62">16.1.1. 加锁</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#63">16.1.1.1. value必须要具有唯一性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#64">16.1.1.2. SET 命令的缺陷</a>  
+&emsp;&emsp;&emsp;<a href="#65">16.1.2. 释放锁</a>  
+&emsp;&emsp;<a href="#66">16.2. Redisson 分布式方案</a>  
 # <a name="0">Redis 基础</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存基本思想：CPU Cache 缓存的是内存数据用于解决 CPU 处理速度和内存不匹配的问题，内存缓存的是硬盘数据用于解决硬盘访问速度过慢的问题。为了避免用户在请求数据的时候获取速度过于缓慢，所以我们在数据库之上增加了缓存这一层来弥补。
 ## <a name="1">基本数据结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -295,10 +296,12 @@
     3) "message1"
     ```
 
+#### <a name="17">保存固定行数的lua</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- https://blog.csdn.net/cainiao1412/article/details/107483286
   
-### <a name="17">HyperLogLog </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">HyperLogLog </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 是做基数统计的redis对象，故不是集合，不会保存元数据，只记录数量而不是数值。
-#### <a name="18">基数计数的演进</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">基数计数的演进</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 第一阶段：使用一般集合或数据结构来处理如HashSet或B+树，
    - B 树最大的优势就是插入和查找效率很高，但是并没有节省内存。**数据量过大**便会导致内存占用过高。
 - 第二阶段：BitMap
@@ -307,7 +310,7 @@
 - 第三阶段：概率算法
   - HyperLogLog 的表现是惊人的，上面我们简单计算过用 bitmap 存储 1 个亿 统计数据大概需要 12 M 内存，而在 Redis 中实现的 HyperLoglog 也只需要 12 K 内存，在 标准误差 0.81% 的前提下，能够统计 2^64 个数据！
   
-#### <a name="19">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 统计系统中每个按钮的使用情况   —————— 南北中的应用
 - 统计注册 IP 数
 - 统计每日访问 IP 数
@@ -315,7 +318,7 @@
 - 统计在线用户数
 - 统计用户每天搜索不同词条的个数
 
-#### <a name="20">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="21">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - pfadd 'keyName'  'value1' 'value2' ... // 添加值到某个集合
 - pfcount 'keyName'   // 统计值
 - ```
@@ -330,7 +333,7 @@
   6
   ```
 
-### <a name="21">GeoHash </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="22">GeoHash </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - GeoHash是用来存储地图经纬度，进而简化距离计算的一种redis对象。
 
 - GeoHash 算法将 二维的经纬度 数据映射到 一维 的整数，这样所有的元素都将在挂载到一条线上，距离靠近的二维坐标映射到一维后的点之间距离也会很接近。
@@ -339,11 +342,11 @@
   
 - 在 Redis 中，经纬度使用 52 位的整数进行编码，放进了 zset 里面，zset 的 value 是元素的 key，score 是 GeoHash 的 52 位整数值。zset 的 score 虽然是浮点数，但是对于 52 位的整数值来说，它可以无损存储。
 - 应用场景：附近的人、附近的餐厅、共享单车（周围的车）
-#### <a name="22">使用注意场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">使用注意场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 如果使用 Redis 的 Geo 数据结构，它们将 全部放在一个 zset 集合中。在 Redis 的集群环境中，集合可能会从一个节点迁移到另一个节点，如果单个 key 的数据过大，会对集群的迁移工作造成较大的影响，在集群环境中单个 key 对应的数据量不宜超过 1M，否则会导致集群迁移出现卡顿现象，影响线上服务的正常运行。所以，这里建议 Geo 的数据使用 单独的 Redis 实例部署，不使用集群环境。
 > 如果数据量过亿甚至更大，就需要对 Geo 数据进行拆分，按国家拆分、按省拆分，按市拆分，在人口特大城市甚至可以按区拆分。这样就可以显著降低单个 zset 集合的大小。
 
-#### <a name="23">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="24">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - geoadd 'geoKeyName'  '纬度' '经度' 'key'
 - geodist 'geoKeyName' '地点key1' '地点key2' km(单位)   // 计算两点距离
 - geopos 'geoKeyName' 'key'    // 显示key对应经纬度
@@ -372,7 +375,7 @@
   10.5501
   ```
 
-### <a name="24">布隆过滤器 bloomFilter</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">布隆过滤器 bloomFilter</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 布隆过滤器 本质上 是由长度为 m 的位向量或位列表（仅包含 0 或 1 位值的列表）组成，最初所有的值均设置为 0
   - 向布隆过滤器中添加数据时，会使用 多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
   - 判断数据是否存在时，同样使用多个hash函数计算key，只要有一个位为 0，说明key不存在。但是都是1，并不能说明key必定存在，可能位置都是其他元素添加导致的，因此说存在一定的误判率。
@@ -383,7 +386,7 @@
 
 - 相关文章：https://github.com/Snailclimb/JavaGuide/blob/master/docs/dataStructures-algorithms/data-structure/bloom-filter.md
 
-#### <a name="25">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="26">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 大数据判断是否存在：这就可以实现出上述的去重功能，如果你的服务器内存足够大的话，那么使用 HashMap 可能是一个不错的解决方案，理论上时间复杂度可以达到 O(1 的级别，但是当数据量起来之后，还是只能考虑布隆过滤器。
 - 解决缓存穿透：我们经常会把一些热点数据放在 Redis 中当作缓存，例如产品详情。通常一个请求过来之后我们会先查询缓存，而不用直接读取数据库，这是提升性能最简单也是最普遍的做法，但是 如果一直请求一个不存在的缓存，那么此时一定不存在缓存，那就会有 大量请求直接打到数据库 上，造成 缓存穿透，布隆过滤器也可以用来解决此类问题。
   - 布隆过滤器有一个可以预判误判率的公式，查询缓存可能误判的名单存在，进行正常的查询。
@@ -392,7 +395,7 @@
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/cacheQueryBloomFilter.jpg)
 
  
- #### <a name="26">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+ #### <a name="27">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  - bf.add  'bfName'  'value'   //添加元素
  - bf.exists   'bfName'  'value'   //判断元素是否存在。
  - bf.madd 'bfName'  'value' 'value'  //批量添加
@@ -427,7 +430,7 @@
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/cacheQueryNormal.jpg)
   
 
-### <a name="27">其他命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="28">其他命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - DEL、EXPIRE、RENAME、TYPE、OBJECT可以对任何键执行
 - 清空数据库的键:FLUSHDB
 - 随机返回数据库中某个键：RANDOMKEY
@@ -436,7 +439,7 @@
 - keys 查询所有key，由于redis单线程，查询所有keys会造成阻塞。线上可以用scan指令（增量式迭代）可能会有一定的重复。
 - scan 无阻塞的取出指定模式的key列表，客户端去重，执行时长会比key长。属于增量式迭代的命令，可能迭代过程key被修改。
 
-## <a name="28">事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="29">事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Redis通过MULTI(开启事务)、EXEC（执行指令）、WATCH（乐观锁监控Key）、DISCARD（取消事务）命令来实现事务。
 ```
 >MULTI
@@ -488,17 +491,17 @@ QUEUED
 - redis不保证原子性：Redis 同一个事务中如果有一条命令执行失败，其后的命令仍然会被执行，没有回滚
   - Redis开发者们觉得没必要支持回滚，这样更简单便捷并且性能更好。Redis开发者觉得即使命令执行错误也应该在开发过程中就被发现而不是生产过程中。
   
-## <a name="29">持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="30">持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="30">RDB持久化 （快照）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="31">RDB持久化 （快照）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - RDB是对 Redis 中的数据执行周期性的持久化，非常适合做冷备。
 - RDB持久化可以手工执行，也可以根据服务器配置选项定期执行，该功能可以将某个时间点上的数据库状态保存在RDB文件中。
 
-#### <a name="31">RDB文件创建与载入</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="32">RDB文件创建与载入</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - SAVE命令，阻塞Redis服务器进程，直到RDB文件创建完毕为止。
 - BGSAVE命令会派生出一个子进程，然后由子进程创建RDB文件，不会阻塞主线程。为保证拷贝的数据一致性，使用了操作系统的COW机制。类似CopyOnWriteList的实现。
 
-### <a name="32">AOF持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">AOF持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF文件中。通过fsync异步将命令写到日志
 
 - 持久化的三个过程：命令追加、文件写入、文件同步
@@ -511,13 +514,13 @@ QUEUED
 
 - AOF重写，指的是对命令进行压缩，将RPUSH、LPOP的类似命令进行压缩，减少AOF文件大小
 
-### <a name="33">混合持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">混合持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 混合持久化：混合RDB和AOF持久化。解决单单使用AOF持久化，重启时缓存恢复速度过慢的问题
 
 
-## <a name="34">数据过期清理策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="35">数据过期清理策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="35">过期键清理策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">过期键清理策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 过期键的删除策略
   - 定时删除，为每个过期键建立一个timer，缺点占用CPU
   - 惰性删除，键获取的时候判断过期再清除，对内存不友好。
@@ -527,7 +530,7 @@ QUEUED
 
 - redis在内存空间不足的时候，为了保证命中率，就会选择一定的数据淘汰策略——内存淘汰机制（过期键的补充措施）
 
-### <a name="36">内存淘汰机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">内存淘汰机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 内存淘汰机制：八种大体上可以分为4中，lru（最近最少使用）、lfu（最少使用频率）、random（随机）、ttl（根据生存时间，快过期）。
 1. volatile-lru：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。
 2. volatile-ttl：从已设置过期时间的数据集中挑选将要过期的数据淘汰。
@@ -540,7 +543,7 @@ QUEUED
 
 
 
-## <a name="37">发布订阅模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="38">发布订阅模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```
 //查看服务器目前订阅的通道
@@ -562,7 +565,7 @@ QUEUED
 2. 如果有一个或者多个模式patten与channel匹配，那么将message发送给patten的订阅者。
   
 
-### <a name="38">发布订阅key事件案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="39">发布订阅key事件案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 客户端1：
 ```
 127.0.0.1:6379> PSUBSCRIBE '__key*__:*'
@@ -595,29 +598,29 @@ Reading messages... (press Ctrl-C to quit)
 相关文章：
 - https://github.com/redis/redis/issues/1855
 - https://redis.io/commands/subscribe
-## <a name="39">redis实现队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="40">redis实现队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="40">异步队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">异步队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - list结构做队列，rpush生产消息，lpop消费消息。当lpop无消息的时候，程序sleep一会重试。
   - 针对sleep改进，使用blpop指令，阻塞弹出消息。
   
 - pub/sub主题订阅者模式，可以实现1：N的消息队列，即生产一个消息，N个通道消费消息
   - 当消费者下线后，消息可能丢失
   
-### <a name="41">延迟队列实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">延迟队列实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 使用zSet实现，拿时间戳当score，消息当成key，使用zadd指令生产消息。
   - 而消费者使用zrangebyscore来获取N秒之前数据进行轮询处理。
 
 
 
-## <a name="42">主从结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="43">主从结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 设置主服务器指令： **SLAVEOF 127.0.0.1 6379**
 - 主从复制，主要两个命令SYNC、PSYNC
   - SYNC：主服务器开启BGSAVE生成RDB文件，生成之后发送从服务器，占网络资源。从服务器主进程执行载入，阻塞无法处理命令请求。
   - PSYNC：根据主从维护的复制偏移量，是否存在偏移量之后的数据，如果存在，则进行部分重同步操作。否则执行完整重同步。
 
 
-## <a name="43">Sentinel 哨兵</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="44">Sentinel 哨兵</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Sentinel是Redis的一个高可用的解决方案：由一个或者多个Sentinel实例组成Sentinel系统。
 - 启动命令：
 ```
@@ -636,7 +639,7 @@ redis-server /path/to/your/sentinel.conf
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/sentinel.jpg)
 
 
-## <a name="44">集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="45">集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Redis集群是Redis提供的分布式数据库方案，集群通过分片实现数据共享，并提供复制和故障转移功能。
 - 建立一个集群 至少需要三主三从六台服务器。
 - 在 Redis cluster 架构下，每个 Redis 要放开两个端口号，比如一个是 6379，另外一个就是 加 1w 的端口号，比如 16379
@@ -652,7 +655,7 @@ redis-server /path/to/your/sentinel.conf
 ```
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/cluster.jpg)
 
-### <a name="45">哈希槽 槽指派</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="46">哈希槽 槽指派</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 槽指派：Redis集群通过分片的方式保存数据库的键值对。集群的整个数据库被分成16384个槽slot
   - 对数据库的16384个槽进行指派之后，集群就处于上线状态。
   - 在获取数据库键时，便需要对键进行计算，再获取对应的槽位，并判断当前数据库是否为负责键所在槽的节点。
@@ -678,10 +681,10 @@ OK
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/askError.jpg)
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/slotReadd.jpg)
 
-#### <a name="46">哈希槽</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="47">哈希槽</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Redis 集群并没有直接使用一致性哈希，而是使用了哈希槽 （slot） 的概念。没有使用Hash算法，而是使用了crc16校验算法。槽位其实就是一个个的空间的单位。
 - 每个key经过crc16校验算法计算，会落在对应的哈希槽上，便可以定位到节点的redis
-### <a name="47">故障转移</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="48">故障转移</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 复制与故障转移
   - 设置从节点
   - ```
@@ -696,7 +699,7 @@ OK
     4. 新的主节点在集群中发送PONG消息，通知其他节点该节点变成主节点。
     5. 新主节点开始接受和处理指派槽的消息。
 
-### <a name="48">一致性哈希</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="49">一致性哈希</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一致性哈希解决问题：定位节点用传统的key%节点数取模，会导致每次在新增和删除节点的时候，都要根据key的定位做大量的数据迁移。
 
 - 查询如何定位到对应的服务器位置？
@@ -706,7 +709,7 @@ OK
 2. 服务器根据IP地址进行hash计算，定位到环上的某一点。
 3. 用户的 IP 使用上面相同的函数 Hash 计算出哈希值，并确定此数据在环上的位置，从此位置沿环 顺时针行走，遇到的第一台服务器就是其应该定位到的服务器。
 
-#### <a name="49">缺陷：Hash环的数据倾斜问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="50">缺陷：Hash环的数据倾斜问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 当4个服务节点时，我们并不能保证4个服务节点刚好均匀的落在时钟的 12、3、6、9点上。
 - 解决方案：设置"虚拟节点"，即在服务器IP或者主机名后加上后缀
   - 如 服务器1 的 IP 是 192.168.32.132，那么虚拟服务器节点在环形空间的位置就是hash("192.168.32.132#A") % 2^32
@@ -718,7 +721,7 @@ OK
 - 相关文章：https://www.cnblogs.com/jajian/p/10896624.html
 
 
-## <a name="50">项目使用Redis的场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="51">项目使用Redis的场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - MySQL 数据库对于并发的场景天然支持不好，单机支撑到 2000QPS 也开始容易报警了。
   - MySQL 这类的数据库的 QPS 大概都在 1w 左右（4 核 8g）
 
@@ -729,9 +732,9 @@ OK
 
 - redis 分布式锁：保证集群之间的资源同步。
 
-## <a name="51">缓存一致性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="52">允许缓存与数据库存在偶尔不一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="53">Cache Aside Pattern（旁路缓存模式）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="52">缓存一致性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="53">允许缓存与数据库存在偶尔不一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="54">Cache Aside Pattern（旁路缓存模式）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 写：更新 DB，然后直接删除缓存 cache 。
 - 读：从 cache 中读取数据，读取到就直接返回，读取不到的话，就从 DB 中取数据返回，然后再把数据放到 cache 中。
 - Cache Aside Pattern 是我们平时使用比较多的一个缓存读写模式，比较适合读请求比较多的场景。
@@ -751,10 +754,10 @@ OK
 
 - 串行化可以保证一定不会出现不一致的情况，但是它也会导致系统的吞吐量大幅度降低，用比正常情况下多几倍的机器去支撑线上的一个请求。
  
-### <a name="54">Write Behind Pattern（异步缓存写入）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="55">Write Behind Pattern（异步缓存写入）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
     - 使用阿里巴巴的canal，订阅mysql的binlog日志，通过解析日志，更新缓存信息。解决上述缓存删除后，出现缓存穿透的问题。
 
-## <a name="55">缓存雪崩</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="56">缓存雪崩</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存雪崩：指缓存由于某些原因(比如 宕机、cache服务挂了或者大量过期)整体crash掉了,导致大量请求到达后端数据库,从而导致数据库崩溃,整个系统崩溃,发生灾难。
 - 针对缓存雪崩的处理措施
     - 事前：Redis 高可用，主从+哨兵，Redis cluster，避免全盘崩溃。
@@ -767,7 +770,7 @@ OK
   - 对用户来说，部分请求都是可以被处理的。系统没死，对用户来说，可能就是点击几次刷不出来页面，但是多点几次，就可以刷出来了。
 
 
-## <a name="56">缓存穿透</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="57">缓存穿透</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存穿透：指缓存和数据库中都没有的数据，而有恶意攻击者不断发起请求，如发起为id为“-1”的数据或id为特别大不存在的数据，导致数据库压力过大。
 
 - 解决方案：
@@ -776,7 +779,7 @@ OK
  
 - 解决方案2： 使用布隆过滤器
   
-## <a name="57">缓存击穿</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="58">缓存击穿</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存击穿：缓存击穿，就是说某个 key 非常热点，访问非常频繁，处于集中式高并发访问的情况，当这个 key 在失效的瞬间，大量的请求就击穿了缓存，直接请求数据库，就像是在一道屏障上凿开了一个洞。
 
 - 解决措施：
@@ -784,7 +787,7 @@ OK
     - 若缓存的数据更新不频繁，且缓存刷新的整个流程耗时较少的情况下，则可以采用基于 Redis、zookeeper 等分布式中间件的分布式互斥锁，或者本地互斥锁以保证仅少量的请求能请求数据库并重新构建缓存，其余线程则在锁释放后能访问到新缓存。
     - 若缓存的数据更新频繁或者在缓存刷新的流程耗时较长的情况下，可以利用定时线程在缓存过期前主动地重新构建缓存或者延后缓存的过期时间，以保证所有的请求能一直访问到对应的缓存。
     
-## <a name="58">LRU 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="59">LRU 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```
 public class LRU<K, V> implements Iterable<K> {
@@ -912,10 +915,10 @@ public class LRU<K, V> implements Iterable<K> {
 }
 ```
 
-## <a name="59">分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="60">分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="60">独立实现分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="61">加锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="61">独立实现分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="62">加锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 通过指令SET结合过期时间一起使用，并设置过期时间，防止线程挂了导致锁未释放
 ```
 SET key value[EX seconds][PX milliseconds][NX|XX]
@@ -936,7 +939,7 @@ OK
 "firethehole"
 ```
 
-##### <a name="62">value必须要具有唯一性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="63">value必须要具有唯一性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 假如value不是随机字符串，而是一个固定值，那么就可能存在下面的问题：
 
 1. 客户端1获取锁成功
@@ -947,13 +950,13 @@ OK
 
 简而言之，就是A线程锁过期，后序导致对锁的异常释放。
 
-##### <a name="63">SET 命令的缺陷</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="64">SET 命令的缺陷</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 加锁后主节点出现故障，锁数据未同步，导致加锁失败，其他节点获得锁。
 
 - 具体流程
 A客户端在Redis的master节点上拿到了锁，但是这个加锁的key还没有同步到slave节点，master故障，发生故障转移，一个slave节点升级为master节点，B客户端也可以获取同个key的锁，但客户端A也已经拿到锁了，这就导致多个客户端都拿到锁。
 
-#### <a name="64">释放锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="65">释放锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 释放锁时需要验证value值，也就是说我们在获取锁的时候需要设置一个value，**不能直接用del key这种粗暴的方式，因为直接del key任何客户端都可以进行解锁了**，所以解锁时，我们需要判断锁是否是自己的，基于value值来判断，代码如下：
 - 使用Lua脚本的方式，尽量保证原子性。
 ```
@@ -964,7 +967,7 @@ public boolean releaseLock_with_lua(String key,String value) {
 }
 ```
 
-### <a name="65">Redisson 分布式方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="66">Redisson 分布式方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - redisson是在redis基础上实现的一套开源解决方案，提供了分布式的相关实现及RedLock的分布式锁实现。
 
 原理：生成唯一的Value，即UUID+threadId。获取锁时向多个redis实例发送的LUA脚本命令，解锁同理。

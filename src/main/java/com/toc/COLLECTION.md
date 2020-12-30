@@ -181,17 +181,21 @@ private void grow(int minCapacity) {
 - sortedMap: 排序的Map，现阶段TreeMap是其唯一实现。
 - EnumMap:要求键必须来自一个Enum。
 ### <a name="10">HashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点
+基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点
 - 基本的存储的结构为Node 节点的数组
   - ```
     transient Node<K,V>[] table;
     ```
-- threshold:临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
-- TREEIFY_THRESHOLD：树化的最小长度8。
-  - 为啥设定为8，TreeNodes占用空间是普通Nodes的两倍，建立树是需要时间及空间成本的。因此此处基于时间与空间的权衡定位8,具体可以看源码。
-- UNTREEIFY_THRESHOLD：树变成链表的阀值6。
-- MIN_TREEIFY_CAPACITY：hashMap进行树化的最低条件table的大小达到64，否则只是进行扩容。
-- Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
+threshold:临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
+
+TREEIFY_THRESHOLD：树化的最小长度8。
+- 为啥设定为8，TreeNodes占用空间是普通Nodes的两倍，建立树是需要时间及空间成本的。因此此处基于时间与空间的权衡定位8,具体可以看源码。
+
+UNTREEIFY_THRESHOLD：树变成链表的阀值6。
+
+MIN_TREEIFY_CAPACITY：hashMap进行树化的最低条件table的大小达到64，否则只是进行扩容。
+
+Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 ```
   static class Node<K,V> implements Map.Entry<K,V> {
         final int hash;
@@ -200,17 +204,22 @@ private void grow(int minCapacity) {
         // 用于处理哈希冲突的拉链法解决方案
         Node<K,V> next;
 ```
+
+负载因子：hashMap的负载因子默认为0.75，当hashMap中的元素达到 3/4就进行元素的扩容。
+> 负载因子大小的关系，若负载因子为1，那么在出现大量的hash膨胀的情况下，元素会较密集，并且都是用链表或者红黑树的方式连接，导致查询效率较低。
+> 若负载因子为0.5 那么就会造成空间的浪费，元素分布较为稀疏。
+
 #### <a name="11">put 操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 首先判断table是否需要扩容，若需要进行扩容操作
-- 计算当前元素hash经过散列后是否有元素存在，若不存在元素直接添加。
-- 若存在元素，分下面两个判断
-  - 替换：若旧元素的hash值与新添加元素一致，且新添加Node 的key调用equals方法一致，则直接替换旧节点。
-  - 拉链法：
-    - 普通链表：循环判断链表节点是否为key相同替换情况，若均不是需要替换情况，则定位到链表尾部添加新节点。
-    - 红黑树：树形遍历判断是否存在，不存在添加。
+1. 首先判断table是否需要扩容，若需要进行扩容操作
+2. 计算当前元素hash经过散列后是否有元素存在，若不存在元素直接添加。
+3. 若存在元素，分下面两个判断
+    1. 替换：若旧元素的hash值与新添加元素一致，且新添加Node 的key调用equals方法一致，则直接替换旧节点。
+    2. 拉链法：
+        - 普通链表：循环判断链表节点是否为key相同替换情况，若均不是需要替换情况，则定位到链表尾部添加新节点。
+        - 红黑树：树形遍历判断是否存在，不存在添加。
 
 ##### <a name="12">扩容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 每次扩容的大小为 <<1，表示2的平方。 
+每次扩容的大小为 <<1，表示2的平方。 
 1. 计算扩容新的table长度size 与threshold 的长度
 2. 遍历旧table，如果节点，无哈希冲突的情况，e.hash&(newCap-1)直接定位到新的位置。
 3. 出现哈希冲突的情况，由于每次扩容的大小默认为2的n次方，因此重散列的位置只会为当前位置或者当前位置+旧数组大小两个位置。
@@ -221,14 +230,15 @@ private void grow(int minCapacity) {
 
 
 #### <a name="13">HashMap红黑树查找：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 红黑树建立是基于Hash的大小来建立的。这里的hashcode 为hashMap换算过的hash。hash小的为左子树， hash 大的为右子树
-- 针对hash重复的情况：
-  - 使用equal的方法进行匹配，相同返回。
-  - 若存在左节点或右节点缺失，则直接进入未缺失的节点查找。（left==null ==> findByRight)，均不存在返回null。
-  - 左右子节点均存在，判断是否为相同的class，及class是否继承comparable接口，
-  - 若为相同的class且都继承则直接通过comparable判断左右节点。
-  - 若不同的class、无继承comparable接口或者经过comparable接口比较的结果相等。
-  - 递归调用左节点查找，若未找到，递归调用右节点查找。
+红黑树建立是基于Hash的大小来建立的。这里的hashcode 为hashMap换算过的hash。hash小的为左子树， hash 大的为右子树
+
+针对hash重复的情况：
+1. 使用equal的方法进行匹配，相同返回。
+2. 若存在左节点或右节点缺失，则直接进入未缺失的节点查找。（left==null ==> findByRight)，均不存在返回null。
+3. 左右子节点均存在，判断是否为相同的class，及class是否继承comparable接口，
+4. 若为相同的class且都继承则直接通过comparable判断左右节点。
+5. 若不同的class、无继承comparable接口或者经过comparable接口比较的结果相等。
+6. 递归调用左节点查找，若未找到，递归调用右节点查找。
 
 ```
  final TreeNode<K,V> find(int h, Object k, Class<?> kc) {
@@ -264,9 +274,9 @@ private void grow(int minCapacity) {
 
 ```
 
-- 针对建立红黑树或者添加树节点的情况
-  - 若使用equal及class 的compare 均无法确定添加节点的方向
-  - 使用对象的类名进行判断，若类名依然相同，则使用System根据对象地址换算的hashcode编码判断添加方向。
+针对建立红黑树或者添加树节点的情况
+- 若使用equal及class 的compare 均无法确定添加节点的方向
+- 使用对象的类名进行判断，若类名依然相同，则使用System根据对象地址换算的hashcode编码判断添加方向。
 ```
   static int tieBreakOrder(Object a, Object b) {
         int d;
@@ -280,9 +290,9 @@ private void grow(int minCapacity) {
 ```
 
 #### <a name="14">hash 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 一次16位右位移异或混合
-  - 混合后的低位掺杂了高位的部分特征，这样高位的信息也被变相保留下来。
-  - 混合原始哈希码的高位和低位，以此来加大低位的随机性。
+一次16位右位移异或混合
+- 混合后的低位掺杂了高位的部分特征，这样高位的信息也被变相保留下来。
+- 混合原始哈希码的高位和低位，以此来加大低位的随机性。
 ```
 static final int hash(Object key) {
     int h;
@@ -291,7 +301,7 @@ static final int hash(Object key) {
 ```
 
 ### <a name="15">LinkedHashMap </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 基于HashMap的基础Node的节点做拓展，添加头尾指针，因此支持顺序访问。双链表加数组的实现。
+基于HashMap的基础Node的节点做拓展，添加头尾指针，因此支持顺序访问。双链表加数组的实现。
 ```
 static class Entry<K,V> extends HashMap.Node<K,V> {
     Entry<K,V> before, after;
@@ -300,7 +310,7 @@ static class Entry<K,V> extends HashMap.Node<K,V> {
     }
 }
 ```
-- accessOrder主要用于LRU的构建 
+accessOrder主要用于LRU的构建 
 - 一个基本的LRU队列需要两点：
   - 添加元素添加在队头，
   ``` 
@@ -326,17 +336,20 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
 }
 ```
 ### <a name="16">concurrentHashMap实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 数据结构与HashMap一致，并发控制使用 synchronized 和自旋配合 CAS 来操作。 新增了TreeBin和ForwardingNode的概念。
-- 变量 sizeCtl ，它的值决定着当前的初始化状态。
-    - -1 说明正在初始化
-    - -N 说明有N-1个线程正在进行扩容
-    - table为null时，表示 table初始化大小，如果 table 没有初始化
-    - table不为null时，表示下一次进行扩容的大小，此处与HashMap一致使用0.75的装载因子（n - (n >>> 2);）
-    - 0 为默认值
-- ForwardingNode （转移）节点保证扩容时的线程安全。
-  - 当进行扩容时，要把链表迁移到新的哈希表，在做这个操作时，会在把数组中的头节点替换为ForwardingNode对象。ForwardingNode中不保存key和value，只保存了扩容后哈希表（nextTable）的引用。此时查找相应node时，需要去nextTable中查找。
-  - 线程put时发现为ForwardingNode会协作进行扩容。完成扩容后，通过for死循环的自旋添加新元素
-- TreeBin：当链表转为红黑树后，数组中保存的引用为 TreeBin，TreeBin 内部不保存 key/value，他保存了 TreeNode的list以及红黑树 root。充当一颗树的节点锁的概念。
+数据结构与HashMap一致，并发控制使用 synchronized 和自旋配合 CAS 来操作。 新增了TreeBin和ForwardingNode的概念。
+
+变量 sizeCtl ，它的值决定着当前的初始化状态。
+- -1 说明正在初始化
+- -N 说明有N-1个线程正在进行扩容
+- table为null时，表示 table初始化大小，如果 table 没有初始化
+- table不为null时，表示下一次进行扩容的大小，此处与HashMap一致使用0.75的装载因子（n - (n >>> 2);）
+- 0 为默认值
+
+ForwardingNode （转移）节点保证扩容时的线程安全。
+- 当进行扩容时，要把链表迁移到新的哈希表，在做这个操作时，会在把数组中的头节点替换为ForwardingNode对象。ForwardingNode中不保存key和value，只保存了扩容后哈希表（nextTable）的引用。此时查找相应node时，需要去nextTable中查找。
+- 线程put时发现为ForwardingNode会协作进行扩容。完成扩容后，通过for死循环的自旋添加新元素
+
+TreeBin：当链表转为红黑树后，数组中保存的引用为 TreeBin，TreeBin 内部不保存 key/value，他保存了 TreeNode的list以及红黑树 root。充当一颗树的节点锁的概念。
 
 #### <a name="17">get方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 计算出hash位置，通过unsafe的包，保证可见性的获取节点。
@@ -345,7 +358,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
 
 #### <a name="18">put方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 首先进入一个自旋的for循环
+首先进入一个自旋的for循环
 1. 若未初始化，进行初始化操作。设置sizeCtl为-1，表示正在初始化。
 2. 若初始化完成，则直接使用可见性获取的操作定位到节点，节点为空则使用CAS设置。
 3. 若节点为ForwardingNode，则帮助进行节点转移。
@@ -409,7 +422,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
   - 应用：Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
   
 ### <a name="21">TreeMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 定义了一个Entry的节点，基于红黑树的实现
+定义了一个Entry的节点，基于红黑树的实现
 ```
   static final class Entry<K,V> implements Map.Entry<K,V> {
         K key;
@@ -422,7 +435,9 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 ```
 ## <a name="22">Set</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 HashSet（无序，唯一）: 基于 HashMap 实现的，底层采用 HashMap 来保存元素
+
 LinkedHashSet：LinkedHashSet 是 HashSet 的子类，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap 其内部是基于 HashMap 实现一样，不过还是有一点点区别的
+
 TreeSet（有序，唯一）： 红黑树(自平衡的排序二叉树)
 
 ### <a name="23">HashSet</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

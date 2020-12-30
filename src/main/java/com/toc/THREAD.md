@@ -2,26 +2,30 @@
 
 <a href="#0">java 并发线程相关</a>  
 &emsp;<a href="#1">1. 线程状态</a>  
-&emsp;<a href="#2">2. 创建一个线程的开销</a>  
-&emsp;<a href="#3">3. 创建线程的方式</a>  
-&emsp;<a href="#4">4. 退出线程的方法</a>  
-&emsp;<a href="#5">5. 线程池</a>  
-&emsp;&emsp;<a href="#6">5.1. 线程池状态</a>  
-&emsp;&emsp;<a href="#7">5.2. 线程池创建</a>  
-&emsp;&emsp;<a href="#8">5.3. 线程池的队列 五种</a>  
-&emsp;&emsp;<a href="#9">5.4. 线程池相关方法</a>  
-&emsp;&emsp;<a href="#10">5.5. 线上线程池的配置</a>  
-&emsp;&emsp;&emsp;<a href="#11">5.5.1. 常规思路</a>  
-&emsp;&emsp;&emsp;<a href="#12">5.5.2. 实际执行解决方案：动态配置线程池核心线程数和最大线程数</a>  
-&emsp;&emsp;&emsp;<a href="#13">5.5.3. 相关资料</a>  
-&emsp;&emsp;<a href="#14">5.6. ThreadFactory 线程工厂</a>  
-&emsp;<a href="#15">6. ThreadLocal </a>  
-&emsp;&emsp;<a href="#16">6.1. 父线程与子线程传递threadLocal的方案</a>  
-&emsp;&emsp;<a href="#17">6.2. ThreadLocal应用</a>  
-&emsp;&emsp;<a href="#18">6.3. TheadLocal 与 SimpleDateFormat的应用</a>  
-&emsp;&emsp;<a href="#19">6.4. 相关资料</a>  
-&emsp;<a href="#20">7. spring 中的线程池</a>  
-&emsp;&emsp;<a href="#21">7.1. 异步编程的例子：</a>  
+&emsp;&emsp;<a href="#2">1.1. 线程方法与状态切换</a>  
+&emsp;<a href="#3">2. 创建一个线程的开销</a>  
+&emsp;<a href="#4">3. 创建线程的方式</a>  
+&emsp;<a href="#5">4. 退出线程的方法</a>  
+&emsp;&emsp;<a href="#6">4.1. 虚拟机级别的中断方式</a>  
+&emsp;&emsp;<a href="#7">4.2. 基于ReentrantLock</a>  
+&emsp;&emsp;<a href="#8">4.3. 中断标志Interrupt</a>  
+&emsp;<a href="#9">5. 线程池</a>  
+&emsp;&emsp;<a href="#10">5.1. 线程池状态</a>  
+&emsp;&emsp;<a href="#11">5.2. 线程池创建</a>  
+&emsp;&emsp;<a href="#12">5.3. 线程池的队列 五种</a>  
+&emsp;&emsp;<a href="#13">5.4. 线程池相关方法</a>  
+&emsp;&emsp;<a href="#14">5.5. 线上线程池的配置</a>  
+&emsp;&emsp;&emsp;<a href="#15">5.5.1. 常规思路</a>  
+&emsp;&emsp;&emsp;<a href="#16">5.5.2. 实际执行解决方案：动态配置线程池核心线程数和最大线程数</a>  
+&emsp;&emsp;&emsp;<a href="#17">5.5.3. 相关资料</a>  
+&emsp;&emsp;<a href="#18">5.6. ThreadFactory 线程工厂</a>  
+&emsp;<a href="#19">6. ThreadLocal </a>  
+&emsp;&emsp;<a href="#20">6.1. 父线程与子线程传递threadLocal的方案</a>  
+&emsp;&emsp;<a href="#21">6.2. ThreadLocal应用</a>  
+&emsp;&emsp;<a href="#22">6.3. TheadLocal 与 SimpleDateFormat的应用</a>  
+&emsp;&emsp;<a href="#23">6.4. 相关资料</a>  
+&emsp;<a href="#24">7. spring 中的线程池</a>  
+&emsp;&emsp;<a href="#25">7.1. 异步编程的例子：</a>  
 # <a name="0">java 并发线程相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -54,7 +58,29 @@
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadstate.png)
 
-## <a name="2">创建一个线程的开销</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="2">线程方法与状态切换</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+sleep 导致当前线程休眠，与 wait 方法不同的是 sleep 不会释放当前占有的锁,sleep(long)会导致线程进入 **TIMED-WATING** 状态，而 wait()方法会导致当前线程进入 WATING 状态
+
+wait 方法，主动让出锁。
+1. 不带时间常数的wait 方法进入WAITING状态。
+2. 带时间常数的wait 进入TIME-WAITING状态。
+
+yield 方法，线程让步。
+> yield 会使当前线程让出 CPU 执行时间片，与其他线程一起重新竞争 CPU 时间片。一般情况下，优先级高的线程有更大的可能性成功竞争得到 CPU 时间片
+
+join方法，当前线程转为阻塞状态，等到另一个线程结束，当前线程再由阻塞状态变为就绪状态，等待 cpu 的宠幸。
+> join方法可用于多线程的协作，如主子线程的协作，主线程等待子线程完成任务。
+> - join 方法的状态转换与wait方法相同，带时间的进入TIME-WAITING状态，不带时间的进入WAITING状态。
+```
+System.out.println(Thread.currentThread().getName() + "线程运行开始!");
+Thread6 thread1 = new Thread6();
+thread1.setName("线程 B");
+thread1.join();
+System.out.println("这时 thread1 执行完毕之后才能执行主线程");
+```
+
+## <a name="3">创建一个线程的开销</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 JVM 在背后帮我们做了哪些事情：
 
 1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
@@ -73,7 +99,7 @@ JVM 在背后帮我们做了哪些事情：
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState2.jpg)
 
 
-## <a name="3">创建线程的方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="4">创建线程的方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - callable 接口继承：可以获取线程的返回值。
 - Future接口 相当于 Runnable接口
 - FutureTask类 类似于Thread类
@@ -127,7 +153,8 @@ class RunnableThread implements Runnable{
 }
 ```
 
-## <a name="4">退出线程的方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="5">退出线程的方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="6">虚拟机级别的中断方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 线程中使用一个静态的volatile的标志判断退出。
 2. 调用Executors的submit方法，获取线程上下文对象Future，调用cancel方法。（注：无法中断正在试图获取synchronized锁或者试图执行I/O操作的线程）IO的中断，关闭底层资源之后，任务将解除阻塞。如socket连接，调用socket的close 或者 system.in 的输入连接调用in.close().
 3. 调用ExecutorService的shutdown的方法。
@@ -135,19 +162,26 @@ class RunnableThread implements Runnable{
 - 与Runnable相关: 主要是通过调用Thread.interrupt方法实现。
 - 与Callable相关：可以调用Future对象的cancel(true)方法。
 
+### <a name="7">基于ReentrantLock</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ReentrantLock调用锁的lockInterruptibly()方法，
 - 1）lock(), 拿不到lock就不罢休，不然线程就一直block。 比较无赖的做法。
 - 2）tryLock()，马上返回，拿到lock就返回true，不然返回false。 比较潇洒的做法。
   带时间限制的tryLock()，拿不到lock，就等一段时间，超时返回false。比较聪明的做法。
 - 3）lockInterruptibly()就稍微难理解一些。
   先说说线程的打扰机制，每个线程都有一个 打扰 标志。这里分两种情况，
-  - 线程在sleep或wait,join， 此时如果别的进程调用此进程的 interrupt（）方法，此线程会被唤醒并被要求处理InterruptedException；(thread在做IO操作时也可能有类似行为，见java thread api)
+  - 线程在sleep或wait、join， 此时如果别的进程调用此进程的 interrupt（）方法，此线程会被唤醒并被要求处理InterruptedException；(thread在做IO操作时也可能有类似行为，见java thread api)
   - 此线程在运行中，则不会收到提醒。但是 此线程的 “打扰标志”会被设置， 可以通过isInterrupted()查看并 作出处理。
   - 结论：lockInterruptibly()和上面的第一种情况是一样的， 线程在请求lock并被阻塞时，如果被interrupt，则“此线程会被唤醒并被要求处理InterruptedException”。并且如果线程已经被interrupt，再使用lockInterruptibly的时候，此线程也会被要求处理interruptedException
  
+### <a name="8">中断标志Interrupt</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+中断一个线程，其本意是给这个线程一个通知信号，会影响这个线程内部的一个中断标识位。 这个线程本身并不会因此而改变状态(如阻塞，终止等)。
+1. 调用 interrupt()方法并不会中断一个正在运行的线程。也就是说处于 Running 状态的线程并不会因为被中断而被终止，仅仅改变了内部维护的中断标识位而已。
+2. 若调用 sleep()而使线程处于 TIMED-WATING 状态，这时调用 interrupt()方法，会抛出InterruptedException,从而使线程提前结束 TIMED-WATING 状态。
+3. 许多声明抛出 InterruptedException 的方法，抛出异常前，都会**清除中断标识位**，所以抛出异常后，调用 isInterrupted()方法将会返回 false
+4. 利用中断标识，可以调用 thread.interrupt()方法，在线程的 run 方法内部可以根据 thread.isInterrupted()的值来优雅的终止线程。
 
-## <a name="5">线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="6">线程池状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="9">线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">线程池状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPool.png)
 
@@ -171,7 +205,7 @@ ReentrantLock调用锁的lockInterruptibly()方法，
   1. 状态说明：线程池彻底终止，就变成TERMINATED状态。 
   2. 状态切换：线程池处在TIDYING状态时，执行完terminated()之后，就会由 TIDYING -> TERMINATED当线程池在STOP状态下，线程池中执行的任务为空时，就会由STOP -> TIDYING。
   
-### <a name="7">线程池创建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="11">线程池创建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 线程池的初始化：
 ```
 /**
@@ -205,7 +239,7 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
 
 
-### <a name="8">线程池的队列 五种</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">线程池的队列 五种</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Executors.newFixedThreadPool()：new LinkedBlockingQueue<Runnable>()
 - Executors.newSingleThreadExecutor()：new LinkedBlockingQueue()
   - 以上两种创建的方式不推荐，因为使用了linkedBlockingQueue的无界队列，会导致最大线程数以及多余核心的keepalive的参数失效。
@@ -234,7 +268,7 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
 3. ArrayBlockingQueue
   - ArrayBlockingQueue是一个有界缓存等待队列，可以指定缓存队列的大小，当正在执行的线程数等于corePoolSize时，多余的元素缓存在ArrayBlockingQueue队列中等待有空闲的线程时继续执行，当ArrayBlockingQueue已满时，加入ArrayBlockingQueue失败，会开启新的线程去执行，当线程数已经达到最大的maximumPoolSizes时，再有新的元素尝试加入ArrayBlockingQueue时会报错
 
-### <a name="9">线程池相关方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="13">线程池相关方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 execute() vs submit()
 - execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
 - submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，
@@ -245,8 +279,8 @@ isTerminated() VS isShutdown()
 - isShutDown 当调用 shutdown() 方法后返回为 true。
 - isTerminated 当调用 shutdown() 方法后，并且所有提交的任务完成后返回为 true
   
-### <a name="10">线上线程池的配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="11">常规思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">线上线程池的配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="15">常规思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 CPU密集: CPU密集的意思是该任务需要大量的运算，而没有阻塞，CPU一直全速运行。
 - CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
   
@@ -285,7 +319,7 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
 > 临界区都是串行的，非临界区都是并行的，用单线程执行 临界区的时间/用单线程执行(临界区+非临界区)的时间 就是串行百分比
 
 
-#### <a name="12">实际执行解决方案：动态配置线程池核心线程数和最大线程数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="16">实际执行解决方案：动态配置线程池核心线程数和最大线程数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
   ThreadPoolExecutor threadPoolExecutor =  new ThreadPoolExecutor(
                 2,5,60,
@@ -316,9 +350,9 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
   - CAT
   - zipkin
   
-#### <a name="13">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="17">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 美团线程池：https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html
-### <a name="14">ThreadFactory 线程工厂</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">ThreadFactory 线程工厂</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
   - 对于区分业务的线程池，就可以用到到命名线程工厂的实现，针对不同线程池资源定义不同的线程名
   - 或者设置一个创建守护线程的线程工厂。
@@ -352,7 +386,7 @@ public final class NamingThreadFactory implements ThreadFactory {
 }
 ```
 
-## <a name="15">ThreadLocal </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="19">ThreadLocal </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
   - key key视作ThreadLocal，value为代码中放入的值（实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference）.
   - ThreadLocalMap的key 为每个新建的ThreadLocal private void set(ThreadLocal<?> key, Object value) { }
@@ -373,12 +407,12 @@ TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收�
 
 - 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
 
-### <a name="16">父线程与子线程传递threadLocal的方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">父线程与子线程传递threadLocal的方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 阿里巴巴提供TransmittableThreadLocal组件：父线程与子线程传递threadLocal的方案
 InheritableThreadLocal： 父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
 - 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
     
-### <a name="17">ThreadLocal应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">ThreadLocal应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Spring 事务应用
 - Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
 - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
@@ -395,7 +429,7 @@ ThreadLocalRandom 是ThreadLocal与 Random的结合，在Random的基础上进�
 
 跨方法传递：
 - 常规web服务接收到request的时候，经常有一些用户信息需要传递到service层。此时就可以使用ThreadLocal存储用户信息，每个service方法就不用写传递参数。
-### <a name="18">TheadLocal 与 SimpleDateFormat的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="22">TheadLocal 与 SimpleDateFormat的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用SimpleDataFormat的parse()方法，内部有一个Calendar对象，调用SimpleDataFormat的parse()方法会先调用Calendar.clear（），然后调用Calendar.add()，如果一个线程先调用了add()然后另一个线程又调用了clear()，这时候parse()方法解析的时间就不对了。
 
 解决：使用了线程池加上ThreadLocal包装SimpleDataFormat，再调用initialValue让每个线程有一个SimpleDataFormat的副本，从而解决了线程安全的问题，也提高了性能。
@@ -408,11 +442,11 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
 **如果是Java8应用，可以使用DateTimeFormatter代替SimpleDateFormat, 线程安全**
 
 
-### <a name="19">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="23">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ
 
 待补充资料：netty的fastThreadLocal
-## <a name="20">spring 中的线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="24">spring 中的线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
   - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
@@ -431,7 +465,7 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
         return executor;
       }
     ```
-### <a name="21">异步编程的例子：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">异步编程的例子：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - ```
      @Async
       public CompletableFuture<List<String>> completableFutureTask(String start) {

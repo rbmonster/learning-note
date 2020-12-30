@@ -271,7 +271,16 @@ InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过
 添加一行字段当版本号字段，更新的时候带版本号。如：
 `update xx set name = aaa and version = 3 where id = 'xxx' and version = 2'`
 
-## redo log 与 binlog
+## redo log、undo log、binlog
+### undo log
+undo log主要有两个作用：回滚和多版本控制(MVCC)
+
+在数据修改的时候，不仅记录了redo log，还记录undo log，如果因为某些原因导致事务失败或回滚了，可以用undo log进行回滚
+
+undo log主要存储的也是逻辑日志，比如我们要insert一条数据了，那undo log会记录的一条对应的delete日志。我们要update一条记录时，它会记录一条对应相反的update记录。
+
+MVCC: 内部使用的一致性读快照称为Read View，在不同的隔离级别下，事务启动时或者SQL语句开始时，看到的数据快照版本可能也不同，在RR、RC隔离级别下会用到 Read view。
+> 当执行sql语句的时候会创建一致性视图，保证在本事务中可以做到可重复读。
 
 
 ### redo log
@@ -524,6 +533,93 @@ select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 ```
 
 
+## 数据库设计
+
+### 数据库设计原则
+
+#### 第一范式(列不可再分)
+第一范式是最基本的范式(确保每列保持原子性)。如果数据库表中的所有字段值都是不可分解的原子值，就说明该数据库表满足了第一范式。
+> 第一范式的合理遵循需要根据系统的实际需求来定。比如某些数据库系统中需要用到“地址”这个属性，本来直接将“地址”属性设计成一个数据库表的字段就行。但是如果系统经常会访问“地址”属性中的“城市”部分，那么就非要将“地址”这个属性重新拆分为省份、城市、详细地址等多个部分进行存储。
+
+
+
+#### 第二范式(确保表中的每列都和主键相关)
+第二范式需要确保数据库表中的每一列都和主键相关，而不能只与主键的某一部分相关（主要针对联合主键而言）。也就是说在一个数据库表中，一个表中只能保存一种数据，不可以把多种数据保存在同一张数据库表中。
+> 如一个订单的商品明细表，不应该订单主表的ID放到商品明细表中，会导致数据冗余
+
+#### 第三范式(确保每列都和主键列直接相关,而不是间接相关)
+第三范式需要确保数据表中的每一列数据都和主键直接相关，而不能间接相关。
+> 如一个订单表都会有客户字段，可以把客户编码作为一个外键跟订单表建立响应关系。
+
+#### 相关资料
+- https://www.cnblogs.com/linjiqin/archive/2012/04/01/2428695.html
+
+### 表字段设计
+规则：用尽量少的存储空间来存储一个字段的数据
+
+常用的类型：int、float、double、 decimal、varchar、char、 date、datetime等
+
+1. 对于固定长度的字符使用varchar来进行存储，如电话号码。
+2. 对于精度要求高的使用decimal，如金钱、重量相关。
+3. 与时间相关的，主要根据时间的精度，如只需要存储具体的天，不需要到时分秒。
+4. 业务中选择性很少的状态status、类型type等字段推荐使用tinytint或者smallint类型节省存储空间。
+5. 字段设置固定长度，对一个新增的列，mysql通常会分配固定的空间大小。太大的字段会造成空间浪费。
+6. 表达是与否概念的字段，必须使用 is_xxx 的方式命名，数据类型是 unsigned tinyint（ 1 表示是， 0 表示否）。
+#### 乐观锁字段
+使用version作为乐观锁的控制。
+
+#### 通用字段
+创建人、创建时间、修改人、修改时间
+
+#### 日期字段的选择
+ 数据库日期的存储主要有三种：字符串、DataTime与Timestamp、时间戳
+ 
+使用字符串存储时间会有如下问题：
+1. 字符串占用的空间更大！
+2. 字符串存储的日期比较效率比较低（逐个字符进行比对），无法用日期相关的 API 进行计算和比较。
+
+Datetime 和 Timestamp，通常会首选 Timestamp
+1. DateTime 类型没有时区信息的，而Timestamp有，具体可以通过改变时区看出差别 `set time_zone='+8:00';`
+2. DateTime 类型耗费空间更大使用8个字节存储，timestamp使用4个字节，也就导致了Timestamp表示的时间范围较小。
+   - DateTime ：1000-01-01 00:00:00 ~ 9999-12-31 23:59:59
+   - Timestamp： 1970-01-01 00:00:01 ~ 2037-12-31 23:59:59
+   
+时间戳存储：
+1. 使用4个字节存储，但是可读性太差
+2. 同样为4个字节可表示的时间范围比Timestamp大。
+
+### 实际设计问题 —— 设计部门表 
+设计一张部门表应该有哪些必要字段？
+
+1. 部门基本信息。
+2. 父部门字段。
+3. 如何关联父部门下所有子部门
+    1. 方案一，加入一个path字段。用于关联查询。
+    2. 方案二，使用内存组装树节点数据。
+
+
+## 分库分表
+
+### 分库分表有了解吗？
+由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。
+
+### 垂直切分
+垂直分表定义：将一个表按照字段分成多表，每个表存储其中一部分字段。通常我们按以下原则进行垂直拆分:
+1. 把不常用的字段单独放在一张表;
+2. 把text，blob等大字段拆分出来放在附表中;
+3. 经常组合查询的列放在一张表中;
+  
+垂直分库是指按照业务将表进行分类，分布到不同的数据库上面，每个库可以放在不同的服务器上，它的核心理念是专库专用。
+- 将表按照功能模块、关系密切程度划分出来， 部署到不同的库上。
+> 例如，我们会建立定义数据库 workDB、商品数据库 payDB、用户数据库 userDB、日志数据库 logDB 等，分别用于存储项目数据定义表、商品定义表、用户数据表、日志数据表等。
+
+
+### 水平切分
+水平分库是把同一个表的数据按一定规则拆到不同的数据库中，每个库可以放在不同的服务器上。
+- 如将店铺ID为单数的和店铺ID为双数的商品信息分别放在两个库中。
+
+水平分表是在同一个数据库内，把同一个表的数据按一定规则拆到多个表中。
+
 ## 其他面试题
 
 ### mysql数据库抖动
@@ -573,10 +669,58 @@ show processlist;显示哪些线程正在运行。您也可以使用mysqladmin p
   - 执行kill 命令
 
 ### 如何优化SQL
-1. 通过慢查询日志获取sql语句
-2. 对sql进行基本的优化，看是不是有用函数导致了索引不生效的情况。
+1. 慢sql获取：通过慢查询日志获取sql语句
+2. 对sql进行基本的优化
+    1. 针对select 部分，查看是否内连子查询、使用自定义函数、或者返回text的字段导致数据量过大消耗网络及IO
+    2. 针对join部分，查看是否可以减少连接的数据集。
+    3. 针对where部分，主要看索引列是否存在失效的情况，如使用
+        1. 负向查询
+        2. 索引列使用运算或者函数
+        3. like不匹配最左前缀原则
+        4. or关联非索引（无法使用合并索引优化）
+        5. 隐式关联导致索引失效
+        6. 联合索引过滤顺序有误
+        7. mysql优化器分析有误，不走索引（重新执行分析或者牵制走索引）
+    4. group by部分，查看是否可以加索引，若无法优化可考虑冗余索引字段
+    5. order by部分，检查字段排序顺序，是否与联合索引一致
+    6. limit m,n要慎重， m的值越高，sql消耗时间越长
 3. 执行explain语句 查看SQL执行情况。
 4. 针对未走索引的情况，可以使用强制走索引的方式
 5. 针对复合索引创建顺序有误，导致了索引生效，修改索引。
 6. 对于走错索引，说明mysql在统计行信息出错（由于磁盘，mysql使用采样统计的方式），通过执行analysis table。建议低峰使用。确定索引无用，可以删除干扰索引。第三种，强制走索引。。
 7. 数据集过大，索引失效。
+
+explain 分析例子
+``` 
++----+-------------+-------+------------+--------+------------------+------------------+---------+----------------------------------+------+----------+----------------------------------------------------+
+| id | select_type | table | partitions | type   | possible_keys    | key              | key_len | ref                              | rows | filtered | Extra                                              |
++----+-------------+-------+------------+--------+------------------+------------------+---------+----------------------------------+------+----------+----------------------------------------------------+
+|  1 | SIMPLE      | ct    | NULL       | ALL    | NULL             | NULL             | NULL    | NULL                             |  353 |   100.00 | Using where                                        |
+|  1 | SIMPLE      | mo    | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | ct.organization_id           |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | cm    | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | ct.container_master_id       |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | cei   | NULL       | ref    | idx_container_id | idx_container_id | 9       | ct.container_id              |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | ctp   | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | cei.transfer_plan_id         |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | mw    | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | ct.current_warehouse_id      |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | cl    | NULL       | ref    | idx_container_id | idx_container_id | 9       | ct.container_id              |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | mm    | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | cl.materiel_id               |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | qq    | NULL       | ALL    | NULL             | NULL             | NULL    | NULL                         |  123 |   100.00 | Using where; Using join buffer (Block Nested Loop) |
+|  1 | SIMPLE      | pg    | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | qq.product_grade_id          |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | cli   | NULL       | ref    | idx_container_id | idx_container_id | 9       | ct.container_id              |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | ctr   | NULL       | ref    | idx_container_id | idx_container_id | 9       | ct.container_id              |    1 |   100.00 | Using where                                        |
+|  1 | SIMPLE      | cso   | NULL       | ref    | idx_container_id | idx_container_id | 9       | ct.container_id              |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | tsb   | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | cso.tran_sea_bill_id         |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | tspn  | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | tsb.sea_plan_id              |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | suser | NULL       | ref    | uk_user_name     | uk_user_name     | 63      | tspn.book_space_user         |    1 |   100.00 | Using where; Using index                           |
+|  1 | SIMPLE      | tspc  | NULL       | ALL    | idx_container_id | NULL             | NULL    | NULL                         |    2 |   100.00 | Using where; Using join buffer (Block Nested Loop) |
+|  1 | SIMPLE      | tspd  | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | tspc.tran_sub_plan_detail_id |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | tsp   | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | tspd.tran_sub_plan_id        |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | csm   | NULL       | ref    | idx_container_id | idx_container_id | 9       | ct.container_id              |    1 |   100.00 | NULL                                               |
+|  1 | SIMPLE      | yjtsp | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | csm.sea_plan_id              |    1 |   100.00 | NULL                                               |
++----+-------------+-------+------------+--------+------------------+------------------+---------+----------------------------------+------+----------+----------------------------------------------------+
+
+```
+
+- 相关资料：https://mp.weixin.qq.com/s/nEmN4S9JOTVGj5IHyfNtCw
+
+
+

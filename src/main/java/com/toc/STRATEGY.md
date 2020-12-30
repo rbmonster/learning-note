@@ -1,6 +1,6 @@
 <a name="index">**Index**</a>
 
-&emsp;&emsp;<a href="#0">0.36. 策略模式</a>  
+&emsp;&emsp;<a href="#0">24.1. 策略模式</a>  
 ### <a name="0">策略模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Context是上下文，用一个ConcreteStrategy来配置，维护一个对Strategy对象的引用；Strategy是策略类，用于定义所有支持算法的公共接口；ConcreteStrategy是具体策略类，封装了具体的算法或行为，继承于Strategy。
 

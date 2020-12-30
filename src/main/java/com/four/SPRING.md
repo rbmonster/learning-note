@@ -11,8 +11,56 @@ AOP(Aspect-Oriented Programming:面向切面编程)
   - 能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
 
 Spring AOP就是基于动态代理的，如果要代理的对象，实现了某个接口，那么Spring AOP会使用JDK Proxy，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候Spring AOP会使用Cglib 。
+#### 应用场景
+1. Authentication 权限
+2. Caching 缓存
+3. Context passing 内容传递
+4. Error handling 错误处理
+5. Lazy loading 懒加载
+6. Debugging 调试
+7. logging, tracing, profiling and monitoring 记录跟踪 优化 校准
+8. Performance optimization 性能优化
+9. Persistence 持久化
+10. Resource pooling 资源池
+11. Synchronization 同步
+12. Transactions 事务
+
+#### aop 相关概念
+1. 切面（aspect） ： 类是对物体特征的抽象，切面就是对横切关注点的抽象
+2. 横切关注点： 对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。
+3. 连接点（joinpoint） ： 被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。
+4. 切入点（pointcut） ： 对连接点进行拦截的定义
+5. 通知（advice） ： 所谓通知指的就是指拦截到连接点之后要执行的代码， 通知分为前置、后置、异常、最终、环绕通知五类。
+6. 目标对象： 代理的目标对象
+7. 织入（weave） ： 将切面应用到目标对象并导致代理对象创建的过程
+8. 引入（introduction） ： 在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法或字段
+
 #### aop切面的相关方法   
+
+```
+@Aspect
+public class TransactionDemo {
+    @Pointcut(value="execution(* com.yangxin.core.service.*.*.*(..))")
+    public void point(){
+    }
+    @Before(value="point()")
+    public void before(){
+        System.out.println("transaction begin");
+    }
+    @AfterReturning(value = "point()")
+    public void after(){
+        System.out.println("transaction commit");
+    }
+    @Around("point()")
+    public void around(ProceedingJoinPoint joinPoint) throws Throwable{
+        System.out.println("transaction begin");
+        joinPoint.proceed();
+        System.out.println("transaction commit");
+    }
+}
+```
 https://www.cnblogs.com/zhangxufeng/p/9160869.html
+
 
 ### Spring AOP 和 AspectJ AOP 有什么区别？
 Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
@@ -22,10 +70,12 @@ Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 
 
 ## Spring 中的 bean 的作用域有哪些?
 - singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。
-- prototype : 每次请求都会创建一个新的 bean 实例。如跟请求状态有关的对象，就不能使用单例，需要使用多例保证线程安全。
+- prototype : 每次请求都会创建一个新的 bean 实例。如跟请**求状态有关**的对象，就不能使用单例，需要使用多例保证线程安全。
+  - > 之所以用多例，是为了防止**并发问题**；即一个请求改变了对象的状态，此时对象又处理另一个请求，而之前请求对**对象状态**的改变导致了对象对另一个请求做了错误的处理；
+  - > 使用@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE,proxyMode = ScopedProxyMode.TARGET_CLASS)。ScopedProxyMode.TARGET_CLASS是字节码级别多例,设置多例的代理模式使用一次就会产生一个运行时字节新对象
 - request : 每一次HTTP请求都会产生一个新的bean，该bean仅在当前HTTP request内有效。
 - session : 每一次HTTP请求都会产生一个新的 bean，该bean仅在当前 HTTP session 内有效。
-> - global-session： 全局session作用域，仅仅在基于portlet的web应用中才有意义，Spring5已经没有了。Portlet是能够生成语义代码(例如：HTML)片段的小型Java Web插件。它们基于portlet容器，可以像servlet一样处理HTTP请求。但是，与 servlet 不同，每个 portlet 都有不同的会话
+> global-session： 全局session作用域，仅仅在基于portlet的web应用中才有意义，Spring5已经没有了。Portlet是能够生成语义代码(例如：HTML)片段的小型Java Web插件。它们基于portlet容器，可以像servlet一样处理HTTP请求。但是，与 servlet 不同，每个 portlet 都有不同的会话
    
 ## Spring 中的 bean 生命周期
 - 见声明周期详解
@@ -218,6 +268,7 @@ public String update() {
 
 ## Spring mvc 工作原理
 流程说明（重要）：
+> 一个http请求发送过来先经过Servlet的filter进行过滤，之后进入MVC流程
 1. 客户端（浏览器）发送请求，直接请求到 DispatcherServlet。
 2. DispatcherServlet 根据请求信息调用 HandlerMapping，解析请求对应的 Handler。
 3. 解析到对应的 Handler（也就是我们平常说的 Controller 控制器）后，开始由 HandlerAdapter 适配器处理。
@@ -245,6 +296,28 @@ ApplicationContext 是 Spring 应用程序中的中央接口，用于向应用�
 
 BeanFactory是Spring框架的基础设施，面向Spring本身；而ApplicationContext面向使用Spring的开发者，相比BeanFactory提供了更多面向实际应用的功能，几乎所有场合都可以直接使用ApplicationContext而不是底层的BeanFactory
 
+ApplicationContext 还区分不同类型的上下文：
+1. ClassPathXmlApplicationContext：从类路径加载配置文件的上下文。
+2. AnnotationApplicationContext：基于注解加载配置的上下文。
+3. ServletWebServerApplicationContext：提供web应用的服务的上下文。
+
+
+## spring容器启动过程、spring boot启动过程
+spring boot启动过程
+1. 新建SpringApplication对象，实例化ApplicationContextInitializer和ApplicationListener
+2. 实例化EventPublishRunLister，用于事件驱动模型的广播。
+3. prepareEnvironment准备环境，并广播事件。
+    - > 环境准备的时候，BootStrapApplicationListener会启动父类上下文，并加载对应的父类配置(spring cloud的应用)。添加CloseContextOnFailureApplicationListener，用于关闭父类上下文的监听器
+4. 区分类型创建上下文。分为server、reactive和默认基于注解的三种
+5. prepareContext准备上下文，调用初始化器的初始化方法
+    - > BeanDefinition的加载是通过BeanDefinitionHolder填充BeanDefinition的属性，再注册到Context的BeanFactory中
+6. refresh 刷新上下文，区分上下文类型创建bean工厂。
+    1. 对象锁 + AtomicBoolean 锁定刷新过程。
+    2. 区分类型创建 BeanFactory
+    3. 进入postProcessor的调用。其中invokeBeanFactoryPostProcessors触发自动配置的加载流程
+    4. 对于web 类型的上下文，新建对应的嵌入式Server
+    5. 对于所有非懒加载的Bean对象，触发bean 的实例化
+    6. 完成初始化后，启动server容器
 
 ## @RestController vs @Controller
 @RestController
@@ -254,7 +327,10 @@ BeanFactory是Spring框架的基础设施，面向Spring本身；而ApplicationC
     public @interface RestController { ... }
     ```
 > 单独使用 @Controller 不加 @ResponseBody的话返回一个视图，这种情况属于比较传统的Spring MVC 的应用
-- @ResponseBody 注解的作用是将 Controller 的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中，通常用来返回 JSON 或者 XML 数据，返回 JSON 数据的情况比较多。
+### @ResponseBody
+@ResponseBody 注解的作用是将 Controller 的方法返回的对象通过适当的**转换器**转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中，通常用来返回 JSON 或者 XML 数据，返回 JSON 数据的情况比较多。
+
+- 自定义MessageConvert？
 
 ## spring中的设计模式
 - 工厂设计模式 : Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
@@ -265,14 +341,8 @@ BeanFactory是Spring框架的基础设施，面向Spring本身；而ApplicationC
 - 观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。
 - 适配器模式 :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。
 
+
 ## 零散的一些面试题
-
-### Spring中 BeanFactory与 ApplicationContext
-
-BeanFactory接口是IOC容器要实现的最基础的接口，定义了管理bean的最基本的方法，例如获取实例、基本的判断等
-
-ApplicationContext应用上下文（com.springframework.context.）建立在 BeanFactory 基础之上，提供了更多面向应用的功能拥有了Environment（环境）、MessageSource（国际化）、ResourceLoader（资源）、ApplicationEventPublisher（应用事件）等服务相关的接口
-
 ### @Autowired和@Resource的区别是什么？
 1. @Autowired注解是按类型装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它required属性为false。可以结合@Qualifier注解一起使用。
 2. @Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上，但它默认按名称装配。默认按byName自动注入，也提供按照byType 注入；

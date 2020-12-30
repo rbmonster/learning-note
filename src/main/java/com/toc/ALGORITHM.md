@@ -25,6 +25,7 @@
 &emsp;&emsp;<a href="#22">8.2. 拓扑排序</a>  
 &emsp;&emsp;<a href="#23">8.3. dfs+回溯</a>  
 &emsp;&emsp;<a href="#24">8.4. 并查集</a>  
+&emsp;<a href="#25">9. 动态规划</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -439,6 +440,7 @@ private int maximum_depth(TreeNode root) {
 ### <a name="23">dfs+回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 全排列（review）：https://leetcode-cn.com/problems/permutations/
 - 全排列 II（review）：https://leetcode-cn.com/problems/permutations-ii/
+- 字符串的排列: https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/
     - 重点看区别重复元素的条件
     - ```   public List<List<Integer>> permute(int[] nums) {
               List<List<Integer>> res = new ArrayList<>();
@@ -523,3 +525,7 @@ class UnionFindSet {
     }
 ```
 
+
+
+## <a name="25">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 数字翻译字符串：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/

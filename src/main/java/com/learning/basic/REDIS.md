@@ -227,6 +227,8 @@
     3) "message1"
     ```
 
+#### 保存固定行数的lua
+- https://blog.csdn.net/cainiao1412/article/details/107483286
   
 ### HyperLogLog 
 - 是做基数统计的redis对象，故不是集合，不会保存元数据，只记录数量而不是数值。

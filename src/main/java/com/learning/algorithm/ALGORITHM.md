@@ -412,6 +412,7 @@ private int maximum_depth(TreeNode root) {
 ### dfs+回溯
 - 全排列（review）：https://leetcode-cn.com/problems/permutations/
 - 全排列 II（review）：https://leetcode-cn.com/problems/permutations-ii/
+- 字符串的排列: https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/
     - 重点看区别重复元素的条件
     - ```   public List<List<Integer>> permute(int[] nums) {
               List<List<Integer>> res = new ArrayList<>();
@@ -496,3 +497,7 @@ class UnionFindSet {
     }
 ```
 
+
+
+## 动态规划
+- 数字翻译字符串：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/

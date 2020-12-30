@@ -19,9 +19,11 @@
 1、程序计数器
  - 定义：可以看作是当前线程所执行的字节码的行号指示器，为线程隔离的数据区。
  - java多线程切换时，每个线程独立的程序计数器，各条线程之间的计数器互不影响，独立存储，保证了线程切换后能恢复到正确的位置。
+ - 唯一一个无OOM的区域
  
 2、Java虚拟机栈
  - 定义：每个方法执行的时候，Java虚拟机都会同步的创建一个栈帧用于储存局部变量表、操作数栈、动态链接、方法出口等信息。每个方法被调用直至执行完毕的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
+    - > 栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息
  - 局部变量表存放了编译期可知的各种Java虚拟机基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference类型）和returnAddress类型（指向一条字节码指令的地址）、
  - 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。 
  
@@ -46,22 +48,27 @@
 
   
   
-#### 对象的访问
- - 定义：java程序会通过栈上的reference数据来操作堆上的具体对象。具体的对象访问方式由虚拟机决定，主要有两种使用句柄和直接指针两种。
-    - 使用句柄访问的话，java堆会划分一块内存作为句柄池。而句柄中分为两块指针，一个是指向对象实例的指针，一个是指向对象类型数据的指针(指向方法区)。好处为整理内存是只需要整理实例的指针。
-    - 直接指针访问，对实例中包含数据的类型数据的指针(指向方法区)，好处为减少了指向实例的时间定为开销。
+### 对象的访问
+定义：java程序会通过栈上的reference数据来操作堆上的具体对象。具体的对象访问方式由虚拟机决定，主要有两种使用句柄和直接指针两种。
+- 使用句柄访问的话，java堆会划分一块内存作为句柄池。而句柄中分为两块指针，一个是指向对象实例的指针，一个是指向对象类型数据的指针(指向方法区)。好处为整理内存是只需要整理实例的指针。
+- 直接指针访问，对实例中包含数据的类型数据的指针(指向方法区)，好处为减少了指向实例的时间定为开销。
+
+### HotSpot 的后台线程
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/hotspotThread.jpg)
+
 
 ## 垃圾收集器与内存分配策略
 - 程序计数器、虚拟机栈、本地方法栈3个区域随线程而生而灭，因此这几个区域的内存分配和回收都具备确定性，不需要过多考虑回收问题。
 
 ### 判断对象是否已死的方法
- - 引用计数法：
-   - 定义：在对象中添加一个引用计数器，有一个地方引用时，计数器值加一，引用失效时减一。
-   - 优点：原理简单，判定效率也很高。
-   - 缺点：难以解决对象之间互相循环引用的问题。
- - 可达性分析算法：
-   - 定义：通过一系列成为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”。弱某对象到GC Roots间没有任何引用链相连，证明此对象是不可能再被使用的。
-   - GC Roots的对象分为以下几种：
+引用计数法：
+- 定义：在对象中添加一个引用计数器，有一个地方引用时，计数器值加一，引用失效时减一。
+- 优点：原理简单，判定效率也很高。
+- 缺点：难以解决对象之间互相循环引用的问题。
+
+可达性分析算法：
+- 定义：通过一系列成为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”。弱某对象到GC Roots间没有任何引用链相连，证明此对象是不可能再被使用的。
+- GC Roots的对象分为以下几种：
      1. 虚拟机栈中的引用对象，入线程调用方法堆栈的参数、局部变量、临时变量等。 
      2. 在方法区中类静态属性引用的对象。如Java类的引用类型静态变量。
      3. 在方法区中常量引用对象，如字符串常量池的引用。
@@ -78,7 +85,7 @@
 - 对象死亡的调用，任何一个对象都会被系统调用一次，如果对象下一次面临回收它的finalize()不会再执行。
 
 ### 回收方法区
-- 方法区的回收主要是两部分内容：废弃的常量和不再使用的类型。
+方法区的回收主要是两部分内容：废弃的常量和不再使用的类型。
 - 废弃的常量的例子：字符创常量进入到常量池中，但当前系统有没有任何一个字符串对象的值为“java”，则该常量就会被系统清理出常量池。
 - 不在使用的类，需同时满足一下三个条件：
   - 该类的所有实例已经被回收，也就是java对重不存在该类及其任何派生的子类实例。
@@ -86,31 +93,57 @@
   - 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。
   
 ### 垃圾收集算法
-- 弱分代假说：绝大多数对象都是朝生夕灭。
-- 强分代假说：熬过越多次垃圾手机过程的对象就越难消亡。
-- 跨代引用假说：存在于新生代的对象可能会引用老年代的对象。因此该假说说明的是，存在互相引用关系的对象，是应该倾向于同时生存或者同时死亡。
-  - 解决方案，在新生代上建立一个全局的数据结构（记忆集），这个结构吧老年代划分成若干小块，表示出老年代的哪一块内存会存在跨代引用。之后发生Minor GC时，只有包含跨代引用的小块内存才会加入到GC Root的扫描.
+弱分代假说：绝大多数对象都是朝生夕灭。
+强分代假说：熬过越多次垃圾手机过程的对象就越难消亡。
+跨代引用假说：存在于新生代的对象可能会引用老年代的对象。因此该假说说明的是，存在互相引用关系的对象，是应该倾向于同时生存或者同时死亡。
+- 解决方案，在新生代上建立一个全局的数据结构（记忆集），这个结构吧老年代划分成若干小块，表示出老年代的哪一块内存会存在跨代引用。之后发生Minor GC时，只有包含跨代引用的小块内存才会加入到GC Root的扫描.
 
 
 #### 标记-清除算法
-- 定义：算法分为两个阶段，一个阶段就是标记出所有需要回收的对象，在标记完成后，统一回收掉所有标记的对象，当然也可以反过来标记存活的对象，统一回收未标记对象。
-- 缺点：
-   1. 执行效率不稳定，如果java堆中包含大量对象，并且其中大部分是需要回收的，当对象的数量增长，标记跟清除的执行效率都会越来越低。
-   2. 内存碎片化问题，标记跟清除之后会产生大量不连续的内存碎片，空间碎片太多可能导致后续程序在分配大对象的时候不得不触发另一次垃圾收集动作。
+定义：算法分为两个阶段，一个阶段就是标记出所有需要回收的对象，在标记完成后，统一回收掉所有标记的对象，当然也可以反过来标记存活的对象，统一回收未标记对象。
+
+缺点：
+1. 执行效率不稳定，如果java堆中包含大量对象，并且其中大部分是需要回收的，当对象的数量增长，标记跟清除的执行效率都会越来越低。
+2. 内存碎片化问题，标记跟清除之后会产生大量不连续的内存碎片，空间碎片太多可能导致后续程序在分配大对象的时候不得不触发另一次垃圾收集动作。
 
 #### 标记-复制算法
-- 定义:为了解决标记算法面对大量可回收对象时执行效率低及空间碎片化的问题，该算法将内存分为两个大小相等的空间，每次只使用其中一块。当一块的内存使用完了，就将还存货的对象复制到另一块上去，然后把已使用过的空间一次性清理干净。
-- 缺点：
-   1. 当内存中大多数对象都是存活的，那么该算法会产生大量的复制开销。
-   2. 将可用的对象内存缩小为原来的一半，空间浪费未免太多了。
-   3. 老年代一般不直接使用该算法，因为老年代对象存货率较高，复制开销太大。针对100%都存活的极端情况，
+定义:为了解决标记算法面对大量可回收对象时执行效率低及空间碎片化的问题，该算法将内存分为两个大小相等的空间，每次只使用其中一块。当一块的内存使用完了，就将还存货的对象复制到另一块上去，然后把已使用过的空间一次性清理干净。
+
+缺点：
+1. 当内存中大多数对象都是存活的，那么该算法会产生大量的复制开销。
+2. 将可用的对象内存缩小为原来的一半，空间浪费未免太多了。
+3. 老年代一般不直接使用该算法，因为老年代对象存货率较高，复制开销太大。针对100%都存活的极端情况，
    
 #### 标记-整理算法
-- 定义：与标记-清除算法本质区别为，移动存活的对象。而移动回收后存活的对象是一项优缺点并存的风险决策。
-- 移动对象的优缺点:
-  - 缺点：在老年代这种每次回收都有大量存活的区域，移动存活对象并更新所有引用这些对象的地方会是一种极其负重的工作，工作期间必须暂停用户应用程序才能进行。
-  - 优点：内存规整，解决了空间碎片化问题。空间碎片化问题只能依赖更复杂的内存分配器和内存访问器来解决。
+定义：与标记-清除算法本质区别为，移动存活的对象。而移动回收后存活的对象是一项优缺点并存的风险决策。
+
+移动对象的优缺点:
+- 缺点：在老年代这种每次回收都有大量存活的区域，移动存活对象并更新所有引用这些对象的地方会是一种极其负重的工作，工作期间必须暂停用户应用程序才能进行。
+- 优点：内存规整，解决了空间碎片化问题。空间碎片化问题只能依赖更复杂的内存分配器和内存访问器来解决。
 - 综合的解决方案，平常都是用标记-清除算法，直到空间碎片化已经影响到对象分配，再使用标记-整理算法。
+
+
+### 新生代垃圾回收
+1. eden、 survivor From 复制到 survivor To，年龄+1。
+    - 首先，把 Eden 和 survivor From 区域中存活的对象复制到 survivor To 区域（如果有对象的年龄以及达到了老年的标准，则赋值到老年代区），同时把这些对象的年龄+1（如果 ServicorTo 不够位置了就放到老年区）；
+2. 清空 eden、 survivor From。
+    - 然后，清空 Eden 和 survivor From 中的对象；
+3. survivor To 和 survivor From 互换
+    - 最后， survivor To 和 survivor From 互换，原 survivor To 成为下一次 GC 时的 survivor From区。
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/edenGc.jpg)
+
+
+#### 相关问题
+为什么需要Survivor区域？
+> 防止对象过早进入Old，导致Old频繁Full GC。Survivor具有预筛选保证，只有对象到一定岁数才会送往老年代，Survivor区可以减少被送到老年代的对象，进而减少Full GC发生。
+
+为什么需要两个Survivor区域？
+> 如果只有一个Survivor，每次垃圾回收年龄+1，会有部分对象进入老年代，导致Survivor的空间变成碎片化空间，最后触发minor gc。使用两个Survivor并进行交换，就保证了两个Survivor区，一个为空，另一个是非空且无碎片保存的。
+
+
+- https://blog.csdn.net/weixin_33881050/article/details/91448770
+
+
 
 ### 经典的垃圾收集器
 
@@ -174,7 +207,7 @@
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/jvm/picture/cms-1.jpg)
 
 #### Garbage First 收集器
-- 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中海油一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
+- 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中还有一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
 - 参数Region的大小可通过-XX:G1HeapRegionSize设定，取值范围为1M~32M，为2的N次幂。
 - 用户设定的允许收集停顿时间使用参数-XX:MaxGCPauseMills指定，默认为200毫秒。调的调小会导致每次的回收集只占内存的很小一部分，收集的速度慢于分配的速度导致垃圾堆积，进而引发Full GC。正常设置为100~300毫秒之间。
 - 运行步骤：
@@ -397,9 +430,19 @@ java相关的三层类加载器
 - 验证的范围：文件格式、元数据、字节码、符号引用验证
 
 #### 准备
-- 准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些内存都将在方法区中分配。对于该阶段有以下几点需要注意：
-  - 进行内存分配的仅包括类变量（static），而不包括实例变量
-  - 这里所设置的初始值"通常情况"下是数据类型默认的零值（如0、0L、null、false等）
+准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些内存都将在方法区中分配。对于该阶段有以下几点需要注意：
+- 进行内存分配的仅包括类变量（static），而不包括实例变量
+- 这里所设置的初始值"通常情况"下是数据类型默认的零值（如0、0L、null、false等）
+
+```
+public static int v = 8080;
+// 实际上变量 v 在准备阶段过后的初始值为 0 而不是 8080， 将 v 赋值为 8080 的 put static 指令是程序被编译后， 存放于类构造器<client>方法之中
+
+public static final int v = 8080;
+// 在编译阶段会为 v 生成 ConstantValue 属性，在准备阶段虚拟机会根据 ConstantValue 属性将 v赋值为 8080
+
+```
+
 #### 解析
 - 解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程。解析动作主要针对类或接口、字段、类方法、接口方法、方法类型、方法句柄和调用限定符7类符号引用进行。
 
@@ -442,11 +485,95 @@ java相关的三层类加载器
 4. 设置对象头：进行对象的必要设置如那个类的示例、hashcode、GC分代年龄等信息，这些信息存放在对象头中。
 5. 上数工作完成之后，java开始调用对象的构造函数。
 
-  
-  
+## CMS + ParNew收集器的流程梳理
+
+### young区域(年轻代)
+1. 对象首先分配到Eden，分配满了触发Young Gc(Minor Gc)，基于复制交换算法，晋升对象年龄+1。
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/edenGc.jpg)
+2. 年龄到达老年代门槛的晋升老年代。
+    - 动态对象年龄判断：如果在 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到 -XX:MaxTenuringThreshold 中要求的年龄。
+    - 晋升失败触发FULL GC的两种场景：
+        1. 空间分配担保失败：在进行 Young GC 时，Survivor 放不下，对象只能放入 Old，但此时 Old 也放不下。
+        2. 内存碎片导致的 Promotion Failed，Young GC 以为 Old 有足够的空间，结果到分配时，晋级的大对象找不到连续的空间存放。
+
+特殊：
+1. 大对象通过直接进入老年代。
+2. 动态对象年龄判断：如果在 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到 -XX:MaxTenuringThreshold 中要求的年龄。
+3. 空间分配担保：当 Survivor 空间不足以容纳一次 Minor GC 之后存活的对象时，就需要依赖其他内存区域(实际上大多数情况下就是老年代) 进行分配担保，survior区无法容纳的对象直接晋升到老年代。。
+    > 在发生 Minor GC 之前，虚拟机必须先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那这一次 Minor GC 可以确保是安全的。如果不成立，则虚拟机会先查看 - XX:HandlePromotionFailure 参数的设置值是否允许担保失败 (Handle Promotion Failure)；如果允许，那会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，将尝试进行一次 Minor GC，尽管这次 Minor GC 是有风险的；如果小于，或者-XX: HandlePromotionFailure设置不允许冒险，那这时就要改为进行一次 Full GC。
+
+
+#### 对象分配内存方式
+- **TLAB**：Thread Local Allocation Buffer 的简写，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
+- 整齐空间：指针碰撞
+- 碎片空间：空闲链表（free list）：通过额外的存储记录空闲的地址，将随机 IO 变为顺序 IO，但带来了额外的空间消耗。
+
+### old区域(老年代)
+#### CMS GC原因
+触发 CMS GC有：
+1. Old 区达到回收阈值.
+2. MetaSpace 空间不足
+3. Young 区晋升失败
+4. 大对象担保失败
+5. 扩容缩容
+6. 显式调用System.gc
+7. 并发模式失败(浮动垃圾导致)
+
+#### CMS GC 垃圾回收模式
+CMS GC 的垃圾回收共分为 Background 和 Foreground 两种模式，
+- Background： 正常的CMS收集过程，初始标记、并发标记、重新标记、标记清除
+- Foreground： 会进行一次压缩式 GC，使用 MSC（Mark-Sweep-Compact）做 Full GC。收集的范围是 Java 堆的 Young 区和 Old 区以及 MetaSpace，会带来非常长的 STW。
+
+
+CMS 在Background回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark 这两个阶段
+- 初始标记 Init Mark ： 整个过程比较简单，从 GC Root 出发标记 Old 中的对象，处理完成后借助 BitMap 处理下 Young 区对 Old 区的引用，整个过程基本都比较快，很少会有较大的停顿。
+- 最终标记 Final Remark ：Final Remark 的开始阶段与 Init Mark 处理的流程相同，但是后续多了 **Card Table 遍历**、**Reference 实例的清理**并将其加入到 Reference 维护的 pend_list 中，如果要收集元数据信息，还要清理 SystemDictionary、CodeCache、SymbolTable、StringTable 等组件中不再使用的资源
+> Final Remark 是最终的第二次标记，这种情况只有在 Background GC 执行了 InitialMarking 步骤的情形下才会执行,如果是 Foreground GC 执行的 InitialMarking 步骤则不需要再次执行 FinalRemark。
+
+
+并发的 CMS GC 算法，退化为 Foreground 单线程串行 GC 模式，STW 时间超长，有时会长达十几秒。其中 CMS 收集器退化后单线程串行 GC 算法有两种：
+- 带压缩动作的算法，称为 MSC，上面我们介绍过，使用标记-清理-压缩，单线程全暂停的方式，对整个堆进行垃圾收集，也就是真正意义上的 Full GC，暂停时间要长于普通 CMS。
+- 不带压缩动作的算法，收集 Old 区，和普通的 CMS 算法比较相似，暂停时间相对 MSC 算法短一些。
+
+#### 其他老年代问题
+ CMS 无法处理浮动垃圾（Floating Garbage）。CMS 的并发清理阶段，应用还在运行，因此不断有新的垃圾产生，而这些垃圾不在这次清理标记的范畴里，无法在本次 GC 被清除掉，这些就是浮动垃圾，除此之外在 Remark 之前那些断开引用脱离了读写屏障控制的对象也算浮动垃圾。
+
+### 相关文章
+[图解垃圾回收](https://www.cnblogs.com/hynblogs/p/12292345.html)
+
 ## Java虚拟机内存调优
  ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/jvmParameter.jpg)
  ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/jvmGCType.jpg)
+
+
+### 基本概念重述
+> 跨代引用解决方案
+
+Card Table：中文翻译为卡表，主要是用来标记卡页的状态，每个卡表项对应一个卡页。当卡页中一个对象引用有写操作时，写屏障将会标记对象所在的卡表状态改为 dirty，卡表的本质是用来解决跨代引用的问题。
+
+> 内存分配 
+
+1. **TLAB**：Thread Local Allocation Buffer 的简写，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
+2. CAS+失败重试
+
+Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造者，通过 Allocator 进行 allocate 和 free。
+
+#### 工具整理
+
+##### 命令行终端
+
+标准终端类：jps、jinfo、jstat、jstack、jmap
+
+功能整合类：jcmd、vjtools、arthas、greys
+
+##### 可视化界面
+
+简易：JConsole、JVisualvm、HA、GCHisto、GCViewer
+
+进阶：MAT、JProfiler
+
+命令行推荐 arthas ，可视化界面推荐 JProfiler，此外还有一些在线的平台 gceasy、heaphero、fastthread ，美团内部的 Scalpel（一款自研的 JVM 问题诊断工具，暂时未开源）也比较好用。
+
 
 ### GC 调优目的
 将转移到老年代的对象数量降低到最小； 减少 GC 的执行时间。
@@ -463,7 +590,177 @@ java相关的三层类加载器
 **策略5**：注意： 如果满足下面的指标，则一般不需要进行 GC 优化：
 >MinorGC 执行时间不到50ms； Minor GC 执行不频繁，约10秒一次； Full GC 执行时间不到1s； Full GC 执行频率不算频繁，不低于10分钟1次。
 
+
+### 调优指标
+- 延迟（Latency）：也可以理解为最大停顿时间，即垃圾收集过程中一次 STW 的最长时间，越短越好，一定程度上可以接受频次的增大，GC 技术的主要发展方向。
+
+- 吞吐量（Throughput）：应用系统的生命周期内，由于 GC 线程会占用 Mutator 当前可用的 CPU 时钟周期，吞吐量即为 Mutator 有效花费的时间占系统总运行时间的百分比，例如系统运行了 100 min，GC 耗时 1 min，则系统吞吐量为 99%，吞吐量优先的收集器可以接受较长的停顿。
+
+### 问题排查思路
+四种分析思路
+
+- 时序分析：先发生的事件是根因的概率更大，通过监控手段分析各个指标的异常时间点，还原事件时间线，如先观察到 CPU 负载高（要有足够的时间 Gap），那么整个问题影响链就可能是：
+> CPU 负载高 -> 慢查询增多 -> GC 耗时增大 -> 线程Block增多 -> RT 上涨。
+
+- 概率分析：使用统计概率学，结合历史问题的经验进行推断，由近到远按类型分析，如过往慢查的问题比较多，那么整个问题影响链就可能是：
+> 慢查询增多 -> GC 耗时增大 ->  CPU 负载高   -> 线程 Block 增多 -> RT上涨。
+
+- 实验分析：通过故障演练等方式对问题现场进行模拟，触发其中部分条件（一个或多个），观察是否会发生问题，如只触发线程 Block 就会发生问题，那么整个问题影响链就可能是：
+> 线程Block增多  -> CPU 负载高  -> 慢查询增多  -> GC 耗时增大 ->  RT 上涨。
+
+- 反证分析：对其中某一表象进行反证分析，即判断表象的发不发生跟结果是否有相关性，例如我们从整个集群的角度观察到某些节点慢查和 CPU 都正常，但也出了问题，那么整个问题影响链就可能是：
+> GC 耗时增大 -> 线程 Block 增多 ->  RT 上涨。
+
 ### 案例
+#### 美团技术案例（基于CMS JDK1.8）
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/gcProcess.jpg)
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/localIssue.png)
+
+
+##### 场景一：动态扩容引起的空间震荡
+服务刚刚启动时 GC 次数较多，最大空间剩余很多但是依然发生 GC， GC Cause 一般为 Allocation Failure，且在 GC 日志中会观察到经历一次 GC ，堆内各个空间的大小会被调整。
+
+解决：尽量将成对出现的空间大小配置参数设置成固定的，
+> 如 -Xms 和 -Xmx，-XX:MaxNewSize 和 -XX:NewSize，-XX:MetaSpaceSize 和 -XX:MaxMetaSpaceSize 等。
+
+策略：保证 Java 虚拟机的堆是稳定的，避免弹性伸缩带来的额外 GC 消耗，确保 -Xms 和 -Xmx 设置的是一个值（即初始值和最大值一致），获得一个稳定的堆，同理在 MetaSpace 区也有类似的问题
+> 在不追求停顿时间的情况下震荡的空间也是有利的，可以动态地伸缩以节省空间，例如作为富客户端的 Java 应用。
+
+##### 场景二：显式 GC 的去与留 (System.gc)
+除了扩容缩容会触发 CMS GC 之外，还有
+ 1. Old 区达到回收阈值.
+ 2. MetaSpace 空间不足
+ 3. Young 区晋升失败
+ 4. 大对象担保失败等几种触发条件
+
+如果以上均不是GC发生的原因，那么就是代码中调用了 `System.gc `方法。
+
+增加 -XX:+DisableExplicitGC 参数后，`System.gc `这个方法变成了一个空方法
+
+CMS GC 共分为 Background 和 Foreground 两种模式，
+- Background： 正常的CMS收集过程，初始标记、并发标记、重新标记、标记清除
+- Foreground： 会进行一次压缩式 GC，使用 MSC（Mark-Sweep-Compact）做 Full GC。收集的范围是 Java 堆的 Young 区和 Old 区以及 MetaSpace，会带来非常长的 STW。
+
+
+保留 `System.gc`：在显示触发System.gc会使用Foreground模式对Old区域进行垃圾收集造成，长时间的STW。
+
+去掉 `System.gc`：DirectByteBuffer直接内存在分配空间会显式调用 System.gc ，希望通过 Full GC 来强迫已经无用的 DirectByteBuffer 对象释放掉它们关联的 Native Memory。若禁用`System.gc`，会导致已经晋升到 Old 的 DirectByteBuffer 关联的 Native Memory 得不到及时释放，于是就有发生 Direct Memory 的 OOM。
+> -XX:+DisableExplicitGC 可以用于禁用System.gc
+
+
+**策略**
+因为DirectByteBuffer经常用于Netty 等各种 NIO 框架使用，所以不应该去除`System.gc`，可以使用参数改变System.gc的触发类型为Background，该模式也会触发old的DirectByteMemory 的清理工作。
+> -XX:+ExplicitGCInvokesConcurrent  和 -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses  参数来将 System.gc 的触发类型从 Foreground 改为 Background
+
+> 不止 CMS，在 G1 或 ZGC中开启 ExplicitGCInvokesConcurrent 模式，都会采用高性能的并发收集方式进行收集，不过还是建议在代码规范方面也要做好约束，规范好 System.gc 的使用。
+
+##### 场景三：MetaSpace 区 OOM
+现象：JVM 在启动后或者某个时间点开始，MetaSpace 的已使用大小在持续增长，同时每次 GC 也无法释放，调大 MetaSpace 空间也无法彻底解决。
+
+--- 
+MetaSpace 主要由 Klass Metaspace 和 NoKlass Metaspace 两大部分组成。
+- Klass MetaSpace：就是用来存 Klass 的，就是 Class 文件在 JVM 里的运行时数据结构.\
+> 这部分默认放在 Compressed Class Pointer Space 中，是一块连续的内存区域，紧接着 Heap。Compressed Class Pointer Space 不是必须有的，如果设置了 -XX:-UseCompressedClassPointers，或者 -Xmx 设置大于 32 G，就不会有这块内存，这种情况下 Klass 都会存在 NoKlass Metaspace 里。
+- NoKlass MetaSpace：专门来存 Klass 相关的其他的内容，比如 Method，**ConstantPool** 常量池等，可以由多块不连续的内存组成。虽然叫做 NoKlass Metaspace，但是也其实可以存 Klass 的内容。
+
+MetaSpace 内存管理：类和其元数据的生命周期与其对应的类加载器相同，只要类的类加载器是存活的，在 Metaspace 中的类元数据也是存活的，不能被回收。每个加载器有单独的存储空间，通过 ClassLoaderMetaspace 来进行管理 SpaceManager* 的指针，相互隔离的
+
+MetaSpace 弹性伸缩：由于 MetaSpace 空间和 Heap 并不在一起，所以这块的空间可以不用设置或者单独设置，一般情况下避免 MetaSpace 耗尽 VM 内存都会设置一个 MaxMetaSpaceSize
+
+---
+
+问题原因：为了避免弹性伸缩带来的额外 GC 消耗，我们会将 -XX:MetaSpaceSize 和 -XX:MaxMetaSpaceSize 两个值设置为固定的，但是这样也会导致在空间不够的时候无法扩容，然后频繁地触发 GC，最终 OOM。
+> 经常会出问题的几个点有 Orika 的 classMap、JSON 的 ASMSerializer、Groovy 动态加载类等，基本都集中在反射、Javasisit 字节码增强、CGLIB 动态代理、OSGi 自定义类加载器等的技术点上。
+
+
+策略： 给 MetaSpace 区的使用率加一个监控，如果指标有波动提前发现并解决问题。
+
+
+##### 场景四：过早晋升 
+现象：
+1. 分配速率接近于晋升速率，对象晋升年龄较小
+2. Full GC 比较频繁，且经历过一次 GC 之后 Old 区的变化比例非常大。
+
+原因：
+1. Young/Eden 区过小：过小的直接后果就是 Eden 被装满的时间变短，本应该回收的对象参与了 GC 并晋升， copying 耗时远大于 mark，也就是 Young GC 耗时本质上就是 copy 的时间
+2. 分配速率过大：可以观察出问题前后 Mutator 的分配速率，如果有明显波动可以尝试观察网卡流量、存储类中间件慢查询日志等信息，看是否有大量数据被加载到内存中。
+
+
+设定固定的 MaxTenuringThreshold 值作为晋升条件：
+- MaxTenuringThreshold 如果设置得过大，原本应该晋升的对象一直停留在 Survivor 区，直到 Survivor 区溢出，一旦溢出发生。Eden + Survivor 中对象将不再依据年龄全部提升到 Old 区，这样对象老化的机制就失效了。
+- MaxTenuringThreshold 如果设置得过小，过早晋升即对象不能在 Young 区充分被回收，大量短期对象被晋升到 Old 区，Old 区空间迅速增长，引起频繁的 Major GC，分代回收失去了意义，严重影响 GC 性能。
+> 未设置情况，Hotspot 会使用动态计算的方式来调整晋升的阈值：
+> Hotspot 遍历所有对象时，从所有年龄为 0 的对象占用的空间开始累加，如果加上年龄等于 n 的所有对象的空间之后，使用 Survivor 区的条件值（TargetSurvivorRatio / 100，TargetSurvivorRatio 默认值为 50）进行判断，若大于这个值则结束循环，将 n 和 MaxTenuringThreshold 比较，若 n 小，则阈值为 n，若 n 大，则只能去设置最大阈值为 MaxTenuringThreshold。动态年龄触发后导致更多的对象进入了 Old 区，造成资源浪费。
+
+
+策略：
+1. Young/Eden 区过小：调整堆分区内存，一般情况下 Old 的大小应当为活跃对象的 2~3 倍左右，考虑到浮动垃圾问题最好在 3 倍左右，剩下的都可以分给 Young 区。
+    - > 如何设置Survivor面积，可以自己推算。
+2. 分配速率过大： 
+- 偶发较大：通过内存分析工具找到问题代码，从业务逻辑上做一些优化。
+- 一直较大：当前的 Collector 已经不满足 Mutator 的期望了，这种情况要么扩容 Mutator 的 VM，要么调整 GC 收集器类型或加大空间。
+
+##### 场景五：CMS Old GC 频繁 
+现象：Old 区频繁的做 CMS GC，但是每次耗时不是特别长，整体最大 STW 也在可接受范围内，但由于 GC 太频繁导致吞吐下降比较多。
+ 
+> 描述过于抽象，见文章
+
+##### 场景六：单次 CMS Old GC 耗时长
+CMS 在回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark 这两个阶段
+- 初始标记 Init Mark ： 整个过程比较简单，从 GC Root 出发标记 Old 中的对象，处理完成后借助 BitMap 处理下 Young 区对 Old 区的引用，整个过程基本都比较快，很少会有较大的停顿。
+- 最终标记 Final Remark ：Final Remark 的开始阶段与 Init Mark 处理的流程相同，但是后续多了 **Card Table 遍历**、**Reference 实例的清理**并将其加入到 Reference 维护的 pend_list 中，如果要收集元数据信息，还要清理 SystemDictionary、CodeCache、SymbolTable、StringTable 等组件中不再使用的资源
+> Final Remark 是最终的第二次标记，这种情况只有在 Background GC 执行了 InitialMarking 步骤的情形下才会执行,如果是 Foreground GC 执行的 InitialMarking 步骤则不需要再次执行 FinalRemark。
+
+由上述过程可以推断，大部分出问题的耗时都是出现在最终标记中。处理思路如下：
+1. 分析Reference 处理和元数据处理 real 耗时是否正常，一般来说最容易出问题的地方就是 Reference 中的 FinalReference 和元数据信息处理中的 scrub symbol table 两个阶段。
+2. 需要通过` -XX:+PrintReferenceGC` 参数开启。基本在日志里面就能定位到大概是哪个方向出了问题，耗时超过 10% 的就需要关注
+    - 对 FinalReference 的分析
+        - > 经常会出现问题的几个点有 Socket 的 SocksSocketImpl 、Jersey 的 ClientRuntime、MySQL 的 ConnectionImpl 等等。
+    - scrub symbol table 表示清理元数据符号引用耗时，观察 MetaSpace 区的历史使用峰值，看是否有使用动态类加载或者 DSL 处理等。
+        - > 如果MateSpace 数据没啥变化，可以通过 -XX:-CMSClassUnloadingEnabled 来避免 MetaSpace 的处理。
+ 
+##### 场景七：内存碎片&收集器退化
+现象：
+并发的 CMS GC 算法，退化为 Foreground 单线程串行 GC 模式，STW 时间超长，有时会长达十几秒。其中 CMS 收集器退化后单线程串行 GC 算法有两种：
+- 带压缩动作的算法，称为 MSC，上面我们介绍过，使用标记-清理-压缩，单线程全暂停的方式，对整个堆进行垃圾收集，也就是真正意义上的 Full GC，暂停时间要长于普通 CMS。
+- 不带压缩动作的算法，收集 Old 区，和普通的 CMS 算法比较相似，暂停时间相对 MSC 算法短一些。
+
+原因：
+1. 晋升失败：
+    1. 在进行 Young GC 时，Survivor 放不下，对象只能放入 Old，但此时 Old 也放不下。
+        > 发生的条件是很苛刻
+    2. 另有一种情况就是内存碎片导致的 Promotion Failed，Young GC 以为 Old 有足够的空间，结果到分配时，晋级的大对象找不到连续的空间存放。
+        - 碎片带来了两个问题：
+            - 空间分配效率较低：连续空间使用指针碰撞，而有大量碎片的空闲链表则需要逐个访问 freelist 中的项来访问
+            - 空间利用效率变低: Young 区晋升的对象大小大于了连续空间的大小，那么将会触发 Promotion Failed ，即使整个 Old 区的容量是足够的，但由于其不连续，也无法存放新对象
+ 
+2. 增量收集担保失败: 分配内存失败后，会判断统计得到的 Young GC 晋升到 Old 的平均大小,，以及当前 Young 区已使用的大小也就是最大可能晋升的对象大小，是否大于 Old 区的剩余空间。只要 CMS 的剩余空间比前两者的任意一者大，CMS 就认为晋升还是安全的，反之不安全，进行FULL GC。
+3. 显式 GC： System.gc
+4. 并发模式失败（Concurrent Mode Failure）:在 GC 日志中经常能看到 Concurrent Mode Failure 关键字。这种是由于并发 Background CMS GC 正在执行，同时又有 Young GC 晋升的对象要放入到了 Old 区中，而此时 Old 区空间不足造成的。
+> 概率较高，主要是由于 CMS 无法处理浮动垃圾（Floating Garbage）引起的。CMS 的并发清理阶段，Mutator 还在运行，因此不断有新的垃圾产生，而这些垃圾不在这次清理标记的范畴里，无法在本次 GC 被清除掉，这些就是浮动垃圾，除此之外在 Remark 之前那些断开引用脱离了读写屏障控制的对象也算浮动垃圾。
+
+策略
+- 内存碎片：通过配置 -XX:UseCMSCompactAtFullCollection=true 来控制 Full GC的过程中是否进行空间的整理（默认开启，注意是Full GC，不是普通CMS GC），以及 -XX: CMSFullGCsBeforeCompaction=n 来控制多少次 Full GC 后进行一次压缩。
+- 增量收集：降低触发 CMS GC 的阈值，即参数 -XX:CMSInitiatingOccupancyFraction 的值，让 CMS GC 尽早执行，以保证有足够的连续空间，也减少 Old 区空间的使用大小，另外需要使用 -XX:+UseCMSInitiatingOccupancyOnly 来配合使用，不然 JVM 仅在第一次使用设定值，后续则自动调整。
+- 浮动垃圾：视情况控制每次晋升对象的大小，或者缩短每次 CMS GC 的时间，必要时可调节 NewRatio 的值。另外就是使用 -XX:+CMSScavengeBeforeRemark 在过程中提前触发一次 Young GC，防止后续晋升过多对象。
+
+
+##### 场景八：堆外内存 OOM
+现象： 内存使用率不断上升，甚至开始使用 SWAP 内存，同时可能出现 GC 时间飙升，线程被 Block 等现象，通过 top 命令发现 Java 进程的 RES 甚至超过了 -Xmx 的大小。
+
+JVM 的堆外内存泄漏，主要有两种的原因：
+1. 通过 UnSafe#allocateMemory，ByteBuffer#allocateDirect 主动申请了堆外内存而没有释放，常见于 NIO、Netty 等相关组件。
+2. 代码中有通过 JNI 调用 Native Code 申请的内存没有释放。
+
+策略： 在项目中添加 -XX:NativeMemoryTracking=detail JVM参数后重启项目（需要注意的是，打开 NMT 会带来 5%~10% 的性能损耗）。使用命令 jcmd pid VM.native_memory detail 查看内存分布。
+    
+
+##### 场景九：JNI 引发的 GC 问题
+
+> 太抽象了
+
 #### 不恰当的数据结构导致内存过大
 - -Xms4g -Xmx8g -Xmn1g 使用ParNew + CMS组合。
 - 业务上需要10min加载80MB的数据到内存，会产生100W HashMap entry
@@ -498,5 +795,13 @@ YGC出现大量复制工作，很耗费时间。每次分配的空间过大，�
 解决处理：死循环线程、修改自动生成的test分配合理内存。
 
 #### 其他案例分析资料
-- https://blog.csdn.net/u012948161/article/details/102983795?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control
+- [JSP引起的老年代不回收场景](https://blog.csdn.net/u012948161/article/details/102983795?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
+- [native memory](http://mahaijin.github.io/2015/04/27/JVM%E7%9A%84Heap%20Memory%E5%92%8CNative%20Memory/)
+- [美团：Java中9种常见的CMS GC问题分析与解决](https://mp.weixin.qq.com/s/RFwXYdzeRkTG5uaebVoLQw)
 
+#### 其他建议
+- 禁用偏向锁：偏向锁在只有一个线程使用到该锁的时候效率很高，但是在竞争激烈情况会升级成轻量级锁，此时就需要先消除偏向锁，这个过程是 STW 的。
+    - > 在已知并发激烈的前提下，一般会禁用偏向锁 -XX:-UseBiasedLocking 来提高性能。
+- 主动式 GC： 观测 Old 区的使用情况，即将到达阈值时将应用服务摘掉流量，手动触发一次 Major GC。必要时引入，会影响系统健壮性。
+- 虚拟内存：启动初期有些操作系统（例如 Linux）并没有真正分配物理内存给 JVM ，而是在虚拟内存中分配，使用的时候才会在物理内存中分配内存页，这样也会导致 GC 时间较长。
+    - > 这种情况可以添加 -XX:+AlwaysPreTouch 参数，让 VM 在 commit 内存时跑个循环来强制保证申请的内存真的 commit，避免运行时触发缺页异常。

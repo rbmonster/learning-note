@@ -30,6 +30,28 @@
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/threadstate.png)
 
+### 线程方法与状态切换
+
+sleep 导致当前线程休眠，与 wait 方法不同的是 sleep 不会释放当前占有的锁,sleep(long)会导致线程进入 **TIMED-WATING** 状态，而 wait()方法会导致当前线程进入 WATING 状态
+
+wait 方法，主动让出锁。
+1. 不带时间常数的wait 方法进入WAITING状态。
+2. 带时间常数的wait 进入TIME-WAITING状态。
+
+yield 方法，线程让步。
+> yield 会使当前线程让出 CPU 执行时间片，与其他线程一起重新竞争 CPU 时间片。一般情况下，优先级高的线程有更大的可能性成功竞争得到 CPU 时间片
+
+join方法，当前线程转为阻塞状态，等到另一个线程结束，当前线程再由阻塞状态变为就绪状态，等待 cpu 的宠幸。
+> join方法可用于多线程的协作，如主子线程的协作，主线程等待子线程完成任务。
+> - join 方法的状态转换与wait方法相同，带时间的进入TIME-WAITING状态，不带时间的进入WAITING状态。
+```
+System.out.println(Thread.currentThread().getName() + "线程运行开始!");
+Thread6 thread1 = new Thread6();
+thread1.setName("线程 B");
+thread1.join();
+System.out.println("这时 thread1 执行完毕之后才能执行主线程");
+```
+
 ## 创建一个线程的开销
 JVM 在背后帮我们做了哪些事情：
 
@@ -104,6 +126,7 @@ class RunnableThread implements Runnable{
 ```
 
 ## 退出线程的方法
+### 虚拟机级别的中断方式
 1. 线程中使用一个静态的volatile的标志判断退出。
 2. 调用Executors的submit方法，获取线程上下文对象Future，调用cancel方法。（注：无法中断正在试图获取synchronized锁或者试图执行I/O操作的线程）IO的中断，关闭底层资源之后，任务将解除阻塞。如socket连接，调用socket的close 或者 system.in 的输入连接调用in.close().
 3. 调用ExecutorService的shutdown的方法。
@@ -111,16 +134,23 @@ class RunnableThread implements Runnable{
 - 与Runnable相关: 主要是通过调用Thread.interrupt方法实现。
 - 与Callable相关：可以调用Future对象的cancel(true)方法。
 
+### 基于ReentrantLock
 ReentrantLock调用锁的lockInterruptibly()方法，
 - 1）lock(), 拿不到lock就不罢休，不然线程就一直block。 比较无赖的做法。
 - 2）tryLock()，马上返回，拿到lock就返回true，不然返回false。 比较潇洒的做法。
   带时间限制的tryLock()，拿不到lock，就等一段时间，超时返回false。比较聪明的做法。
 - 3）lockInterruptibly()就稍微难理解一些。
   先说说线程的打扰机制，每个线程都有一个 打扰 标志。这里分两种情况，
-  - 线程在sleep或wait,join， 此时如果别的进程调用此进程的 interrupt（）方法，此线程会被唤醒并被要求处理InterruptedException；(thread在做IO操作时也可能有类似行为，见java thread api)
+  - 线程在sleep或wait、join， 此时如果别的进程调用此进程的 interrupt（）方法，此线程会被唤醒并被要求处理InterruptedException；(thread在做IO操作时也可能有类似行为，见java thread api)
   - 此线程在运行中，则不会收到提醒。但是 此线程的 “打扰标志”会被设置， 可以通过isInterrupted()查看并 作出处理。
   - 结论：lockInterruptibly()和上面的第一种情况是一样的， 线程在请求lock并被阻塞时，如果被interrupt，则“此线程会被唤醒并被要求处理InterruptedException”。并且如果线程已经被interrupt，再使用lockInterruptibly的时候，此线程也会被要求处理interruptedException
  
+### 中断标志Interrupt
+中断一个线程，其本意是给这个线程一个通知信号，会影响这个线程内部的一个中断标识位。 这个线程本身并不会因此而改变状态(如阻塞，终止等)。
+1. 调用 interrupt()方法并不会中断一个正在运行的线程。也就是说处于 Running 状态的线程并不会因为被中断而被终止，仅仅改变了内部维护的中断标识位而已。
+2. 若调用 sleep()而使线程处于 TIMED-WATING 状态，这时调用 interrupt()方法，会抛出InterruptedException,从而使线程提前结束 TIMED-WATING 状态。
+3. 许多声明抛出 InterruptedException 的方法，抛出异常前，都会**清除中断标识位**，所以抛出异常后，调用 isInterrupted()方法将会返回 false
+4. 利用中断标识，可以调用 thread.interrupt()方法，在线程的 run 方法内部可以根据 thread.isInterrupted()的值来优雅的终止线程。
 
 ## 线程池
 ### 线程池状态

@@ -43,7 +43,10 @@
 
 spring的循环引用的解决使用三级缓存，但是针对于循环引用都是构造器的情况就会抛出循环引用报错的问题。**缓存存储的是实例化的对象，而若对象实例化的构造器此时就需要注入对象，而循环引用的对象还未初始化完毕，那么就会出现循环引用的问题。**
 
-解决方案：在springBoot 启动的时候exclude DataSourceAutoConfiguration
+解决方案：
+1. 在springBoot 启动的时候exclude DataSourceAutoConfiguration
+2. 用import以全路径的形式注入bean
+
 
 ## <a name="3">数据库初始化相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 

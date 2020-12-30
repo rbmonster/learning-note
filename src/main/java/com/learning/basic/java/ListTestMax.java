@@ -1,6 +1,8 @@
 package com.learning.basic.java;
 
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
@@ -15,12 +17,40 @@ import java.util.function.Supplier;
  * @Author: sanwu
  * @Date: 2020/10/31 11:17
  */
-public class ListTestMax{
+public class ListTestMax {
     public static void main(String[] args) throws ExecutionException, InterruptedException, TimeoutException {
         new ListTestMax().testThreadLocal();
+
+        Thread thread = new Thread(()-> System.out.println("123"));
+        thread.wait();
     }
 
 
+
+    List<String> result = new ArrayList<>();
+    boolean[] reach;
+    public String[] permutation(String s) {
+        reach = new boolean[s.length()];
+        dfs(s, 0, new StringBuilder());
+        String[] res = new String[result.size()];
+        result.toArray(res);
+        return res;
+    }
+
+    public void dfs(String s, int index, StringBuilder sb) {
+        if(sb.length() == s.length()){
+            result.add(sb.toString());
+            return;
+        }
+        for(int i = 0;i< s.length();i++) {
+            if(reach[i]) continue;
+            sb.append(s.charAt(i));
+            reach[i] = true;
+            dfs(s, i,sb);
+            sb.deleteCharAt(sb.length()-1);
+            reach[i] = false;
+        }
+    }
     public void testThreadLocal() {
 
 //        ThreadLocal<String> listTestMaxThreadLocal = ThreadLocal.withInitial(String::new);

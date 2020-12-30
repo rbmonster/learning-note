@@ -454,6 +454,14 @@ public Semaphore(int permits, boolean fair) {
     ```
 - 写锁独占锁实现。
 
+### 独占锁与共享锁
+独占锁：独占锁模式下，每次只能有一个线程能持有锁， ReentrantLock 就是以独占方式实现的互斥锁。
+> 独占锁是一种悲观保守的加锁策略，它避免了读/读冲突，如果某个只读线程获取锁，则其他读线程都只能等待，这种情况下就限制了不必要的并发性，因为读操作并不会影响数据的一致性。
+
+共享锁则允许多个线程同时获取锁，并发访问 共享资源，如： ReadWriteLock。 共享锁则是一种乐观锁，它放宽了加锁策略，允许多个执行读操作的线程同时访问共享资源。
+1. AQS 的内部类 Node 定义了两个常量 SHARED 和 EXCLUSIVE，他们分别标识 AQS 队列中等待线程的锁获取模式。
+2. java 的并发包中提供了 ReadWriteLock，读-写锁。它允许一个资源可以被多个读操作访问，或者被一个 写操作访问，但两者不能同时进行。
+
 ## Atomic 原子类
 - 原子类主要基于CAS操作实现，同时使用 volatile 保证可见性。
 
@@ -532,7 +540,7 @@ User user = new User("Java", 22);
 System.out.println(a.getAndIncrement(user));// 22
 ```
 
-## 队列
+## 线程安全集合
 - ConcurrentHashMap: 线程安全的 HashMap
 - CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.
 - ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
@@ -546,18 +554,24 @@ ArrayBlockingQueue 是 BlockingQueue 接口的有界队列实现类，底层采�
 ArrayBlockingQueue 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
 
 #### LinkedBlockingQueue
-LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做**无界队列也可以当做有界队列**来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。
-  - 使用两个ReentrantLock，takeLock和putLock两把锁，分别用于阻塞队列的读写线程，也就是说，读线程和写线程可以同时运行，在多线程高并发场景，应该可以有更高的吞吐量，性能比单锁更高。
+LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做**无界队列也可以当做有界队列**来使用，同样满足 FIFO 的特性。
+而 LinkedBlockingQueue 之所以能够高效的处理并发数据，还因为其对于生产者端和消费者端分别采用了独立的锁来控制数据同步，这也意味着在高并发的情况下生产者和消费者可以并行地操作队列中的数据，以此来提高整个队列的并发性能。
+> 使用两个ReentrantLock，takeLock和putLock两把锁，分别用于阻塞队列的读写线程，也就是说，读线程和写线程可以同时运行，在多线程高并发场景，应该可以有更高的吞吐量，性能比单锁更高。
   
 #### PriorityBlockingQueue
 PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
-  - PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为无界队列
+  - PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为**无界队列**
   
+#### SynchronousQueue
+是一个不存储元素的阻塞队列。每一个 put 操作必须等待一个 take 操作，否则不能继续添加元素。
+> 队列本身并不存储任何元素，非常适合于传递性场景,比如在一个线程中使用的数据，传递给另 外 一 个 线 程 使 用 ， SynchronousQueue 的 吞 吐 量 高 于 LinkedBlockingQueue 和ArrayBlockingQueue。
+
 ### DelayQueue 
 #### 实现
 
 DelayQueue 延迟队列实现使用数据结构使用PriorityQueue，**线程安全协作**使用的是ReentrantLock 与 Condition 条件队列实现。关键的实现在take方法的 available.awaitNanos(delay);
 - 队列中的元素必须是Delayed的实现类
+> 可应用于缓存失效及定时任务中。
 
 - take() 方法源码
 ```

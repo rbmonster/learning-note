@@ -355,36 +355,50 @@ public boolean equals(Object o) {
 this is int 97
 ```
 ## 反射
-- 反射可以提供运行时的类信息，并且这个类可以在运行时才加载进来，甚至在编译时期该类的 .class 不存在也可以加载进来。
-  - 当编译一个新类时，会产生一个同名的 .class 文件，该文件内容保存着 Class 对象。
-  - 类加载相当于 Class 对象的加载，类在第一次使用时才动态加载到 JVM 中。
-  - 也可以使用 Class.forName("com.mysql.jdbc.Driver") 这种方式来控制类的加载，该方法会返回一个 Class 对象。
+反射可以提供运行时的类信息，并且这个类可以在运行时才加载进来，甚至在编译时期该类的 .class 不存在也可以加载进来。
+- 当编译一个新类时，会产生一个同名的 .class 文件，该文件内容保存着 Class 对象。
+- 类加载相当于 Class 对象的加载，类在第一次使用时才动态加载到 JVM 中。
+- 也可以使用 Class.forName("com.mysql.jdbc.Driver") 这种方式来控制类的加载，该方法会返回一个 Class 对象。
   
-- Class 和 java.lang.reflect 一起对反射提供了支持，java.lang.reflect 类库主要包含了以下三个类：
+Class 和 java.lang.reflect 一起对反射提供了支持，java.lang.reflect 类库主要包含了以下三个类：
     - Field ：可以使用 get() 和 set() 方法读取和修改 Field 对象关联的字段；
     - Method ：可以使用 invoke() 方法调用与 Method 对象关联的方法；
     - Constructor ：可以用 Constructor 的 newInstance() 创建新的对象。
-- 反射的优点：
-  - **可扩展性**   ：应用程序可以利用全限定名创建可扩展对象的实例，如com.demo.Test。
-  - 调试器和测试工具： 调试器需要能够检查一个类里的私有成员。测试工具可以利用反射来自动地调用类里定义的可被发现的 API 定义，以确保一组测试中有较高的代码覆盖率。
-  - 开发工具：如IDEA开发工具可以从反射中获取类的信息，帮助开发人员代码编写。
+
+反射的优点：
+- **可扩展性**   ：应用程序可以利用全限定名创建可扩展对象的实例，如com.demo.Test。
+- 调试器和测试工具： 调试器需要能够检查一个类里的私有成员。测试工具可以利用反射来自动地调用类里定义的可被发现的 API 定义，以确保一组测试中有较高的代码覆盖率。
+- 开发工具：如IDEA开发工具可以从反射中获取类的信息，帮助开发人员代码编写。
   
-- 反射的缺点：如果一个功能可以不用反射完成，那么最好就不用。
+反射的缺点：如果一个功能可以不用反射完成，那么最好就不用。
   - **性能开销**   ：反射涉及了动态类型的解析，所以 JVM 无法对这些代码进行优化。因此，反射操作的效率要比那些非反射操作低得多。
   - **安全限制**   ：使用反射技术要求程序必须在一个没有安全限制的环境中运行。
   - 内部暴露： 反射破坏了封装性，可能会导致意料之外的副作用，这可能导致代码功能失调并破坏可移植性
   
+通过反射创建对象
+```
+//获取 Person 类的 Class 对象
+Class clazz=Class.forName("reflection.Person");
+//使用.newInstane 方法创建对象
+Person p=(Person) clazz.newInstance();
+//获取构造方法并创建对象
+Constructor c=clazz.getDeclaredConstructor(String.class,String.class,int.class);
+//创建对象并设置属性
+Person p1=(Person) c.newInstance("李四","男",20);
+```
+
 ## 异常
-- Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： Error 和 Exception。
-  - 其中 Error 用来表示 JVM 无法处理的错误，
-  - Exception 分为两种：
+Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： Error 和 Exception。
+- 其中 Error 用来表示 JVM 无法处理的错误，
+- Exception 分为两种：
    - 受检异常 ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
    - 非受检异常 ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此时程序崩溃并且无法恢复
    - 运行时异常（runtime exception）
-- RuntimeException是一种Unchecked Exception，即表示编译器不会检查程序是否对RuntimeException作了处理，在程序中不必捕获RuntimException类型的异常，也不必在方法体声明抛出RuntimeException类。一般来说，RuntimeException发生的时候，表示程序中出现了编程错误，所以应该找出错误修改程序，而不是去捕获RuntimeException。
+
+RuntimeException是一种Unchecked Exception，即表示编译器不会检查程序是否对RuntimeException作了处理，在程序中不必捕获RuntimException类型的异常，也不必在方法体声明抛出RuntimeException类。一般来说，RuntimeException发生的时候，表示程序中出现了编程错误，所以应该找出错误修改程序，而不是去捕获RuntimeException。
   - 常见RuntimeException异常：NullPointException、ClassCastException、IllegalArgumentException、IndexOutOfBoundException
   
-- 如果try语句里有return，返回的是try语句块中变量值。 
+如果try语句里有return，返回的是try语句块中变量值。 
   - 详细执行过程如下：
     1. 如果有返回值，就把返回值保存到局部变量中；
     2. 执行jsr指令跳到finally语句里执行；
@@ -393,21 +407,22 @@ this is int 97
   **如果try，finally语句里均有return，忽略try的return，而使用finally的return.**
   
 ## 泛型
-- 泛型的本质是参数化类型，也就是所操作的数据类型被指定为一个参数。
-  - 在集合中存储对象并在使用前进行类型转换是多么的不方便。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
-  - 使用T, E or K,V等被广泛认可的类型占位符。
+泛型的本质是参数化类型，也就是所操作的数据类型被指定为一个参数。
+- 在集合中存储对象并在使用前进行类型转换是多么的不方便。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
+- 使用T, E or K,V等被广泛认可的类型占位符。
   
-- 泛型有三种常用的使用方式：泛型类，泛型接口和泛型方法。
+泛型有三种常用的使用方式：泛型类，泛型接口和泛型方法。
 - 限定通配符和非限定通配符 
   - 非限定通配符：另一方面<?>表示了非限定通配符，因为<?>可以用任意类型来替代。
   - 一种是<? extends T>它通过确保类型必须是T的子类来设定类型的上界
   - 另一种是<? super T>它通过确保类型必须是T的父类来设定类型的下界
   - 泛型类型必须用限定内的类型来进行初始化，否则会导致编译错误。
   
--  类型擦除: Java的泛型基本上都是在编译器这个层次上实现的，在生成的字节码中是不包含泛型中的类型信息的，使用泛型的时候加上类型参数，在编译器编译的时候会去掉，这个过程成为类型擦除。
-   - 如在代码中定义List<Object>和List<String>等类型，在编译后都会变成List，JVM看到的只是List，而由泛型附加的类型信息对JVM是看不到的。
-   - 类型擦除后保留的原始类型，最后在字节码中的类型变量变成真正类型。无论何时定义一个泛型，相应的原始类型都会被自动提供，无限定的变量用Object替换。
-- 泛型擦除的例子： 本应该只能储存Integer，在通过反射调用方法时，却可以添加String数据
+类型擦除: Java的泛型基本上都是在编译器这个层次上实现的，在生成的字节码中是不包含泛型中的类型信息的，使用泛型的时候加上类型参数，在编译器编译的时候会去掉，这个过程成为类型擦除。
+- 如在代码中定义List<Object>和List<String>等类型，在编译后都会变成List，JVM看到的只是List，而由泛型附加的类型信息对JVM是看不到的。
+- 类型擦除后保留的原始类型，最后在字节码中的类型变量变成真正类型。无论何时定义一个泛型，相应的原始类型都会被自动提供，无限定的变量用Object替换。
+
+泛型擦除的例子： 本应该只能储存Integer，在通过反射调用方法时，却可以添加String数据
 ```
  public static void main(String[] args) throws Exception {
         ArrayList<Integer> list = new ArrayList<Integer>();
@@ -421,9 +436,10 @@ this is int 97
 //1
 //asd
 ```
-- 类型擦除后保留的原始类型：在调用泛型方法时，可以指定泛型，也可以不指定泛型。
-  - 在不指定泛型的情况下，泛型变量的类型为该方法中的几种类型的同一父类的最小级，直到Object
-  - 在指定泛型的情况下，该方法的几种类型必须是该泛型的实例的类型或者其子类
+
+类型擦除后保留的原始类型：在调用泛型方法时，可以指定泛型，也可以不指定泛型。
+- 在不指定泛型的情况下，泛型变量的类型为该方法中的几种类型的同一父类的最小级，直到Object
+- 在指定泛型的情况下，该方法的几种类型必须是该泛型的实例的类型或者其子类
 ```
 Number f = Test.add(1, 1.2); //这两个参数一个是Integer，以风格是Float，所以取同一父类的最小级，为Number  
 Object o = Test.add(1, "asd"); //这两个参数一个是Integer，以风格是Float，所以取同一父类的最小级，为Object  
@@ -447,16 +463,16 @@ public class Box<T> {
 }
 ```
 
-- Java不能实现真正的泛型，只能使用类型擦除来实现伪泛型，这样虽然不会有类型膨胀问题，但是也引起来许多新问题
+Java不能实现真正的泛型，只能使用类型擦除来实现伪泛型，这样虽然不会有类型膨胀问题，但是也引起来许多新问题
 
 ## 注解
-- java.lang.annotation 提供了四种元注解，专门注解其他的注解（在自定义注解的时候，需要使用到元注解）：
-  - @Documented：注解是否将包含在JavaDoc中
-  - @Retention：什么时候使用该注解 
-       - RetentionPolicy.SOURCE : 在编译阶段丢弃。这些注解在编译结束之后就不再有任何意义，所以它们不会写入字节码。@Override, @SuppressWarnings都属于这类注解。
-       - RetentionPolicy.CLASS : 在类加载的时候丢弃。在字节码文件的处理中有用。注解默认使用这种方式
-       - RetentionPolicy.RUNTIME : 始终不会丢弃，运行期也保留该注解，因此可以使用反射机制读取该注解的信息。我们自定义的注解通常使用这种方式。
-  - @Target – 注解用于什么地方
+java.lang.annotation 提供了四种元注解，专门注解其他的注解（在自定义注解的时候，需要使用到元注解）：
+- @Documented：注解是否将包含在JavaDoc中
+- @Retention：什么时候使用该注解 
+    - RetentionPolicy.SOURCE : 在编译阶段丢弃。这些注解在编译结束之后就不再有任何意义，所以它们不会写入字节码。@Override, @SuppressWarnings都属于这类注解。
+    - RetentionPolicy.CLASS : 在类加载的时候丢弃。在字节码文件的处理中有用。注解默认使用这种方式
+    - RetentionPolicy.RUNTIME : 始终不会丢弃，运行期也保留该注解，因此可以使用反射机制读取该注解的信息。我们自定义的注解通常使用这种方式。
+- @Target – 注解用于什么地方
      - ElementType.CONSTRUCTOR: 用于描述构造器
      - ElementType.FIELD: 成员变量、对象、属性（包括enum实例）
      - ElementType.LOCAL_VARIABLE: 用于描述局部变量
@@ -464,13 +480,14 @@ public class Box<T> {
      - ElementType.PACKAGE: 用于描述包
      - ElementType.PARAMETER: 用于描述参数
      - ElementType.TYPE: 用于描述类、接口(包括注解类型) 或enum声明 常见的@Component、@Service
-  - @Inherited – 是否允许子类继承该注解
+- @Inherited – 是否允许子类继承该注解
     - @Inherited 元注解是一个标记注解，@Inherited 阐述了某个被标注的类型是被继承的。如果一个使用了@Inherited 修饰的annotation 类型被用于一个class，则这个annotation 将被用于该class 的子类
-- 编写注解的规则
-  1. Annotation 型定义为@interface。
-  2. 参数成员只能用public 或默认(default) 这两个访问权修饰
-  3. 参数成员只能用基本类型byte、short、char、int、long、float、double、boolean八种基本数据类型和String、Enum、Class、annotations等数据类型，以及这一些类型的数组。
-  4. 要获取类方法和字段的注解信息，必须通过Java的反射技术来获取 Annotation 对象
+
+编写注解的规则
+1. Annotation 型定义为@interface。
+2. 参数成员只能用public 或默认(default) 这两个访问权修饰
+3. 参数成员只能用基本类型byte、short、char、int、long、float、double、boolean八种基本数据类型和String、Enum、Class、annotations等数据类型，以及这一些类型的数组。
+4. 要获取类方法和字段的注解信息，必须通过Java的反射技术来获取 Annotation 对象
 ```
  @Target(FIELD)
  @Retention(RUNTIME)
@@ -479,6 +496,7 @@ public class Box<T> {
      String value() default "";
  }
 ```
+
 ## 线程
 #### 线程状态
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState.jpg)
@@ -522,10 +540,10 @@ public class Box<T> {
 
 
 ## 零散的点
-- 方法：
-  - 按值调用(call by value)表示方法接收的是调用者提供的值，
-  - 而按引用调用（call by reference)表示方法接收的是调用者提供的变量地址。
-  - 方法体传递参数时，无论是值还是对象都是“值”传递。引用类型传递的是引用变量的地址。
+### 方法调用的知识点
+- 按值调用(call by value)表示方法接收的是调用者提供的值，
+- 而按引用调用（call by reference)表示方法接收的是调用者提供的变量地址。
+- 方法体传递参数时，无论是值还是对象都是“值”传递。引用类型传递的是引用变量的地址。
 ```
 public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -549,13 +567,14 @@ y:小张
 s1:小张
 s2:小李
 ```
-
+### 三大特性
 - 封装:封装是指把一个对象的状态信息（也就是属性）隐藏在对象内部，不允许外部对象直接访问对象的内部信息。
 - 继承:不同类型的对象，相互之间经常有一定数量的共同点。 extends
 - 多态:表示一个对象具有多种的状态。具体表现为父类的引用指向子类的实例。
 
+### 序列化与反序列化
 - transient 关键字的作用是：阻止实例中那些用此关键字修饰的的变量序列化；当对象被反序列化时，被 transient 修饰的变量值不会被持久化和恢复。transient 只能修饰变量，不能修饰类和方法。
-
+- 序列化ID：` private static final long serialVersionUID` 该ID决定着是否能够成功反序列化！简单来说，java的序列化机制是通过在运行时判断类的serialVersionUID来验证版本一致性的。
 - 获取键盘输入的两种方式：
 ```
 //通过 Scanner
@@ -568,3 +587,9 @@ BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 String s = input.readLine();
 ```
 - Arrays.asList():返回的并不是 java.util.ArrayList ，而是 java.util.Arrays 的一个内部类,这个内部类并没有实现集合的add()、remove()、clear()会抛出异常unSupportedOperationException。
+
+### java复制
+对于基本类型，直接赋值复制，对于对象类型分为浅拷贝与深拷贝
+1. 浅拷贝：对引用数据类型进行引用传递般的拷贝，此为浅拷贝。
+2. 深拷贝：对基本数据类型进行值传递，对引用数据类型，创建一个新的对象，并复制其内容，此为深拷贝。
+    - 深拷贝的另一种方式，使用序列化和反序列化，获取一个新对象。
