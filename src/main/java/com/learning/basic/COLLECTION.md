@@ -150,6 +150,7 @@ private void grow(int minCapacity) {
 - sortedMap: 排序的Map，现阶段TreeMap是其唯一实现。
 - EnumMap:要求键必须来自一个Enum。
 ### HashMap
+#### 基本知识
 基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点
 - 基本的存储的结构为Node 节点的数组
   - ```
@@ -187,8 +188,8 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
         - 普通链表：循环判断链表节点是否为key相同替换情况，若均不是需要替换情况，则定位到链表尾部添加新节点。
         - 红黑树：树形遍历判断是否存在，不存在添加。
 
-##### 扩容
-每次扩容的大小为 <<1，表示2的平方。 
+#### 扩容
+每次扩容的大小为 <<1，表示乘以2。 
 1. 计算扩容新的table长度size 与threshold 的长度
 2. 遍历旧table，如果节点，无哈希冲突的情况，e.hash&(newCap-1)直接定位到新的位置。
 3. 出现哈希冲突的情况，由于每次扩容的大小默认为2的n次方，因此重散列的位置只会为当前位置或者当前位置+旧数组大小两个位置。
@@ -198,7 +199,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 - 如果初始化容量大小部位2的幂次方，那么在初始化的时候，会计算threshold为大于初始化数的最近2的幂次方数，在实际使用的时候声明为table的大小。
 
 
-#### HashMap红黑树查找：
+#### HashMap红黑树查找
 红黑树建立是基于Hash的大小来建立的。这里的hashcode 为hashMap换算过的hash。hash小的为左子树， hash 大的为右子树
 
 针对hash重复的情况：
@@ -268,6 +269,35 @@ static final int hash(Object key) {
     return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 }
 ```
+
+#### 并发下循环链表
+HashMap扩容是使用类似**头插法**的方式把旧节点转移到新的数组上。假设节点出现哈希冲突以链表的方式连接，且头节点1和节点2 扩容的位置仍然不变。
+1. 当线程1与线程2新建完新数组，并且执行到上述链表节点的扩容，执行旧数组的头结点3。举个例子链表为 3->7
+2. 假设线程1先执行，扩容完毕后链表变为： 7 -> 3
+3. 线程2 继续运行，那么节点3 以头插法的方式接到新的数组头上，接着节点7，但是这时候节点7的next为 -> 3,
+4. 当前数组节点的链表顺序为 7->3，重新进行节点3的头插，就会导致一个循环链表的现象
+
+```
+ 1 void transfer(Entry[] newTable) {
+ 2     Entry[] src = table;                   //src引用了旧的Entry数组
+ 3     int newCapacity = newTable.length;
+ 4     for (int j = 0; j < src.length; j++) { //遍历旧的Entry数组
+ 5         Entry<K,V> e = src[j];             //取得旧Entry数组的每个元素
+ 6         if (e != null) {
+ 7             src[j] = null;//释放旧Entry数组的对象引用（for循环后，旧的Entry数组不再引用任何对象）
+ 8             do {
+ 9                 Entry<K,V> next = e.next;
+10                 int i = indexFor(e.hash, newCapacity); //！！重新计算每个元素在数组中的位置
+11                 e.next = newTable[i]; //标记[1]
+12                 newTable[i] = e;      //将元素放在数组上
+13                 e = next;             //访问下一个Entry链上的元素
+14             } while (e != null);
+15         }
+16     }
+17 } 
+```
+
+[美团关于HashMap的讲解](https://tech.meituan.com/2016/06/24/java-hashmap.html)
 
 ### LinkedHashMap 
 基于HashMap的基础Node的节点做拓展，添加头尾指针，因此支持顺序访问。双链表加数组的实现。

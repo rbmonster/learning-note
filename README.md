@@ -10,7 +10,7 @@
 - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/THREAD.md)
 - [Java并发（虚拟机）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENT.md)
 - [Java并发（AQS）](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENTTOOL.md)
-- [Java并发应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURREN_APPLICATION.md)
+- [Java并发应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CONCURRENT_APPLICATION.md)
 
 ## Spring
 - [Spring 基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING.md)

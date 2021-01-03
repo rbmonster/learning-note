@@ -463,8 +463,12 @@ private int maximum_depth(TreeNode root) {
    }
   ```
 
+## 动态规划
+- 数字翻译字符串：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/
+- 
 
-### 并查集
+
+## 并查集
 ```
 class UnionFindSet {
         int[] rank;
@@ -499,5 +503,15 @@ class UnionFindSet {
 
 
 
-## 动态规划
-- 数字翻译字符串：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/
+
+## 单调栈
+
+
+## 前缀树
+前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
+
+典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计
+它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
+
+
+## 

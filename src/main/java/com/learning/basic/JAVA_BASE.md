@@ -13,7 +13,7 @@
     - long/64
       - 占用8个字节（-2的63次方到2的63次方-1）
     - double/64
-      - - 占用8个字节，IEEE754
+      - 占用8个字节，IEEE754
     - char/16
     - boolean/~
 - 基本数据类型转换关系：byte→short(char)→int→long→float→double
@@ -361,9 +361,9 @@ this is int 97
 - 也可以使用 Class.forName("com.mysql.jdbc.Driver") 这种方式来控制类的加载，该方法会返回一个 Class 对象。
   
 Class 和 java.lang.reflect 一起对反射提供了支持，java.lang.reflect 类库主要包含了以下三个类：
-    - Field ：可以使用 get() 和 set() 方法读取和修改 Field 对象关联的字段；
-    - Method ：可以使用 invoke() 方法调用与 Method 对象关联的方法；
-    - Constructor ：可以用 Constructor 的 newInstance() 创建新的对象。
+- Field ：可以使用 get() 和 set() 方法读取和修改 Field 对象关联的字段；
+- Method ：可以使用 invoke() 方法调用与 Method 对象关联的方法；
+- Constructor ：可以用 Constructor 的 newInstance() 创建新的对象。
 
 反射的优点：
 - **可扩展性**   ：应用程序可以利用全限定名创建可扩展对象的实例，如com.demo.Test。
