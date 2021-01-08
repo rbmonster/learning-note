@@ -11,24 +11,26 @@
 &emsp;&emsp;&emsp;<a href="#8">1.1.3. LinkedList</a>  
 &emsp;<a href="#9">2.  Map</a>  
 &emsp;&emsp;<a href="#10">2.1. HashMap</a>  
-&emsp;&emsp;&emsp;<a href="#11">2.1.1. put 操作</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#12">2.1.1.1. 扩容</a>  
-&emsp;&emsp;&emsp;<a href="#13">2.1.2. HashMap红黑树查找：</a>  
-&emsp;&emsp;&emsp;<a href="#14">2.1.3. hash 方法</a>  
-&emsp;&emsp;<a href="#15">2.2. LinkedHashMap </a>  
-&emsp;&emsp;<a href="#16">2.3. concurrentHashMap实现</a>  
-&emsp;&emsp;&emsp;<a href="#17">2.3.1. get方法</a>  
-&emsp;&emsp;&emsp;<a href="#18">2.3.2. put方法</a>  
-&emsp;&emsp;&emsp;<a href="#19">2.3.3. 扩容 addCount() -> transfer()</a>  
-&emsp;&emsp;<a href="#20">2.4. WeakHashMap</a>  
-&emsp;&emsp;<a href="#21">2.5. TreeMap</a>  
-&emsp;<a href="#22">3. Set</a>  
-&emsp;&emsp;<a href="#23">3.1. HashSet</a>  
-&emsp;&emsp;<a href="#24">3.2. LinkedHashSet实现</a>  
-&emsp;&emsp;<a href="#25">3.3. TreeSet 实现</a>  
-&emsp;<a href="#26">4. 迭代器</a>  
-&emsp;<a href="#27">5. 其他</a>  
-&emsp;&emsp;<a href="#28">5.1. 如何选用集合?</a>  
+&emsp;&emsp;&emsp;<a href="#11">2.1.1. 基本知识</a>  
+&emsp;&emsp;&emsp;<a href="#12">2.1.2. put 操作</a>  
+&emsp;&emsp;&emsp;<a href="#13">2.1.3. 扩容</a>  
+&emsp;&emsp;&emsp;<a href="#14">2.1.4. HashMap红黑树查找</a>  
+&emsp;&emsp;&emsp;<a href="#15">2.1.5. hash 方法</a>  
+&emsp;&emsp;&emsp;<a href="#16">2.1.6. 并发下循环链表</a>  
+&emsp;&emsp;<a href="#17">2.2. LinkedHashMap </a>  
+&emsp;&emsp;<a href="#18">2.3. concurrentHashMap实现</a>  
+&emsp;&emsp;&emsp;<a href="#19">2.3.1. get方法</a>  
+&emsp;&emsp;&emsp;<a href="#20">2.3.2. put方法</a>  
+&emsp;&emsp;&emsp;<a href="#21">2.3.3. 扩容 addCount() -> transfer()</a>  
+&emsp;&emsp;<a href="#22">2.4. WeakHashMap</a>  
+&emsp;&emsp;<a href="#23">2.5. TreeMap</a>  
+&emsp;<a href="#24">3. Set</a>  
+&emsp;&emsp;<a href="#25">3.1. HashSet</a>  
+&emsp;&emsp;<a href="#26">3.2. LinkedHashSet实现</a>  
+&emsp;&emsp;<a href="#27">3.3. TreeSet 实现</a>  
+&emsp;<a href="#28">4. 迭代器</a>  
+&emsp;<a href="#29">5. 其他</a>  
+&emsp;&emsp;<a href="#30">5.1. 如何选用集合?</a>  
 # <a name="0">集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/collectionfamily.jpg)
 - 集合主要分为两大类，一个实现collection接口的，一个是实现了Map接口的。
@@ -181,6 +183,7 @@ private void grow(int minCapacity) {
 - sortedMap: 排序的Map，现阶段TreeMap是其唯一实现。
 - EnumMap:要求键必须来自一个Enum。
 ### <a name="10">HashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="11">基本知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点
 - 基本的存储的结构为Node 节点的数组
   - ```
@@ -209,7 +212,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 > 负载因子大小的关系，若负载因子为1，那么在出现大量的hash膨胀的情况下，元素会较密集，并且都是用链表或者红黑树的方式连接，导致查询效率较低。
 > 若负载因子为0.5 那么就会造成空间的浪费，元素分布较为稀疏。
 
-#### <a name="11">put 操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="12">put 操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 首先判断table是否需要扩容，若需要进行扩容操作
 2. 计算当前元素hash经过散列后是否有元素存在，若不存在元素直接添加。
 3. 若存在元素，分下面两个判断
@@ -218,8 +221,8 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
         - 普通链表：循环判断链表节点是否为key相同替换情况，若均不是需要替换情况，则定位到链表尾部添加新节点。
         - 红黑树：树形遍历判断是否存在，不存在添加。
 
-##### <a name="12">扩容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-每次扩容的大小为 <<1，表示2的平方。 
+#### <a name="13">扩容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+每次扩容的大小为 <<1，表示乘以2。 
 1. 计算扩容新的table长度size 与threshold 的长度
 2. 遍历旧table，如果节点，无哈希冲突的情况，e.hash&(newCap-1)直接定位到新的位置。
 3. 出现哈希冲突的情况，由于每次扩容的大小默认为2的n次方，因此重散列的位置只会为当前位置或者当前位置+旧数组大小两个位置。
@@ -229,7 +232,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 - 如果初始化容量大小部位2的幂次方，那么在初始化的时候，会计算threshold为大于初始化数的最近2的幂次方数，在实际使用的时候声明为table的大小。
 
 
-#### <a name="13">HashMap红黑树查找：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="14">HashMap红黑树查找</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 红黑树建立是基于Hash的大小来建立的。这里的hashcode 为hashMap换算过的hash。hash小的为左子树， hash 大的为右子树
 
 针对hash重复的情况：
@@ -289,7 +292,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
     }
 ```
 
-#### <a name="14">hash 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="15">hash 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一次16位右位移异或混合
 - 混合后的低位掺杂了高位的部分特征，这样高位的信息也被变相保留下来。
 - 混合原始哈希码的高位和低位，以此来加大低位的随机性。
@@ -300,7 +303,36 @@ static final int hash(Object key) {
 }
 ```
 
-### <a name="15">LinkedHashMap </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="16">并发下循环链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+HashMap扩容是使用类似**头插法**的方式把旧节点转移到新的数组上。假设节点出现哈希冲突以链表的方式连接，且头节点1和节点2 扩容的位置仍然不变。
+1. 当线程1与线程2新建完新数组，并且执行到上述链表节点的扩容，执行旧数组的头结点3。举个例子链表为 3->7
+2. 假设线程1先执行，扩容完毕后链表变为： 7 -> 3
+3. 线程2 继续运行，那么节点3 以头插法的方式接到新的数组头上，接着节点7，但是这时候节点7的next为 -> 3,
+4. 当前数组节点的链表顺序为 7->3，重新进行节点3的头插，就会导致一个循环链表的现象
+
+```
+ 1 void transfer(Entry[] newTable) {
+ 2     Entry[] src = table;                   //src引用了旧的Entry数组
+ 3     int newCapacity = newTable.length;
+ 4     for (int j = 0; j < src.length; j++) { //遍历旧的Entry数组
+ 5         Entry<K,V> e = src[j];             //取得旧Entry数组的每个元素
+ 6         if (e != null) {
+ 7             src[j] = null;//释放旧Entry数组的对象引用（for循环后，旧的Entry数组不再引用任何对象）
+ 8             do {
+ 9                 Entry<K,V> next = e.next;
+10                 int i = indexFor(e.hash, newCapacity); //！！重新计算每个元素在数组中的位置
+11                 e.next = newTable[i]; //标记[1]
+12                 newTable[i] = e;      //将元素放在数组上
+13                 e = next;             //访问下一个Entry链上的元素
+14             } while (e != null);
+15         }
+16     }
+17 } 
+```
+
+[美团关于HashMap的讲解](https://tech.meituan.com/2016/06/24/java-hashmap.html)
+
+### <a name="17">LinkedHashMap </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 基于HashMap的基础Node的节点做拓展，添加头尾指针，因此支持顺序访问。双链表加数组的实现。
 ```
 static class Entry<K,V> extends HashMap.Node<K,V> {
@@ -335,7 +367,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
     }
 }
 ```
-### <a name="16">concurrentHashMap实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">concurrentHashMap实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 数据结构与HashMap一致，并发控制使用 synchronized 和自旋配合 CAS 来操作。 新增了TreeBin和ForwardingNode的概念。
 
 变量 sizeCtl ，它的值决定着当前的初始化状态。
@@ -351,13 +383,13 @@ ForwardingNode （转移）节点保证扩容时的线程安全。
 
 TreeBin：当链表转为红黑树后，数组中保存的引用为 TreeBin，TreeBin 内部不保存 key/value，他保存了 TreeNode的list以及红黑树 root。充当一颗树的节点锁的概念。
 
-#### <a name="17">get方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">get方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 计算出hash位置，通过unsafe的包，保证可见性的获取节点。
 2. 若节点的equals方法不匹配，说明存在链表、红黑树或者ForwardingNode。
 3. 调用链表节点、红黑树节点或ForwardingNode对应的查找方法。
 
 
-#### <a name="18">put方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">put方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 首先进入一个自旋的for循环
 1. 若未初始化，进行初始化操作。设置sizeCtl为-1，表示正在初始化。
 2. 若初始化完成，则直接使用可见性获取的操作定位到节点，节点为空则使用CAS设置。
@@ -409,19 +441,19 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 }
 ```
 
-#### <a name="19">扩容 addCount() -> transfer()</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="21">扩容 addCount() -> transfer()</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 建立新table
 2. 锁节点，节点转移，旧的table的节点设置为ForwardingNode。便于其他线程识别并帮忙转移。
 3. 这里节点转移区分树节点转移和链表转移。
 
 
 
-### <a name="20">WeakHashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="22">WeakHashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - WeakHashMap 的 Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。
 - WeakHashMap 主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。
   - 应用：Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
   
-### <a name="21">TreeMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="23">TreeMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义了一个Entry的节点，基于红黑树的实现
 ```
   static final class Entry<K,V> implements Map.Entry<K,V> {
@@ -433,14 +465,14 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         boolean color = BLACK;
 }
 ```
-## <a name="22">Set</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="24">Set</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 HashSet（无序，唯一）: 基于 HashMap 实现的，底层采用 HashMap 来保存元素
 
 LinkedHashSet：LinkedHashSet 是 HashSet 的子类，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap 其内部是基于 HashMap 实现一样，不过还是有一点点区别的
 
 TreeSet（有序，唯一）： 红黑树(自平衡的排序二叉树)
 
-### <a name="23">HashSet</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">HashSet</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - HashSet是基于HashMap实现的，HashSet中的元素都存放在HashMap的key上面，而value中的值都是统一的一个固定对象private static final Object PRESENT = new Object();
 - 为什么没有get方法？ 因为map的get方法是通过Key获取的，而HashSet的应用里面，key都用来存值了。
 ```
@@ -448,7 +480,7 @@ TreeSet（有序，唯一）： 红黑树(自平衡的排序二叉树)
         map = new HashMap<>();
     }
 ```
-### <a name="24">LinkedHashSet实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">LinkedHashSet实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 底层使用LinkedHashMap
 ```
 public LinkedHashSet(int initialCapacity, float loadFactor) {
@@ -460,10 +492,10 @@ HashSet(int initialCapacity, float loadFactor, boolean dummy) {
  }
 ```
 
-### <a name="25">TreeSet 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="27">TreeSet 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 基于TreeMap实现
 
-## <a name="26">迭代器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="28">迭代器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 迭代器 Iterator 是什么？
 ```
 public interface Iterator<E> {
@@ -482,7 +514,7 @@ Iterator 对象称为迭代器（设计模式的一种），迭代器可以对�
 Iterator 主要是用来遍历集合用的，它的特点是更加安全，因为它可以确保，在当前遍历的集合元素被更改的时候，就会抛出 ConcurrentModificationException 异常。
 
 
-## <a name="27">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="28">如何选用集合?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="29">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">如何选用集合?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 主要根据集合的特点来选用，比如我们需要根据键值获取到元素值时就选用 Map 接口下的集合，需要排序时选择 TreeMap,不需要排序时就选择 HashMap,需要保证线程安全就选用 ConcurrentHashMap。
 - 当我们只需要存放元素值时，就选择实现Collection 接口的集合，需要保证元素唯一时选择实现 Set 接口的集合比如 TreeSet 或 HashSet，不需要就选择实现 List 接口的比如 ArrayList 或 LinkedList，然后再根据实现这些接口的集合的特点来选用。

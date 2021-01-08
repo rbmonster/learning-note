@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class Demo {
 
     public static void main(String[] args) {
+        String ad = "";
 //        Demo main = new Demo();
 //        int[][] matrix = {
 //                {1, 2, 2, 3, 5},

@@ -198,9 +198,9 @@ MyBatis 有三种基本的 Executor 执行器，SimpleExecutor、ReuseExecutor�
 - Mybatis的默认执行器是SimpleExecutor，需要配置在创建SqlSession对象的时候指定执行器的类型即可。
 
 ## <a name="10">MyBatis xml文件与内部数据结构之间的关系？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-<resultMap>标签会被解析为 ResultMap 对象，其每个子元素会被解析为 ResultMapping 对象。
+`<resultMap>`标签会被解析为 ResultMap 对象，其每个子元素会被解析为 ResultMapping 对象。
 
-每一个<select>、<insert>、<update>、<delete>标签均会被解析为 MappedStatement 对象。
+每一个`<select>、<insert>、<update>、<delete>`标签均会被解析为 MappedStatement 对象。
 
 标签内的 sql 会被解析为 BoundSql 对象。
 

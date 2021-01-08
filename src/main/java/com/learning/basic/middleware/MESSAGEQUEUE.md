@@ -277,6 +277,8 @@ spring.kafka.consumer.enable-auto-commit=false
 ```
 
 ---
+### kafka 高可用是如何实现?
+
 
 ### kafka会存在数据丢失问题
 > 数据在消息队列是如何持久化(磁盘？数据库？Redis？分布式文件系统？)

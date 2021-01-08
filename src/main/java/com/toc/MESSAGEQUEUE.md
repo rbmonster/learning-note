@@ -38,14 +38,15 @@
 &emsp;&emsp;&emsp;<a href="#35">5.2.3. 零拷贝技术</a>  
 &emsp;&emsp;&emsp;<a href="#36">5.2.4. 消息压缩、批量发送</a>  
 &emsp;&emsp;<a href="#37">5.3. Kafka 如何保证消息队列不丢失</a>  
-&emsp;&emsp;<a href="#38">5.4. kafka会存在数据丢失问题</a>  
-&emsp;&emsp;<a href="#39">5.5. 想要保证消息（数据）是有序的，怎么做？</a>  
-&emsp;&emsp;<a href="#40">5.6. 为什么在消息队列中重复消费了数据</a>  
-<a href="#41">RocketMQ</a>  
-&emsp;<a href="#42">1. 基本概念</a>  
-&emsp;<a href="#43">2. 基本架构</a>  
-&emsp;<a href="#44">3. 优缺点</a>  
-&emsp;<a href="#45">4. 事务实现</a>  
+&emsp;&emsp;<a href="#38">5.4. kafka 高可用是如何实现?</a>  
+&emsp;&emsp;<a href="#39">5.5. kafka会存在数据丢失问题</a>  
+&emsp;&emsp;<a href="#40">5.6. 想要保证消息（数据）是有序的，怎么做？</a>  
+&emsp;&emsp;<a href="#41">5.7. 为什么在消息队列中重复消费了数据</a>  
+<a href="#42">RocketMQ</a>  
+&emsp;<a href="#43">1. 基本概念</a>  
+&emsp;<a href="#44">2. 基本架构</a>  
+&emsp;<a href="#45">3. 优缺点</a>  
+&emsp;<a href="#46">4. 事务实现</a>  
 # <a name="0">消息队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 为什么使用消息队列？
 - 异步、解耦、削峰、统一管理所有的消息
@@ -325,22 +326,24 @@ spring.kafka.consumer.enable-auto-commit=false
 ```
 
 ---
+### <a name="38">kafka 高可用是如何实现?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="38">kafka会存在数据丢失问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="39">kafka会存在数据丢失问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 数据在消息队列是如何持久化(磁盘？数据库？Redis？分布式文件系统？)
 - Kafka会将partition以消息日志的方式(落磁盘)存储起来，通过 顺序访问IO和缓存(等到一定的量或时间)才真正把数据写到磁盘上，来提高速度。
 
-### <a name="39">想要保证消息（数据）是有序的，怎么做？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="40">想要保证消息（数据）是有序的，怎么做？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Kafka会将数据写到partition，单个partition的写入是有顺序的。如果要保证全局有序，那只能写入一个partition中。如果要消费也有序，消费者也只能有一个。
 
-### <a name="40">为什么在消息队列中重复消费了数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">为什么在消息队列中重复消费了数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 凡是分布式就无法避免网络抖动/机器宕机等问题的发生，很有可能消费者A读取了数据，还没来得及消费，就挂掉了。Zookeeper发现消费者A挂了，让消费者B去消费原本消费者A的分区，等消费者A重连的时候，发现已经重复消费同一条数据了。(各种各样的情况，消费者超时等等都有可能…)
   
 如果业务上不允许重复消费的问题，最好消费者那端做业务上的校验（如果已经消费过了，就不消费了）
   
-# <a name="41">RocketMQ</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="42">RocketMQ</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-## <a name="42">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="43">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 消息生产者（Producer）：负责生产消息，一般由业务系统负责生产消息。RocketMQ提供多种发送方式，同步发送、异步发送、顺序发送、单向发送。同步和异步方式均需要Broker返回确认信息，单向发送不需要。
 
 消息消费者（Consumer）：负责消费消息，一般是后台系统负责异步消费。
@@ -362,14 +365,14 @@ spring.kafka.consumer.enable-auto-commit=false
 消费者组（Consumer Group）：同一类Consumer的集合，这类Consumer通常消费同一类消息且消费逻辑一致。消费者组使得在消息消费方面，实现负载均衡和容错的目标变得非常容易。要注意的是，消费者组的消费者实例必须订阅完全相同的Topic。RocketMQ 支持两种消息模式：集群消费和广播消费。
 - 标签（Tag）：为消息设置的标志，用于同一主题下区分不同类型的消息。来自同一业务单元的消息，可以根据不同业务目的在同一主题下设置不同标签。标签能够有效地保持代码的清晰度和连贯性，并优化RocketMQ提供的查询系统。
 
-## <a name="43">基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="44">基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/rocketmqAC.jpg)
 主要包含四部分Producer、Consumer、Broker、NameServer
 
 - Producer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向**提供Topic 服务的Master建立长连接**，且定时向Master发送心跳。
 - Consumer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向**提供Topic服务的Master、Slave建立长连接**，且定时向Master、Slave发送心跳。
 
-## <a name="44">优缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="45">优缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 单机吞吐量：十万级
 - 可用性：非常高，分布式架构
 - 支持10亿级别的消息堆积，不会因为堆积导致性能下降
@@ -381,7 +384,7 @@ spring.kafka.consumer.enable-auto-commit=false
 - 社区活跃度不是特别活跃那种
 - 没有在 mq 核心中去实现JMS等接口，有些系统要迁移需要修改大量代码
 
-## <a name="45">事务实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="46">事务实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 RocketMQ采用了2PC的思想来实现了提交事务消息，同时增加一个补偿逻辑来处理二阶段超时或者失败的消息。
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/middleware/picture/rocketMqTransaction.jpg)
 

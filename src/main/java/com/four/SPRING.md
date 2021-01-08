@@ -341,6 +341,24 @@ spring boot启动过程
 - 观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。
 - 适配器模式 :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。
 
+## @Import 注解
+1. 直接填class数组方式
+    - > @Import({ 类名.class , 类名.class... })
+2. ImportSelector方式
+    - 实现ImportSelector接口，返回一个String数组，将全类名返回。
+    - ```
+        public class Myclass implements ImportSelector {
+            @Override
+            public String[] selectImports(AnnotationMetadata annotationMetadata) {
+                return new String[]{"com.yc.Test.TestDemo3"};
+            }
+        }
+        ```
+3. ImportBeanDefinitionRegistrar方式 (手动注册bean到容器)
+
+
+
+https://www.cnblogs.com/yichunguo/p/12122598.html
 
 ## 零散的一些面试题
 ### @Autowired和@Resource的区别是什么？

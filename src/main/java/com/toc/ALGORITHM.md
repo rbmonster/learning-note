@@ -24,8 +24,11 @@
 &emsp;&emsp;<a href="#21">8.1. BFS & DFS：</a>  
 &emsp;&emsp;<a href="#22">8.2. 拓扑排序</a>  
 &emsp;&emsp;<a href="#23">8.3. dfs+回溯</a>  
-&emsp;&emsp;<a href="#24">8.4. 并查集</a>  
-&emsp;<a href="#25">9. 动态规划</a>  
+&emsp;<a href="#24">9. 动态规划</a>  
+&emsp;<a href="#25">10. 并查集</a>  
+&emsp;<a href="#26">11. 单调栈</a>  
+&emsp;<a href="#27">12. 前缀树</a>  
+&emsp;<a href="#28">13. </a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -491,8 +494,12 @@ private int maximum_depth(TreeNode root) {
    }
   ```
 
+## <a name="24">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 数字翻译字符串：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/
+- 
 
-### <a name="24">并查集</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+## <a name="25">并查集</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 class UnionFindSet {
         int[] rank;
@@ -527,5 +534,15 @@ class UnionFindSet {
 
 
 
-## <a name="25">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 数字翻译字符串：https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/
+
+## <a name="26">单调栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+## <a name="27">前缀树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
+
+典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计
+它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
+
+
+## <a name="28"></a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

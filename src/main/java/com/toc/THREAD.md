@@ -272,9 +272,11 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
 execute() vs submit()
 - execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
 - submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，
+
 shutdown()VS shutdownNow()
 - shutdown（） :关闭线程池，线程池的状态变为 SHUTDOWN。线程池不再接受新任务了，但是队列里的任务得执行完毕。
 - shutdownNow（） :关闭线程池，线程的状态变为 STOP。线程池会终止当前正在运行的任务，并停止处理排队的任务并返回正在等待执行的 List。
+
 isTerminated() VS isShutdown()
 - isShutDown 当调用 shutdown() 方法后返回为 true。
 - isTerminated 当调用 shutdown() 方法后，并且所有提交的任务完成后返回为 true

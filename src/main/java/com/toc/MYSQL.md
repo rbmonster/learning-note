@@ -86,6 +86,10 @@
 &emsp;&emsp;<a href="#83">8.6. 两种日志有以下三点不同。</a>  
 &emsp;&emsp;<a href="#84">8.7. 数据库什么情况会出现死锁？如何处理死锁？</a>  
 &emsp;&emsp;<a href="#85">8.8. 如何优化SQL</a>  
+&emsp;&emsp;<a href="#86">8.9. 数据库连接池、数据库连接线程安全的吗？</a>  
+&emsp;&emsp;<a href="#87">8.10. mysql 查询大表</a>  
+&emsp;&emsp;&emsp;<a href="#88">8.10.1. 延迟关联</a>  
+&emsp;&emsp;&emsp;<a href="#89">8.10.2. 小案例</a>  
 # <a name="0">MySQL</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">MySQL基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -811,4 +815,46 @@ explain 分析例子
 - 相关资料：https://mp.weixin.qq.com/s/nEmN4S9JOTVGj5IHyfNtCw
 
 
+### <a name="86">数据库连接池、数据库连接线程安全的吗？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
+数据库连接池就用用来保存数据库连接的一个池子。每当我们的业务代码需要和数据库进行交互时，就从这个池子里面取出一个数据库连接，然后在这个连接上进行查增删改操作。使用结束后，业务代码再将这个连接归还给这个池子，然后这个连接就可以被其他业务代码继续使用了。
+从过程中可以看出，数据库连接池是可以在多个线程中使用的，每个线程获取不同的数据库连接。因此是线程安全的。
+
+单个数据库连接肯定不是线程安全的，这就是需要实现数据库事务的原因。
+
+### <a name="87">mysql 查询大表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+#### <a name="88">延迟关联</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+通过子查询关联，子查询先把对应的主键id查询出来，再进行主表关联
+```
+select * from user inner join 
+(select id from user limit 10000000 10)  a on user.id = a.id
+
+```
+
+#### <a name="89">小案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 常规查询：
+```
+select * from test_table 
+where merchant_id = 43 and status = 'SUCCESS' 
+order by salary_id desc limit 900000,10;
+
+10 rows in set (0.82 sec)
+```
+
+- 延迟优化:通过id查询减少回表次数
+```
+SELECT *
+FROM test_table a
+INNER JOIN
+  (SELECT salary_id
+   FROM test_table
+   WHERE merchant_id = 43
+     AND STATUS = 'SUCCESS'
+   LIMIT 900000,
+         10) b ON a.salary_id = b.salary_id;
+
+10 rows in set (0.52 sec)
+```
+
+最大id查询法

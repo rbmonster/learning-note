@@ -29,12 +29,13 @@
 &emsp;<a href="#26">10. @RestController vs @Controller</a>  
 &emsp;&emsp;<a href="#27">10.1. @ResponseBody</a>  
 &emsp;<a href="#28">11. spring中的设计模式</a>  
-&emsp;<a href="#29">12. 零散的一些面试题</a>  
-&emsp;&emsp;<a href="#30">12.1. @Autowired和@Resource的区别是什么？</a>  
-&emsp;&emsp;<a href="#31">12.2. @PostConstruct和@PreDestroy</a>  
-&emsp;&emsp;<a href="#32">12.3. Spring 的异常处理</a>  
-&emsp;&emsp;<a href="#33">12.4.  json 数据处理</a>  
-&emsp;&emsp;<a href="#34">12.5.  @Component 和 @Bean 的区别是什么？</a>  
+&emsp;<a href="#29">12. @Import 注解</a>  
+&emsp;<a href="#30">13. 零散的一些面试题</a>  
+&emsp;&emsp;<a href="#31">13.1. @Autowired和@Resource的区别是什么？</a>  
+&emsp;&emsp;<a href="#32">13.2. @PostConstruct和@PreDestroy</a>  
+&emsp;&emsp;<a href="#33">13.3. Spring 的异常处理</a>  
+&emsp;&emsp;<a href="#34">13.4.  json 数据处理</a>  
+&emsp;&emsp;<a href="#35">13.5.  @Component 和 @Bean 的区别是什么？</a>  
 # <a name="0">Spring </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">Spring IOC & AOP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -378,16 +379,34 @@ spring boot启动过程
 - 观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。
 - 适配器模式 :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。
 
+## <a name="29">@Import 注解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 直接填class数组方式
+    - > @Import({ 类名.class , 类名.class... })
+2. ImportSelector方式
+    - 实现ImportSelector接口，返回一个String数组，将全类名返回。
+    - ```
+        public class Myclass implements ImportSelector {
+            @Override
+            public String[] selectImports(AnnotationMetadata annotationMetadata) {
+                return new String[]{"com.yc.Test.TestDemo3"};
+            }
+        }
+        ```
+3. ImportBeanDefinitionRegistrar方式 (手动注册bean到容器)
 
-## <a name="29">零散的一些面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="30">@Autowired和@Resource的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+https://www.cnblogs.com/yichunguo/p/12122598.html
+
+## <a name="30">零散的一些面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="31">@Autowired和@Resource的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. @Autowired注解是按类型装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它required属性为false。可以结合@Qualifier注解一起使用。
 2. @Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上，但它默认按名称装配。默认按byName自动注入，也提供按照byType 注入；
 3. @Resources按名字，是JDK的，@Autowired按类型，是Spring的。
 4. 处理这2个注解的BeanPostProcessor不一样CommonAnnotationBeanPostProcessor是处理@Resource注解的，AutoWiredAnnotationBeanPostProcessor是处理@AutoWired注解的
 
 
-### <a name="31">@PostConstruct和@PreDestroy</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="32">@PostConstruct和@PreDestroy</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 @PostConstruct和@PreDestroy 是两个作用于 Servlet 生命周期的注解，被这两个注解修饰的方法可以保证在整个 Servlet 生命周期只被执行一次，即使 Web 容器在其内部中多次实例化该方法所在的 bean。
   - @PostConstruct : 用来修饰方法，标记在项目启动的时候执行这个方法,一般用来执行某些初始化操作比如全局配置。PostConstruct 注解的方法会在构造函数之后执行,Servlet 的init()方法之前执行。
   - @PreDestroy : 当 bean 被 Web 容器的时候被调用，一般用来释放 bean 所持有的资源。。@PreDestroy 注解的方法会在Servlet 的destroy()方法之前执行。
@@ -411,7 +430,7 @@ spring boot启动过程
       }
   }
   ```
-### <a name="32">Spring 的异常处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">Spring 的异常处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用 @ControllerAdvice和@ExceptionHandler处理全局异常
   - ```
     @RestControllerAdvice(basePackages = {"com.design.apidesign.controller"}) 
@@ -447,7 +466,7 @@ spring boot启动过程
     }
     ```
 
-### <a name="33"> json 数据处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34"> json 数据处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - @JsonIgnoreProperties 作用在类上用于过滤掉特定字段不返回或者不解析
 - @JsonIgnore一般用于类的属性上，作用和上面的@JsonIgnoreProperties 一样。
 - @JsonFormat一般用来格式化 json 数据。
@@ -487,7 +506,7 @@ spring boot启动过程
   }
   ```
   
-### <a name="34"> @Component 和 @Bean 的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35"> @Component 和 @Bean 的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 作用对象不同: @Component 注解作用于类，而@Bean注解作用于方法。
   - @Component通常是通过类路径扫描来自动侦测以及自动装配到Spring容器中（我们可以使用 @ComponentScan 注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中）。@Bean 注解通常是我们在标有该注解的方法中定义产生这个 bean,@Bean告诉了Spring这是某个类的示例，当我需要用它的时候还给我。
   - @Bean 注解比 Component 注解的自定义性更强，而且很多地方我们只能通过 @Bean 注解来注册bean。比如当我们引用第三方库中的类需要装配到 Spring容器时，则只能通过 @Bean来实现。
