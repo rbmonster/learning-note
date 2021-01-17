@@ -77,7 +77,16 @@ sdfadf
 ### 相关资料
 [百度百科](https://baike.baidu.com/item/%E6%A0%87%E5%87%86%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA/4714867?fr=aladdin#3)
 
+### 磁盘分区及目录
 
+挂载：利用一个目录当成进入点，将磁盘分区槽的数据放置在该目录下。也就是说，进入该目录就可以读取该分区槽的意思。
+挂载点：那个进入点的目录我们称为『挂载点』。 
+
+
+### 权限修改
+- chgrp ：改变文件所属群组
+- chown ：改变文件拥有者
+- chmod ：改变文件的权限, SUID, SGID, SBIT 等等的特性
 
 ## 其他资料
 
@@ -101,3 +110,256 @@ bash: is: command not found
 [root@localhost sh]# echo The date is `date`
 The date is 2011年 03月 14日 星期一 21:15:43 CST
 ```
+
+
+## sed
+```
+[dmtsai@study ~]$ sed [-nefr] [动作]
+选项与参数：
+-n ：使用安静(silent)模式。在一般 sed 的用法中，所有来自 STDIN 的数据一般都会被列出到屏幕上。但如果加上 -n 参数后，则只有经过 sed 特殊处理的那一行(或者动作)才会被列出来。
+-e ：直接在指令列模式上进行 sed 的动作编辑
+-f ：直接将 sed 的动作写在一个文件内， -f filename 则可以执行 filename 内的 sed 动作；
+-r ：sed 的动作支持的是延伸型正规表示法的语法。(预设是基础正规表示法语法)
+-i ：直接修改读取的文件内容，而不是由屏幕输出。
+
+动作说明： [n1[,n2]]function
+n1, n2 ：不见得会存在，一般代表『选择进行动作的行数』，举例来说，如果我的动作
+是需要在 10 到 20 行之间进行的，则『 10,20[动作行为] 』
+function 有底下这些咚咚：
+a ：新增， a 的后面可以接字符串，而这些字符串会在新的一行出现(目前的下一行)～
+c ：取代， c 的后面可以接字符串，这些字符串可以取代 n1,n2 之间的行！
+d ：删除，因为是删除啊，所以 d 后面通常不接任何咚咚；
+i ：插入， i 的后面可以接字符串，而这些字符串会在新的一行出现(目前的上一行)；
+p ：打印，亦即将某个选择的数据印出。通常 p 会与参数 sed -n 一起运作～
+s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可以搭配正规表示法！
+例如 1,20s/old/new/g 就是
+```
+
+
+
+
+- `function：d` demo
+```
+[root@VM-0-16-centos ~]# nl file 
+     1	sdfadf
+     2	123
+     3	123
+     4	123
+     5	12
+     6	3123
+     7	123123
+     8	qwe
+     9	123
+    10	qwe
+    11	qwe
+    12	qwe
+    13	asd
+    14	qwea
+    15	sd
+    16	xzcZXc
+    17	qwweqwe12
+       
+[root@VM-0-16-centos ~]# nl file |sed '2,5d'
+     1	sdfadf
+     6	3123
+     7	123123
+     8	qwe
+     9	123
+    10	qwe
+    11	qwe
+    12	qwe
+    13	asd
+    14	qwea
+    15	sd
+    16	xzcZXc
+    17	qwweqwe12
+```
+
+- `function：a` 新增demo 会新增到下一行
+```
+[root@VM-0-16-centos ~]# nl file |sed '2a|sadf'
+     1	sdfadf
+     2	123
+|sadf
+     3	123
+     4	123
+     5	12
+     6	3123
+     7	123123
+     8	qwe
+     9	123
+    10	qwe
+    11	qwe
+    12	qwe
+    13	asd
+    14	qwea
+    15	sd
+    16	xzcZXc
+    17	qwweqwe12
+
+```
+
+```
+// 新增多行以反斜杠结尾
+[root@VM-0-16-centos ~]# nl file |sed '2a|sadf............\
+dsfasdff ? dfsd\
+dsfasdf'
+     1	sdfadf
+     2	123
+|sadf............
+dsfasdff ? dfsd
+dsfasdf
+     3	123
+     4	123
+     5	12
+     6	3123
+     7	123123
+     8	qwe
+     9	123
+    10	qwe
+    11	qwe
+    12	qwe
+    13	asd
+    14	qwea
+    15	sd
+    16	xzcZXc
+    17	qwweqwe12
+
+```
+
+- `function：c` 行替换例子
+```
+[root@VM-0-16-centos ~]# nl file|sed '2,6c go down town'
+     1	sdfadf
+go down town
+     7	123123
+     8	qwe
+     9	123
+    10	qwe
+    11	qwe
+    12	qwe
+    13	asd
+    14	qwea
+    15	sd
+    16	xzcZXc
+    17	qwweqwe12
+
+```
+
+- `function：p` 打印修改行数  
+> `-n` 输出sed修改的行数
+```
+[root@VM-0-16-centos ~]# nl file | sed -n '2,10p' 
+     2	123
+     3	123
+     4	123
+     5	12
+     6	3123
+     7	123123
+     8	qwe
+     9	123
+    10	qwe
+
+```
+
+- `function：s` 替换内容 `sed 's/要被取代的字符串/新的字符串/g'`
+> 被取代的字符串部分可以使用正则表达式
+```
+[root@VM-0-16-centos ~]# nl file 
+     1	sdfadf
+     2	123
+     3	123
+     4	123
+     5	12
+     6	3123
+     7	123123
+     8	qwe
+     9	123
+    10	qwe
+    11	qwe
+    12	qwe
+    13	asd
+    14	qwea
+    15	sd
+    16	xzcZXc
+    17	qwweqwe12
+       
+[root@VM-0-16-centos ~]# nl file |sed 's/^.*123/456/g'
+     1	sdfadf
+456
+456
+456
+     5	12
+456
+456
+     8	qwe
+456
+    10	qwe
+    11	qwe
+    12	qwe
+    13	asd
+    14	qwea
+    15	sd
+    16	xzcZXc
+    17	qwweqwe12
+
+```
+
+- `sed -i ` 修改文件内容
+
+- sed 在每行头部或者尾部添加固定字符
+```
+[root@VM-0-16-centos ~]# cat file |sed 's/^/yep/g'
+yepsdfadf
+yep123
+yep123
+yep123
+yep12
+yep3123
+yep123123
+yepqwe
+yep123
+yepqwe
+yepqwe
+yepqwe
+yepasd
+yepqwea
+yepsd
+yepxzcZXc
+yepqwweqwe12
+
+[root@VM-0-16-centos ~]# cat file |sed 's/$/~yep/g'
+sdfadf~yep
+123~yep
+123~yep
+123~yep
+12~yep
+3123~yep
+123123~yep
+qwe~yep
+123~yep
+qwe~yep
+qwe~yep
+qwe~yep
+asd~yep
+qwea~yep
+sd~yep
+xzcZXc~yep
+qwweqwe12~yep
+
+```
+
+###  正则表达式
+| 正则表达式|范例|  匹配结果|
+| --------------- | -----------------------| ----------------------------------- |
+| + | 意义：重复『一个或一个以上』的前一个 RE 字符| `egrep -n 'go+d' regular_express.txt` 搜寻 (god) (good) (goood)... 等等的字符串 |
+| ? |意义：『零个或一个』的前一个 RE 字符 | ` egrep -n 'go+d' regular_express.txt` 范例：搜寻 (gd) (god) 这两个字符串。|
+| 竖线| 意义：用或( or )的方式找出数个字符串| `egrep -n 'gd/good' regular_express.txt` 范例：搜寻 gd 或 good 这两个字符串|
+| () | 意义：找出『群组』字符串 | `egrep 'A(xyz)+C'`  范例：将『AxyzxyzxyzxyzC』用 echo 叫出|
+| ^ | 匹配输入字符串的开始位置 | ` egrep '^ABC' ` 范例：匹配以ABC开头的|
+| $| 匹配输入字符串的结尾位置| `egrep 'CBA$'` 范例：匹配以CBA结尾的|
+
+## awk
+awk 主要是处理『每一行的字段内的数据』，而默认的『字段的分隔符为 "空格键" 或 "[tab]键" 』！
+> awk 后面接两个单引号并加上大括号 {} 来设定想要对数据进行的处理动作。 awk 可以处理后续接的文件，也可以读取来自前个指令的 standard output 。 
+

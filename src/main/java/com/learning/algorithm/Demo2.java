@@ -15,13 +15,35 @@ import java.util.*;
  */
 public class Demo2 {
     public static void main(String[] args) {
-        new Demo2().translateNum(18580);
+        new Demo2().reverseWords("the sky is blue");
 
         PriorityQueue<Integer> queue = new PriorityQueue<>((o1,o2) ->  o2-o1);
 
     }
 
-    int res = 0;
+    public String reverseWords(String s) {
+        if (s == null || s.trim().length() == 0) return "";
+        StringBuilder sb = new StringBuilder();
+        int len = s.length();
+        int index = 0;
+        for (int i = 0; i < len; i++) {
+            char ch = s.charAt(i);
+            if (ch == ' ') {
+                if (sb.length() > 0 && sb.charAt(sb.length() - 1) != ' ') {
+                    sb.append(' ');
+                }
+                continue;
+            }
+            if (sb.length() > 0 && sb.charAt(sb.length() - 1) == ' ') {
+                index = sb.length();
+            }
+            sb.insert(index, ch);
+        }
+        return sb.reverse().toString();
+    }
+
+
+        int res = 0;
 
     public int translateNum(int num) {
         String str = String.valueOf(num);

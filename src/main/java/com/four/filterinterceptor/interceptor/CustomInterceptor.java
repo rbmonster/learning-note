@@ -26,8 +26,8 @@ public class CustomInterceptor implements HandlerInterceptor {
             throws Exception {
         log.info("[preHandle][" + request + "]" + "[" + request.getMethod()
                 + "]" + request.getRequestURI() + request.getParameterMap());
-
-        return HandlerInterceptor.super.preHandle(request, response, handler);
+        throw new RuntimeException("sdfasdf");
+//        return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
     @Override

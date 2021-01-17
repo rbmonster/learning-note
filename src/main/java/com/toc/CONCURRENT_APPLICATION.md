@@ -12,8 +12,9 @@
 &emsp;&emsp;<a href="#9">2.1. 基于Synchronize锁对象</a>  
 &emsp;&emsp;<a href="#10">2.2. 基于Reentrant Lock </a>  
 &emsp;<a href="#11">3. 线程安全的类定义</a>  
-&emsp;<a href="#12">4. 单订单重复退款请求</a>  
-&emsp;&emsp;<a href="#13">4.1. 分布式锁的处理方案</a>  
+&emsp;&emsp;<a href="#12">3.1. 枚举类为什么是线程安全？</a>  
+&emsp;<a href="#13">4. 单订单重复退款请求</a>  
+&emsp;&emsp;<a href="#14">4.1. 分布式锁的处理方案</a>  
 # <a name="0">Java并发应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">生产者与消费者模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -303,14 +304,70 @@ ReentrantLock lock = new ReentrantLock(true);
    3. 使用Atomic包的基本类型，如AtomicInteger、AtomicReference、AtmoicStampReference修饰变量。
    
 
-## <a name="12">单订单重复退款请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">枚举类为什么是线程安全？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+普通的一个枚举类
+```
+public enum t {
+    SPRING,SUMMER,AUTUMN,WINTER;
+}
+```
+
+反编译后的代码
+```
+public final class T extends Enum
+{
+    private T(String s, int i)
+    {
+        super(s, i);
+    }
+    public static T[] values()
+    {
+        T at[];
+        int i;
+        T at1[];
+        System.arraycopy(at = ENUM$VALUES, 0, at1 = new T[i = at.length], 0, i);
+        return at1;
+    }
+
+    public static T valueOf(String s)
+    {
+        return (T)Enum.valueOf(demo/T, s);
+    }
+
+    public static final T SPRING;
+    public static final T SUMMER;
+    public static final T AUTUMN;
+    public static final T WINTER;
+    private static final T ENUM$VALUES[];
+    static
+    {
+        SPRING = new T("SPRING", 0);
+        SUMMER = new T("SUMMER", 1);
+        AUTUMN = new T("AUTUMN", 2);
+        WINTER = new T("WINTER", 3);
+        ENUM$VALUES = (new T[] {
+            SPRING, SUMMER, AUTUMN, WINTER
+        });
+    }
+}
+```
+
+1. `public final class T extends Enum`，说明，该类是继承了Enum类的，同时final关键字告诉我们，这个类也是不能被继承的。
+2. 类中的几个属性和方法都是static final类型的，说明static类型的属性会在类被加载之后被初始化便不可修改。
+> 创建一个enum类型是线程安全的。
+
+
+- 相关资料：https://www.cnblogs.com/z00377750/p/9177097.html
+
+## <a name="13">单订单重复退款请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. synchronize修饰退款方法。 
 2. 缩小synchronize锁范围，使用对象锁。对象锁，创建弱引用的一个订单ID对象，放到同一的锁对象资源池中。
    - 清理锁对象可以使用守护线程的方法，基于Unsafe的包操作去清除。
 3. 分布式应用，使用分布式锁来处理。
 
 
-### <a name="13">分布式锁的处理方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">分布式锁的处理方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 1. 数据库锁，数据库乐观锁，数据库悲观锁。
 

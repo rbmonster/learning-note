@@ -25,6 +25,7 @@
 - 添加元素时使用 ensureCapacityInternal() 方法来保证容量足够，如果不够时，需要使用 grow() 方法进行扩容，新容量的大小为 oldCapacity + (oldCapacity >> 1)，也就是旧容量的 1.5 倍。
 - 主要一个超精度负数判断，如果经度过长，则默认使用当前长度
 - 数据复制使用Arrays.copyOf(elementData, newCapacity);
+
 - 因为为一步操作因此用于快速失败的modCount+1
 ```
 // size为当前的list长度
@@ -66,6 +67,9 @@ private void grow(int minCapacity) {
     elementData = Arrays.copyOf(elementData, newCapacity);
 }
 ```
+
+思考：arrayList 为啥1.5倍扩容？
+
 ##### 删除元素
 - 调用 System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)，可以看到 ArrayList 删除元素的代价是非常高的。
   -  System.arraycopy(elementData, index+1, elementData, index, numMoved);

@@ -66,17 +66,19 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 ### 字符串
 公共前缀问题
 - 最长公共前缀：https://leetcode-cn.com/problems/longest-common-prefix/
+    - 分治法、二分法
   
 回文问题（包含子串与子序列问题）
 - 最长回文子串：https://leetcode-cn.com/problems/longest-palindromic-substring/
 
 双指针问题
-- 反转字符串
+- 反转字符串：https://leetcode-cn.com/problems/reverse-string/
 - 两数之和 II - 输入有序数组（最基础问题） ：https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/
 - 快慢指针：
     - 移除数组
     - 移动零
-    
+
+- 反转单词顺序：https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/
 
 ## 链表
 链表双指针：
@@ -270,10 +272,15 @@ private int maximum_depth(TreeNode root) {
 - 二叉树的最近公共祖先：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
  
 ### 二叉搜索树
+二叉搜索树相关问题基本思想：
+1. 中序遍历
+2. 递归利用二叉搜索树属性进行处理。
+
 基本操作：
 - 验证二叉搜索树：https://leetcode-cn.com/problems/validate-binary-search-tree/
 - 二叉搜索树中的搜索：https://leetcode-cn.com/problems/search-in-a-binary-search-tree/
 - 二叉搜索树中的插入操作：https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/
+- 把二叉搜索树转换为累加树（review）：https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
 - 删除二叉搜索树中的节点
   - 如果目标节点没有子节点，我们可以直接移除该目标节点。
   - 如果目标节只有一个子节点，我们可以用其子节点作为替换。
@@ -319,8 +326,7 @@ private int maximum_depth(TreeNode root) {
 
 二叉搜索树构建：
 - 将有序数组转换为二叉搜索树：https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
-    
-    
+
     
 ## 算法归类
 
@@ -343,7 +349,6 @@ private int maximum_depth(TreeNode root) {
 - 修剪二叉搜索树（review）：https://leetcode-cn.com/problems/trim-a-binary-search-tree/
 - 左叶子之和（review）：https://leetcode-cn.com/problems/sum-of-left-leaves/
 - 二叉树的右视图（review）：https://leetcode-cn.com/problems/binary-tree-right-side-view/
-- 把二叉搜索树转换为累加树（review）：https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
 - 找树左下角的值（review）：https://leetcode-cn.com/problems/find-bottom-left-tree-value/
 - 寻找重复的子树（review）：https://leetcode-cn.com/problems/find-duplicate-subtrees/solution/
 - 二叉搜索树中的众数：https://leetcode-cn.com/problems/find-mode-in-binary-search-tree/
@@ -505,7 +510,60 @@ class UnionFindSet {
 
 
 ## 单调栈
+单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
 
+     
+- 每日温度：https://leetcode-cn.com/problems/daily-temperatures/
+- 下一个更大元素 I: https://leetcode-cn.com/problems/next-greater-element-i/
+```
+public int[] dailyTemperatures(int[] T) {
+    Deque<Integer> stack = new LinkedList<>();
+    int len = T.length;
+    int[] res = new int[len];
+    // 从尾到头遍历
+    for(int i = len-1; i>=0 ;i--) {
+        while(!stack.isEmpty() && T[stack.peek()] <= T[i]) {
+            stack.pop();
+        }
+        // 判断位置差值
+        res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
+        stack.push(i);
+    }
+    return res;
+}
+```
+
+## 单调队列
+
+- 剑指 Offer 59 - I. 滑动窗口的最大值: https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/
+```
+public int[] maxSlidingWindow(int[] nums, int k) {
+     if(nums.length == 0 || k == 0) return new int[0];
+    Deque<Integer> deque = new LinkedList<>();
+    int len = nums.length;
+    int[] res=  new int[len -k +1];
+    for(int i =0;i<k ;i++) {
+        // 新元素入队，比较队尾元素，小的元素全部移除，保证队列的单调性
+        while(!deque.isEmpty()&& deque.peekLast() <nums[i]) {
+            deque.removeLast();
+        }
+        deque.addLast(nums[i]);
+    }
+    res[0] = deque.peekFirst();
+    for(int i =k;i<len;i++) {
+        // 滑动窗口的比较
+        if(nums[i-k] == deque.peekFirst()) {
+            deque.removeFirst();
+        }
+        while(!deque.isEmpty()&& deque.peekLast() <nums[i]) {
+            deque.removeLast();
+        }
+        deque.addLast(nums[i]);
+        res[i-k+1] = deque.peekFirst();
+    }
+    return res;
+}
+```
 
 ## 前缀树
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。

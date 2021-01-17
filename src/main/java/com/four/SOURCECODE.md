@@ -145,6 +145,38 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 
 - Spring 事务处理 中，可以通过设计一个 TransactionProxyFactoryBean 来使用 AOP 功能，通过这个 TransactionProxyFactoryBean 可以生成 Proxy 代理对象
 
+
+### 事务隔离实现
+
+
+spring 事务隔离主要通过`DataSourceTransactionManager` 在开启事务的时候，设置对应的隔离级别到数据库连接中。
+> 本质上事务的实现是通过设置数据库连接的隔离级别。即类似于 `mysql> set global transaction_isolation ='read-committed';` 因此数据库的实现依赖于数据库支持的隔离级别
+```
+	@Override
+	protected void doBegin(Object transaction, TransactionDefinition definition) {
+		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
+		Connection con = null;
+
+		try {
+			if (!txObject.hasConnectionHolder() ||
+					txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
+				Connection newCon = obtainDataSource().getConnection();
+				if (logger.isDebugEnabled()) {
+					logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
+				}
+				txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
+			}
+
+			txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
+			con = txObject.getConnectionHolder().getConnection();
+
+			Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
+			txObject.setPreviousIsolationLevel(previousIsolationLevel);
+        ...
+        }
+    }
+```
+
 ### @Transactional失效场景
 1. 注解导致的事务失效：
     1. @Transactional 注解属性 propagation 设置错误，设置了以非事务的状态运行

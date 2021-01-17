@@ -1,8 +1,7 @@
 # Java IO 
 
 ## 基本概念
-- Java 的 I/O 大概可以分成以下几类：
-
+Java 的 I/O 大概可以分成以下几类：
 1. 磁盘操作：File
 2. 字节操作：InputStream 和 OutputStream
 3. 字符操作：Reader 和 Writer
@@ -13,12 +12,12 @@
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/io/picture/inputStreamStructure.jpg)
 Java I/O 使用了装饰者模式来实现。以 InputStream 为例，
 
-- InputStream 是抽象组件；
-    - FileInputStream 是 InputStream 的子类，属于具体组件，提供了文件字节流的输入操作；
-    - FilterInputStream 属于抽象装饰者，装饰者用于装饰组件，为组件提供额外的功能。例如 BufferedInputStream 为 FileInputStream 提供缓存的功能。
+InputStream 是抽象组件；
+- FileInputStream 是 InputStream 的子类，属于具体组件，提供了文件字节流的输入操作；
+- FilterInputStream 属于抽象装饰者，装饰者用于装饰组件，为组件提供额外的功能。例如 BufferedInputStream 为 FileInputStream 提供缓存的功能。
 
 
-- InputStream的作用是用来表示那些从不同数据源产生输入的类。
+InputStream的作用是用来表示那些从不同数据源产生输入的类。
 1. 字节数组
 2. String对象
 3. 文件
@@ -26,17 +25,17 @@ Java I/O 使用了装饰者模式来实现。以 InputStream 为例，
 5. 其他数据源，如Internet连接等
 
 Reader 与 Writer
-  - 不管是磁盘还是网络传输，最小的存储单元都是字节，而不是字符。但是在程序中操作的通常是字符形式的数据，因此需要提供对字符进行操作的方法。
-  - InputStreamReader 实现从字节流解码成字符流；
-  - OutputStreamWriter 实现字符流编码成为字节流。
+- 不管是磁盘还是网络传输，最小的存储单元都是字节，而不是字符。但是在程序中操作的通常是字符形式的数据，因此需要提供对字符进行操作的方法。
+- InputStreamReader 实现从字节流解码成字符流；
+- OutputStreamWriter 实现字符流编码成为字节流。
   
 ### 编码与解码
-- 编码就是把字符转换为字节，而解码是把字节重新组合成字符。如果编码和解码过程使用不同的编码方式那么就出现了乱码。
-    - GBK 编码中，中文字符占 2 个字节，英文字符占 1 个字节；
-    - UTF-8 编码中，中文字符占 3 个字节，英文字符占 1 个字节；
-    - UTF-16be 编码中，中文字符和英文字符都占 2 个字节。
+编码就是把字符转换为字节，而解码是把字节重新组合成字符。如果编码和解码过程使用不同的编码方式那么就出现了乱码。
+- GBK 编码中，中文字符占 2 个字节，英文字符占 1 个字节；
+- UTF-8 编码中，中文字符占 3 个字节，英文字符占 1 个字节；
+- UTF-16be 编码中，中文字符和英文字符都占 2 个字节。
 
-- String 编码转换
+String 编码转换
 ```
 String str1 = "中文";
 byte[] bytes = str1.getBytes("UTF-8");
@@ -59,6 +58,7 @@ System.out.println(str2);
 
 ### BIO
 传统的BIO中，read去读取网络的数据时，是无法预知对方是否已经发送数据的。因此在收到数据之前，能做的只有等待，直到对方把数据发过来，或者等到网络超时。
+
 ### NIO
 NIO模式下，系统调用read，如果发现没数据已经到达，就会立刻返回-1。使用轮询的方式，不断的尝试有没有数据到达。没有得到数据就等一小会再试继续轮询。
 
@@ -75,7 +75,7 @@ NIO解决了线程阻塞的问题 ，但是会带来两个新问题：
 - IO多路复用是要和NIO一起使用的。尽管在操作系统级别，NIO和IO多路复用是两个相对独立的事情。也可以只用IO多路复用 + BIO，这时效果还是当前线程被卡住，没有达到IO多路复用的通知请求到来的效果。
 
 - IO多路复用说的是多个Socket或IO连接，只不过操作系统是一起监听他们的事件而已。
->多个数据流共享同一个TCP连接的场景的确是有，比如Http2 Multiplexing就是指Http2通讯中中多个逻辑的数据流共享同一个TCP连接。但这与IO多路复用是完全不同的问题。
+>多个数据流共享同一个TCP连接的场景的确是有，比如Http2 Multiplexing就是指Http2通讯中多个逻辑的数据流共享同一个TCP连接。但这与IO多路复用是完全不同的问题。
 - IO多路复用的关键API调用(select，poll，epoll_wait）总是Block的
 - **IO多路复用和NIO一起仅仅是解决了调度的问题，避免CPU在这个过程中的浪费**，使系统的瓶颈更容易触达到网络带宽，而非CPU或者内存。要提高IO吞吐，还是提高硬件的容量（例如，用支持更大带宽的网线、网卡和交换机）和依靠并发传输（例如HDFS的数据多副本并发传输）。
 
@@ -97,9 +97,9 @@ epoll除了性能优势，还有一个优点——同时支持水平触发(Level
 
 
 ### 信号驱动IO
-- 在通道中安装一个信号器：映射到Linux操作系统中，这就是信号驱动IO。应用进程在读取文件时通知内核，如果某个 socket 的某个事件发生时，请向我发一个信号。
+在通道中安装一个信号器：映射到Linux操作系统中，这就是信号驱动IO。应用进程在读取文件时通知内核，如果某个 socket 的某个事件发生时，请向我发一个信号。
 
-- 阻塞IO模型、非阻塞IO模型、IO复用模型和信号驱动IO模型都是同步的IO模型。原因是因为，无论以上那种模型，真正的数据拷贝过程，都是同步进行的。
+阻塞IO模型、非阻塞IO模型、IO复用模型和信号驱动IO模型都是同步的IO模型。原因是因为，无论以上那种模型，真正的数据拷贝过程，都是同步进行的。
 
 
 ### AIO
@@ -137,12 +137,12 @@ BIO多线程情况下的缺点：内存消耗、线程上下文切换
 4. 容易造成锯齿状的系统负载。因为系统负载是用活动线程数或CPU核心数，一旦线程数量高但外部网络环境不是很稳定，就很容易造成大量请求的结果同时返回，激活大量阻塞线程从而使系统负载压力过大。
 
 ### java NIO(Non-blocking/New I/O)
- NIO的主要事件有几个：读就绪、写就绪、有新连接到来。
-  1. 首先需要注册当这几个事件到来的时候所对应的处理器，事件处理完毕移除SelectKey，若未移除，selector不会检查这些key是否有事件到来。
-  2. 然后在合适的时机告诉事件选择器：对这个事件感兴趣。
-  3. 其次，用一个死循环选择就绪的事件，会执行系统调用，还会阻塞的等待新事件的到来。（系统调用指的是操作系统的函数调用，Linux 2.6之前是select、poll，2.6之后是epoll，Windows是IOCP）
-  4. 新事件到来的时候，会在selector上注册标记位，标示可读、可写或者有连接到来。
-  5. 注意，select是阻塞的，无论是通过操作系统的通知（epoll）还是不停的轮询(select，poll)，这个函数是阻塞的。
+NIO的主要事件有几个：读就绪、写就绪、有新连接到来。
+1. 首先需要注册当这几个事件到来的时候所对应的处理器，事件处理完毕移除SelectKey，若未移除，selector不会检查这些key是否有事件到来。
+2. 然后在合适的时机告诉事件选择器：对这个事件感兴趣。
+3. 其次，用一个死循环选择就绪的事件，会执行系统调用，还会阻塞的等待新事件的到来。（系统调用指的是操作系统的函数调用，Linux 2.6之前是select、poll，2.6之后是epoll，Windows是IOCP）
+4. 新事件到来的时候，会在selector上注册标记位，标示可读、可写或者有连接到来。
+5. 注意，select是阻塞的，无论是通过操作系统的通知（epoll）还是不停的轮询(select，poll)，这个函数是阻塞的。
 > select会进行系统调用（Linux 2.6之前是select、poll，2.6之后是epoll，Windows是IOCP），还会阻塞的等待新事件的到来。新事件到来的时候，会在selector上注册标记位，标示可读、可写或者有连接到来。
  
 - NIO由原来的阻塞读写（占用线程）变成了**单线程轮询事件**，找到可以进行读写的网络描述符进行读写。除了事件的轮询是阻塞的（没有可干的事情必须要阻塞），剩余的I/O操作都是纯CPU操作，没有必要开启多线程。
@@ -159,6 +159,7 @@ IO的拷贝：
 - 相关资料：https://blog.csdn.net/weixin_38950807/article/details/91374912
 
 #### 事件驱动模型
+Reactor模式首先是事件驱动的，有一个或多个并发输入源，有一个Service Handler，有多个Request Handlers；这个Service Handler会同步的将输入的请求（Event）多路复用的分发给相应的Request Handler。
  
 Java的Selector对于Linux系统来说，有一个致命限制：同一个channel的select不能被并发的调用。因此，如果有多个I/O线程，必须保证：一个socket只能属于一个IoThread，而一个IoThread可以管理多个socket。另外连接的处理和读写的处理通常可以选择分开，这样对于海量连接的注册和读写就可以分发。虽然read()和write()是比较高效无阻塞的函数，但毕竟会占用CPU，如果面对更高的并发则无能为力。
 
@@ -195,9 +196,9 @@ interface ChannelHandler{
 
 [本文NIO demo](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/learning/io/nio)
 
-- 相关资料：
- - NIO selectKey原理：https://blog.csdn.net/qq_32331073/article/details/81132937
- - 美团NIO浅析: https://tech.meituan.com/2016/11/04/nio.html
+相关资料：
+- NIO selectKey原理：https://blog.csdn.net/qq_32331073/article/details/81132937
+- 美团NIO浅析: https://tech.meituan.com/2016/11/04/nio.html
 
 ### NIO与BIO区别
 - 通讯方式：NIO 通过Channel（通道） 进行读写，通道是双向的，可读也可写。而BIO使用的流读写是单向的。
@@ -218,13 +219,13 @@ NIO 带来了什么
 
 ### Proactor与Reactor
 
-- 在Reactor中实现读
+在Reactor中实现读
 1. 注册读就绪事件和相应的事件处理器。
 2. 事件分发器等待事件。
 3. 事件到来，激活分发器，分发器调用事件对应的处理器。
 4. 事件处理器完成实际的读操作，处理读到的数据，注册新的事件，然后返还控制权。
 
-- 在Proactor中实现读：
+在Proactor中实现读：
 1. 处理器发起异步读操作（注意：操作系统必须支持异步IO）。在这种情况下，处理器无视IO就绪事件，它关注的是完成事件。
 2. 事件分发器等待操作完成事件。
 3. 在分发器等待过程中，操作系统利用并行的内核线程执行实际的读操作，并将结果数据存入用户自定义缓冲区，最后通知事件分发器读操作完成。
@@ -236,26 +237,27 @@ NIO 带来了什么
 
 
 ### RMI 远程方法调用
-- java支持，最早的远程调用，使用Remote接口，同时实现类别需要继承UnicastRemoteObject 
-- 通过Registry，注册发现远程方法，并调用接口。
+java支持，最早的远程调用，使用Remote接口，同时实现类别需要继承UnicastRemoteObject 
+
+通过Registry，注册发现远程方法，并调用接口。
 
 
 
 ### netty
-- Netty 是一个 基于 NIO 的 client-server(客户端服务器)框架，使用它可以快速简单地开发网络应用程序。
-  - 它极大地简化并优化了 TCP 和 UDP 套接字服务器等网络编程,并且性能以及安全性等很多方面甚至都要更好。
-  - 支持多种协议 如 FTP，SMTP，HTTP 以及各种二进制和基于文本的传统协议。
+Netty 是一个 基于 NIO 的 client-server(客户端服务器)框架，使用它可以快速简单地开发网络应用程序。
+- 它极大地简化并优化了 TCP 和 UDP 套接字服务器等网络编程,并且性能以及安全性等很多方面甚至都要更好。
+- 支持多种协议 如 FTP，SMTP，HTTP 以及各种二进制和基于文本的传统协议。
   
-- 支持多个交互模型
+支持多个交互模型
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/io/picture/netty.jpg)
 - Reactor分成两部分，mainReactor负责监听server socket，accept新连接；并将建立的socket分派给subReactor。subReactor负责多路分离已连接的socket，读写网络数据，对业务处理功能，其扔给worker线程池完成。
 
-- Netty中的事件分为Inbond事件和Outbound事件。
-  - Inbound事件通常由I/O线程触发，如TCP链路建立事件、链路关闭事件、读事件、异常通知事件等。
-  - Outbound事件通常是用户主动发起的网络I/O操作，如用户发起的连接操作、绑定操作、消息发送等。
+Netty中的事件分为Inbond事件和Outbound事件。
+- Inbound事件通常由I/O线程触发，如TCP链路建立事件、链路关闭事件、读事件、异常通知事件等。
+- Outbound事件通常是用户主动发起的网络I/O操作，如用户发起的连接操作、绑定操作、消息发送等。
 
-- 相比NIO ：
-  - NIO在面对断连重连、包丢失、粘包等问题时处理过程非常复杂。Netty的出现正是为了解决这些问题。
-  - 解决了JDK 的 NIO 底层由 epoll 实现，该实现饱受诟病的空轮询 bug 会导致 cpu 飙升 100%
-  - 通过代码封装，简化了服务端与客户端的代码交互。
-  - 数据直接复制到directBuffer的工作缓冲区
+相比NIO ：
+- NIO在面对断连重连、包丢失、粘包等问题时处理过程非常复杂。Netty的出现正是为了解决这些问题。
+- 解决了JDK 的 NIO 底层由 epoll 实现，该实现饱受诟病的空轮询 bug 会导致 cpu 飙升 100%
+- 通过代码封装，简化了服务端与客户端的代码交互。
+- 数据直接复制到directBuffer的工作缓冲区

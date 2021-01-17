@@ -74,8 +74,7 @@ JVM 在背后帮我们做了哪些事情：
 ## 创建线程的方式
 - callable 接口继承：可以获取线程的返回值。
 - Future接口 相当于 Runnable接口
-- FutureTask类 类似于Thread类
-- 最后执行调用都要使用Thread类
+- FutureTask类 类似于Thread类，最后执行调用都要使用Thread类
 ```
  public void test() throws ExecutionException, InterruptedException, TimeoutException {
     FutureTask<String> futureTask = new FutureTask<>(new CallableThread());
@@ -86,7 +85,7 @@ JVM 在背后帮我们做了哪些事情：
     // while (!Thread.interrupted())，那么本次任务会一直执行，只有mayInterruptIfRunning=true
     futureTask.cancel(true);
     // 设置获取结果的等待时间,超时抛出timeOutException
-//        String s = futureTask.get(1, TimeUnit.SECONDS);
+    // String s = futureTask.get(1, TimeUnit.SECONDS);
     // 阻塞等待
     String result = futureTask.get();
     System.out.println(result);
@@ -101,7 +100,6 @@ class CallableThread implements Callable<String> {
         return "complete the job";
     }
 }
-
 ```
 
 - Runnable接口实现与 继承Thread
@@ -201,6 +199,9 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
   - 如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务
   - 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
 
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
+
 线程池拒绝策略
   - ThreadPoolExecutor.AbortPolicy：抛出 RejectedExecutionException来拒绝新任务的处理。
   - ThreadPoolExecutor.CallerRunsPolicy：调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
@@ -208,7 +209,7 @@ corePoolSize：核心线程数量，当有新任务在execute()方法提交时�
   - ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
   - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
+- [线程池应用场景简介](https://www.cnblogs.com/waitmoon/p/13442193.html)
 
 
 ### 线程池的队列 五种

@@ -6,15 +6,16 @@
 &emsp;&emsp;<a href="#3">1.2. Spring自动配置加载</a>  
 &emsp;<a href="#4">2. Spring transaction</a>  
 &emsp;&emsp;<a href="#5">2.1. TransactionAspectSupport</a>  
-&emsp;&emsp;<a href="#6">2.2. @Transactional失效场景</a>  
-&emsp;&emsp;<a href="#7">2.3. 相关文章</a>  
-&emsp;<a href="#8">3. Spring AOP</a>  
-&emsp;&emsp;<a href="#9">3.1. HandlerAdapter与InvocableHandlerMethod</a>  
-&emsp;&emsp;<a href="#10">3.2. 整体的调用流程</a>  
-&emsp;&emsp;<a href="#11">3.3. 判断使用JDK代理还是Cglib代理</a>  
-&emsp;&emsp;<a href="#12">3.4. CglibAopProxy的代理方法</a>  
-&emsp;&emsp;<a href="#13">3.5. JdkDynamicAopProxy的代理方法</a>  
-&emsp;&emsp;<a href="#14">3.6. AspectJ的方法织入</a>  
+&emsp;&emsp;<a href="#6">2.2. 事务隔离实现</a>  
+&emsp;&emsp;<a href="#7">2.3. @Transactional失效场景</a>  
+&emsp;&emsp;<a href="#8">2.4. 相关文章</a>  
+&emsp;<a href="#9">3. Spring AOP</a>  
+&emsp;&emsp;<a href="#10">3.1. HandlerAdapter与InvocableHandlerMethod</a>  
+&emsp;&emsp;<a href="#11">3.2. 整体的调用流程</a>  
+&emsp;&emsp;<a href="#12">3.3. 判断使用JDK代理还是Cglib代理</a>  
+&emsp;&emsp;<a href="#13">3.4. CglibAopProxy的代理方法</a>  
+&emsp;&emsp;<a href="#14">3.5. JdkDynamicAopProxy的代理方法</a>  
+&emsp;&emsp;<a href="#15">3.6. AspectJ的方法织入</a>  
 # <a name="0">Spring源码</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">Spring IOC初始化(暂时不看)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -162,7 +163,39 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 
 - Spring 事务处理 中，可以通过设计一个 TransactionProxyFactoryBean 来使用 AOP 功能，通过这个 TransactionProxyFactoryBean 可以生成 Proxy 代理对象
 
-### <a name="6">@Transactional失效场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="6">事务隔离实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+spring 事务隔离主要通过`DataSourceTransactionManager` 在开启事务的时候，设置对应的隔离级别到数据库连接中。
+> 本质上事务的实现是通过设置数据库连接的隔离级别。即类似于 `mysql> set global transaction_isolation ='read-committed';` 因此数据库的实现依赖于数据库支持的隔离级别
+```
+	@Override
+	protected void doBegin(Object transaction, TransactionDefinition definition) {
+		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
+		Connection con = null;
+
+		try {
+			if (!txObject.hasConnectionHolder() ||
+					txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
+				Connection newCon = obtainDataSource().getConnection();
+				if (logger.isDebugEnabled()) {
+					logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
+				}
+				txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
+			}
+
+			txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
+			con = txObject.getConnectionHolder().getConnection();
+
+			Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
+			txObject.setPreviousIsolationLevel(previousIsolationLevel);
+        ...
+        }
+    }
+```
+
+### <a name="7">@Transactional失效场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 注解导致的事务失效：
     1. @Transactional 注解属性 propagation 设置错误，设置了以非事务的状态运行
     2. @Transactional  注解属性 rollbackFor 设置错误，实际抛出的错误跟设置不一致
@@ -198,12 +231,12 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 4. 异常被 catch 导致@Transactional失效
 5. 数据库引擎不支持事务
 
-### <a name="7">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="8">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - https://juejin.cn/post/6844903779188342798
 
 
-## <a name="8">Spring AOP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="9">HandlerAdapter与InvocableHandlerMethod</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="9">Spring AOP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">HandlerAdapter与InvocableHandlerMethod</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 对于Controller的方法，请求发送的时候通过HandlerAdapter调用InvocableHandlerMethod.doInvoke方法。
   - InvocableHandlerMethod.doInvoke 强制会把方法设为可见：
   - ```
@@ -215,12 +248,12 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
             ...
         }
     ```
-### <a name="10">整体的调用流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="11">整体的调用流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 对于web的调用，首先通过InvocationHandlerMethod，设置方法可见，强制调用方法。
 2. 调用方法后，判断方法是否使用代理，若没使用代理，直接调用方法。若使用了代理，进入代理方法的invoke方法。
 3. 区分JDK代理、Cglib代理，获取Advisor的对应拦截链，分别进入到拦截类的proceed()方法执行中。
 
-### <a name="11">判断使用JDK代理还是Cglib代理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">判断使用JDK代理还是Cglib代理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 对于实际的Method调用，如果是代理对象的调用会分别进入各自的代理的invoke方法中，主要分为Cglib（CglibAopProxy）和JDK代理（JdkDynamicAopProxy）
 - DefaultAopProxyFactory：如何判断使用JDK代理还是Cglib代理
   - ```
@@ -243,7 +276,7 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
     		}
     	}
     ```
-### <a name="12">CglibAopProxy的代理方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="13">CglibAopProxy的代理方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - CglibAopProxy 代理方法：
   - ```
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
@@ -277,7 +310,7 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
         finally {
         }
     ```
-### <a name="13">JdkDynamicAopProxy的代理方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">JdkDynamicAopProxy的代理方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - JdkDynamicAopProxy:  基于JDK的代理可以看出，对于基本的方法hashcode以及equals方法都是没有进行拦截的。
   - ```
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -334,7 +367,7 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
     			}
     }
     ```
-### <a name="14">AspectJ的方法织入</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="15">AspectJ的方法织入</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - AspectJ的Aop 在方法调用的时候添加了AOP对应的拦截方法，根据对应的拦截类型
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/methodAop.jpg)
 

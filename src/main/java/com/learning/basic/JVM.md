@@ -17,34 +17,34 @@
 
 ## 虚拟机数据区
 1、程序计数器
- - 定义：可以看作是当前线程所执行的字节码的行号指示器，为线程隔离的数据区。
- - java多线程切换时，每个线程独立的程序计数器，各条线程之间的计数器互不影响，独立存储，保证了线程切换后能恢复到正确的位置。
- - 唯一一个无OOM的区域
+- 定义：可以看作是当前线程所执行的字节码的行号指示器，为线程隔离的数据区。
+- java多线程切换时，每个线程独立的程序计数器，各条线程之间的计数器互不影响，独立存储，保证了线程切换后能恢复到正确的位置。
+- 唯一一个无OOM的区域
  
 2、Java虚拟机栈
- - 定义：每个方法执行的时候，Java虚拟机都会同步的创建一个栈帧用于储存局部变量表、操作数栈、动态链接、方法出口等信息。每个方法被调用直至执行完毕的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
+- 定义：每个方法执行的时候，Java虚拟机都会同步的创建一个栈帧用于储存局部变量表、操作数栈、动态链接、方法出口等信息。每个方法被调用直至执行完毕的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
     - > 栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息
- - 局部变量表存放了编译期可知的各种Java虚拟机基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference类型）和returnAddress类型（指向一条字节码指令的地址）、
- - 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。 
+- 局部变量表存放了编译期可知的各种Java虚拟机基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference类型）和returnAddress类型（指向一条字节码指令的地址）、
+- 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。 
  
 3、本地方法栈
- - 定义：为虚拟机使用到的本地（Native）方法服务。
- - HotSpot直接把本方法栈和虚拟机栈合二为一。
- - 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。
+- 定义：为虚拟机使用到的本地（Native）方法服务。
+- HotSpot直接把本方法栈和虚拟机栈合二为一。
+- 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。
  
 4、Java堆
- - 定义:是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。
- - 参数-Xmx和-Xms 最大堆内存和最小堆内存
+- 定义:是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。
+- 参数-Xmx和-Xms 最大堆内存和最小堆内存
  ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/jvm/picture/hotstop-heap.jpg)
 
 5、方法区
- - 定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
- - JDK8以前使用永久代来实现方法区（-XX:MaxPermSize 设置上限）
+- 定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
+- JDK8以前使用永久代来实现方法区（-XX:MaxPermSize 设置上限）
   - 方法区类似于接口，永久代类似于实现类的关系。使用永久代的时候，可以设置内存上限，而且不同的虚拟机的实现不一样，因此更容易遇到内存溢出的问题。
  
 6、运行时常量池
- - 定义：运行时常量池是方法区的一部分。Class文件除类字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，在类加载后存放到方法区的运行时常量池中。
- - 运行时常量池具备动态性，运行期间可以将新的常量放入池中，当无法申请到空间抛出OutOfMemoryError异常。
+- 定义：运行时常量池是方法区的一部分。Class文件除类字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，在类加载后存放到方法区的运行时常量池中。
+- 运行时常量池具备动态性，运行期间可以将新的常量放入池中，当无法申请到空间抛出OutOfMemoryError异常。
 
   
   
@@ -191,41 +191,56 @@
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/jvm/picture/parallel.jpg)
 
 #### CMS(Concurrent Mark Sweep)收集器
-- 定义：一种以获取最短回收停顿时间为目标的收集器，工作于老年代。
-- 运行过程解析：基于标记-清除算法实现，具体步骤如下，
-  - 初始标记：仅仅标记一下GC Root对象能直接关联到的对象，速度很快，需要暂停所有线程。
-  - 并发标记：从GC Root关联对象开始遍历整个对象图的过程，可以与用户线程共同执行。
-  - 重新标记：因用户程序继续运行而导致标记产生变动的那部分对象的标记记录，通常比初始标记长远比并发标记段。
-  - 并发清除：清理删除掉标记阶段判断的已经死亡的对象，由于不需要移动对象，因此可以与用户线程共同执行。
-- 特点：
-  - 1.对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此弱核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
-  - 2.无法处理“浮动垃圾”，有可能出现并发模式失败进而导致一次Full GC。浮动垃圾为出现在标记过程结束之后产生的对象。因为CMS要支持手机过程中与用户线程并存，因此不能在老年代几乎被填满时再运行，需要预留一部分空间供并发收集的程序运行。
+定义：一种以获取最短回收停顿时间为目标的收集器，工作于老年代。
+
+运行过程解析：基于标记-清除算法实现，具体步骤如下，
+- 初始标记：仅仅标记一下GC Root对象能直接关联到的对象，速度很快，需要暂停所有线程。
+- 并发标记：从GC Root关联对象开始遍历整个对象图的过程，可以与用户线程共同执行。
+- 重新标记：因用户程序继续运行而导致标记产生变动的那部分对象的标记记录，通常比初始标记长远比并发标记段。
+- 并发清除：清理删除掉标记阶段判断的已经死亡的对象，由于不需要移动对象，因此可以与用户线程共同执行。
+
+特点：
+1. 对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此弱核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
+2. 无法处理“浮动垃圾”，有可能出现并发模式失败进而导致一次Full GC。浮动垃圾为出现在标记过程结束之后产生的对象。因为CMS要支持手机过程中与用户线程并存，因此不能在老年代几乎被填满时再运行，需要预留一部分空间供并发收集的程序运行。
     - JDK5中设置CMS在老年代使用了68%便会激活，JDK6默认的设置提高到92%。当运行预留的内存无法满足程序分配新对象的需要，就会出现一次“并发失败”。后备预案为冻结用户线程，启用Serial Old进行老年代的垃圾收集。
-    - -XX:CMSInitiatingOccupancyFraction 可以设置触发CMS收集的百分比。
-  - 参数-XX:CMSFullGCsBeforeCompaction：作用是要求CMS收集器在执行过若干次不整理的Full GC之后，下一次先进行碎片整理(默认值为0，表示每次FullGC都进行碎片整理) 
+    - `-XX:CMSInitiatingOccupancyFraction `可以设置触发CMS收集的百分比。
+- 参数-XX:CMSFullGCsBeforeCompaction：作用是要求CMS收集器在执行过若干次不整理的Full GC之后，下一次先进行碎片整理(默认值为0，表示每次FullGC都进行碎片整理) 
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/jvm/picture/cms-1.jpg)
 
 #### Garbage First 收集器
-- 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中还有一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
+定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中还有一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
+
 - 参数Region的大小可通过-XX:G1HeapRegionSize设定，取值范围为1M~32M，为2的N次幂。
 - 用户设定的允许收集停顿时间使用参数-XX:MaxGCPauseMills指定，默认为200毫秒。调的调小会导致每次的回收集只占内存的很小一部分，收集的速度慢于分配的速度导致垃圾堆积，进而引发Full GC。正常设置为100~300毫秒之间。
-- 运行步骤：
-  1. 初始标记：标记GC Root对象能直接关联的对象并修改TAMS指针的值为正确的空区域。需要暂停线程，但是时间很短，借用进行Minor GC时同步完成。
-  2. 并发标记：根据GC Root进行可达性分析，扫描对象图。完成扫描后，处理SATB记录下并发时有引用变动的对象。
-  3. 最终标记：短暂暂停用户线程，处理并发阶段结束后，少量的SATB记录。
-  4. 筛选回收：更新Region的统计数据，进行回收价值和成本的排序，根据用户期望的停顿时间来构建回收集合。回收集合的存活对象复制到空的Region，再清理旧的Region。涉及到对象移动，需要暂停用户线程，使用多线程并行完成移动。
-- G1整体是基于标记-整理算法实现的收集器，但从局部优势基于标记-复制算法实现。
-- 特点:
-  1. 避免在整个Java堆进行全区域的垃圾回收，而是让G1跟踪每个Region的垃圾回收的价值及回收所需的时间，在后台维护一个优先级表。根据用户设定的允许收集停顿时间，优先回收价值收益最大的Region。(使用参数-XX:MaxGCPauseMills指定)
-  2. G1收集器每个Region都需要自己的记忆集，记录跨区域引用，因此比其他收集器要耗费内存，大约为java堆内存容量10%~20%。
-  3. 通过在Region中划分空间(使用两TAMS指针，标记一块区域)用于并发回收的新对象分配，解决并发标记阶段与用户线程互不干扰。同样若内存分配速度大于内存回收速度，也许冻结用户线程Full GC。
-  4. CMS使用增量更新算法，而G1使用原始快照(SATB)算法来解决，用户线程改变对象的引用关系，不打破原有的对象图结构，防止标记错误。
-  5. 可靠停顿预测模型的建立：根据每个Region的回收成本，分析出收集的平均值、标准偏差、置信度等统计信息。
+
+运行步骤：
+1. 初始标记：标记GC Root对象能直接关联的对象并修改TAMS指针的值为正确的空区域。需要暂停线程，但是时间很短，借用进行Minor GC时同步完成。
+2. 并发标记：根据GC Root进行可达性分析，扫描对象图。完成扫描后，处理SATB记录下并发时有引用变动的对象。
+3. 最终标记：短暂暂停用户线程，处理并发阶段结束后，少量的SATB记录。
+4. 筛选回收：更新Region的统计数据，进行回收价值和成本的排序，根据用户期望的停顿时间来构建回收集合。回收集合的存活对象复制到空的Region，再清理旧的Region。涉及到对象移动，需要暂停用户线程，使用多线程并行完成移动。
+
+G1整体是基于标记-整理算法实现的收集器，但从局部优势基于标记-复制算法实现。
+
+特点:
+1. 避免在整个Java堆进行全区域的垃圾回收，而是让G1跟踪每个Region的垃圾回收的价值及回收所需的时间，在后台维护一个优先级表。根据用户设定的允许收集停顿时间，优先回收价值收益最大的Region。(使用参数-XX:MaxGCPauseMills指定)
+2. G1收集器每个Region都需要自己的记忆集，记录跨区域引用，因此比其他收集器要耗费内存，大约为java堆内存容量10%~20%。
+3. 通过在Region中划分空间(使用两TAMS指针，标记一块区域)用于并发回收的新对象分配，解决并发标记阶段与用户线程互不干扰。同样若内存分配速度大于内存回收速度，也许冻结用户线程Full GC。
+4. CMS使用增量更新算法，而G1使用原始快照(SATB)算法来解决，用户线程改变对象的引用关系，不打破原有的对象图结构，防止标记错误。
+5. 可靠停顿预测模型的建立：根据每个Region的回收成本，分析出收集的平均值、标准偏差、置信度等统计信息。
 - 缺点：内存占用过高，在小内存应用上CMS的表现大于G1。
   
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/jvm/picture/g1.jpg)
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/jvm/picture/g1-memory.jpg)
+
+#### CMS 与 G1 对比
+CMS 以获取最短回收停顿时间为目标的收集器，基于分代收集理念设计。
+G1 GC 这是一种兼顾吞吐量和停顿时间的 GC 实现，基于分区收集理念设计，部分结合分代收集理念。
+
+1. 对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此弱核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
+2. 无法处理“浮动垃圾”，有可能出现并发模式失败进而导致一次Full GC。浮动垃圾为出现在标记过程结束之后产生的对象。因为CMS要支持手机过程中与用户线程并存，因此不能在老年代几乎被填满时再运行，需要预留一部分空间供并发收集的程序运行。
+
+TODO
 
 #### 其他的垃圾收集器
 - Shenandoah 收集器：仅存在OpenJdk，区别G1的特点为支持并发整理，使用转发指针和读屏障实现。
@@ -409,6 +424,42 @@ java相关的三层类加载器
     }
 ```
 
+#### 自定义类加载器
+1. 加载非classpath下的类，从非标准的来源加载代码
+2. 加载加密过的类文件，使用秘钥进行解密。
+
+```
+public class MyClassLoader extends ClassLoader {
+ 
+    private String classPath;
+ 
+    public MyClassLoader(String classPath) {
+        this.classPath = classPath;
+    }
+ 
+    private byte[] loadByte(String name) throws Exception {
+        name = name.replaceAll("\\.", "/");
+        FileInputStream fis = new FileInputStream(classPath + "/" + name + ".class");
+        int len = fis.available();
+        byte[] data = new byte[len];
+        fis.read(data);
+        fis.close();
+        return data;
+    }
+ 
+    @Override
+    protected Class<?> findClass(String name) {
+        byte[] data = new byte[0];
+        try {
+            data = loadByte(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return defineClass(name, data, 0, data.length);
+    }
+}
+```
+
 ### 类初始化的时机
 - Java 虚拟机规范没有强制约束类加载过程的第一阶段（即：加载）什么时候开始，但对于“初始化”阶段，有着严格的规定。有且仅有 5 种情况必须立即对类进行“初始化”：
   - 在遇到 new、putstatic、getstatic、invokestatic 字节码指令时，如果类尚未初始化，则需要先触发其初始化。
@@ -485,6 +536,56 @@ public static final int v = 8080;
 4. 设置对象头：进行对象的必要设置如那个类的示例、hashcode、GC分代年龄等信息，这些信息存放在对象头中。
 5. 上数工作完成之后，java开始调用对象的构造函数。
 
+
+## 堆内存的设置要点
+1. 新生代的内存大小设置建议：Sun官方推荐配置为整个堆的3/8。
+2. 服务器的内存需要预留一部分给永久代、线程栈及NIO
+
+- 内存分配问题
+省略比较小的区域，可以总结JVM占用的内存：
+- JVM内存 ≈ Java永久代 ＋ Java堆(新生代和老年代) ＋ 线程栈＋ Java NIO
+
+假设原来的内存分配是：6g(java堆) ＋ 600m(监控) ＋ 800m(系统)，剩余大约600m内存未分配。
+
+现在分析这600m内存的分配情况：
+1. Linux保留大约200m，这部分是Linux正常运行的需要，
+2. Java服务的线程数量是160个，JVM默认的线程栈大小是1m，因此使用160m内存，
+3. Java NIO buffer，通过JMX查到最多占用了200m，
+4. Java服务使用NIO大量读写文件，需要使用PageCache，正如前面分析，这个暂时不好定量估算大小。
+前三项加起来已经560m，因此可以断定Linux物理内存不够使用。
+
+
+以下是sun公司的性能优化白皮书中提到的几个例子： 
+1．对于吞吐量的调优。机器配置：4G的内存，32个线程并发能力。 
+```
+java -Xmx3800m -Xms3800m -Xmn2g -Xss128k -XX:+UseParallelGC -XX:ParallelGCThreads=20 
+
+-Xmx3800m -Xms3800m 配置了最大Java Heap来充分利用系统内存。 
+-Xmn2g 创建足够大的青年代（可以并行被回收）充分利用系统内存，防止将短期对象复制到老年代。 
+-Xss128 减少默认最大的线程栈大小，提供更多的处理虚拟内存地址空间被进程使用。 
+-XX:+UseParallelGC 采用并行垃圾收集器对年青代的内存进行收集，提高效率。 
+-XX:ParallelGCThreads=20 减少垃圾收集线程，默认是和服务器可支持的线程最大并发数相同，往往不需要配置到最大值。 
+
+```
+2．尝试采用对老年代并行收集 
+```
+java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:+UseParallelGC -XX:ParallelGCThreads=20 -XX:+UseParallelOldGC 
+
+-Xmx3550m -Xms3550m 内存分配被减小，因为ParallelOldGC会增加对于Native Heap的需求，因此需要减小Java Heap来满足需求。 
+-XX:+UseParallelOldGC 采用对于老年代并发收集的策略，可以提高收集效率。 
+```
+
+3．提高吞吐量，减少应用停顿时间 
+```
+java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:SurvivorRatio=8 -XX:TargetSurvivorRatio=90 -XX:MaxTenuringThreshold=31 
+
+-XX:+UseConcMarkSweepGC -XX:+UseParNewGC 选择了并发标记交换收集器，它可以并发执行收集操作，降低应用停止时间，同时它也是并行处理模式，可以有效地利用多处理器的系统的多进程处理。 
+-XX:SurvivorRatio=8 -XX:MaxTenuringThreshold=31 表示在青年代中Eden和Survivor比例，设置增加了Survivor的大小，越大的survivor空间可以允许短期对象尽量在年青代消亡。 
+-XX:TargetSurvivorRatio=90 允许90%的空间被占用，超过默认的50%，提高对于survivor的使用率。
+```
+
+- 相关文章： https://zhuanlan.zhihu.com/p/61049063?utm_source=wechat_session
+
 ## CMS + ParNew收集器的流程梳理
 
 ### young区域(年轻代)
@@ -511,7 +612,7 @@ public static final int v = 8080;
 ### old区域(老年代)
 #### CMS GC原因
 触发 CMS GC有：
-1. Old 区达到回收阈值.
+1. Old 区达到回收阈值
 2. MetaSpace 空间不足
 3. Young 区晋升失败
 4. 大对象担保失败
@@ -782,7 +883,7 @@ JVM 的堆外内存泄漏，主要有两种的原因：
 3. jmap -heap pid 导出堆的分配情况
 
 原因为Evosuite自动生成的test中存在：
-1. StringUtils的expend 测试，延长字符串到1610613374长度。jdk8，String内部使用char数组。
+1. StringUtils的expend测试，延长字符串到1610613374长度。jdk8，String内部使用char数组。
 2. 调用Util类分配694225808 长度的ArrayList 数组空间，并分配元素。
 3. 死循环线程
 
