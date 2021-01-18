@@ -506,6 +506,7 @@ class UnionFindSet {
     }
 ```
 
+冗余连接：https://leetcode-cn.com/problems/redundant-connection/
 
 
 
@@ -572,4 +573,3 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
-## 

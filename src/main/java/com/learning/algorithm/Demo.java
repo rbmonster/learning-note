@@ -23,33 +23,33 @@ import java.util.stream.Collectors;
 public class Demo {
 
     public static void main(String[] args) {
-        String ad = "";
-        Demo main = new Demo();
-        int[][] matrix = {
-                {1, 2, 2, 3, 5},
-                {3, 2, 3, 4, 4},
-                {2, 4, 5, 3, 1},
-                {6, 7, 1, 4, 5},
-                {5, 1, 1, 2, 4}
-        };
-        int[][] xx = {{0, 1, 0, 0, 1, 1, 0}, {1, 0, 0, 0, 0, 0, 0}, {1, 0, 0, 1, 1, 1, 1}, {0, 1, 0, 0, 0, 0, 0}, {1, 0, 0, 0, 0, 0, 1}, {1, 0, 0, 1, 0, 0, 0}, {1, 0, 1, 0, 0, 1, 0}};
-//        System.out.println(main.shortestPathBinaryMatrix(xx));
-        Map<Integer, Integer> map = new HashMap<>();
-        map.put(1, 2);
-        System.out.println(map);
-        map.putIfAbsent(1, 4);
-        map.putIfAbsent(2, 4);
-        System.out.println(map);
-        int mer = map.merge(1, 6, (v1, v2) -> v1 + v2);
-        System.out.println(map);
-        int value = 123123;
-        int key2 = map.computeIfAbsent(2, k -> value);
-        int key3 = map.computeIfAbsent(3, k -> value);
-        System.out.println(map);
-        int res = map.computeIfPresent(3, (key, oldVal) -> oldVal - 1);
-        System.out.println(map);
-        int result1 = map.compute(3, (key, oldValue) -> oldValue - 10);
-        int[][] example = new int[][]{{1,1,0}, {1,1,0},{0,0,1}};
+//        String ad = "";
+//        Demo main = new Demo();
+//        int[][] matrix = {
+//                {1, 2, 2, 3, 5},
+//                {3, 2, 3, 4, 4},
+//                {2, 4, 5, 3, 1},
+//                {6, 7, 1, 4, 5},
+//                {5, 1, 1, 2, 4}
+//        };
+//        int[][] xx = {{0, 1, 0, 0, 1, 1, 0}, {1, 0, 0, 0, 0, 0, 0}, {1, 0, 0, 1, 1, 1, 1}, {0, 1, 0, 0, 0, 0, 0}, {1, 0, 0, 0, 0, 0, 1}, {1, 0, 0, 1, 0, 0, 0}, {1, 0, 1, 0, 0, 1, 0}};
+////        System.out.println(main.shortestPathBinaryMatrix(xx));
+//        Map<Integer, Integer> map = new HashMap<>();
+//        map.put(1, 2);
+//        System.out.println(map);
+//        map.putIfAbsent(1, 4);
+//        map.putIfAbsent(2, 4);
+//        System.out.println(map);
+//        int mer = map.merge(1, 6, (v1, v2) -> v1 + v2);
+//        System.out.println(map);
+//        int value = 123123;
+//        int key2 = map.computeIfAbsent(2, k -> value);
+//        int key3 = map.computeIfAbsent(3, k -> value);
+//        System.out.println(map);
+//        int res = map.computeIfPresent(3, (key, oldVal) -> oldVal - 1);
+//        System.out.println(map);
+//        int result1 = map.compute(3, (key, oldValue) -> oldValue - 10);
+//        int[][] example = new int[][]{{1,1,0}, {1,1,0},{0,0,1}};
 //        System.out.println(main.findCircleNum(example));
 //        System.out.println(main.findDuplicate(new int[] {1,2,3,3,4}));
 //        System.out.println(main.hammingDistance(1,4));
@@ -71,7 +71,60 @@ public class Demo {
 //         treeSet.add(3);
 //         treeSet.add(4);
 //        System.out.println(treeSet.last());
+        new Demo().permutation("aab");
+
     }
+    public String[] permutation(String s) {
+        char[] array = s.toCharArray();
+        Arrays.sort(array);
+        List<String> result = new ArrayList<>();
+        boolean[] reach = new boolean[array.length];
+        dfs(result,reach,new StringBuilder(), array );
+        String[]res = new String[result.size()];
+        result.toArray(res);
+        return res;
+    }
+
+    public void dfs(List<String>result, boolean[] reach,StringBuilder sb, char[] array ) {
+        if(sb.length() == array.length) {
+            result.add(sb.toString());
+            return;
+        }
+        for(int i = 0;i< array.length;i++) {
+            if(reach[i] || i>0 && array[i] == array[i-1] && !reach[i-1]){
+                continue;
+            }
+            sb.append(array[i]);
+            reach[i] =true;
+            dfs(result, reach, sb, array);
+            sb.deleteCharAt(sb.length()-1);
+            reach[i] =false;
+        }
+    }
+
+    public String frequencySort(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        for(char ch : s.toCharArray()) {
+            map.put(ch, map.getOrDefault(ch,0)+1);
+        }
+        PriorityQueue<Pair<Character, Integer>> queue = new PriorityQueue<>((o1, o2) -> {
+            return  o2.getValue() - o1.getValue();
+        });
+        for(Map.Entry<Character, Integer> entry: map.entrySet()) {
+            queue.add(new Pair(entry.getKey(), entry.getValue()));
+        }
+        StringBuilder sb = new StringBuilder();
+        while(!queue.isEmpty()){
+            Pair<Character, Integer> entry = queue.poll();
+            int time = entry.getValue();
+            while(time>0) {
+                sb.append(entry.getKey());
+                time--;
+            }
+        }
+        return sb.toString();
+    }
+
     Map<String, Integer> note = new HashMap<>();
 
     public void insert(String key, int val) {
