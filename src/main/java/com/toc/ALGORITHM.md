@@ -29,7 +29,6 @@
 &emsp;<a href="#26">11. 单调栈</a>  
 &emsp;<a href="#27">12. 单调队列</a>  
 &emsp;<a href="#28">13. 前缀树</a>  
-&emsp;<a href="#29">14. </a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -538,6 +537,7 @@ class UnionFindSet {
     }
 ```
 
+冗余连接：https://leetcode-cn.com/problems/redundant-connection/
 
 
 
@@ -604,4 +604,3 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
-## <a name="29"></a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

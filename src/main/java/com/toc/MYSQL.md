@@ -37,60 +37,62 @@
 &emsp;&emsp;<a href="#34">3.6. 悲观锁</a>  
 &emsp;&emsp;<a href="#35">3.7. 乐观锁</a>  
 &emsp;<a href="#36">4. redo log、undo log、binlog</a>  
-&emsp;&emsp;<a href="#37">4.1. undo log</a>  
-&emsp;&emsp;<a href="#38">4.2. redo log</a>  
-&emsp;&emsp;&emsp;<a href="#39">4.2.1. redo log 写入机制</a>  
-&emsp;&emsp;<a href="#40">4.3. binlog</a>  
-&emsp;&emsp;&emsp;<a href="#41">4.3.1. bin log写入机制</a>  
-&emsp;&emsp;<a href="#42">4.4. 两种日志区别</a>  
-&emsp;&emsp;<a href="#43">4.5. 两阶段提交</a>  
-&emsp;&emsp;&emsp;<a href="#44">4.5.1. 为何需要两个日志</a>  
-&emsp;&emsp;&emsp;<a href="#45">4.5.2. 两阶段提交的实际执行流程</a>  
-&emsp;<a href="#46">5. 实际sql的执行</a>  
-&emsp;&emsp;<a href="#47">5.1. count(*)实现</a>  
-&emsp;&emsp;<a href="#48">5.2. order by 处理流程</a>  
-&emsp;&emsp;&emsp;<a href="#49">5.2.1. 全字段排序</a>  
-&emsp;&emsp;&emsp;<a href="#50">5.2.2. rowId排序</a>  
-&emsp;&emsp;<a href="#51">5.3. join的执行过程</a>  
-&emsp;&emsp;&emsp;<a href="#52">5.3.1. Index Nested-Loop Join</a>  
-&emsp;&emsp;&emsp;<a href="#53">5.3.2. Simple Nested-Loop Join</a>  
-&emsp;&emsp;&emsp;<a href="#54">5.3.3. Block Nested-Loop Join</a>  
-&emsp;&emsp;&emsp;<a href="#55">5.3.4. join语句mysql的优化</a>  
-&emsp;&emsp;&emsp;<a href="#56">5.3.5. 总结</a>  
-&emsp;&emsp;<a href="#57">5.4. union执行流程</a>  
-&emsp;&emsp;&emsp;<a href="#58">5.4.1. union all</a>  
-&emsp;&emsp;<a href="#59">5.5. group by 执行流程</a>  
-&emsp;&emsp;&emsp;<a href="#60">5.5.1. group by 优化 ——索引</a>  
-&emsp;&emsp;&emsp;<a href="#61">5.5.2. group by 优化 —— 直接排序</a>  
-&emsp;<a href="#62">6. 数据库设计</a>  
-&emsp;&emsp;<a href="#63">6.1. 数据库设计原则</a>  
-&emsp;&emsp;&emsp;<a href="#64">6.1.1. 第一范式(列不可再分)</a>  
-&emsp;&emsp;&emsp;<a href="#65">6.1.2. 第二范式(确保表中的每列都和主键相关)</a>  
-&emsp;&emsp;&emsp;<a href="#66">6.1.3. 第三范式(确保每列都和主键列直接相关,而不是间接相关)</a>  
-&emsp;&emsp;&emsp;<a href="#67">6.1.4. 相关资料</a>  
-&emsp;&emsp;<a href="#68">6.2. 表字段设计</a>  
-&emsp;&emsp;&emsp;<a href="#69">6.2.1. 乐观锁字段</a>  
-&emsp;&emsp;&emsp;<a href="#70">6.2.2. 通用字段</a>  
-&emsp;&emsp;&emsp;<a href="#71">6.2.3. 日期字段的选择</a>  
-&emsp;&emsp;<a href="#72">6.3. 实际设计问题 —— 设计部门表 </a>  
-&emsp;<a href="#73">7. 分库分表</a>  
-&emsp;&emsp;<a href="#74">7.1. 分库分表有了解吗？</a>  
-&emsp;&emsp;<a href="#75">7.2. 垂直切分</a>  
-&emsp;&emsp;<a href="#76">7.3. 水平切分</a>  
-&emsp;<a href="#77">8. 其他面试题</a>  
-&emsp;&emsp;<a href="#78">8.1. mysql数据库抖动</a>  
-&emsp;&emsp;<a href="#79">8.2. 读已提交和可重复读是如何实现的</a>  
-&emsp;&emsp;<a href="#80">8.3. 读已提交和可重复读区别。</a>  
-&emsp;&emsp;<a href="#81">8.4. 数据库数据库一致性是如何实现的？</a>  
-&emsp;&emsp;<a href="#82">8.5. redolog、undolog、binlog区别？</a>  
-&emsp;&emsp;<a href="#83">8.6. 两种日志有以下三点不同。</a>  
-&emsp;&emsp;<a href="#84">8.7. 数据库什么情况会出现死锁？如何处理死锁？</a>  
-&emsp;&emsp;<a href="#85">8.8. 如何优化SQL</a>  
-&emsp;&emsp;<a href="#86">8.9. 数据库连接池、数据库连接线程安全的吗？</a>  
-&emsp;&emsp;<a href="#87">8.10. mysql 查询大表</a>  
-&emsp;&emsp;&emsp;<a href="#88">8.10.1. 延迟关联</a>  
-&emsp;&emsp;&emsp;<a href="#89">8.10.2. 小案例</a>  
-&emsp;&emsp;<a href="#90">8.11. InnoDB 和 MyIsam 数据库引擎的区别</a>  
+&emsp;&emsp;<a href="#37">4.1. undo log 与 MVCC</a>  
+&emsp;&emsp;&emsp;<a href="#38">4.1.1. undo log</a>  
+&emsp;&emsp;&emsp;<a href="#39">4.1.2. MVCC</a>  
+&emsp;&emsp;<a href="#40">4.2. redo log</a>  
+&emsp;&emsp;&emsp;<a href="#41">4.2.1. redo log 写入机制</a>  
+&emsp;&emsp;<a href="#42">4.3. binlog</a>  
+&emsp;&emsp;&emsp;<a href="#43">4.3.1. bin log写入机制</a>  
+&emsp;&emsp;<a href="#44">4.4. 两种日志区别</a>  
+&emsp;&emsp;<a href="#45">4.5. 两阶段提交</a>  
+&emsp;&emsp;&emsp;<a href="#46">4.5.1. 为何需要两个日志</a>  
+&emsp;&emsp;&emsp;<a href="#47">4.5.2. 两阶段提交的实际执行流程</a>  
+&emsp;<a href="#48">5. 实际sql的执行</a>  
+&emsp;&emsp;<a href="#49">5.1. count(*)实现</a>  
+&emsp;&emsp;<a href="#50">5.2. order by 处理流程</a>  
+&emsp;&emsp;&emsp;<a href="#51">5.2.1. 全字段排序</a>  
+&emsp;&emsp;&emsp;<a href="#52">5.2.2. rowId排序</a>  
+&emsp;&emsp;<a href="#53">5.3. join的执行过程</a>  
+&emsp;&emsp;&emsp;<a href="#54">5.3.1. Index Nested-Loop Join</a>  
+&emsp;&emsp;&emsp;<a href="#55">5.3.2. Simple Nested-Loop Join</a>  
+&emsp;&emsp;&emsp;<a href="#56">5.3.3. Block Nested-Loop Join</a>  
+&emsp;&emsp;&emsp;<a href="#57">5.3.4. join语句mysql的优化</a>  
+&emsp;&emsp;&emsp;<a href="#58">5.3.5. 总结</a>  
+&emsp;&emsp;<a href="#59">5.4. union执行流程</a>  
+&emsp;&emsp;&emsp;<a href="#60">5.4.1. union all</a>  
+&emsp;&emsp;<a href="#61">5.5. group by 执行流程</a>  
+&emsp;&emsp;&emsp;<a href="#62">5.5.1. group by 优化 ——索引</a>  
+&emsp;&emsp;&emsp;<a href="#63">5.5.2. group by 优化 —— 直接排序</a>  
+&emsp;<a href="#64">6. 数据库设计</a>  
+&emsp;&emsp;<a href="#65">6.1. 数据库设计原则</a>  
+&emsp;&emsp;&emsp;<a href="#66">6.1.1. 第一范式(列不可再分)</a>  
+&emsp;&emsp;&emsp;<a href="#67">6.1.2. 第二范式(确保表中的每列都和主键相关)</a>  
+&emsp;&emsp;&emsp;<a href="#68">6.1.3. 第三范式(确保每列都和主键列直接相关,而不是间接相关)</a>  
+&emsp;&emsp;&emsp;<a href="#69">6.1.4. 相关资料</a>  
+&emsp;&emsp;<a href="#70">6.2. 表字段设计</a>  
+&emsp;&emsp;&emsp;<a href="#71">6.2.1. 乐观锁字段</a>  
+&emsp;&emsp;&emsp;<a href="#72">6.2.2. 通用字段</a>  
+&emsp;&emsp;&emsp;<a href="#73">6.2.3. 日期字段的选择</a>  
+&emsp;&emsp;<a href="#74">6.3. 实际设计问题 —— 设计部门表 </a>  
+&emsp;<a href="#75">7. 分库分表</a>  
+&emsp;&emsp;<a href="#76">7.1. 分库分表有了解吗？</a>  
+&emsp;&emsp;<a href="#77">7.2. 垂直切分</a>  
+&emsp;&emsp;<a href="#78">7.3. 水平切分</a>  
+&emsp;<a href="#79">8. 其他面试题</a>  
+&emsp;&emsp;<a href="#80">8.1. mysql数据库抖动</a>  
+&emsp;&emsp;<a href="#81">8.2. 读已提交和可重复读是如何实现的</a>  
+&emsp;&emsp;<a href="#82">8.3. 读已提交和可重复读区别。</a>  
+&emsp;&emsp;<a href="#83">8.4. 数据库数据库一致性是如何实现的？</a>  
+&emsp;&emsp;<a href="#84">8.5. redolog、undolog、binlog区别？</a>  
+&emsp;&emsp;<a href="#85">8.6. 两种日志有以下三点不同。</a>  
+&emsp;&emsp;<a href="#86">8.7. 数据库什么情况会出现死锁？如何处理死锁？</a>  
+&emsp;&emsp;<a href="#87">8.8. 如何优化SQL</a>  
+&emsp;&emsp;<a href="#88">8.9. 数据库连接池、数据库连接线程安全的吗？</a>  
+&emsp;&emsp;<a href="#89">8.10. mysql 查询大表</a>  
+&emsp;&emsp;&emsp;<a href="#90">8.10.1. 延迟关联</a>  
+&emsp;&emsp;&emsp;<a href="#91">8.10.2. 小案例</a>  
+&emsp;&emsp;<a href="#92">8.11. InnoDB 和 MyIsam 数据库引擎的区别</a>  
 # <a name="0">MySQL</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">MySQL基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -365,18 +367,26 @@ InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过
 `update xx set name = aaa and version = 3 where id = 'xxx' and version = 2'`
 
 ## <a name="36">redo log、undo log、binlog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="37">undo log</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">undo log 与 MVCC</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="38">undo log</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 undo log主要有两个作用：回滚和多版本控制(MVCC)
 
 在数据修改的时候，不仅记录了redo log，还记录undo log，如果因为某些原因导致事务失败或回滚了，可以用undo log进行回滚
 
 undo log主要存储的也是逻辑日志，比如我们要insert一条数据了，那undo log会记录的一条对应的delete日志。我们要update一条记录时，它会记录一条对应相反的update记录。
 
+#### <a name="39">MVCC</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 MVCC: 内部使用的一致性读快照称为Read View，在不同的隔离级别下，事务启动时或者SQL语句开始时，看到的数据快照版本可能也不同，在RR、RC隔离级别下会用到 Read view。
 > 当执行sql语句的时候会创建一致性视图，保证在本事务中可以做到可重复读。
 
+实现机制：InnoDB在每行数据都增加三个隐藏字段，一个唯一行号，一个记录创建的版本号，一个记录删除的版本号。
+- 创建版本号：insert操作时事务的id
+- 删除版本号：insert时为null，删除时为当前事务的id
+当读操作时，读取的是删除版本号为null，或者创建版本号最大的数据，保证我们读取的是最新的数据
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mvcc-line.png)
 
-### <a name="38">redo log</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="40">redo log</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 MySQL里经常说到的WAL技术，WAL的全称是WriteAheadLogging，它的关键点就是先写日志，再写磁盘，也就是先写粉板，等不忙的时候再写账本。
 - 当有一条记录需要更新的时候， InnoDB引擎就会先把记录写到redo log（粉板） 里面， 并更新内存， 这个时候更新就算完成了。 同时， InnoDB引擎会在适当的时候， 将这个操作记录更新到磁盘里面， 而这个更新往往是在系统比较空闲的时候做， 这就像打烊以后掌柜做的事。(由于磁盘连接开销大，)
 - InnoDB的redo log是固定大小的， 比如可以配置为一组4个文件， 每个文件的大小是1GB， 那么这块“粉板”总共就可以记录4GB的操作。 从头开始写， 写到末尾就又回到开头循环写， 如下面这个图所示
@@ -385,7 +395,7 @@ MySQL里经常说到的WAL技术，WAL的全称是WriteAheadLogging，它的关�
 
 redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志的。 在执行事务的时候，如insert、update会先存在buffer中。等事务commit，再一起写入redo log
 
-#### <a name="39">redo log 写入机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="41">redo log 写入机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologwrite.png)
 这三种状态分别是：
 1. 存在redo log buffer中， 物理上是在MySQL进程内存中， 就是图中的红色部分；
@@ -402,10 +412,10 @@ InnoDB写盘的三种情况：
 2. redo log buffer占用的空间即将达到 innodb_log_buffer_size一半的时候，后台线程会主动写盘。
 3. 并行的事务提交的时候， 顺带将这个事务的redo log buffer持久化到磁盘。 
 
-### <a name="40">binlog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">binlog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
 
-#### <a name="41">bin log写入机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="43">bin log写入机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/binlogwrite.jpg)
 每个线程有自己binlog cache， 但是共用同一份binlog文件。
 1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
@@ -416,13 +426,13 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
 2. row
 3. mix 上面两种的混合
 
-### <a name="42">两种日志区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="44">两种日志区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. redo log是InnoDB引擎特有的； binlog是MySQL的Server层实现的， 所有引擎都可以使用。
 2. redo log是物理日志， 记录的是“在某个数据页上做了什么修改”； binlog是逻辑日志， 记录的是这个语句的原始逻辑， 比如“给ID=2这一行的c字段加1 ”。
 3. redo log是循环写的， 空间固定会用完； binlog是可以追加写入的。 “追加写”是指binlog文件写到一定大小后会切换到下一个， 并不会覆盖以前的日志。
 4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
 
-### <a name="43">两阶段提交</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="45">两阶段提交</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/twocommit.jpg)
 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
 
@@ -442,7 +452,7 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
     - 如果碰到只有prepare、 而没有commit的redo log， 就拿着XID去binlog找对应的事务。
          
  
-#### <a name="44">为何需要两个日志</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="46">为何需要两个日志</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 只使用binlog的话，相当于一个update语句： => binlog write ->commit ->binlog write -> commit
     - 若崩溃在binlog write的阶段，就是crash-unsafe
 2. 只使用redo log，可以保证crash-safe。
@@ -450,18 +460,18 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
     - 很多公司有异构系统（比如一些数据分析系统） ， 这些系统就靠消费MySQL的binlog来更新自己的数据。 
     
     
-#### <a name="45">两阶段提交的实际执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="47">两阶段提交的实际执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/actualWrite.jpg)
 WAL机制主要得益于两个方面：
 1. redo log 和 binlog都是顺序写， 磁盘的顺序写比随机写速度要快；
 2. 组提交机制， 可以大幅度降低磁盘的IOPS消耗。
 
 
-## <a name="46">实际sql的执行</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="48">实际sql的执行</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一个sql 语句mysql的执行顺序：
 
 `from -- on  -- JOIN -- where -- group by -- having -- select -- distinct -- order by -- limit`
-### <a name="47">count(*)实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="49">count(*)实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 不同引擎中的实现
 - MyISAM引擎把一个表的总行数存在了磁盘上， 因此执行count(*)的时候会直接返回这个数，效率很高；
 - 而InnoDB引擎就麻烦了， 它执行count(*)的时候， 需要把数据一行一行地从引擎里面读出来， 然后累积计数
@@ -480,8 +490,8 @@ show table status 命令也可以显示行数，这里的行数是基于采样�
 - count(*)是例外， 并不会把全部字段取出来， 而是专门做了优化， 不取值。 count(*)肯定不是null， 按行累加。
 - 按照效率排序的话， count(字段)<count(主键id)<count(1)≈count(*)
   
-### <a name="48">order by 处理流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="49">全字段排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="50">order by 处理流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="51">全字段排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 CREATE TABLE `t` (
 `id` int(11) NOT NULL,
@@ -519,7 +529,7 @@ sort_buffer_size， 是MySQL为排序开辟的内存（sort_buffer） 的大小�
     ```
 这里的排序使用的是归并排序
 
-#### <a name="50">rowId排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="52">rowId排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 max_length_for_sort_data: 是MySQL中专门控制用于排序的行数据的长度的一个参数。 它的意思是， 如果单行的长度超过这个值， MySQL就认为单行太大， 要换一个算法。
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby3.jpg)
 - 主要体现在内存排序完毕之后要多一次查询。
@@ -536,8 +546,8 @@ order by rand()使用了内存临时表， 内存临时表排序的时候使用�
   
 直接使用order by rand()， 这个语句需要Using temporary和 Using filesort， 查询的执行代价往往是比较大的
 
-### <a name="51">join的执行过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="52">Index Nested-Loop Join</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="53">join的执行过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="54">Index Nested-Loop Join</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 select * from t1 straight_join t2 on (t1.a=t2.a);
 ```
@@ -553,17 +563,17 @@ select * from t1 straight_join t2 on (t1.a=t2.a);
 2. 而对于每一行R， 根据a字段去表t2查找， 走的是树搜索过程。 由于我们构造的数据都是一一对应的， 因此每次的搜索过程都只扫描一行， 也是总共扫描100行；
 3. 所以， 整个执行流程， 总扫描行数是200。
 
-#### <a name="53">Simple Nested-Loop Join</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="55">Simple Nested-Loop Join</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 select * from t1 straight_join t2 on (t1.a=t2.b);
 ```
 - 表t2的字段b上没有索引，关联查询使用全表扫描。
 - SQL请求就要扫描表t2多达100次， 总共扫描100*1000=10万行。
 
-#### <a name="54">Block Nested-Loop Join</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="56">Block Nested-Loop Join</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 将驱动表数据读入线程内存join_buffer中，同样以全表扫描，但是因为使用内存操作，速度比上述方法快。
 
-#### <a name="55">join语句mysql的优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="57">join语句mysql的优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Multi-Range Read优化
 - 大多数的数据都是按照主键递增顺序插入得到的， 所以可以认为， 如果按照主键的递增顺序查询的话， 对磁盘的读比较接近顺序读， 能够提升读性能
 - MRR优化思路即将查询的关联集合排序，再关联查询，提高查询效率。将随机访问改成范围访问。
@@ -572,13 +582,13 @@ Batched Key Access （BAK）
 - 将驱动表数据取出放join_buffer中，进行排序再关联查询。
 - join_buffer内存不够大时，进行多次的重复操作。
 
-#### <a name="56">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="58">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 尽量使用被驱动表的索引，即关联表的字段为索引。
 2. 不能使用被驱动表的索引， 只能使用Block Nested-Loop Join算法， 这样的语句就尽量不要使用；
 3. 在使用join的时候， 应该让小表做驱动表。
 4. 把join 的条件写在where和写在on中区别为，一个为连接的条件。
 
-### <a name="57">union执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="59">union执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 (select 1000 as f) union (select id from t1 order by id desc limit 2);
 ```
@@ -590,13 +600,13 @@ Batched Key Access （BAK）
 3. 执行第二个子查询：拿到第一行id=1000， 试图插入临时表中。 但由于1000这个值已经存在于临时表了， 违反了唯一性约束， 所以插入失败， 然后继续执行；取到第二行id=999， 插入临时表成功。
 4. 从临时表中按行取出数据， 返回结果， 并删除临时表， 结果中包含两行数据分别是1000和999
 
-#### <a name="58">union all</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="60">union all</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 (select 1000 as f) union all(select id from t1 order by id desc limit 2);
 ```
 - 与上面的区别为union all不需要除重，因此直接把查询结果放在结果集中返回。
 
-### <a name="59">group by 执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="61">group by 执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 select id%10 as m, count(*) as c from t1 group by m;
 ```
@@ -616,38 +626,38 @@ group by语句默认都会对语句进行排序，可以使用order by null 避�
 ```
 select id%10 as m, count(*) as c from t1 group by m order by null;
 ```
-#### <a name="60">group by 优化 ——索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="62">group by 优化 ——索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 索引保证了数据有序，在group by时候，分组计数计算时一片区域的id都是连续的，整个表扫描结束时便可以拿到结果，不需要临时表也不需要排序。
 
-#### <a name="61">group by 优化 —— 直接排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="63">group by 优化 —— 直接排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 确保数据量确实超过了sort buffer，可以直接强制mysql直接使用磁盘文件排序。
 ```
 select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 ```
 
 
-## <a name="62">数据库设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="64">数据库设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="63">数据库设计原则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="65">数据库设计原则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="64">第一范式(列不可再分)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="66">第一范式(列不可再分)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 第一范式是最基本的范式(确保每列保持原子性)。如果数据库表中的所有字段值都是不可分解的原子值，就说明该数据库表满足了第一范式。
 > 第一范式的合理遵循需要根据系统的实际需求来定。比如某些数据库系统中需要用到“地址”这个属性，本来直接将“地址”属性设计成一个数据库表的字段就行。但是如果系统经常会访问“地址”属性中的“城市”部分，那么就非要将“地址”这个属性重新拆分为省份、城市、详细地址等多个部分进行存储。
 
 
 
-#### <a name="65">第二范式(确保表中的每列都和主键相关)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="67">第二范式(确保表中的每列都和主键相关)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 第二范式需要确保数据库表中的每一列都和主键相关，而不能只与主键的某一部分相关（主要针对联合主键而言）。也就是说在一个数据库表中，一个表中只能保存一种数据，不可以把多种数据保存在同一张数据库表中。
 > 如一个订单的商品明细表，不应该订单主表的ID放到商品明细表中，会导致数据冗余
 
-#### <a name="66">第三范式(确保每列都和主键列直接相关,而不是间接相关)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="68">第三范式(确保每列都和主键列直接相关,而不是间接相关)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 第三范式需要确保数据表中的每一列数据都和主键直接相关，而不能间接相关。
 > 如一个订单表都会有客户字段，可以把客户编码作为一个外键跟订单表建立响应关系。
 
-#### <a name="67">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="69">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - https://www.cnblogs.com/linjiqin/archive/2012/04/01/2428695.html
 
-### <a name="68">表字段设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="70">表字段设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 规则：用尽量少的存储空间来存储一个字段的数据
 
 常用的类型：int、float、double、 decimal、varchar、char、 date、datetime等
@@ -658,13 +668,13 @@ select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 4. 业务中选择性很少的状态status、类型type等字段推荐使用tinytint或者smallint类型节省存储空间。
 5. 字段设置固定长度，对一个新增的列，mysql通常会分配固定的空间大小。太大的字段会造成空间浪费。
 6. 表达是与否概念的字段，必须使用 is_xxx 的方式命名，数据类型是 unsigned tinyint（ 1 表示是， 0 表示否）。
-#### <a name="69">乐观锁字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="71">乐观锁字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用version作为乐观锁的控制。
 
-#### <a name="70">通用字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="72">通用字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 创建人、创建时间、修改人、修改时间
 
-#### <a name="71">日期字段的选择</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="73">日期字段的选择</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  数据库日期的存储主要有三种：字符串、DataTime与Timestamp、时间戳
  
 使用字符串存储时间会有如下问题：
@@ -681,7 +691,7 @@ Datetime 和 Timestamp，通常会首选 Timestamp
 1. 使用4个字节存储，但是可读性太差
 2. 同样为4个字节可表示的时间范围比Timestamp大。
 
-### <a name="72">实际设计问题 —— 设计部门表 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="74">实际设计问题 —— 设计部门表 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 设计一张部门表应该有哪些必要字段？
 
 1. 部门基本信息。
@@ -691,12 +701,12 @@ Datetime 和 Timestamp，通常会首选 Timestamp
     2. 方案二，使用内存组装树节点数据。
 
 
-## <a name="73">分库分表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="75">分库分表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="74">分库分表有了解吗？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="76">分库分表有了解吗？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。
 
-### <a name="75">垂直切分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="77">垂直切分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 垂直分表定义：将一个表按照字段分成多表，每个表存储其中一部分字段。通常我们按以下原则进行垂直拆分:
 1. 把不常用的字段单独放在一张表;
 2. 把text，blob等大字段拆分出来放在附表中;
@@ -707,15 +717,15 @@ Datetime 和 Timestamp，通常会首选 Timestamp
 > 例如，我们会建立定义数据库 workDB、商品数据库 payDB、用户数据库 userDB、日志数据库 logDB 等，分别用于存储项目数据定义表、商品定义表、用户数据表、日志数据表等。
 
 
-### <a name="76">水平切分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="78">水平切分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 水平分库是把同一个表的数据按一定规则拆到不同的数据库中，每个库可以放在不同的服务器上。
 - 如将店铺ID为单数的和店铺ID为双数的商品信息分别放在两个库中。
 
 水平分表是在同一个数据库内，把同一个表的数据按一定规则拆到多个表中。
 
-## <a name="77">其他面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="79">其他面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="78">mysql数据库抖动</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="80">mysql数据库抖动</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 当内存数据页跟磁盘数据页内容不一致的时候， 我们称这个内存页为“脏页”。 
 - 在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
 
@@ -727,24 +737,24 @@ Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（fl
 - 第四种：MySql关闭时刷脏页。
 
 
-### <a name="79">读已提交和可重复读是如何实现的</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="81">读已提交和可重复读是如何实现的</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. ReadView：
     - 当进行查询操作时，事务会生成一个ReadView，ReadView是一个事务快照，准确来说是当前时间点系统内活跃的事务列表，也就是说系统内所有未提交的事务，都会记录在这个Readview内，事务就根据它来判断哪些数据是可见的，哪些是不可见的。
     - 查询一条数据时，事务会拿到这个ReadView，去到undo log中进行判断。若查询到某一条数据：
 2. undo log
     - 当事务对数据行进行一次更新操作时，会把旧数据行记录在一个叫做undo log的记录中，在undo log中除了记录数据行，还会记录下该行数据的对应的创建版本号，也就是生成这行数据的事务id。并连接原纪录
 
-### <a name="80">读已提交和可重复读区别。</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="82">读已提交和可重复读区别。</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 举两个事务线程的例子。
      
-### <a name="81">数据库数据库一致性是如何实现的？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="83">数据库数据库一致性是如何实现的？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 通过redolog 与binlog 两阶段提交 保证事务一致性。
 
-### <a name="82">redolog、undolog、binlog区别？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="84">redolog、undolog、binlog区别？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - redolog：确保事务的持久性。防止在发生故障的时间点，尚有脏页未写入磁盘，在重启mysql服务的时候，根据redo log进行重做，从而达到事务的持久性这一特性。
 - undo log：保存了事务发生之前的数据的一个版本，可以用于回滚，同时可以提供多版本并发控制下的读（MVCC），也即非锁定读
 
-### <a name="83">两种日志有以下三点不同。</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="85">两种日志有以下三点不同。</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. redo log是InnoDB引擎特有的； binlog是MySQL的Server层实现的， 所有引擎都可以使用。
 2. redo log是物理日志， 记录的是“在某个数据页上做了什么修改”； binlog是逻辑日志， 记录的是这个语句的原始逻辑， 比如“给ID=2这一行的c字段加1 ”。
 3. redo log是循环写的， 空间固定会用完； binlog是可以追加写入的。 “追加写”是指binlog文件写到一定大小后会切换到下一个， 并不会覆盖以前的日志。
@@ -753,7 +763,7 @@ Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（fl
   - 用于复制，在主从复制中，从库利用主库上的binlog进行重播，实现主从同步。 
   - 用于数据库的基于时间点的还原。
   
-### <a name="84">数据库什么情况会出现死锁？如何处理死锁？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="86">数据库什么情况会出现死锁？如何处理死锁？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 mysql 两个事物更新条件互斥，进入循环等待。
 
 使用mysql参数innodb_deadlock_detect设置为on， 表示开启这个死锁检测逻辑。
@@ -761,7 +771,7 @@ mysql 两个事物更新条件互斥，进入循环等待。
 show processlist;显示哪些线程正在运行。您也可以使用mysqladmin processlist语句得到此信息
   - 执行kill 命令
 
-### <a name="85">如何优化SQL</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="87">如何优化SQL</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 慢sql获取：通过慢查询日志获取sql语句
 2. 对sql进行基本的优化
     1. 针对select 部分，查看是否内连子查询、使用自定义函数、或者返回text的字段导致数据量过大消耗网络及IO
@@ -816,16 +826,16 @@ explain 分析例子
 - 相关资料：https://mp.weixin.qq.com/s/nEmN4S9JOTVGj5IHyfNtCw
 
 
-### <a name="86">数据库连接池、数据库连接线程安全的吗？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="88">数据库连接池、数据库连接线程安全的吗？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 数据库连接池就用用来保存数据库连接的一个池子。每当我们的业务代码需要和数据库进行交互时，就从这个池子里面取出一个数据库连接，然后在这个连接上进行查增删改操作。使用结束后，业务代码再将这个连接归还给这个池子，然后这个连接就可以被其他业务代码继续使用了。
 从过程中可以看出，数据库连接池是可以在多个线程中使用的，每个线程获取不同的数据库连接。因此是线程安全的。
 
 单个数据库连接肯定不是线程安全的，这就是需要实现数据库事务的原因。
 
-### <a name="87">mysql 查询大表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="89">mysql 查询大表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="88">延迟关联</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="90">延迟关联</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 通过子查询关联，子查询先把对应的主键id查询出来，再进行主表关联
 ```
 select * from user inner join 
@@ -833,7 +843,7 @@ select * from user inner join
 
 ```
 
-#### <a name="89">小案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="91">小案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 常规查询：
 ```
 select * from test_table 
@@ -861,7 +871,7 @@ INNER JOIN
 最大id查询法
 
 
-### <a name="90">InnoDB 和 MyIsam 数据库引擎的区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="92">InnoDB 和 MyIsam 数据库引擎的区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 事务处理：MyISAM是非事务安全型的，而InnoDB是事务安全型的（支持事务处理等高级处理）；
 2. 外键支持: mysiam表不支持外键，而InnoDB支持
 3. 锁机制不同：MyISAM是表级锁，而InnoDB是行级锁；

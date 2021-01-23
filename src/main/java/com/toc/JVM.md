@@ -510,7 +510,8 @@ java相关的三层类加载器
 #### <a name="36">自定义类加载器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 加载非classpath下的类，从非标准的来源加载代码
 2. 加载加密过的类文件，使用秘钥进行解密。
-
+3. 热部署，简单粗暴的方法是自定义类加载器，加载目录外的类对象。使用定时任务或者触发起的方法，每次创建新的类加载器。
+    - [相关资料](https://developer.ibm.com/zh/articles/j-lo-hotswapcls/)
 ```
 public class MyClassLoader extends ClassLoader {
  

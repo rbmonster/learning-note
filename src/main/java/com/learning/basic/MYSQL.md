@@ -272,15 +272,23 @@ InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过
 `update xx set name = aaa and version = 3 where id = 'xxx' and version = 2'`
 
 ## redo log、undo log、binlog
-### undo log
+### undo log 与 MVCC
+#### undo log
 undo log主要有两个作用：回滚和多版本控制(MVCC)
 
 在数据修改的时候，不仅记录了redo log，还记录undo log，如果因为某些原因导致事务失败或回滚了，可以用undo log进行回滚
 
 undo log主要存储的也是逻辑日志，比如我们要insert一条数据了，那undo log会记录的一条对应的delete日志。我们要update一条记录时，它会记录一条对应相反的update记录。
 
+#### MVCC
 MVCC: 内部使用的一致性读快照称为Read View，在不同的隔离级别下，事务启动时或者SQL语句开始时，看到的数据快照版本可能也不同，在RR、RC隔离级别下会用到 Read view。
 > 当执行sql语句的时候会创建一致性视图，保证在本事务中可以做到可重复读。
+
+实现机制：InnoDB在每行数据都增加三个隐藏字段，一个唯一行号，一个记录创建的版本号，一个记录删除的版本号。
+- 创建版本号：insert操作时事务的id
+- 删除版本号：insert时为null，删除时为当前事务的id
+当读操作时，读取的是删除版本号为null，或者创建版本号最大的数据，保证我们读取的是最新的数据
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mvcc-line.png)
 
 
 ### redo log

@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
  * @Date: 2020/11/24 13:11
  */
 public class Test {
+
+
     public static void main(String[] args) throws InterruptedException {
         Thread thread = new Thread(() -> {
             while (true){
@@ -21,7 +23,6 @@ public class Test {
                 } catch (InterruptedException e) {
                     System.out.println("wake up by interrupt");
                     e.printStackTrace();
-//                    Thread.currentThread().interrupt();
                 }
             }
         });
