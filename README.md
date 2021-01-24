@@ -49,6 +49,8 @@
 - [Redis数据结构的设计应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/REDIS_APPLICATION.md)
 - [敏感数据过滤设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SENSITIVE_FILTER.md)
 - [数据库读写分离](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/READ_WRITE_DB.md)
+- [数据库表相关设计题](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TABLE_DESIGN.md)
+- [会议系统设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MEETING_DESIGN.md)
 
 ## 分布式与微服务
 - [Spring Cloud相关知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING-CLOUD.md)
@@ -64,7 +66,7 @@
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
 - [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
 - [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
-- [MySql45讲](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
+- [MySql45讲](https://github.com/rbmonster/learningA-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
 - [java集合类(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/COLLECTION_BOOK.md)
 - [java并发(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CONCURRENT_BOOK.md)
 

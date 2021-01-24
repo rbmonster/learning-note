@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.learning.mybatis.dao.DemoMapper">
+  <resultMap id="BaseResultMap" type="com.learning.mybatis.entity.Demo">
+    <id column="demo_id" jdbcType="BIGINT" property="demoId" />
+    <result column="demo_code" jdbcType="VARCHAR" property="demoCode" />
+    <result column="demo_name" jdbcType="VARCHAR" property="demoName" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="status_desc" jdbcType="VARCHAR" property="statusDesc" />
+    <result column="demo_qty" jdbcType="INTEGER" property="demoQty" />
+    <result column="demo_rate" jdbcType="DECIMAL" property="demoRate" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_by_name" jdbcType="VARCHAR" property="createByName" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_by_name" jdbcType="VARCHAR" property="updateByName" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    demo_id, demo_code, demo_name, status, status_desc, demo_qty, demo_rate, start_date, 
+    end_date, create_time, create_by, create_by_name, update_time, update_by, update_by_name, 
+    version
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from demo
+    where demo_id = #{demoId,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insert" parameterType="com.learning.mybatis.entity.Demo">
+    insert into demo (demo_id, demo_code, demo_name, 
+      status, status_desc, demo_qty, 
+      demo_rate, start_date, end_date, 
+      create_time, create_by, create_by_name, 
+      update_time, update_by, update_by_name, 
+      version)
+    values (#{demoId,jdbcType=BIGINT}, #{demoCode,jdbcType=VARCHAR}, #{demoName,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{statusDesc,jdbcType=VARCHAR}, #{demoQty,jdbcType=INTEGER}, 
+      #{demoRate,jdbcType=DECIMAL}, #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{createByName,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{updateByName,jdbcType=VARCHAR}, 
+      #{version,jdbcType=INTEGER})
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.learning.mybatis.entity.Demo">
+    update demo
+    <set>
+      <if test="demoCode != null">
+        demo_code = #{demoCode,jdbcType=VARCHAR},
+      </if>
+      <if test="demoName != null">
+        demo_name = #{demoName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="statusDesc != null">
+        status_desc = #{statusDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="demoQty != null">
+        demo_qty = #{demoQty,jdbcType=INTEGER},
+      </if>
+      <if test="demoRate != null">
+        demo_rate = #{demoRate,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createByName != null">
+        create_by_name = #{createByName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateByName != null">
+        update_by_name = #{updateByName,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
+    </set>
+    where demo_id = #{demoId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.learning.mybatis.entity.Demo">
+    update demo
+    set demo_code = #{demoCode,jdbcType=VARCHAR},
+      demo_name = #{demoName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      status_desc = #{statusDesc,jdbcType=VARCHAR},
+      demo_qty = #{demoQty,jdbcType=INTEGER},
+      demo_rate = #{demoRate,jdbcType=DECIMAL},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      end_date = #{endDate,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_by_name = #{createByName,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_by_name = #{updateByName,jdbcType=VARCHAR},
+      version = #{version,jdbcType=INTEGER}
+    where demo_id = #{demoId,jdbcType=BIGINT}
+  </update>
+
+  <select id="queryAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from demo
+  </select>
+
+  <delete id="delete" parameterType="com.learning.mybatis.entity.Demo">
+    delete from demo
+    where demo_id = #{demoId}
+  </delete>
+</mapper>

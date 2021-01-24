@@ -126,6 +126,51 @@
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mybatisProcess.jpg)
 - 四大组件:StatementHandler、Executor、ParameterHandler、ResultSetHandler
+
+下面的执行流程简要描述，只是为了辅助理解，相关初始化方法：
+1. Configuration中保存了，解析完xml的MapperStatement的HashMap
+   - Mybatis将Mapper接口注册到Spring的时候，将Mapper接口生成的BeanDefiniton的beanClass设置为MapperFactoryBean
+2. Mapper接口初始化的时候通过MapperFactoryBean，进而调用MapperProxyFactory方法初始化及调用。
+3. MapperProxy代理调用时，通过匹配权限名+ID 获取MapperStatement对象
+4. MapperProxy进而MapperMethod的execute方法。
+5. SqlSession 执行的时候会获取Configuration中的四大组件进行sql执行。
+6. Configuration返回的四大组件是经过Interceptor代理封装过返回的代理对象。 
+
+## Interceptor的实现原理
+Executor、ResultSetHandler、StatementHandler、ParameterHandler，这是Mybatis中的四大对象，也是拦截器的切入点。我们可以基于这四大对象的方法进行增强。因为这四个都是接口，我们可以利用动态代理进行方法的增强。
+
+org.apache.ibatis.session.Configuration类，在新建接口对象的时候，通过调用interceptorChain：拦截器执行链的plugin方法，返回被拦截器包装后的代理对象。
+因此对象调用的时候，会判断方法是否拦截进而进入拦截器的方法。
+
+```
+public class Plugin implements InvocationHandler {
+    public static Object wrap(Object target, Interceptor interceptor) {
+        Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
+        Class<?> type = target.getClass();
+        Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
+        if (interfaces.length > 0) {
+          return Proxy.newProxyInstance(
+              type.getClassLoader(),
+              interfaces,
+              new Plugin(target, interceptor, signatureMap));
+        }
+        return target;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        try {
+          Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+          if (methods != null && methods.contains(method)) {
+            return interceptor.intercept(new Invocation(target, method, args));
+          }
+          return method.invoke(target, args);
+        } catch (Exception e) {
+          throw ExceptionUtil.unwrapThrowable(e);
+        }
+    }
+```
+
 ## #{}和${}的区别是什么？
 
 - ${}是 Properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如${driver}会被静态替换为com.mysql.jdbc.Driver。

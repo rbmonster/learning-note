@@ -327,6 +327,7 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
   
 #### 相关资料
 美团线程池：https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html
+
 ### ThreadFactory 线程工厂
 ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
   - 对于区分业务的线程池，就可以用到到命名线程工厂的实现，针对不同线程池资源定义不同的线程名
@@ -360,6 +361,124 @@ public final class NamingThreadFactory implements ThreadFactory {
 
 }
 ```
+
+### Worker工作流程
+Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实现了简单的不可重入的互斥锁。
+1. 使用AQS框架提供对线程的中断控制。
+2. 不可重入互斥，保证了在runWorker方法中执行的线程安全。
+    - 主要为了防止自我中断的现象发生。
+        1. 因为RunWorker方法中存在beforeExecute、afterExecute的空插槽方法，若方法重写后调用了`setCorePoolSize()`, 使用ReentrantLock会导致线程可重入，进而导致自我中断的现象发生。
+        2. 另外线程中的实际执行方法也可能调用`setCorePoolSize()`。
+3. Worker使用HashSet进行保存，通过ReentrantLock方法保证线程安全，控制Worker集合的修改。
+
+```
+  final void runWorker(Worker w) {
+        Thread wt = Thread.currentThread();
+        Runnable task = w.firstTask;
+        w.firstTask = null;
+        w.unlock(); // allow interrupts
+        boolean completedAbruptly = true;
+        try {
+            while (task != null || (task = getTask()) != null) {
+                w.lock();
+                ... 
+                try {
+                    // 空的插槽方法
+                    beforeExecute(wt, task);
+                    Throwable thrown = null;
+                    try {
+                        task.run();
+                    } catch (RuntimeException x) {
+                        thrown = x; throw x;
+                    } catch (Error x) {
+                        thrown = x; throw x;
+                    } catch (Throwable x) {
+                        thrown = x; throw new Error(x);
+                    } finally {
+                        // 空的插槽方法
+                        afterExecute(task, thrown);
+                    }
+                } finally {
+                    task = null;
+                    w.completedTasks++;
+                    w.unlock();
+                }
+            }
+            completedAbruptly = false;
+        } finally {
+            processWorkerExit(w, completedAbruptly);
+        }
+    }
+
+```
+
+
+
+#### Worker 线程复用
+线程复用主要通过while循环的去队列中获取任务`getTask()`
+1. 因为队列为阻塞队列，若为核心线程直接调用阻塞队列的take()方法。
+2. 若目前线程数超过核心线程，那么使用`workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)`，未获取到新任务推出线程的while方法，进入销毁流程。
+
+```
+final void runWorker(Worker w) {
+     Thread wt = Thread.currentThread();
+     Runnable task = w.firstTask;
+     w.firstTask = null;
+     w.unlock(); // allow interrupts
+     boolean completedAbruptly = true;
+     try {
+         while (task != null || (task = getTask()) != null) {
+         ...
+         }
+         ...
+     }
+ }
+
+
+private Runnable getTask() {
+    boolean timedOut = false; // Did the last poll() time out?
+
+    for (;;) {
+        int c = ctl.get();
+        int rs = runStateOf(c);
+        // Check if queue empty only if necessary.
+
+        int wc = workerCountOf(c);
+
+        // Are workers subject to culling?
+        boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+
+        if ((wc > maximumPoolSize || (timed && timedOut))
+            && (wc > 1 || workQueue.isEmpty())) {
+            if (compareAndDecrementWorkerCount(c))
+                return null;
+            continue;
+        }
+
+        try {
+            Runnable r = timed ?
+                workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                workQueue.take();
+            if (r != null)
+                return r;
+            timedOut = true;
+        } catch (InterruptedException retry) {
+            timedOut = false;
+        }
+    }
+}
+```
+
+
+#### 超数量线程的销毁
+1. 超过核心线程数的线程在通过`getTask()`方法中通过使用`workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)`未获取到线程的
+2. 退出线程的while方法，进而进入到销毁流程。
+3. 销毁线程通过ReentrantLock获取WokersSet的操作权限，进而移除线程。
+
+#### 相关资料
+- [Worker继承AQS的原因](https://stackoverflow.com/questions/42189195/why-threadpoolexecutorworker-extends-abstractqueuedsynchronizer)
+- [彻底理解Java线程池原理篇](https://www.jianshu.com/p/9a8c81066201)
+- [深入理解Java线程池：ThreadPoolExecutor](https://www.cnblogs.com/liuzhihu/p/8177371.html)
 
 ## ThreadLocal 
 Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
