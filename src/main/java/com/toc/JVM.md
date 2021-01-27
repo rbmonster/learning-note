@@ -46,41 +46,43 @@
 &emsp;&emsp;&emsp;<a href="#43">5.4.5. 初始化</a>  
 &emsp;&emsp;&emsp;<a href="#44">5.4.6. 卸载</a>  
 &emsp;&emsp;<a href="#45">5.5. 虚拟机中对象的创建</a>  
-&emsp;<a href="#46">6. 堆内存的设置要点</a>  
-&emsp;<a href="#47">7. CMS + ParNew收集器的流程梳理</a>  
-&emsp;&emsp;<a href="#48">7.1. young区域(年轻代)</a>  
-&emsp;&emsp;&emsp;<a href="#49">7.1.1. 对象分配内存方式</a>  
-&emsp;&emsp;<a href="#50">7.2. old区域(老年代)</a>  
-&emsp;&emsp;&emsp;<a href="#51">7.2.1. CMS GC原因</a>  
-&emsp;&emsp;&emsp;<a href="#52">7.2.2. CMS GC 垃圾回收模式</a>  
-&emsp;&emsp;&emsp;<a href="#53">7.2.3. 其他老年代问题</a>  
-&emsp;&emsp;<a href="#54">7.3. 相关文章</a>  
-&emsp;<a href="#55">8. Java虚拟机内存调优</a>  
-&emsp;&emsp;<a href="#56">8.1. 基本概念重述</a>  
-&emsp;&emsp;&emsp;<a href="#57">8.1.1. 工具整理</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#58">8.1.1.1. 命令行终端</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#59">8.1.1.2. 可视化界面</a>  
-&emsp;&emsp;<a href="#60">8.2. GC 调优目的</a>  
-&emsp;&emsp;<a href="#61">8.3. GC 调优策略</a>  
-&emsp;&emsp;<a href="#62">8.4. 调优指标</a>  
-&emsp;&emsp;<a href="#63">8.5. 问题排查思路</a>  
-&emsp;&emsp;<a href="#64">8.6. 案例</a>  
-&emsp;&emsp;&emsp;<a href="#65">8.6.1. 美团技术案例（基于CMS JDK1.8）</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#66">8.6.1.1. 场景一：动态扩容引起的空间震荡</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#67">8.6.1.2. 场景二：显式 GC 的去与留 (System.gc)</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#68">8.6.1.3. 场景三：MetaSpace 区 OOM</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#69">8.6.1.4. 场景四：过早晋升 </a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#70">8.6.1.5. 场景五：CMS Old GC 频繁 </a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#71">8.6.1.6. 场景六：单次 CMS Old GC 耗时长</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#72">8.6.1.7. 场景七：内存碎片&收集器退化</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#73">8.6.1.8. 场景八：堆外内存 OOM</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#74">8.6.1.9. 场景九：JNI 引发的 GC 问题</a>  
-&emsp;&emsp;&emsp;<a href="#75">8.6.2. 不恰当的数据结构导致内存过大</a>  
-&emsp;&emsp;&emsp;<a href="#76">8.6.3. 堆外内存导致溢出错误</a>  
-&emsp;&emsp;&emsp;<a href="#77">8.6.4. 异步系统Socket连接</a>  
-&emsp;&emsp;&emsp;<a href="#78">8.6.5. Evosuite 自动生成单元测试</a>  
-&emsp;&emsp;&emsp;<a href="#79">8.6.6. 其他案例分析资料</a>  
-&emsp;&emsp;&emsp;<a href="#80">8.6.7. 其他建议</a>  
+&emsp;<a href="#46">6. JDK编译期</a>  
+&emsp;&emsp;<a href="#47">6.1. 编译期做的工作</a>  
+&emsp;<a href="#48">7. 堆内存的设置要点</a>  
+&emsp;<a href="#49">8. CMS + ParNew收集器的流程梳理</a>  
+&emsp;&emsp;<a href="#50">8.1. young区域(年轻代)</a>  
+&emsp;&emsp;&emsp;<a href="#51">8.1.1. 对象分配内存方式</a>  
+&emsp;&emsp;<a href="#52">8.2. old区域(老年代)</a>  
+&emsp;&emsp;&emsp;<a href="#53">8.2.1. CMS GC原因</a>  
+&emsp;&emsp;&emsp;<a href="#54">8.2.2. CMS GC 垃圾回收模式</a>  
+&emsp;&emsp;&emsp;<a href="#55">8.2.3. 其他老年代问题</a>  
+&emsp;&emsp;<a href="#56">8.3. 相关文章</a>  
+&emsp;<a href="#57">9. Java虚拟机内存调优</a>  
+&emsp;&emsp;<a href="#58">9.1. 基本概念重述</a>  
+&emsp;&emsp;&emsp;<a href="#59">9.1.1. 工具整理</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#60">9.1.1.1. 命令行终端</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#61">9.1.1.2. 可视化界面</a>  
+&emsp;&emsp;<a href="#62">9.2. GC 调优目的</a>  
+&emsp;&emsp;<a href="#63">9.3. GC 调优策略</a>  
+&emsp;&emsp;<a href="#64">9.4. 调优指标</a>  
+&emsp;&emsp;<a href="#65">9.5. 问题排查思路</a>  
+&emsp;&emsp;<a href="#66">9.6. 案例</a>  
+&emsp;&emsp;&emsp;<a href="#67">9.6.1. 美团技术案例（基于CMS JDK1.8）</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#68">9.6.1.1. 场景一：动态扩容引起的空间震荡</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#69">9.6.1.2. 场景二：显式 GC 的去与留 (System.gc)</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#70">9.6.1.3. 场景三：MetaSpace 区 OOM</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#71">9.6.1.4. 场景四：过早晋升 </a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#72">9.6.1.5. 场景五：CMS Old GC 频繁 </a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#73">9.6.1.6. 场景六：单次 CMS Old GC 耗时长</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#74">9.6.1.7. 场景七：内存碎片&收集器退化</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#75">9.6.1.8. 场景八：堆外内存 OOM</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#76">9.6.1.9. 场景九：JNI 引发的 GC 问题</a>  
+&emsp;&emsp;&emsp;<a href="#77">9.6.2. 不恰当的数据结构导致内存过大</a>  
+&emsp;&emsp;&emsp;<a href="#78">9.6.3. 堆外内存导致溢出错误</a>  
+&emsp;&emsp;&emsp;<a href="#79">9.6.4. 异步系统Socket连接</a>  
+&emsp;&emsp;&emsp;<a href="#80">9.6.5. Evosuite 自动生成单元测试</a>  
+&emsp;&emsp;&emsp;<a href="#81">9.6.6. 其他案例分析资料</a>  
+&emsp;&emsp;&emsp;<a href="#82">9.6.7. 其他建议</a>  
 # <a name="0">JVM </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 介绍下 Java 内存区域（运行时数据区）
@@ -621,7 +623,24 @@ public static final int v = 8080;
 5. 上数工作完成之后，java开始调用对象的构造函数。
 
 
-## <a name="46">堆内存的设置要点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="46">JDK编译期</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="47">编译期做的工作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+1. 默认构造器： 经过编译的代码,可以看到在编译阶段，如果我们没有添加构造器。那么Java编译器会为我们添加一个无参构造方法。
+2. 自动拆装箱
+3. 泛型与类型擦除
+4. foreach优化成Iterator
+5. `String... args` 可变参数优化
+6. switch支持case使用字符串及枚举类型优化，优化成hashcode匹配。
+7. 枚举，优化成final class
+8. try-with-resources 优化，自动在finally中加入close语句
+9. 重写的优化，子类重写方法中会新增一个桥接方法。
+10. 匿名内部类：生成final 修饰的类
+
+- 相关资料： [Java编译期处理](https://blog.csdn.net/gyhdxwang/article/details/104396476)
+
+## <a name="48">堆内存的设置要点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 新生代的内存大小设置建议：Sun官方推荐配置为整个堆的3/8。
 2. 服务器的内存需要预留一部分给永久代、线程栈及NIO
 
@@ -670,9 +689,9 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
 
 - 相关文章： https://zhuanlan.zhihu.com/p/61049063?utm_source=wechat_session
 
-## <a name="47">CMS + ParNew收集器的流程梳理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="49">CMS + ParNew收集器的流程梳理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="48">young区域(年轻代)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="50">young区域(年轻代)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 对象首先分配到Eden，分配满了触发Young Gc(Minor Gc)，基于复制交换算法，晋升对象年龄+1。
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/edenGc.jpg)
 2. 年龄到达老年代门槛的晋升老年代。
@@ -688,13 +707,13 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
     > 在发生 Minor GC 之前，虚拟机必须先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那这一次 Minor GC 可以确保是安全的。如果不成立，则虚拟机会先查看 - XX:HandlePromotionFailure 参数的设置值是否允许担保失败 (Handle Promotion Failure)；如果允许，那会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，将尝试进行一次 Minor GC，尽管这次 Minor GC 是有风险的；如果小于，或者-XX: HandlePromotionFailure设置不允许冒险，那这时就要改为进行一次 Full GC。
 
 
-#### <a name="49">对象分配内存方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="51">对象分配内存方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - **TLAB**：Thread Local Allocation Buffer 的简写，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
 - 整齐空间：指针碰撞
 - 碎片空间：空闲链表（free list）：通过额外的存储记录空闲的地址，将随机 IO 变为顺序 IO，但带来了额外的空间消耗。
 
-### <a name="50">old区域(老年代)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="51">CMS GC原因</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="52">old区域(老年代)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="53">CMS GC原因</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 触发 CMS GC有：
 1. Old 区达到回收阈值
 2. MetaSpace 空间不足
@@ -704,7 +723,7 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
 6. 显式调用System.gc
 7. 并发模式失败(浮动垃圾导致)
 
-#### <a name="52">CMS GC 垃圾回收模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="54">CMS GC 垃圾回收模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 CMS GC 的垃圾回收共分为 Background 和 Foreground 两种模式，
 - Background： 正常的CMS收集过程，初始标记、并发标记、重新标记、标记清除
 - Foreground： 会进行一次压缩式 GC，使用 MSC（Mark-Sweep-Compact）做 Full GC。收集的范围是 Java 堆的 Young 区和 Old 区以及 MetaSpace，会带来非常长的 STW。
@@ -720,18 +739,18 @@ CMS 在Background回收的过程中，STW 的阶段主要是 Init Mark 和 Final
 - 带压缩动作的算法，称为 MSC，上面我们介绍过，使用标记-清理-压缩，单线程全暂停的方式，对整个堆进行垃圾收集，也就是真正意义上的 Full GC，暂停时间要长于普通 CMS。
 - 不带压缩动作的算法，收集 Old 区，和普通的 CMS 算法比较相似，暂停时间相对 MSC 算法短一些。
 
-#### <a name="53">其他老年代问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="55">其他老年代问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  CMS 无法处理浮动垃圾（Floating Garbage）。CMS 的并发清理阶段，应用还在运行，因此不断有新的垃圾产生，而这些垃圾不在这次清理标记的范畴里，无法在本次 GC 被清除掉，这些就是浮动垃圾，除此之外在 Remark 之前那些断开引用脱离了读写屏障控制的对象也算浮动垃圾。
 
-### <a name="54">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="56">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [图解垃圾回收](https://www.cnblogs.com/hynblogs/p/12292345.html)
 
-## <a name="55">Java虚拟机内存调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="57">Java虚拟机内存调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/jvmParameter.jpg)
  ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/jvmGCType.jpg)
 
 
-### <a name="56">基本概念重述</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="58">基本概念重述</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 跨代引用解决方案
 
 Card Table：中文翻译为卡表，主要是用来标记卡页的状态，每个卡表项对应一个卡页。当卡页中一个对象引用有写操作时，写屏障将会标记对象所在的卡表状态改为 dirty，卡表的本质是用来解决跨代引用的问题。
@@ -743,15 +762,15 @@ Card Table：中文翻译为卡表，主要是用来标记卡页的状态，每�
 
 Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造者，通过 Allocator 进行 allocate 和 free。
 
-#### <a name="57">工具整理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="59">工具整理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-##### <a name="58">命令行终端</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="60">命令行终端</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 标准终端类：jps、jinfo、jstat、jstack、jmap
 
 功能整合类：jcmd、vjtools、arthas、greys
 
-##### <a name="59">可视化界面</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="61">可视化界面</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 简易：JConsole、JVisualvm、HA、GCHisto、GCViewer
 
@@ -760,10 +779,10 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 命令行推荐 arthas ，可视化界面推荐 JProfiler，此外还有一些在线的平台 gceasy、heaphero、fastthread ，美团内部的 Scalpel（一款自研的 JVM 问题诊断工具，暂时未开源）也比较好用。
 
 
-### <a name="60">GC 调优目的</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="62">GC 调优目的</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 将转移到老年代的对象数量降低到最小； 减少 GC 的执行时间。
 
-### <a name="61">GC 调优策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="63">GC 调优策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **策略 1**：将新对象预留在新生代，由于 Full GC 的成本远高于 Minor GC，因此尽可能将对象分配在新生代是明智的做法，实际项目中根据 GC 日志分析新生代空间大小分配是否合理，适当通过“-Xmn”命令调节新生代大小，最大限度降低新对象直接进入老年代的情况。
 
 **策略 2**：大对象进入老年代，虽然大部分情况下，将对象分配在新生代是合理的。但是对于大对象这种做法却值得商榷，大对象如果首次在新生代分配可能会出现空间不足导致很多年龄不够的小对象被分配的老年代，破坏新生代的对象结构，可能会出现频繁的 full gc。因此，对于大对象，可以设置直接进入老年代（当然短命的大对象对于垃圾回收来说简直就是噩梦）。-XX:PretenureSizeThreshold 可以设置直接进入老年代的对象大小。
@@ -776,12 +795,12 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 >MinorGC 执行时间不到50ms； Minor GC 执行不频繁，约10秒一次； Full GC 执行时间不到1s； Full GC 执行频率不算频繁，不低于10分钟1次。
 
 
-### <a name="62">调优指标</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="64">调优指标</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 延迟（Latency）：也可以理解为最大停顿时间，即垃圾收集过程中一次 STW 的最长时间，越短越好，一定程度上可以接受频次的增大，GC 技术的主要发展方向。
 
 - 吞吐量（Throughput）：应用系统的生命周期内，由于 GC 线程会占用 Mutator 当前可用的 CPU 时钟周期，吞吐量即为 Mutator 有效花费的时间占系统总运行时间的百分比，例如系统运行了 100 min，GC 耗时 1 min，则系统吞吐量为 99%，吞吐量优先的收集器可以接受较长的停顿。
 
-### <a name="63">问题排查思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="65">问题排查思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 四种分析思路
 
 - 时序分析：先发生的事件是根因的概率更大，通过监控手段分析各个指标的异常时间点，还原事件时间线，如先观察到 CPU 负载高（要有足够的时间 Gap），那么整个问题影响链就可能是：
@@ -796,15 +815,15 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 - 反证分析：对其中某一表象进行反证分析，即判断表象的发不发生跟结果是否有相关性，例如我们从整个集群的角度观察到某些节点慢查和 CPU 都正常，但也出了问题，那么整个问题影响链就可能是：
 > GC 耗时增大 -> 线程 Block 增多 ->  RT 上涨。
 
-### <a name="64">案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="65">美团技术案例（基于CMS JDK1.8）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="66">案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="67">美团技术案例（基于CMS JDK1.8）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/gcProcess.jpg)
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/localIssue.png)
 
 
-##### <a name="66">场景一：动态扩容引起的空间震荡</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="68">场景一：动态扩容引起的空间震荡</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 服务刚刚启动时 GC 次数较多，最大空间剩余很多但是依然发生 GC， GC Cause 一般为 Allocation Failure，且在 GC 日志中会观察到经历一次 GC ，堆内各个空间的大小会被调整。
 
 解决：尽量将成对出现的空间大小配置参数设置成固定的，
@@ -813,7 +832,7 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 策略：保证 Java 虚拟机的堆是稳定的，避免弹性伸缩带来的额外 GC 消耗，确保 -Xms 和 -Xmx 设置的是一个值（即初始值和最大值一致），获得一个稳定的堆，同理在 MetaSpace 区也有类似的问题
 > 在不追求停顿时间的情况下震荡的空间也是有利的，可以动态地伸缩以节省空间，例如作为富客户端的 Java 应用。
 
-##### <a name="67">场景二：显式 GC 的去与留 (System.gc)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="69">场景二：显式 GC 的去与留 (System.gc)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 除了扩容缩容会触发 CMS GC 之外，还有
  1. Old 区达到回收阈值.
  2. MetaSpace 空间不足
@@ -841,7 +860,7 @@ CMS GC 共分为 Background 和 Foreground 两种模式，
 
 > 不止 CMS，在 G1 或 ZGC中开启 ExplicitGCInvokesConcurrent 模式，都会采用高性能的并发收集方式进行收集，不过还是建议在代码规范方面也要做好约束，规范好 System.gc 的使用。
 
-##### <a name="68">场景三：MetaSpace 区 OOM</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="70">场景三：MetaSpace 区 OOM</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 现象：JVM 在启动后或者某个时间点开始，MetaSpace 的已使用大小在持续增长，同时每次 GC 也无法释放，调大 MetaSpace 空间也无法彻底解决。
 
 --- 
@@ -863,7 +882,7 @@ MetaSpace 弹性伸缩：由于 MetaSpace 空间和 Heap 并不在一起，所�
 策略： 给 MetaSpace 区的使用率加一个监控，如果指标有波动提前发现并解决问题。
 
 
-##### <a name="69">场景四：过早晋升 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="71">场景四：过早晋升 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 现象：
 1. 分配速率接近于晋升速率，对象晋升年龄较小
 2. Full GC 比较频繁，且经历过一次 GC 之后 Old 区的变化比例非常大。
@@ -887,12 +906,12 @@ MetaSpace 弹性伸缩：由于 MetaSpace 空间和 Heap 并不在一起，所�
 - 偶发较大：通过内存分析工具找到问题代码，从业务逻辑上做一些优化。
 - 一直较大：当前的 Collector 已经不满足 Mutator 的期望了，这种情况要么扩容 Mutator 的 VM，要么调整 GC 收集器类型或加大空间。
 
-##### <a name="70">场景五：CMS Old GC 频繁 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="72">场景五：CMS Old GC 频繁 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 现象：Old 区频繁的做 CMS GC，但是每次耗时不是特别长，整体最大 STW 也在可接受范围内，但由于 GC 太频繁导致吞吐下降比较多。
  
 > 描述过于抽象，见文章
 
-##### <a name="71">场景六：单次 CMS Old GC 耗时长</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="73">场景六：单次 CMS Old GC 耗时长</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 CMS 在回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark 这两个阶段
 - 初始标记 Init Mark ： 整个过程比较简单，从 GC Root 出发标记 Old 中的对象，处理完成后借助 BitMap 处理下 Young 区对 Old 区的引用，整个过程基本都比较快，很少会有较大的停顿。
 - 最终标记 Final Remark ：Final Remark 的开始阶段与 Init Mark 处理的流程相同，但是后续多了 **Card Table 遍历**、**Reference 实例的清理**并将其加入到 Reference 维护的 pend_list 中，如果要收集元数据信息，还要清理 SystemDictionary、CodeCache、SymbolTable、StringTable 等组件中不再使用的资源
@@ -906,7 +925,7 @@ CMS 在回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark �
     - scrub symbol table 表示清理元数据符号引用耗时，观察 MetaSpace 区的历史使用峰值，看是否有使用动态类加载或者 DSL 处理等。
         - > 如果MateSpace 数据没啥变化，可以通过 -XX:-CMSClassUnloadingEnabled 来避免 MetaSpace 的处理。
  
-##### <a name="72">场景七：内存碎片&收集器退化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="74">场景七：内存碎片&收集器退化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 现象：
 并发的 CMS GC 算法，退化为 Foreground 单线程串行 GC 模式，STW 时间超长，有时会长达十几秒。其中 CMS 收集器退化后单线程串行 GC 算法有两种：
 - 带压缩动作的算法，称为 MSC，上面我们介绍过，使用标记-清理-压缩，单线程全暂停的方式，对整个堆进行垃圾收集，也就是真正意义上的 Full GC，暂停时间要长于普通 CMS。
@@ -932,7 +951,7 @@ CMS 在回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark �
 - 浮动垃圾：视情况控制每次晋升对象的大小，或者缩短每次 CMS GC 的时间，必要时可调节 NewRatio 的值。另外就是使用 -XX:+CMSScavengeBeforeRemark 在过程中提前触发一次 Young GC，防止后续晋升过多对象。
 
 
-##### <a name="73">场景八：堆外内存 OOM</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="75">场景八：堆外内存 OOM</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 现象： 内存使用率不断上升，甚至开始使用 SWAP 内存，同时可能出现 GC 时间飙升，线程被 Block 等现象，通过 top 命令发现 Java 进程的 RES 甚至超过了 -Xmx 的大小。
 
 JVM 的堆外内存泄漏，主要有两种的原因：
@@ -942,23 +961,23 @@ JVM 的堆外内存泄漏，主要有两种的原因：
 策略： 在项目中添加 -XX:NativeMemoryTracking=detail JVM参数后重启项目（需要注意的是，打开 NMT 会带来 5%~10% 的性能损耗）。使用命令 jcmd pid VM.native_memory detail 查看内存分布。
     
 
-##### <a name="74">场景九：JNI 引发的 GC 问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="76">场景九：JNI 引发的 GC 问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 > 太抽象了
 
-#### <a name="75">不恰当的数据结构导致内存过大</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="77">不恰当的数据结构导致内存过大</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - -Xms4g -Xmx8g -Xmn1g 使用ParNew + CMS组合。
 - 业务上需要10min加载80MB的数据到内存，会产生100W HashMap entry
 - Minor GC超过500ms，因为新生代使用了标记复制算法
 - 不从修改程序，仅从GC调优，可以直接去掉SurvivorRatio，让新生代存活的对象一次Minor GC就进入到老年代
     - -XX:SurvivorRatio=65536 -XX:MaxTenuringThreshold=0（或者-XX:+AlwaysTenure)
-#### <a name="76">堆外内存导致溢出错误</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="78">堆外内存导致溢出错误</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - NIO使用直接内存复制，而虚拟机中最大最小内存直接设值成系统内存大小了
 
-#### <a name="77">异步系统Socket连接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="79">异步系统Socket连接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Socket 使用BIO连接异步处理，导致了系统连接数过多，进而虚拟机崩溃
 
-#### <a name="78">Evosuite 自动生成单元测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="80">Evosuite 自动生成单元测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 表现：maven build时候单元测试需要一个多小时。
 
 排查：
@@ -979,12 +998,12 @@ YGC出现大量复制工作，很耗费时间。每次分配的空间过大，�
 
 解决处理：死循环线程、修改自动生成的test分配合理内存。
 
-#### <a name="79">其他案例分析资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="81">其他案例分析资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [JSP引起的老年代不回收场景](https://blog.csdn.net/u012948161/article/details/102983795?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
 - [native memory](http://mahaijin.github.io/2015/04/27/JVM%E7%9A%84Heap%20Memory%E5%92%8CNative%20Memory/)
 - [美团：Java中9种常见的CMS GC问题分析与解决](https://mp.weixin.qq.com/s/RFwXYdzeRkTG5uaebVoLQw)
 
-#### <a name="80">其他建议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="82">其他建议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 禁用偏向锁：偏向锁在只有一个线程使用到该锁的时候效率很高，但是在竞争激烈情况会升级成轻量级锁，此时就需要先消除偏向锁，这个过程是 STW 的。
     - > 在已知并发激烈的前提下，一般会禁用偏向锁 -XX:-UseBiasedLocking 来提高性能。
 - 主动式 GC： 观测 Old 区的使用情况，即将到达阈值时将应用服务摘掉流量，手动触发一次 Major GC。必要时引入，会影响系统健壮性。

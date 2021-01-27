@@ -19,13 +19,17 @@
 &emsp;&emsp;&emsp;<a href="#16">5.5.2. 实际执行解决方案：动态配置线程池核心线程数和最大线程数</a>  
 &emsp;&emsp;&emsp;<a href="#17">5.5.3. 相关资料</a>  
 &emsp;&emsp;<a href="#18">5.6. ThreadFactory 线程工厂</a>  
-&emsp;<a href="#19">6. ThreadLocal </a>  
-&emsp;&emsp;<a href="#20">6.1. 父线程与子线程传递threadLocal的方案</a>  
-&emsp;&emsp;<a href="#21">6.2. ThreadLocal应用</a>  
-&emsp;&emsp;<a href="#22">6.3. TheadLocal 与 SimpleDateFormat的应用</a>  
-&emsp;&emsp;<a href="#23">6.4. 相关资料</a>  
-&emsp;<a href="#24">7. spring 中的线程池</a>  
-&emsp;&emsp;<a href="#25">7.1. 异步编程的例子：</a>  
+&emsp;&emsp;<a href="#19">5.7. Worker工作流程</a>  
+&emsp;&emsp;&emsp;<a href="#20">5.7.1. Worker 线程复用</a>  
+&emsp;&emsp;&emsp;<a href="#21">5.7.2. 超数量线程的销毁</a>  
+&emsp;&emsp;&emsp;<a href="#22">5.7.3. 相关资料</a>  
+&emsp;<a href="#23">6. ThreadLocal </a>  
+&emsp;&emsp;<a href="#24">6.1. 父线程与子线程传递threadLocal的方案</a>  
+&emsp;&emsp;<a href="#25">6.2. ThreadLocal应用</a>  
+&emsp;&emsp;<a href="#26">6.3. TheadLocal 与 SimpleDateFormat的应用</a>  
+&emsp;&emsp;<a href="#27">6.4. 相关资料</a>  
+&emsp;<a href="#28">7. spring 中的线程池</a>  
+&emsp;&emsp;<a href="#29">7.1. 异步编程的例子：</a>  
 # <a name="0">java 并发线程相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -355,6 +359,7 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
   
 #### <a name="17">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 美团线程池：https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html
+
 ### <a name="18">ThreadFactory 线程工厂</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
   - 对于区分业务的线程池，就可以用到到命名线程工厂的实现，针对不同线程池资源定义不同的线程名
@@ -389,7 +394,125 @@ public final class NamingThreadFactory implements ThreadFactory {
 }
 ```
 
-## <a name="19">ThreadLocal </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">Worker工作流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实现了简单的不可重入的互斥锁。
+1. 使用AQS框架提供对线程的中断控制。
+2. 不可重入互斥，保证了在runWorker方法中执行的线程安全。
+    - 主要为了防止自我中断的现象发生。
+        1. 因为RunWorker方法中存在beforeExecute、afterExecute的空插槽方法，若方法重写后调用了`setCorePoolSize()`, 使用ReentrantLock会导致线程可重入，进而导致自我中断的现象发生。
+        2. 另外线程中的实际执行方法也可能调用`setCorePoolSize()`。
+3. Worker使用HashSet进行保存，通过ReentrantLock方法保证线程安全，控制Worker集合的修改。
+
+```
+  final void runWorker(Worker w) {
+        Thread wt = Thread.currentThread();
+        Runnable task = w.firstTask;
+        w.firstTask = null;
+        w.unlock(); // allow interrupts
+        boolean completedAbruptly = true;
+        try {
+            while (task != null || (task = getTask()) != null) {
+                w.lock();
+                ... 
+                try {
+                    // 空的插槽方法
+                    beforeExecute(wt, task);
+                    Throwable thrown = null;
+                    try {
+                        task.run();
+                    } catch (RuntimeException x) {
+                        thrown = x; throw x;
+                    } catch (Error x) {
+                        thrown = x; throw x;
+                    } catch (Throwable x) {
+                        thrown = x; throw new Error(x);
+                    } finally {
+                        // 空的插槽方法
+                        afterExecute(task, thrown);
+                    }
+                } finally {
+                    task = null;
+                    w.completedTasks++;
+                    w.unlock();
+                }
+            }
+            completedAbruptly = false;
+        } finally {
+            processWorkerExit(w, completedAbruptly);
+        }
+    }
+
+```
+
+
+
+#### <a name="20">Worker 线程复用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+线程复用主要通过while循环的去队列中获取任务`getTask()`
+1. 因为队列为阻塞队列，若为核心线程直接调用阻塞队列的take()方法。
+2. 若目前线程数超过核心线程，那么使用`workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)`，未获取到新任务推出线程的while方法，进入销毁流程。
+
+```
+final void runWorker(Worker w) {
+     Thread wt = Thread.currentThread();
+     Runnable task = w.firstTask;
+     w.firstTask = null;
+     w.unlock(); // allow interrupts
+     boolean completedAbruptly = true;
+     try {
+         while (task != null || (task = getTask()) != null) {
+         ...
+         }
+         ...
+     }
+ }
+
+
+private Runnable getTask() {
+    boolean timedOut = false; // Did the last poll() time out?
+
+    for (;;) {
+        int c = ctl.get();
+        int rs = runStateOf(c);
+        // Check if queue empty only if necessary.
+
+        int wc = workerCountOf(c);
+
+        // Are workers subject to culling?
+        boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+
+        if ((wc > maximumPoolSize || (timed && timedOut))
+            && (wc > 1 || workQueue.isEmpty())) {
+            if (compareAndDecrementWorkerCount(c))
+                return null;
+            continue;
+        }
+
+        try {
+            Runnable r = timed ?
+                workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                workQueue.take();
+            if (r != null)
+                return r;
+            timedOut = true;
+        } catch (InterruptedException retry) {
+            timedOut = false;
+        }
+    }
+}
+```
+
+
+#### <a name="21">超数量线程的销毁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 超过核心线程数的线程在通过`getTask()`方法中通过使用`workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)`未获取到线程的
+2. 退出线程的while方法，进而进入到销毁流程。
+3. 销毁线程通过ReentrantLock获取WokersSet的操作权限，进而移除线程。
+
+#### <a name="22">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [Worker继承AQS的原因](https://stackoverflow.com/questions/42189195/why-threadpoolexecutorworker-extends-abstractqueuedsynchronizer)
+- [彻底理解Java线程池原理篇](https://www.jianshu.com/p/9a8c81066201)
+- [深入理解Java线程池：ThreadPoolExecutor](https://www.cnblogs.com/liuzhihu/p/8177371.html)
+
+## <a name="23">ThreadLocal </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
   - key key视作ThreadLocal，value为代码中放入的值（实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference）.
   - ThreadLocalMap的key 为每个新建的ThreadLocal private void set(ThreadLocal<?> key, Object value) { }
@@ -410,12 +533,12 @@ TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收�
 
 - 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
 
-### <a name="20">父线程与子线程传递threadLocal的方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="24">父线程与子线程传递threadLocal的方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 阿里巴巴提供TransmittableThreadLocal组件：父线程与子线程传递threadLocal的方案
 InheritableThreadLocal： 父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
 - 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
     
-### <a name="21">ThreadLocal应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">ThreadLocal应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Spring 事务应用
 - Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
 - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
@@ -432,7 +555,7 @@ ThreadLocalRandom 是ThreadLocal与 Random的结合，在Random的基础上进�
 
 跨方法传递：
 - 常规web服务接收到request的时候，经常有一些用户信息需要传递到service层。此时就可以使用ThreadLocal存储用户信息，每个service方法就不用写传递参数。
-### <a name="22">TheadLocal 与 SimpleDateFormat的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">TheadLocal 与 SimpleDateFormat的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用SimpleDataFormat的parse()方法，内部有一个Calendar对象，调用SimpleDataFormat的parse()方法会先调用Calendar.clear（），然后调用Calendar.add()，如果一个线程先调用了add()然后另一个线程又调用了clear()，这时候parse()方法解析的时间就不对了。
 
 解决：使用了线程池加上ThreadLocal包装SimpleDataFormat，再调用initialValue让每个线程有一个SimpleDataFormat的副本，从而解决了线程安全的问题，也提高了性能。
@@ -445,11 +568,11 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
 **如果是Java8应用，可以使用DateTimeFormatter代替SimpleDateFormat, 线程安全**
 
 
-### <a name="23">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="27">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ
 
 待补充资料：netty的fastThreadLocal
-## <a name="24">spring 中的线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="28">spring 中的线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
   - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
@@ -468,7 +591,7 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
         return executor;
       }
     ```
-### <a name="25">异步编程的例子：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">异步编程的例子：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - ```
      @Async
       public CompletableFuture<List<String>> completableFutureTask(String start) {

@@ -538,6 +538,23 @@ public static final int v = 8080;
 5. 上数工作完成之后，java开始调用对象的构造函数。
 
 
+## JDK编译期
+
+### 编译期做的工作
+
+1. 默认构造器： 经过编译的代码,可以看到在编译阶段，如果我们没有添加构造器。那么Java编译器会为我们添加一个无参构造方法。
+2. 自动拆装箱
+3. 泛型与类型擦除
+4. foreach优化成Iterator
+5. `String... args` 可变参数优化
+6. switch支持case使用字符串及枚举类型优化，优化成hashcode匹配。
+7. 枚举，优化成final class
+8. try-with-resources 优化，自动在finally中加入close语句
+9. 重写的优化，子类重写方法中会新增一个桥接方法。
+10. 匿名内部类：生成final 修饰的类
+
+- 相关资料： [Java编译期处理](https://blog.csdn.net/gyhdxwang/article/details/104396476)
+
 ## 堆内存的设置要点
 1. 新生代的内存大小设置建议：Sun官方推荐配置为整个堆的3/8。
 2. 服务器的内存需要预留一部分给永久代、线程栈及NIO

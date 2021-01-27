@@ -51,6 +51,7 @@
 - [数据库读写分离](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/READ_WRITE_DB.md)
 - [数据库表相关设计题](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TABLE_DESIGN.md)
 - [会议系统设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MEETING_DESIGN.md)
+- [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
 
 ## 分布式与微服务
 - [Spring Cloud相关知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING-CLOUD.md)

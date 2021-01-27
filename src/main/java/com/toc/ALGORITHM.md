@@ -29,6 +29,7 @@
 &emsp;<a href="#26">11. 单调栈</a>  
 &emsp;<a href="#27">12. 单调队列</a>  
 &emsp;<a href="#28">13. 前缀树</a>  
+&emsp;&emsp;<a href="#29">13.1. 贪心算法</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -604,3 +605,12 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
+### <a name="29">贪心算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+[CS-Note](http://www.cyc2018.xyz/%E7%AE%97%E6%B3%95/Leetcode%20%E9%A2%98%E8%A7%A3/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E8%B4%AA%E5%BF%83%E6%80%9D%E6%83%B3.html#_1-%E5%88%86%E9%85%8D%E9%A5%BC%E5%B9%B2)
+
+1. [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
+    - 每次分配给满足孩子的最小的饼干
+2. [不重叠的区间个数](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+    - 每次取结尾最小的区间，留给后面选择的区间更大，移除的区间越小。按区间结尾排序。
+3. [投飞镖刺破气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+    - 与上述类似，每次取结尾最小的区间，

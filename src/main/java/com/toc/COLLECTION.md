@@ -29,8 +29,10 @@
 &emsp;&emsp;<a href="#26">3.2. LinkedHashSet实现</a>  
 &emsp;&emsp;<a href="#27">3.3. TreeSet 实现</a>  
 &emsp;<a href="#28">4. 迭代器</a>  
-&emsp;<a href="#29">5. 其他</a>  
+&emsp;<a href="#29">5. 其他面试问题</a>  
 &emsp;&emsp;<a href="#30">5.1. 如何选用集合?</a>  
+&emsp;&emsp;<a href="#31">5.2. ArrayList 带参数及不带参数</a>  
+&emsp;&emsp;<a href="#32">5.3. Arrays.asList() 方法</a>  
 # <a name="0">集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/collectionfamily.jpg)
 - 集合主要分为两大类，一个实现collection接口的，一个是实现了Map接口的。
@@ -518,7 +520,46 @@ Iterator 对象称为迭代器（设计模式的一种），迭代器可以对�
 Iterator 主要是用来遍历集合用的，它的特点是更加安全，因为它可以确保，在当前遍历的集合元素被更改的时候，就会抛出 ConcurrentModificationException 异常。
 
 
-## <a name="29">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="29">其他面试问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="30">如何选用集合?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 主要根据集合的特点来选用，比如我们需要根据键值获取到元素值时就选用 Map 接口下的集合，需要排序时选择 TreeMap,不需要排序时就选择 HashMap,需要保证线程安全就选用 ConcurrentHashMap。
 - 当我们只需要存放元素值时，就选择实现Collection 接口的集合，需要保证元素唯一时选择实现 Set 接口的集合比如 TreeSet 或 HashSet，不需要就选择实现 List 接口的比如 ArrayList 或 LinkedList，然后再根据实现这些接口的集合的特点来选用。
+
+### <a name="31">ArrayList 带参数及不带参数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```
+    public ArrayList(int initialCapacity) {
+        if (initialCapacity > 0) {
+            this.elementData = new Object[initialCapacity];
+        } else if (initialCapacity == 0) {
+            this.elementData = EMPTY_ELEMENTDATA;
+        } else {
+            throw new IllegalArgumentException("Illegal Capacity: "+
+                                               initialCapacity);
+        }
+    }
+
+    /**
+     * Constructs an empty list with an initial capacity of ten.
+     */
+    public ArrayList() {
+        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+    }
+```
+
+### <a name="32">Arrays.asList() 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Arrays.asList() 方法返回的是Arrays内部的ArrayList，这个ArrayList不支持元素新增及删除，因为未重写抽象父类AbstractList的方法，会抛出UnsupportedOperationException异常。
+```
+public class Arrays{
+ private static class ArrayList<E> extends AbstractList<E>
+        implements RandomAccess, java.io.Serializable
+    {
+        private static final long serialVersionUID = -2764017481108945198L;
+        private final E[] a;
+
+        ArrayList(E[] array) {
+            a = Objects.requireNonNull(array);
+        }
+ ...
+ }
+}
+```
