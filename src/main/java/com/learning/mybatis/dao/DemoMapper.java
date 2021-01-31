@@ -1,6 +1,7 @@
 package com.learning.mybatis.dao;
 
 import com.learning.mybatis.entity.Demo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -30,4 +31,11 @@ public interface DemoMapper {
     int delete(String demoId);
 
 
+    List<Demo> selectWithoutParam(Long demoId, String demoName);
+
+
+//    List<Demo> selectWithoutParamByEntity(@Param("demo") Demo demo);
+    List<Demo> selectWithoutParamByEntity(Demo demo);
+
+    List<Demo> selectWithoutParamByEntityTwo (Demo demo1,Demo demo2);
 }

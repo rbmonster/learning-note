@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -39,4 +40,32 @@ public class TestController {
         demoMapper.updateByPrimaryKeySelective(demo);
         return demo;
     }
+
+
+    @GetMapping("/param")
+    public List<Demo> selectWithoutParam() {
+        return demoMapper.selectWithoutParam(6562302976415772672L, "李四1");
+    }
+
+
+    @GetMapping("/paramTest")
+    public List<Demo> selectWithoutParamByEntity() {
+        Demo demo = new Demo();
+        demo.setDemoId(6562302976415772672L);
+        demo.setDemoName("李四1");
+        return demoMapper.selectWithoutParamByEntity(demo);
+    }
+
+    @GetMapping("/paramTestTwo")
+    public List<Demo> selectWithoutParamByEntityTwo() {
+        Demo demo1 = new Demo();
+        demo1.setDemoId(6562302976415772672L);
+        demo1.setDemoName("李四1");
+        Demo demo2 = new Demo();
+        demo2.setDemoId(6562302976415772672L);
+        demo2.setDemoName("李四1");
+
+        return demoMapper.selectWithoutParamByEntityTwo(demo1, demo2);
+    }
+
 }

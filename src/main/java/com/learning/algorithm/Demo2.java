@@ -1,5 +1,7 @@
 package com.learning.algorithm;
 
+import com.learning.algorithm.basic.treeNode.TreeNode;
+
 import java.util.*;
 
 /**
@@ -17,7 +19,7 @@ public class Demo2 {
     public static void main(String[] args) {
         new Demo2().reverseWords("the sky is blue");
 
-        PriorityQueue<Integer> queue = new PriorityQueue<>((o1,o2) ->  o2-o1);
+        PriorityQueue<Integer> queue = new PriorityQueue<>((o1, o2) -> o2 - o1);
 
     }
 
@@ -43,7 +45,7 @@ public class Demo2 {
     }
 
 
-        int res = 0;
+    int res = 0;
 
     public int translateNum(int num) {
         String str = String.valueOf(num);
@@ -59,12 +61,12 @@ public class Demo2 {
             res++;
             return;
         }
-        dfs(str, index+1);
-        int cur = str.charAt(index)-'0';
-        if (cur >0 && cur<=2 && index+1<len ) {
-            int next = str.charAt(index+1)-'0';
-            if (cur == 2&& next>5) return;
-            dfs(str, index+2);
+        dfs(str, index + 1);
+        int cur = str.charAt(index) - '0';
+        if (cur > 0 && cur <= 2 && index + 1 < len) {
+            int next = str.charAt(index + 1) - '0';
+            if (cur == 2 && next > 5) return;
+            dfs(str, index + 2);
         }
     }
 
@@ -110,4 +112,31 @@ public class Demo2 {
         }
         return result;
     }
+
+    public TreeNode reConstructBinaryTree(int[] pre, int[] in) {
+        if (pre == null || in == null) {
+            return null;
+        }
+
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        for (int i = 0; i < in.length; i++) {
+            map.put(in[i], i);
+        }
+
+        return preIn(pre, 0, pre.length - 1, in, 0, in.length - 1, map);
+    }
+
+    public TreeNode preIn(int[] p, int pi, int pj, int[]
+            n, int ni, int nj, Map<Integer, Integer> map) {
+
+        if (pi > pj) {
+            return null;
+        }
+        TreeNode head = new TreeNode(p[pi]);
+        int index = map.get(p[pi]);                  //这样比原始方案一的方式效率要高，值得思考的地方
+        head.left = preIn(p, pi + 1, pi + index - ni, n, ni, index - 1, map);
+        head.right = preIn(p, pi + index - ni + 1, pj, n, index + 1, nj, map);
+        return head;
+    }
+
 }

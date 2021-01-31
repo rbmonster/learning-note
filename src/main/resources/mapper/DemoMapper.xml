@@ -124,7 +124,32 @@
     from demo
   </select>
 
-  <delete id="delete" parameterType="com.learning.mybatis.entity.Demo">
+  <select id="selectWithoutParam" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from demo
+    where demo_id = #{demoId} and demo_name = #{demoName}
+
+  </select>
+
+  <select id="selectWithoutParamByEntity" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from demo
+    where demo_id = #{demo.demoId} and demo_name = #{demo.demoName}
+
+  </select>
+
+  <select id="selectWithoutParamByEntityTwo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from demo
+    where demo_id = #{demo1.demoId} and demo_name = #{demo2.demoName}
+
+  </select>
+
+
+    <delete id="delete" parameterType="com.learning.mybatis.entity.Demo">
     delete from demo
     where demo_id = #{demoId}
   </delete>
