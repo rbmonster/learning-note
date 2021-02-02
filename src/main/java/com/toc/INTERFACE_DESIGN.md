@@ -14,6 +14,10 @@
 &emsp;&emsp;<a href="#11">4.2. 2. @RestControllerAdvice +   @ExceptionHandler(MethodArgumentNotValidException.class)</a>  
 &emsp;&emsp;<a href="#12">4.3. 3. 使用统一的数据返回结构JsonResponse 包括异常类型</a>  
 &emsp;&emsp;<a href="#13">4.4. 使用swagger暴露参数</a>  
+&emsp;<a href="#14">5. 接口安全相关</a>  
+&emsp;&emsp;<a href="#15">5.1. API Token(接口令牌)</a>  
+&emsp;&emsp;<a href="#16">5.2. 攻击行为防御</a>  
+&emsp;&emsp;<a href="#17">5.3. 相关资料</a>  
 # <a name="0">接口设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Representational State Transfer（REST）。REST的概念是将API结构分离为操作和资源，使用HTTP方法GET、DELETE、POST和PUT操作资源。
 
@@ -166,3 +170,38 @@ Content-Type: application/json
  
 ### <a name="13">使用swagger暴露参数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  - Swagger是一种广泛使用的工具来用来记录与呈现 REST API，它提供了一种探索特定 API 使用的方法，因此允许开发人员理解底层的语义行为。
+ 
+## <a name="14">接口安全相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="15">API Token(接口令牌)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+1. 接口调用方(客户端)向接口提供方(服务器)申请接口调用账号，申请成功后，接口提供方会给接口调用方一个appId和一个key参数
+2. 客户端携带参数appId、timestamp、sign去调用服务器端的API token，其中sign=加密(appId + timestamp + key)
+3. 客户端拿着api_token 去访问不需要登录就能访问的接口
+4. 当访问用户需要登录的接口时，客户端跳转到登录页面，通过用户名和密码调用登录接口，登录接口会返回一个usertoken, 客户端拿着usertoken 去访问需要登录才能访问的接口
+> sign的作用是防止参数被篡改，客户端调用服务端时需要传递sign参数，服务器响应客户端时也可以返回一个sign用于客户度校验返回的值是否被非法篡改了。客户端传的sign和服务器端响应的sign算法可能会不同。
+
+验证参数放置在请求头
+```
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String token = request.getHeader("token");
+        String timestamp = request.getHeader("timestamp");
+        // 随机字符串
+        String nonce = request.getHeader("nonce");
+        String sign = request.getHeader("sign");
+    }
+```
+
+
+### <a name="16">攻击行为防御</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 错误达到3次，验证码或者滑块验证
+2. 错误达到10次，手机验证码验证登陆。
+3. IP限制
+> 不能直接根据错误次数封死账号登陆，可能会导致整个系统的账户都被黑客暴力破解至无法登陆。
+
+
+
+### <a name="17">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 接口安全设计：https://mp.weixin.qq.com/s/Az17l4SJXvcbXNu4A1j1Xg
+- 接口可能遇到的攻击：https://mp.weixin.qq.com/s/j0wjQLwkcXnRx7YTU6Lssg

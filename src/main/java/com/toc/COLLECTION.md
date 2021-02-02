@@ -33,6 +33,7 @@
 &emsp;&emsp;<a href="#30">5.1. 如何选用集合?</a>  
 &emsp;&emsp;<a href="#31">5.2. ArrayList 带参数及不带参数</a>  
 &emsp;&emsp;<a href="#32">5.3. Arrays.asList() 方法</a>  
+&emsp;&emsp;<a href="#33">5.4. hash 冲突解决方案</a>  
 # <a name="0">集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/collectionfamily.jpg)
 - 集合主要分为两大类，一个实现collection接口的，一个是实现了Map接口的。
@@ -563,3 +564,11 @@ public class Arrays{
  }
 }
 ```
+
+### <a name="33">hash 冲突解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 链地址法：HashMap中hash冲突节点，使用链表和红黑树解决
+2. 线性探测再散列：ThreadLocal中ThreadLocalMap的hash冲突，会线性向后探索直到寻找到向下一个空的节点。
+3. 再哈希法。
+    > 这种方法是同时构造多个不同的哈希函数：Hi=RH1（key） i=1，2，…，k。当哈希地址Hi=RH1（key）发生冲突时，再计算Hi=RH2（key）……，直到冲突不再产生。
+
+- [Hash冲突的四种解决办法](https://www.cnblogs.com/gongcheng-/p/10894205.html#_label1_0)

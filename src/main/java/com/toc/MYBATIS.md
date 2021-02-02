@@ -17,6 +17,7 @@
 &emsp;<a href="#14">14. mybatis的一二级缓存</a>  
 &emsp;<a href="#15">15. 千万级数据查询方案---- 流式查询</a>  
 &emsp;<a href="#16">16. MyBatis的设计模式</a>  
+&emsp;<a href="#17">17. @Param的作用</a>  
 # <a name="0">MyBatis </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一个demo
 ```
@@ -316,3 +317,42 @@ Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象
 - 适配器模式，例如Log的Mybatis接口和它对jdbc、log4j等各种日志框架的适配实现；
 - 装饰者模式，例如Cache包中的cache.decorators子包中等各个装饰者的实现；
 - 迭代器模式，例如迭代器模式PropertyTokenizer；
+
+## <a name="17">@Param的作用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+用来指定xml中`#{}` 指定的参数名。
+- 对于常规的参数映射，参数解析直接按照名称解析对应的K-V对应关系。
+- 对于对象类型传递，对于单个对象参数传递，则直接解析成class，xml文件需要直接指定class中的字段`demoId`，不能用参数前缀名`demo.demoId`
+- 对于多对象参数的传递，参数可以使用别名代替。
+
+- 参数解析方法：
+```
+Class MapperMethod{
+    public Object convertArgsToSqlCommandParam(Object[] args) {
+      return paramNameResolver.getNamedParams(args);
+    }
+}
+```
+
+
+- 参数获取方法
+```
+MetaObject{
+  public Object getValue(String name) {
+    PropertyTokenizer prop = new PropertyTokenizer(name);
+    if (prop.hasNext()) {
+      MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
+      if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
+        return null;
+      } else {
+        return metaValue.getValue(prop.getChildren());
+      }
+    } else {
+      return objectWrapper.get(prop);
+    }
+  }
+
+
+}
+
+
+```

@@ -93,6 +93,7 @@
 &emsp;&emsp;&emsp;<a href="#90">8.10.1. 延迟关联</a>  
 &emsp;&emsp;&emsp;<a href="#91">8.10.2. 小案例</a>  
 &emsp;&emsp;<a href="#92">8.11. InnoDB 和 MyIsam 数据库引擎的区别</a>  
+&emsp;&emsp;<a href="#93">8.12. MySQL储存页</a>  
 # <a name="0">MySQL</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">MySQL基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -892,3 +893,10 @@ INNER JOIN
 应用场景
 - MyISAM适合：(1)做很多count 的计算；(2)插入不频繁，查询非常频繁；(3)没有事务。
 - InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况。
+
+
+### <a name="93">MySQL储存页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+默认情况下，表空间中的页大小都为 16KB，当然也可以通过改变 innodb_page_size 选项对默认大小进行修改，需要注意的是不同的页大小最终也会导致区大小的不同：
+
+相关文章： https://blog.csdn.net/zztisgood/article/details/84783370
