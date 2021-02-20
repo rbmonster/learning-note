@@ -40,7 +40,7 @@
 - [FastDFS](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FASTDFS.md)
 
 ## 系统设计
-- [接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/INTERFACE_DESIGN.md)
+- [Java接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/INTERFACE_DESIGN.md)
 - [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SECONDS_KILL_DESIGN.md)
 - [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TINYURL.md)
 - [抢红包](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SECONDKILL_REDPACKAGE.md)
@@ -49,7 +49,7 @@
 - [本地缓存设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LOCALCACHE.md)
 - [Redis数据结构的设计应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/REDIS_APPLICATION.md)
 - [敏感数据过滤设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SENSITIVE_FILTER.md)
-- [数据库读写分离](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/READ_WRITE_DB.md)
+- [Spring侵入式数据库读写分离实现](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/READ_WRITE_DB.md)
 - [数据库表相关设计题](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TABLE_DESIGN.md)
 - [会议系统设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MEETING_DESIGN.md)
 - [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
