@@ -47,27 +47,30 @@
 &emsp;<a href="#44">7. 主从结构</a>  
 &emsp;<a href="#45">8. Sentinel 哨兵</a>  
 &emsp;<a href="#46">9. 集群</a>  
-&emsp;&emsp;<a href="#47">9.1. 哈希槽 槽指派</a>  
-&emsp;&emsp;&emsp;<a href="#48">9.1.1. 哈希槽</a>  
-&emsp;&emsp;<a href="#49">9.2. 故障转移</a>  
-&emsp;&emsp;<a href="#50">9.3. 一致性哈希</a>  
-&emsp;&emsp;&emsp;<a href="#51">9.3.1. 缺陷：Hash环的数据倾斜问题</a>  
-&emsp;<a href="#52">10. 项目使用Redis的场景</a>  
-&emsp;<a href="#53">11. 缓存一致性</a>  
-&emsp;&emsp;<a href="#54">11.1. 允许缓存与数据库存在偶尔不一致</a>  
-&emsp;&emsp;&emsp;<a href="#55">11.1.1. Cache Aside Pattern（旁路缓存模式）</a>  
-&emsp;&emsp;<a href="#56">11.2. Write Behind Pattern（异步缓存写入）</a>  
-&emsp;<a href="#57">12. 缓存雪崩</a>  
-&emsp;<a href="#58">13. 缓存穿透</a>  
-&emsp;<a href="#59">14. 缓存击穿</a>  
-&emsp;<a href="#60">15. LRU 实现</a>  
-&emsp;<a href="#61">16. 分布式锁</a>  
-&emsp;&emsp;<a href="#62">16.1. 独立实现分布式锁</a>  
-&emsp;&emsp;&emsp;<a href="#63">16.1.1. 加锁</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#64">16.1.1.1. value必须要具有唯一性</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#65">16.1.1.2. SET 命令的缺陷</a>  
-&emsp;&emsp;&emsp;<a href="#66">16.1.2. 释放锁</a>  
-&emsp;&emsp;<a href="#67">16.2. Redisson 分布式方案</a>  
+&emsp;&emsp;<a href="#47">9.1. 集群下与客户端交互过程</a>  
+&emsp;&emsp;<a href="#48">9.2. 哈希槽 槽指派</a>  
+&emsp;&emsp;&emsp;<a href="#49">9.2.1. 哈希槽</a>  
+&emsp;&emsp;<a href="#50">9.3. 故障转移</a>  
+&emsp;&emsp;<a href="#51">9.4. 一致性哈希</a>  
+&emsp;&emsp;&emsp;<a href="#52">9.4.1. 缺陷：Hash环的数据倾斜问题</a>  
+&emsp;<a href="#53">10. 项目使用Redis的场景</a>  
+&emsp;<a href="#54">11. 缓存一致性</a>  
+&emsp;&emsp;<a href="#55">11.1. 允许缓存与数据库存在偶尔不一致</a>  
+&emsp;&emsp;&emsp;<a href="#56">11.1.1. Cache Aside Pattern（旁路缓存模式）</a>  
+&emsp;&emsp;<a href="#57">11.2. Write Behind Pattern（异步缓存写入）</a>  
+&emsp;<a href="#58">12. 缓存雪崩</a>  
+&emsp;<a href="#59">13. 缓存穿透</a>  
+&emsp;<a href="#60">14. 缓存击穿</a>  
+&emsp;<a href="#61">15. LRU 实现</a>  
+&emsp;<a href="#62">16. 分布式锁</a>  
+&emsp;&emsp;<a href="#63">16.1. 独立实现分布式锁</a>  
+&emsp;&emsp;&emsp;<a href="#64">16.1.1. 加锁</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#65">16.1.1.1. value必须要具有唯一性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#66">16.1.1.2. SET 命令的缺陷</a>  
+&emsp;&emsp;&emsp;<a href="#67">16.1.2. 释放锁</a>  
+&emsp;&emsp;<a href="#68">16.2. Redisson 分布式方案</a>  
+&emsp;&emsp;&emsp;<a href="#69">16.2.1. 自动延时的看门狗机制</a>  
+&emsp;&emsp;&emsp;<a href="#70">16.2.2. 相关文章</a>  
 # <a name="0">Redis 基础</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存基本思想：CPU Cache 缓存的是内存数据用于解决 CPU 处理速度和内存不匹配的问题，内存缓存的是硬盘数据用于解决硬盘访问速度过慢的问题。为了避免用户在请求数据的时候获取速度过于缓慢，所以我们在数据库之上增加了缓存这一层来弥补。
 ## <a name="1">基本数据结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -662,7 +665,10 @@ redis-server /path/to/your/sentinel.conf
 ```
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/cluster.jpg)
 
-### <a name="47">哈希槽 槽指派</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="47">集群下与客户端交互过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+### <a name="48">哈希槽 槽指派</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 槽指派：Redis集群通过分片的方式保存数据库的键值对。集群的整个数据库被分成16384个槽slot
   - 对数据库的16384个槽进行指派之后，集群就处于上线状态。
   - 在获取数据库键时，便需要对键进行计算，再获取对应的槽位，并判断当前数据库是否为负责键所在槽的节点。
@@ -688,10 +694,10 @@ OK
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/askError.jpg)
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/slotReadd.jpg)
 
-#### <a name="48">哈希槽</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="49">哈希槽</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Redis 集群并没有直接使用一致性哈希，而是使用了哈希槽 （slot） 的概念。没有使用Hash算法，而是使用了crc16校验算法。槽位其实就是一个个的空间的单位。
 - 每个key经过crc16校验算法计算，会落在对应的哈希槽上，便可以定位到节点的redis
-### <a name="49">故障转移</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="50">故障转移</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 复制与故障转移
   - 设置从节点
   - ```
@@ -706,7 +712,7 @@ OK
     4. 新的主节点在集群中发送PONG消息，通知其他节点该节点变成主节点。
     5. 新主节点开始接受和处理指派槽的消息。
 
-### <a name="50">一致性哈希</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="51">一致性哈希</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一致性哈希解决问题：定位节点用传统的key%节点数取模，会导致每次在新增和删除节点的时候，都要根据key的定位做大量的数据迁移。
 
 - 查询如何定位到对应的服务器位置？
@@ -716,7 +722,7 @@ OK
 2. 服务器根据IP地址进行hash计算，定位到环上的某一点。
 3. 用户的 IP 使用上面相同的函数 Hash 计算出哈希值，并确定此数据在环上的位置，从此位置沿环 顺时针行走，遇到的第一台服务器就是其应该定位到的服务器。
 
-#### <a name="51">缺陷：Hash环的数据倾斜问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="52">缺陷：Hash环的数据倾斜问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 当4个服务节点时，我们并不能保证4个服务节点刚好均匀的落在时钟的 12、3、6、9点上。
 - 解决方案：设置"虚拟节点"，即在服务器IP或者主机名后加上后缀
   - 如 服务器1 的 IP 是 192.168.32.132，那么虚拟服务器节点在环形空间的位置就是hash("192.168.32.132#A") % 2^32
@@ -728,7 +734,7 @@ OK
 - 相关文章：https://www.cnblogs.com/jajian/p/10896624.html
 
 
-## <a name="52">项目使用Redis的场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="53">项目使用Redis的场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - MySQL 数据库对于并发的场景天然支持不好，单机支撑到 2000QPS 也开始容易报警了。
   - MySQL 这类的数据库的 QPS 大概都在 1w 左右（4 核 8g）
 
@@ -739,9 +745,9 @@ OK
 
 - redis 分布式锁：保证集群之间的资源同步。
 
-## <a name="53">缓存一致性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="54">允许缓存与数据库存在偶尔不一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="55">Cache Aside Pattern（旁路缓存模式）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="54">缓存一致性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="55">允许缓存与数据库存在偶尔不一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="56">Cache Aside Pattern（旁路缓存模式）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 写：更新 DB，然后直接删除缓存 cache 。
 - 读：从 cache 中读取数据，读取到就直接返回，读取不到的话，就从 DB 中取数据返回，然后再把数据放到 cache 中。
 - Cache Aside Pattern 是我们平时使用比较多的一个缓存读写模式，比较适合读请求比较多的场景。
@@ -761,10 +767,10 @@ OK
 
 - 串行化可以保证一定不会出现不一致的情况，但是它也会导致系统的吞吐量大幅度降低，用比正常情况下多几倍的机器去支撑线上的一个请求。
  
-### <a name="56">Write Behind Pattern（异步缓存写入）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="57">Write Behind Pattern（异步缓存写入）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
     - 使用阿里巴巴的canal，订阅mysql的binlog日志，通过解析日志，更新缓存信息。解决上述缓存删除后，出现缓存穿透的问题。
 
-## <a name="57">缓存雪崩</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="58">缓存雪崩</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存雪崩：指缓存由于某些原因(比如 宕机、cache服务挂了或者大量过期)整体crash掉了,导致大量请求到达后端数据库,从而导致数据库崩溃,整个系统崩溃,发生灾难。
 - 针对缓存雪崩的处理措施
     - 事前：Redis 高可用，主从+哨兵，Redis cluster，避免全盘崩溃。
@@ -777,7 +783,7 @@ OK
   - 对用户来说，部分请求都是可以被处理的。系统没死，对用户来说，可能就是点击几次刷不出来页面，但是多点几次，就可以刷出来了。
 
 
-## <a name="58">缓存穿透</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="59">缓存穿透</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存穿透：指缓存和数据库中都没有的数据，而有恶意攻击者不断发起请求，如发起为id为“-1”的数据或id为特别大不存在的数据，导致数据库压力过大。
 
 - 解决方案：
@@ -786,7 +792,7 @@ OK
  
 - 解决方案2： 使用布隆过滤器
   
-## <a name="59">缓存击穿</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="60">缓存击穿</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 缓存击穿：缓存击穿，就是说某个 key 非常热点，访问非常频繁，处于集中式高并发访问的情况，当这个 key 在失效的瞬间，大量的请求就击穿了缓存，直接请求数据库，就像是在一道屏障上凿开了一个洞。
 
 - 解决措施：
@@ -794,7 +800,7 @@ OK
     - 若缓存的数据更新不频繁，且缓存刷新的整个流程耗时较少的情况下，则可以采用基于 Redis、zookeeper 等分布式中间件的分布式互斥锁，或者本地互斥锁以保证仅少量的请求能请求数据库并重新构建缓存，其余线程则在锁释放后能访问到新缓存。
     - 若缓存的数据更新频繁或者在缓存刷新的流程耗时较长的情况下，可以利用定时线程在缓存过期前主动地重新构建缓存或者延后缓存的过期时间，以保证所有的请求能一直访问到对应的缓存。
     
-## <a name="60">LRU 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="61">LRU 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```
 public class LRU<K, V> implements Iterable<K> {
@@ -922,10 +928,10 @@ public class LRU<K, V> implements Iterable<K> {
 }
 ```
 
-## <a name="61">分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="62">分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="62">独立实现分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="63">加锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="63">独立实现分布式锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="64">加锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 通过指令SET结合过期时间一起使用，并设置过期时间，防止线程挂了导致锁未释放
 ```
 SET key value[EX seconds][PX milliseconds][NX|XX]
@@ -946,7 +952,7 @@ OK
 "firethehole"
 ```
 
-##### <a name="64">value必须要具有唯一性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="65">value必须要具有唯一性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 假如value不是随机字符串，而是一个固定值，那么就可能存在下面的问题：
 
 1. 客户端1获取锁成功
@@ -957,13 +963,13 @@ OK
 
 简而言之，就是A线程锁过期，后序导致对锁的异常释放。
 
-##### <a name="65">SET 命令的缺陷</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="66">SET 命令的缺陷</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 加锁后主节点出现故障，锁数据未同步，导致加锁失败，其他节点获得锁。
 
 - 具体流程
 A客户端在Redis的master节点上拿到了锁，但是这个加锁的key还没有同步到slave节点，master故障，发生故障转移，一个slave节点升级为master节点，B客户端也可以获取同个key的锁，但客户端A也已经拿到锁了，这就导致多个客户端都拿到锁。
 
-#### <a name="66">释放锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="67">释放锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 释放锁时需要验证value值，也就是说我们在获取锁的时候需要设置一个value，**不能直接用del key这种粗暴的方式，因为直接del key任何客户端都可以进行解锁了**，所以解锁时，我们需要判断锁是否是自己的，基于value值来判断，代码如下：
 - 使用Lua脚本的方式，尽量保证原子性。
 ```
@@ -974,10 +980,12 @@ public boolean releaseLock_with_lua(String key,String value) {
 }
 ```
 
-### <a name="67">Redisson 分布式方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="68">Redisson 分布式方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - redisson是在redis基础上实现的一套开源解决方案，提供了分布式的相关实现及RedLock的分布式锁实现。
 
-原理：生成唯一的Value，即UUID+threadId。获取锁时向多个redis实例发送的LUA脚本命令，解锁同理。
+原理：生成唯一的Value，即UUID+threadId。获取锁时向一个redis集群实例发送的LUA脚本命令，解锁同理。
+> 如果该客户端面对的是一个redis cluster集群，他首先会根据hash节点选择一台机器
+> - lua脚本本质上的命令： hset myLock 8743c9c0-0795-4907-87fd-6c719a6b4586:1 1
 ```
 <T> RFuture<T> tryLockInnerAsync(long leaseTime, TimeUnit unit, long threadId, RedisStrictCommand<T> command) {
     internalLockLeaseTime = unit.toMillis(leaseTime);
@@ -1002,7 +1010,11 @@ public boolean releaseLock_with_lua(String key,String value) {
 }
 ```
 
+#### <a name="69">自动延时的看门狗机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 针对过期时间的设置，假设业务还未处理完，锁已过期，Redisson会启动监控线程查看业务执行状态，再重新设置过期时间
 
+watch dog自动延期机制 :只要客户端1一旦加锁成功，就会启动一个watch dog看门狗，他是一个后台线程，会每隔10秒检查一下，如果客户端1还持有锁key，那么就会不断的延长锁key的生存时间。
 
-- 相关文章：https://juejin.cn/post/6844903830442737671#heading-10
+#### <a name="70">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [基于Redis的分布式锁实现](https://juejin.cn/post/6844903830442737671#heading-10)
+- [Redisson实现Redis分布式锁的原理](https://www.cnblogs.com/AnXinliang/p/10019389.html)

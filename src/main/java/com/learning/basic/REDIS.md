@@ -592,6 +592,9 @@ redis-server /path/to/your/sentinel.conf
 ```
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/cluster.jpg)
 
+### 集群下与客户端交互过程
+
+
 ### 哈希槽 槽指派
 - 槽指派：Redis集群通过分片的方式保存数据库的键值对。集群的整个数据库被分成16384个槽slot
   - 对数据库的16384个槽进行指派之后，集群就处于上线状态。
@@ -907,7 +910,9 @@ public boolean releaseLock_with_lua(String key,String value) {
 ### Redisson 分布式方案
 - redisson是在redis基础上实现的一套开源解决方案，提供了分布式的相关实现及RedLock的分布式锁实现。
 
-原理：生成唯一的Value，即UUID+threadId。获取锁时向多个redis实例发送的LUA脚本命令，解锁同理。
+原理：生成唯一的Value，即UUID+threadId。获取锁时向一个redis集群实例发送的LUA脚本命令，解锁同理。
+> 如果该客户端面对的是一个redis cluster集群，他首先会根据hash节点选择一台机器
+> - lua脚本本质上的命令： hset myLock 8743c9c0-0795-4907-87fd-6c719a6b4586:1 1
 ```
 <T> RFuture<T> tryLockInnerAsync(long leaseTime, TimeUnit unit, long threadId, RedisStrictCommand<T> command) {
     internalLockLeaseTime = unit.toMillis(leaseTime);
@@ -932,7 +937,11 @@ public boolean releaseLock_with_lua(String key,String value) {
 }
 ```
 
+#### 自动延时的看门狗机制
 - 针对过期时间的设置，假设业务还未处理完，锁已过期，Redisson会启动监控线程查看业务执行状态，再重新设置过期时间
 
+watch dog自动延期机制 :只要客户端1一旦加锁成功，就会启动一个watch dog看门狗，他是一个后台线程，会每隔10秒检查一下，如果客户端1还持有锁key，那么就会不断的延长锁key的生存时间。
 
-- 相关文章：https://juejin.cn/post/6844903830442737671#heading-10
+#### 相关文章
+- [基于Redis的分布式锁实现](https://juejin.cn/post/6844903830442737671#heading-10)
+- [Redisson实现Redis分布式锁的原理](https://www.cnblogs.com/AnXinliang/p/10019389.html)

@@ -462,6 +462,10 @@ public Semaphore(int permits, boolean fair) {
 1. AQS 的内部类 Node 定义了两个常量 SHARED 和 EXCLUSIVE，他们分别标识 AQS 队列中等待线程的锁获取模式。
 2. java 的并发包中提供了 ReadWriteLock，读-写锁。它允许一个资源可以被多个读操作访问，或者被一个 写操作访问，但两者不能同时进行。
 
+
+### 线程池中的Worker(独占锁实现)
+TODO
+
 ## Atomic 原子类
 - 原子类主要基于CAS操作实现，同时使用 volatile 保证可见性。
 

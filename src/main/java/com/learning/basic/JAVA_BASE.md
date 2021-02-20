@@ -1,58 +1,61 @@
 # Java 基础
 
 ## 基本数据类型
-- 八大基本数据类型
-    - byte/8
-      - 取值范围为-128~127，占用1个字节
-    - short/16
-      - 取值范围为-32768~32767，占用2个字节
-    - int/32
-      - 占用4个字节（-2的31次方到2的31次方-1） 
-    - float/32
-      - 占用4个字节 （-3.40292347E+38~3.40292347E+38）
-    - long/64
-      - 占用8个字节（-2的63次方到2的63次方-1）
-    - double/64
-      - 占用8个字节，IEEE754
-    - char/16
-    - boolean/~
-- 基本数据类型转换关系：byte→short(char)→int→long→float→double
+八大基本数据类型
+- byte/8
+  - 取值范围为-128~127，占用1个字节
+- short/16
+  - 取值范围为-32768~32767，占用2个字节
+- int/32
+  - 占用4个字节（-2的31次方到2的31次方-1） 
+- float/32
+  - 占用4个字节 （-3.40292347E+38~3.40292347E+38）
+- long/64
+  - 占用8个字节（-2的63次方到2的63次方-1）
+- double/64
+  - 占用8个字节，IEEE754
+- char/16
+- boolean/~
+
+基本数据类型转换关系：byte→short(char)→int→long→float→double
 
 ### 包装类型
-- 所谓包装类，就是能够直接将简单类型的变量表示为一个类，在执行变量类型的相互转换时，我们会大量使用这些包装类。
+所谓包装类，就是能够直接将简单类型的变量表示为一个类，在执行变量类型的相互转换时，我们会大量使用这些包装类。
 - 以下用途
-    1. 作为基本数据类型对应的类类型，提供了一系列实用的对象操作，如类型转换，进制转换等
-    2. 集合不允许存放基本数据类型，故常用包装类
-    3. 包含了每种基本类型的相关属性，如最大值，最小值，所占位数等
-- 包装类都为final 不可继承
-- 包装类型都继承了Number抽象类
+1. 作为基本数据类型对应的类类型，提供了一系列实用的对象操作，如类型转换，进制转换等
+2. 集合不允许存放基本数据类型，故常用包装类
+3. 包含了每种基本类型的相关属性，如最大值，最小值，所占位数等
+
+包装类都为final 不可继承
+
+包装类型都继承了Number抽象类
 
 ```
 Integer x = 2;     // 装箱 调用了 Integer.valueOf(2)
 int y = x;         // 拆箱 调用了 X.intValue()
 ```
 
-- new Integer(123) 与 Integer.valueOf(123) 的区别在于：
-  - new Integer(123) 每次都会新建一个对象；
-  - Integer.valueOf(123) 会使用缓存池中的对象，多次调用会取得同一个对象的引用。
+new Integer(123) 与 Integer.valueOf(123) 的区别在于：
+- new Integer(123) 每次都会新建一个对象；
+- Integer.valueOf(123) 会使用缓存池中的对象，多次调用会取得同一个对象的引用。
     - valueOf() 方法的实现比较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容
 
 #### 缓冲池
-- 包装类型内存使用 private static class IntegerCache，声明一个内部使用的缓存池
-  - 如Integer中有个静态内部类IntegerCache，里面有个cache[],也就是Integer常量池，常量池的大小为一个字节（-128~127）
-  - 为啥把缓存设置为[-128，127]区间？性能和资源之间的权衡。
-- 在 jdk 1.8 所有的数值类缓冲池中，Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 - 128，上界默认是 127，但是这个上界是可调的，在启动 jvm 的时候，通过 -XX:AutoBoxCacheMax=<size> 来指定这个缓冲池的大小。
+包装类型内存使用 private static class IntegerCache，声明一个内部使用的缓存池
+- 如Integer中有个静态内部类IntegerCache，里面有个cache[],也就是Integer常量池，常量池的大小为一个字节（-128~127）
+- 为啥把缓存设置为[-128，127]区间？性能和资源之间的权衡。
+在 jdk 1.8 所有的数值类缓冲池中，Integer 的缓冲池 IntegerCache 很特殊，这个缓冲池的下界是 - 128，上界默认是 127，但是这个上界是可调的，在启动 jvm 的时候，通过 -XX:AutoBoxCacheMax=<size> 来指定这个缓冲池的大小。
 
-- 基本类型对应的缓冲池如下：
-    - boolean values: true and false
-    - all byte values
-    - short values: between -128 and 127
-    - int values: between -128 and 127
-    - char: in the range \u0000 to \u007F
+基本类型对应的缓冲池如下：
+- boolean values: true and false
+- all byte values
+- short values: between -128 and 127
+- int values: between -128 and 127
+- char: in the range \u0000 to \u007F
     
 ### BigDecimal
-- BigDecimal 主要用于处理解决精度丢失问题
-  - float和double类型主要是为了科学计算和工程计算而设计的。执行二进制浮点运算，这是为了在广泛的数字范围上提供较为精确的快速近似计算而精心设计的。然而，它们并没有提供完全精确的结果
+BigDecimal 主要用于处理解决精度丢失问题
+- float和double类型主要是为了科学计算和工程计算而设计的。执行二进制浮点运算，这是为了在广泛的数字范围上提供较为精确的快速近似计算而精心设计的。然而，它们并没有提供完全精确的结果
 ```
 float a = 1.0f - 0.9f;
 float b = 0.9f - 0.8f;
@@ -62,31 +65,35 @@ System.out.println(a == b);// false
 ```
     
 ## String
-- String 被声明为 final，因此它不可被继承
-  - Java 8 中，String 内部使用 char 数组存储数据。
-  - Java 9 之后，String 类的实现改用 byte 数组存储字符串，同时使用 coder 来标识使用了哪种编码。
-  - 对String对象的任何改变都不影响到原对象，相关的任何change操作都会生成新的对象
+String 被声明为 final，因此它不可被继承
+- Java 8 中，String 内部使用 char 数组存储数据。
+- Java 9 之后，String 类的实现改用 byte 数组存储字符串，同时使用 coder 来标识使用了哪种编码。
+- 对String对象的任何改变都不影响到原对象，相关的任何change操作都会生成新的对象
   
-- 不可变的好处
-  1. 可以缓存 hash 值
-  2. String Pool 的需要。如果一个 String 对象已经被创建过了，那么就会从 String Pool 中取得引用。只有 String 是不可变的，才可能使用 String Pool。
-  3. 安全性。String 经常作为参数，String 不可变性可以保证参数不可变。如网络传输
-  4. 线程安全
+不可变的好处
+1. 可以缓存 hash 值
+2. String Pool 的需要。如果一个 String 对象已经被创建过了，那么就会从 String Pool 中取得引用。只有 String 是不可变的，才可能使用 String Pool。
+3. 安全性。String 经常作为参数，String 不可变性可以保证参数不可变。如网络传输
+4. 线程安全
   
-- new String("abc") :创建两String对象，（前提是 String Pool 中还没有 "abc" 字符串对象）。
-- java 8 字符串常量池放置于方法区中
+new String("abc") :创建两String对象，（前提是 String Pool 中还没有 "abc" 字符串对象）。
+
+java 8 字符串常量池放置于方法区中
+
 ### String, StringBuffer and StringBuilder
-- intern() 方法： 
-  - 当一个字符串调用 intern() 方法时，如果 String Pool 中已经存在一个字符串和该字符串值相等（使用 equals() 方法进行确定），那么就会返回 String Pool 中字符串的引用；
-  - 否则，就会在 String Pool 中添加一个新的字符串，并返回这个新字符串的引用。
-- String、StringBuilder、StringBuffer三者的执行效率：
-    - StringBuilder > StringBuffer > String
-    - 当然这个是相对的，不一定在所有情况下都是这样。
-    - 比如String str = "hello"+ "world"的效率就比 StringBuilder st  = new StringBuilder().append("hello").append("world")要高。
-- 对于三者使用的总结：
-    1. 操作少量的数据: 适用String
-    2. 单线程操作字符串缓冲区下操作大量数据: 适用StringBuilder
-    3. 多线程操作字符串缓冲区下操作大量数据: 适用StringBuffer
+intern() 方法： 
+- 当一个字符串调用 intern() 方法时，如果 String Pool 中已经存在一个字符串和该字符串值相等（使用 equals() 方法进行确定），那么就会返回 String Pool 中字符串的引用；
+- 否则，就会在 String Pool 中添加一个新的字符串，并返回这个新字符串的引用。
+
+String、StringBuilder、StringBuffer三者的执行效率：
+- StringBuilder > StringBuffer > String
+- 当然这个是相对的，不一定在所有情况下都是这样。
+- 比如String str = "hello"+ "world"的效率就比 StringBuilder st  = new StringBuilder().append("hello").append("world")要高。
+
+对于三者使用的总结：
+1. 操作少量的数据: 适用String
+2. 单线程操作字符串缓冲区下操作大量数据: 适用StringBuilder
+3. 多线程操作字符串缓冲区下操作大量数据: 适用StringBuffer
 ```
     String a = "hello2"; 　  
     String b = "hello";       
@@ -100,6 +107,13 @@ System.out.println(a == b);// false
     System.out.println((a == c));
     输出结果为：true。对于被final修饰的变量，会在class文件常量池中保存一个副本，也就是说不会通过连接而进行访问
 ```
+
+#### 内部数据结构
+java 8 为char[] 数据
+
+#### AbstractStringBuilder 扩容
+扩容的大小是新字符串的长度的2倍，然后再加上2。
+> 在使用StringBuilder的时候，append()之后，我们一般会在后面在加上一个分隔符，例如逗号，也就是再加上一个char，而char在java中占2个字节，避免了因为添加分隔符而再次引起扩容。
 
 
 ## final 关键字
@@ -115,16 +129,17 @@ final StringBuilder stringBuilder = new StringBuilder("123");
 //        stringBuilder = new StringBuilder("123123");
 ```
 
-- 方法：声明方法不能被子类重写。
-- private 方法隐式地被指定为 final，如果在子类中定义的方法和基类中的一个 private 方法签名相同，此时子类的方法不是重写基类方法，而是在子类中定义了一个新的方法。
+方法：声明方法不能被子类重写。
 
-- 类:声明类不允许被继承。
+private 方法隐式地被指定为 final，如果在子类中定义的方法和基类中的一个 private 方法签名相同，此时子类的方法不是重写基类方法，而是在子类中定义了一个新的方法。
+
+类:声明类不允许被继承。
 
 ## static 关键字
-- 静态变量
-  - 静态变量：又称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在一份。
+静态变量
+- 静态变量：又称为类变量，也就是说这个变量属于类的，类所有的实例都共享静态变量，可以直接通过类名来访问它。静态变量在内存中只存在一份。
     - 针对于静态变量储存在方法区中，而静态对象方法区存储引用，对象放在堆中。
-  - 实例变量：每创建一个实例就会产生一个实例变量，它与该实例同生共死。
+- 实例变量：每创建一个实例就会产生一个实例变量，它与该实例同生共死。
 ```
 public class A {
 
@@ -133,13 +148,13 @@ public class A {
 }
 ```
 
-- 静态方法：静态方法在类加载的时候就存在了，它不依赖于任何实例。所以静态方法必须有实现，也就是说它不能是抽象方法。
-  - 只能访问所属类的静态字段和静态方法，方法中不能有 this 和 super 关键字，这两个关键字与具体对象关联
+静态方法：静态方法在类加载的时候就存在了，它不依赖于任何实例。所以静态方法必须有实现，也就是说它不能是抽象方法。
+- 只能访问所属类的静态字段和静态方法，方法中不能有 this 和 super 关键字，这两个关键字与具体对象关联
 
-- 静态语句块：静态语句块在类初始化时运行一次。
+静态语句块：静态语句块在类初始化时运行一次。
 
-- 静态内部类：非静态内部类依赖于外部类的实例，也就是说需要先创建外部类实例，才能用这个实例去创建非静态内部类。而静态内部类不需要。
-  - 注意这边是内部类
+静态内部类：非静态内部类依赖于外部类的实例，也就是说需要先创建外部类实例，才能用这个实例去创建非静态内部类。而静态内部类不需要。
+- 注意这边是内部类
 ```
 public class OuterClass {
 
@@ -158,10 +173,10 @@ public class OuterClass {
 }
 ```
 
-- 静态导包：在使用静态变量和方法时不用再指明 ClassName。增强可读性。
-  - import static com.xxx.ClassName.*
+静态导包：在使用静态变量和方法时不用再指明 ClassName。增强可读性。
+- import static com.xxx.ClassName.*
   
-- 初始化顺序 ：静态变量和静态语句块优先于实例变量和普通语句块，静态变量和静态语句块的初始化顺序取决于它们在代码中的顺序。
+初始化顺序 ：静态变量和静态语句块优先于实例变量和普通语句块，静态变量和静态语句块的初始化顺序取决于它们在代码中的顺序。
 ```
 // 1
 public static String staticField = "静态变量";
@@ -182,13 +197,13 @@ public InitialOrderTest() {
     System.out.println("构造函数");
 }
 ```
-- 存在继承的情况下，初始化顺序为：
-    - 父类（静态变量、静态语句块）
-    - 子类（静态变量、静态语句块）
-    - 父类（实例变量、普通语句块）
-    - 父类（构造函数）
-    - 子类（实例变量、普通语句块）
-    - 子类（构造函数）
+存在继承的情况下，初始化顺序为：
+- 父类（静态变量、静态语句块）
+- 子类（静态变量、静态语句块）
+- 父类（实例变量、普通语句块）
+- 父类（构造函数）
+- 子类（实例变量、普通语句块）
+- 子类（构造函数）
     
 ## Object 通用方法
 
@@ -215,14 +230,16 @@ public final void wait() throws InterruptedException
 ```
 
 ### equals()
-- 等价与相等
-    - 对于基本类型，== 判断两个值是否相等，基本类型没有 equals() 方法。
-    - 对于引用类型，== 判断两个变量是否引用同一个对象，而 equals() 判断引用的对象是否等价。
-- 如何重写：
-  1. 检查是否为同一个对象的引用，如果是直接返回 true；
-  2. 检查是否是同一个类型，如果不是，直接返回 false；
-  3. 将 Object 对象进行转型；
-  4. 判断每个关键域是否相等。
+等价与相等
+- 对于基本类型，== 判断两个值是否相等，基本类型没有 equals() 方法。
+- 对于引用类型，== 判断两个变量是否引用同一个对象，而 equals() 判断引用的对象是否等价。
+
+如何重写：
+1. 检查是否为同一个对象的引用，如果是直接返回 true；
+2. 检查是否是同一个类型，如果不是，直接返回 false；
+3. 将 Object 对象进行转型；
+4. 判断每个关键域是否相等。
+
 ```
 @Override
 public boolean equals(Object o) {
@@ -237,10 +254,11 @@ public boolean equals(Object o) {
 }
 ```
 ### hashCode()
-- hashCode()：hashCode是jdk根据对象的地址或者字符串或者数字算出来的int类型的数值.
-  - 对象按照自己不同的特征尽量的有不同的哈希码，作用是用于快速查找
-  - 另一个应用就是hash集合的使用
-- 重写hashcode方法:
+hashCode()：hashCode是jdk根据对象的地址或者字符串或者数字算出来的int类型的数值.
+- 对象按照自己不同的特征尽量的有不同的哈希码，作用是用于快速查找
+- 另一个应用就是hash集合的使用
+
+重写hashcode方法:
 ```
     private String name;
 	private int age;
@@ -255,21 +273,22 @@ public boolean equals(Object o) {
 	}
 ```
 
--  为什么要使用 31 ?
-  - 原因一：更少的乘积结果冲突
-  - 原因二：与 31 相乘可以转换成移位和减法：31*x == (x<<5)-x，编译器会自动进行这个优化
+为什么要使用 31 ?
+- 原因一：更少的乘积结果冲突
+- 原因二：与 31 相乘可以转换成移位和减法：31*x == (x<<5)-x，编译器会自动进行这个优化
 
 ### toString()
 默认返回 对象名@4554617c 这种形式，其中 @ 后面的数值为散列码的无符号十六进制表示。
 
 ### clone()
-- 主要用于对象的拷贝克隆，如果一个对象不实现clone接口方法，默认抛出CloneNotSupportedException
-- 对象的拷贝分为浅拷贝与深拷贝
-  - 浅拷贝就是返回同一个引用的对象。
-  - 深拷贝就是返回和原始对象的引用类型引用不同对象。
+主要用于对象的拷贝克隆，如果一个对象不实现clone接口方法，默认抛出CloneNotSupportedException
+
+对象的拷贝分为浅拷贝与深拷贝
+- 浅拷贝就是返回同一个引用的对象。
+- 深拷贝就是返回和原始对象的引用类型引用不同对象。
   
 ### wait、notify、notifyAll 相关
- - 如果当前线程没有获得一个对象的监听器，调用该方法就会抛出一个IllegalMonitorStateException
+如果当前线程没有获得一个对象的监听器，调用该方法就会抛出一个IllegalMonitorStateException
 ```
 {
         Test test = new Test();
@@ -284,17 +303,17 @@ public boolean equals(Object o) {
         this.wait();
     }
 ```
-- 获得当前对象的监听器的方式：
-  - 执行此对象的同步 (Sychronized) 实例方法
-  - 执行在此对象上进行同步的 synchronized 语句的方法
-  - 对于 Class 类型的对象，执行该类的同步静态方法
+获得当前对象的监听器的方式：
+- 执行此对象的同步 (Sychronized) 实例方法
+- 执行在此对象上进行同步的 synchronized 语句的方法
+- 对于 Class 类型的对象，执行该类的同步静态方法
  
 ### 继承
-- Java 中有三个访问权限修饰符：private、protected 以及 public，
-  - 如果不加访问修饰符，表示包级可见。
-  - protected 用于修饰成员，表示在继承体系中成员对于子类可见，但是这个访问修饰符对于类没有意义。
-  - private 仅自己可见
-  - public 所有均可见
+Java 中有三个访问权限修饰符：private、protected 以及 public，
+- 如果不加访问修饰符，表示包级可见。
+- protected 用于修饰成员，表示在继承体系中成员对于子类可见，但是这个访问修饰符对于类没有意义。
+- private 仅自己可见
+- public 所有均可见
 
 - private 和 protected 不能修饰类。
 - 设计良好的模块会隐藏所有的实现细节，把它的 API 与它的实现清晰地隔离开来。模块之间只通过它们的 API 进行通信。
@@ -314,9 +333,10 @@ public boolean equals(Object o) {
 - 接口的字段默认都是 static 和 final 的。
 
 #### 比较
-- 从设计层面上看
-  - 抽象类的实现目的，是代码复用，一种模板设计的方式，可以让这些类都派生于一个抽象类。
-  - 接口的设计目的，是对类的行为进行约束（更准确的说是一种“有”约束，因为接口不能规定类不可以有什么行为），也就是提供一种机制，可以强制要求不同的类具有相同的行为。
+从设计层面上看
+- 抽象类的实现目的，是代码复用，一种模板设计的方式，可以让这些类都派生于一个抽象类。
+- 接口的设计目的，是对类的行为进行约束（更准确的说是一种“有”约束，因为接口不能规定类不可以有什么行为），也就是提供一种机制，可以强制要求不同的类具有相同的行为。
+
 - 从使用上来看，一个类可以实现多个接口，但是不能继承多个抽象类。
 - 接口的字段只能是 static 和 final 类型的，而抽象类的字段没有这种限制。
 - 接口的成员只能是 public 的，而抽象类的成员可以有多种访问权限。
@@ -331,18 +351,19 @@ public boolean equals(Object o) {
 
 ### 重写与重载
 #### 重写（Override）：
-- 重写：存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。
-- 重写有以下三个限制：
-  1. 子类方法的访问权限必须大于等于父类方法；
-  2. 子类方法的返回类型必须是父类方法返回类型或为其子类型。
-  3. 子类方法抛出的异常类型必须是父类抛出异常类型或为其子类型。
+重写：存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。
+
+重写有以下三个限制：
+1. 子类方法的访问权限必须大于等于父类方法；
+2. 子类方法的返回类型必须是父类方法返回类型或为其子类型。
+3. 子类方法抛出的异常类型必须是父类抛出异常类型或为其子类型。
  
-- 使用 @Override 注解，可以让编译器帮忙检查是否满足上面的三个限制条件。
+使用 @Override 注解，可以让编译器帮忙检查是否满足上面的三个限制条件。
 
 #### 重载（Overload）
-- 存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、顺序至少有一个不同。
-  - 应该注意的是，返回值不同，其它都相同不算是重载。
-  - 重载方法的优先级，char->int->long->float->double ->Character -> Serializable -> Object ,基本类型的重载方法会按此优先级寻找对应的方法，若重载的方法参数与调用的方法不一致，则会向父类查找匹配上相同类型的方法。
+存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、顺序至少有一个不同。
+- 应该注意的是，返回值不同，其它都相同不算是重载。
+- 重载方法的优先级，char->int->long->float->double ->Character -> Serializable -> Object ,基本类型的重载方法会按此优先级寻找对应的方法，若重载的方法参数与调用的方法不一致，则会向父类查找匹配上相同类型的方法。
 ```
     public static void sayHello(int arg) {
         System.out.println("this is int " +arg);
@@ -375,9 +396,9 @@ Class 和 java.lang.reflect 一起对反射提供了支持，java.lang.reflect �
 - 开发工具：如IDEA开发工具可以从反射中获取类的信息，帮助开发人员代码编写。
   
 反射的缺点：如果一个功能可以不用反射完成，那么最好就不用。
-  - **性能开销**   ：反射涉及了动态类型的解析，所以 JVM 无法对这些代码进行优化。因此，反射操作的效率要比那些非反射操作低得多。
-  - **安全限制**   ：使用反射技术要求程序必须在一个没有安全限制的环境中运行。
-  - 内部暴露： 反射破坏了封装性，可能会导致意料之外的副作用，这可能导致代码功能失调并破坏可移植性
+- **性能开销**   ：反射涉及了动态类型的解析，所以 JVM 无法对这些代码进行优化。因此，反射操作的效率要比那些非反射操作低得多。
+- **安全限制**   ：使用反射技术要求程序必须在一个没有安全限制的环境中运行。
+- 内部暴露： 反射破坏了封装性，可能会导致意料之外的副作用，这可能导致代码功能失调并破坏可移植性
   
 通过反射创建对象
 ```
@@ -394,21 +415,23 @@ Person p1=(Person) c.newInstance("李四","男",20);
 ## 异常
 Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： Error 和 Exception。
 - 其中 Error 用来表示 JVM 无法处理的错误，
-- Exception 分为两种：
-   - 受检异常 ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
-   - 非受检异常 ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此时程序崩溃并且无法恢复
-   - 运行时异常（runtime exception）
+
+Exception 分为两种：
+- 受检异常 ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
+- 非受检异常 ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此时程序崩溃并且无法恢复
+- 运行时异常（runtime exception）
 
 RuntimeException是一种Unchecked Exception，即表示编译器不会检查程序是否对RuntimeException作了处理，在程序中不必捕获RuntimException类型的异常，也不必在方法体声明抛出RuntimeException类。一般来说，RuntimeException发生的时候，表示程序中出现了编程错误，所以应该找出错误修改程序，而不是去捕获RuntimeException。
-  - 常见RuntimeException异常：NullPointException、ClassCastException、IllegalArgumentException、IndexOutOfBoundException
+- 常见RuntimeException异常：NullPointException、ClassCastException、IllegalArgumentException、IndexOutOfBoundException
   
 如果try语句里有return，返回的是try语句块中变量值。 
-  - 详细执行过程如下：
-    1. 如果有返回值，就把返回值保存到局部变量中；
-    2. 执行jsr指令跳到finally语句里执行；
-    3. 执行完finally语句后，返回之前保存在局部变量表里的值。
-    4. 针对对象引用的返回，如果finally中有修改值，返回的是引用的对象。
-  **如果try，finally语句里均有return，忽略try的return，而使用finally的return.**
+
+详细执行过程如下：
+1. 如果有返回值，就把返回值保存到局部变量中；
+2. 执行jsr指令跳到finally语句里执行；
+3. 执行完finally语句后，返回之前保存在局部变量表里的值。
+4. 针对对象引用的返回，如果finally中有修改值，返回的是引用的对象。
+**如果try，finally语句里均有return，忽略try的return，而使用finally的return.**
   
 ## 泛型
 泛型的本质是参数化类型，也就是所操作的数据类型被指定为一个参数。
@@ -453,7 +476,8 @@ public static <T> T add(T x,T y){
     return y;  
 }    
 ```
-- 泛型使用的一个例子
+
+泛型使用的一个例子
 ```
 public class Box<T> {
     // T stands for "Type"
@@ -531,8 +555,7 @@ java.lang.annotation 提供了四种元注解，专门注解其他的注解（�
 - 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
 #### 创建一个线程的开销
-- JVM 在背后帮我们做了哪些事情：
-
+JVM 在背后帮我们做了哪些事情：
 1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
 2. 每一栈帧由一个局部变量数组、返回值、操作数堆栈和常量池组成
 3. 一些支持本机方法的 jvm 也会分配一个本机堆栈

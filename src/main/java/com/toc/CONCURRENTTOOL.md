@@ -17,21 +17,22 @@
 &emsp;&emsp;<a href="#14">1.5. Semaphore </a>  
 &emsp;&emsp;<a href="#15">1.6. ReentrantReadWriteLock</a>  
 &emsp;&emsp;<a href="#16">1.7. 独占锁与共享锁</a>  
-&emsp;<a href="#17">2. Atomic 原子类</a>  
-&emsp;&emsp;<a href="#18">2.1. 原子类型</a>  
-&emsp;&emsp;<a href="#19">2.2. 数组类型</a>  
-&emsp;&emsp;<a href="#20">2.3. 引用类型</a>  
-&emsp;&emsp;<a href="#21">2.4. 对象的属性修改类型</a>  
-&emsp;<a href="#22">3. 线程安全集合</a>  
-&emsp;&emsp;<a href="#23">3.1. blockingQueue</a>  
-&emsp;&emsp;&emsp;<a href="#24">3.1.1. ArrayBlockingQueue</a>  
-&emsp;&emsp;&emsp;<a href="#25">3.1.2. LinkedBlockingQueue</a>  
-&emsp;&emsp;&emsp;<a href="#26">3.1.3. PriorityBlockingQueue</a>  
-&emsp;&emsp;&emsp;<a href="#27">3.1.4. SynchronousQueue</a>  
-&emsp;&emsp;<a href="#28">3.2. DelayQueue </a>  
-&emsp;&emsp;&emsp;<a href="#29">3.2.1. 实现</a>  
-&emsp;&emsp;&emsp;<a href="#30">3.2.2. 相关资料</a>  
-&emsp;<a href="#31">4. 相关文章</a>  
+&emsp;&emsp;<a href="#17">1.8. 线程池中的Worker(独占锁实现)</a>  
+&emsp;<a href="#18">2. Atomic 原子类</a>  
+&emsp;&emsp;<a href="#19">2.1. 原子类型</a>  
+&emsp;&emsp;<a href="#20">2.2. 数组类型</a>  
+&emsp;&emsp;<a href="#21">2.3. 引用类型</a>  
+&emsp;&emsp;<a href="#22">2.4. 对象的属性修改类型</a>  
+&emsp;<a href="#23">3. 线程安全集合</a>  
+&emsp;&emsp;<a href="#24">3.1. blockingQueue</a>  
+&emsp;&emsp;&emsp;<a href="#25">3.1.1. ArrayBlockingQueue</a>  
+&emsp;&emsp;&emsp;<a href="#26">3.1.2. LinkedBlockingQueue</a>  
+&emsp;&emsp;&emsp;<a href="#27">3.1.3. PriorityBlockingQueue</a>  
+&emsp;&emsp;&emsp;<a href="#28">3.1.4. SynchronousQueue</a>  
+&emsp;&emsp;<a href="#29">3.2. DelayQueue </a>  
+&emsp;&emsp;&emsp;<a href="#30">3.2.1. 实现</a>  
+&emsp;&emsp;&emsp;<a href="#31">3.2.2. 相关资料</a>  
+&emsp;<a href="#32">4. 相关文章</a>  
 # <a name="0">Java并发相关工具类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">AQS 相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -496,10 +497,14 @@ public Semaphore(int permits, boolean fair) {
 1. AQS 的内部类 Node 定义了两个常量 SHARED 和 EXCLUSIVE，他们分别标识 AQS 队列中等待线程的锁获取模式。
 2. java 的并发包中提供了 ReadWriteLock，读-写锁。它允许一个资源可以被多个读操作访问，或者被一个 写操作访问，但两者不能同时进行。
 
-## <a name="17">Atomic 原子类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="17">线程池中的Worker(独占锁实现)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+TODO
+
+## <a name="18">Atomic 原子类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 原子类主要基于CAS操作实现，同时使用 volatile 保证可见性。
 
-### <a name="18">原子类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">原子类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用原子的方式更新基本类型
 - AtomicInteger：整型原子类
 - AtomicLong：长整型原子类
@@ -516,7 +521,7 @@ boolean compareAndSet(int expect, int update) //如果输入的数值等于预�
 public final void lazySet(int newValue)//最终设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
 ```
 
-### <a name="19">数组类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">数组类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 数组类型:使用原子的方式更新数组里的某个元素
 - AtomicIntegerArray：整型数组原子类
 - AtomicLongArray：长整型数组原子类
@@ -532,7 +537,7 @@ public final int getAndAdd(int i, int delta) //获取 index=i 位置元素的值
 boolean compareAndSet(int i, int expect, int update) //如果输入的数值等于预期值，则以原子方式将 index=i 位置的元素值设置为输入值（update）
 public final void lazySet(int i, int newValue)//最终 将index=i 位置的元素设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
 ```
-### <a name="20">引用类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">引用类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 引用类型
 - AtomicReference：引用类型原子类
 - AtomicMarkableReference：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来，也可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
@@ -561,7 +566,7 @@ final Integer newReference = 666, newStamp = 999;
 final boolean casResult = asr.compareAndSet(initialRef, newReference, initialStamp, newStamp);
 ```
     
-### <a name="21">对象的属性修改类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="22">对象的属性修改类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 如果需要原子更新某个类里的某个字段时，需要用到对象的属性修改类型原子类。
 - AtomicIntegerFieldUpdater:原子更新整型字段的更新器
 - AtomicLongFieldUpdater：原子更新长整型字段的更新器
@@ -574,34 +579,34 @@ User user = new User("Java", 22);
 System.out.println(a.getAndIncrement(user));// 22
 ```
 
-## <a name="22">线程安全集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="23">线程安全集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - ConcurrentHashMap: 线程安全的 HashMap
 - CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.
 - ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
 - BlockingQueue: 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。
 - ConcurrentSkipListMap: 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
 
-### <a name="23">blockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="24">ArrayBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="24">blockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="25">ArrayBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ArrayBlockingQueue 是 BlockingQueue 接口的有界队列实现类，底层采用数组来实现。ArrayBlockingQueue 一旦创建，容量不能改变。其并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。
 
 ArrayBlockingQueue 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
 
-#### <a name="25">LinkedBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="26">LinkedBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做**无界队列也可以当做有界队列**来使用，同样满足 FIFO 的特性。
 而 LinkedBlockingQueue 之所以能够高效的处理并发数据，还因为其对于生产者端和消费者端分别采用了独立的锁来控制数据同步，这也意味着在高并发的情况下生产者和消费者可以并行地操作队列中的数据，以此来提高整个队列的并发性能。
 > 使用两个ReentrantLock，takeLock和putLock两把锁，分别用于阻塞队列的读写线程，也就是说，读线程和写线程可以同时运行，在多线程高并发场景，应该可以有更高的吞吐量，性能比单锁更高。
   
-#### <a name="26">PriorityBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">PriorityBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
   - PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为**无界队列**
   
-#### <a name="27">SynchronousQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="28">SynchronousQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 是一个不存储元素的阻塞队列。每一个 put 操作必须等待一个 take 操作，否则不能继续添加元素。
 > 队列本身并不存储任何元素，非常适合于传递性场景,比如在一个线程中使用的数据，传递给另 外 一 个 线 程 使 用 ， SynchronousQueue 的 吞 吐 量 高 于 LinkedBlockingQueue 和ArrayBlockingQueue。
 
-### <a name="28">DelayQueue </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="29">实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">DelayQueue </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="30">实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 DelayQueue 延迟队列实现使用数据结构使用PriorityQueue，**线程安全协作**使用的是ReentrantLock 与 Condition 条件队列实现。关键的实现在take方法的 available.awaitNanos(delay);
 - 队列中的元素必须是Delayed的实现类
@@ -646,8 +651,8 @@ DelayQueue 延迟队列实现使用数据结构使用PriorityQueue，**线程安
         }
     }
 ```
-#### <a name="30">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="31">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - https://segmentfault.com/a/1190000016388106
 
-## <a name="31">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="32">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - https://www.javadoop.com/post/AbstractQueuedSynchronizer-3
