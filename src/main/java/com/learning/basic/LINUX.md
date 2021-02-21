@@ -80,14 +80,21 @@ sdfadf
 ### 磁盘分区及目录
 
 挂载：利用一个目录当成进入点，将磁盘分区槽的数据放置在该目录下。也就是说，进入该目录就可以读取该分区槽的意思。
+
 挂载点：那个进入点的目录我们称为『挂载点』。 
 
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/linuxFolder.jpg)
 
-### 权限修改
+### 权限修改 —— chown、chmod
 - chgrp ：改变文件所属群组
 - chown ：改变文件拥有者
 - chmod ：改变文件的权限, SUID, SGID, SBIT 等等的特性
 
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/linuxfile.jpg)
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/linuxfile1.jpg)
+
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/linuxfile2.jpg)
 ## 其他资料
 
 ### 单引号与双引号
@@ -291,6 +298,177 @@ VBird 23000 24000 25000
 [root@VM-0-16-centos test]# grep -w "VB" temp 
 ```
 
+### sort    
+#### 选项与参数说明
+```
+[dmtsai@study ~]$ sort [-fbMnrtuk] [file or stdin]
+选项与参数：
+-f ：忽略大小写的差异，例如 A 与 a 视为编码相同；
+-b ：忽略最前面的空格符部分；
+-M ：以月份的名字来排序，例如 JAN, DEC 等等的排序方法；
+-n ：使用『纯数字』进行排序(默认是以文字型态来排序的)；
+-r ：反向排序；
+-u ：就是 uniq ，相同的数据中，仅出现一行代表；
+-t ：分隔符，预设是用 [tab] 键来分隔；
+-k ：以那个区间 (field) 来进行排序的意思
+```
+
+#### 实例
+```
+// 内容是以 : 来分隔的，以第三栏来排序
+[root@VM-0-16-centos ~]# cat /etc/passwd |sort -t ":" -k 3
+root:x:0:0:root:/root:/bin/bash
+operator:x:11:0:operator:/root:/sbin/nologin
+bin:x:1:1:bin:/bin:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+
+// 排序汇总
+cat file|sort -u
+```
+
+### xargs(划重点)
+xargs 可以读入 stdin 的数据，并且以空格符或断行字符作为分辨，将 stdin 的资料分隔成为 arguments 
+> - xargs命令还可以从文件读取条目，而不是从标准输入读取条目。使用-a选项，后跟文件名。
+> - xargs 默认的命令是 echo，这意味着通过管道传递给 xargs 的输入将会包含换行和空白，不过通过 xargs 的处理，换行和空白将被空格取代。
+
+选项与参数：
+- -0 ：如果输入的 stdin 含有特殊字符，例如 `, \, 空格键等等字符时，这个 -0 参数可以将他还原成一般字符。这个参数可以用于特殊状态喔！
+- -e ：这个是 EOF (end of file) 的意思。后面可以接一个字符串，当 xargs 分析到这个字符串时，就会停止继续工作！
+- -p ：在执行每个指令的 argument 时，都会询问使用者的意思；
+- -n ：后面接次数，每次 command 指令执行时，要使用几个参数的意思。
+- -t 表示先打印命令，然后再执行。
+当 xargs 后面没有接任何的指令时，默认是以 echo 来进行输出喔！
+
+
+#### 实例
+```
+[root@VM-0-16-centos ~]# find /usr/sbin -perm /7000 | xargs ls -l
+-rwxr-sr-x 1 root root 11224 Apr  1  2020 /usr/sbin/netreport
+-rwsr-xr-x 1 root root 11232 Apr  1  2020 /usr/sbin/pam_timestamp_check
+-rwsr-xr-x 1 root root 36272 Apr  1  2020 /usr/sbin/unix_chkpwd
+-rws--x--x 1 root root 40328 Aug  9  2019 /usr/sbin/userhelper
+-rwsr-xr-x 1 root root 11296 Apr  1  2020 /usr/sbin/usernetctl
+```
+
+单行与多行的变换-n 
+```
+[root@VM-0-16-centos ~]# cat test 
+a b c d e f g
+h i j k l m n
+o p q
+r s t
+u v w x y z
+// xargs 也可以将单行或多行文本输入转换为其他格式，例如多行变单行，单行变多行。 单行变多行通过-n指令实现。
+[root@VM-0-16-centos ~]# cat test |xargs
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+[root@VM-0-16-centos ~]# cat test |xargs -n4
+a b c d
+e f g h
+i j k l
+m n o p
+q r s t
+u v w x
+y z
+```
+
+-t 输出执行参数
+```
+[root@VM-0-16-centos ~]# ls  |grep lsroot| xargs -t 
+echo lsrootaa lsrootab lsrootac 
+lsrootaa lsrootab lsrootac
+[root@VM-0-16-centos ~]# ls  |grep lsroot| xargs -t rm -rf
+rm -rf lsrootaa lsrootab lsrootac 
+
+```
+
+-p 执行时进行询问
+```
+[root@VM-0-16-centos ~]# cat test |xargs -p -n4
+echo a b c d ?...y
+a b c d
+echo e f g h ?...y
+e f g h
+echo i j k l ?...y
+i j k l
+echo m n o p ?...y
+m n o p
+echo q r s t ?...y
+q r s t
+echo u v w x ?...y
+u v w x
+echo y z ?...y
+y z
+
+```
+### 其他
+#### uniq
+定义：仅列出一个显示
+
+选项与参数：
+- -i ：忽略大小写字符的不同；
+- -c ：进行计数
+
+
+```
+范例一：使用 last 将账号列出，仅取出账号栏，进行排序后仅取出一位；
+[root@VM-0-16-centos ~]# last | cut -d ' ' -f1 | sort | uniq
+
+reboot
+root
+wtmp
+
+范例二：承上题，如果我还想要知道每个人的登入总次数呢？
+[root@VM-0-16-centos ~]# last | cut -d ' ' -f1 | sort | uniq -c
+      1 
+      1 reboot
+     27 root
+      1 wtmp
+
+```
+
+#### wc
+定义：统计计算
+
+选项与参数：
+- -l ：仅列出行；
+- -w ：仅列出多少字(英文单字)；
+- -m ：多少字符
+
+```
+[root@VM-0-16-centos ~]# last |wc
+     30     288    2194
+# 输出的三个数字中，分别代表： 『行、字数、字符数』
+
+[root@VM-0-16-centos ~]# last |wc -l
+30
+
+```
+
+#### tee
+定义：tee 会同时将数据流分送到文件去与屏幕 (screen)；而输出到屏幕的，其实就是 stdout 
+
+```
+[dmtsai@study ~]$ last | tee last.list | cut -d " " -f1
+# 这个范例可以让我们将 last 的输出存一份到 last.list 文件中
+```
+
+#### split 分割文件
+选项与参数：
+- -b ：后面可接欲分区成的文件大小，可加单位，例如 b, k, m 等；
+- -l ：以行数来进行分区。
+- PREFIX ：代表前导符的意思，可作为分区文件的前导文字。
+
+```
+// 按1k 分割文件
+[root@VM-0-16-centos ~]# split -b 1k lsrootaa
+
+// 按1k 分割文件，指定文件前缀为sadf
+[root@VM-0-16-centos ~]# split -b 1k  lsrootaa sadf
+
+// 使用 ls -al / 输出的信息中，每十行记录成一个文件
+[root@VM-0-16-centos ~]# ls -al / | split -l 10 - lsroot
+```
 ## sed
 ### 选项与参数说明
 ```
@@ -317,7 +495,7 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
 
 
 
-
+### 实例
 - `function：d` demo
 ```
 [root@VM-0-16-centos ~]# nl file 
@@ -729,4 +907,318 @@ VBird 23000 24000 25000 72000
 DMTsai 21000 20000 23000 64000
 Bird2 43000 42000 41000 126000
 
+```
+
+## 文件比对
+### diff
+
+选项与参数：
+from-file ：一个档名，作为原始比对文件的档名；
+to-file ：一个档名，作为目的比对文件的档名；
+> 注意，from-file 或 to-file 可以 - 取代，那个 - 代表『Standard input』之意。
+- -b ：忽略一行当中，仅有多个空白的差异(例如 "about me" 与 "about   me" 视为相同
+- -B ：忽略空白行的差异。
+- -i ：忽略大小写的不同
+
+```
+[root@VM-0-16-centos ~]# cp test test-bk
+[root@VM-0-16-centos ~]# diff test test-bk 
+[root@VM-0-16-centos ~]# vi test-bk 
+// 表示右边的文件新增了字符
+[root@VM-0-16-centos ~]# diff test test-bk 
+2a3
+> i dsfa 
+```
+
+### comm
+Linux comm 命令用于比较两个已排过序的文件。这项指令会一列列地比较两个已排序文件的差异，并将其结果显示出来，如果没有指定任何参数，则会把结果分成 3 列显示：
+- 第 1 列仅是在第 1 个文件中出现过的列
+- 第 2 列是仅在第 2 个文件中出现过的列
+- 第 3 列则是在第 1 与第 2 个文件里都出现过的列。
+
+选项及参数：
+- -1 不显示只在第 1 个文件里出现过的列。
+- -2 不显示只在第 2 个文件里出现过的列。
+- -3 不显示只在第 1 和第 2 个文件里出现过的列。
+
+
+```
+[root@VM-0-16-centos ~]# comm -12 test test-bk 
+a b c d e f g
+h i j k l m n
+o p q
+r s t
+u v w x y z
+[root@VM-0-16-centos ~]# comm -1 test test-bk 
+	a b c d e f g
+	h i j k l m n
+i dsfa 
+	o p q
+	r s t
+	u v w x y z
+[root@VM-0-16-centos ~]# comm -13 test test-bk 
+i dsfa 
+[root@VM-0-16-centos ~]# comm  test test-bk 
+		a b c d e f g
+		h i j k l m n
+	i dsfa 
+		o p q
+		r s t
+		u v w x y z
+```
+
+## 日志及文件查找
+### less
+less 与 more 类似，但使用 less 可以随意浏览文件，而且 less 在查看之前不会加载整个文件。
+
+参数与选项
+- -N 显示每行的行号
+- /字符串：向下搜索"字符串"的功能
+- ?字符串：向上搜索"字符串"的功能
+- n：重复前一个搜索（与 / 或 ? 有关）
+- N：反向重复前一个搜索（与 / 或 ? 有关）
+
+
+
+
+### more
+more 命令类似 cat ，不过会以一页一页的形式显示，更方便使用者逐页阅读，而最基本的指令就是按空白键（space）就往下一页显示，按 b 键就会往回（back）一页显示
+
+参数与选项
+- 空格键 向下滚动一屏
+- Ctrl+B 返回上一屏
+- ：f 输出文件名和当前行的行号
+- q 退出more
+- V 调用vi编辑器
+
+### tail
+
+tail 命令可用于查看文件的内容，有一个常用的参数 -f 常用于查阅正在改变的日志文件。
+
+- -f 循环读取
+- -n<行数> 显示文件的尾部 n 行内容
+- -c<数目> 显示的字节数
+
+```
+
+[root@VM-0-16-centos logs]# tail -200f zookeeper-root-server-VM-0-16-centos.out 
+
+[root@VM-0-16-centos logs]# tail -n 1000  zookeeper-root-server-VM-0-16-centos.out 
+
+[root@VM-0-16-centos logs]# tail -c 100  zookeeper-root-server-VM-0-16-centos.out 
+hreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+```
+
+
+### head
+head 命令可用于查看文件的开头部分的内容，有一个常用的参数 -n 用于显示行数，默认为 10，即显示 10 行的内容。
+
+参数与选项：
+- -q 隐藏文件名
+- -v 显示文件名
+- -c<数目> 显示的字节数。
+- -n<行数> 显示的行数。
+
+```
+[root@VM-0-16-centos logs]# head -n 2 zookeeper-root-server-VM-0-16-centos.out 
+2020-12-26 17:21:12,027 [myid:] - INFO  [main:QuorumPeerConfig@174] - Reading configuration from: /usr/local/apache-zookeeper-3.6.2-bin/bin/../conf/zoo.cfg
+2020-12-26 17:21:12,235 [myid:] - INFO  [main:QuorumPeerConfig@460] - clientPortAddress is 0.0.0.0:2181
+
+[root@VM-0-16-centos logs]# head -c 20 zookeeper-root-server-VM-0-16-centos.out
+2020-12-26 17:21:12,
+```
+## vi 与 vim 文本编辑
+
+### vi 
+vi 共分为三种模式，分别是
+-『一般指令模式』: 默认模式
+-『编辑模式』: 在一般模式中『i, I, o, O, a, A, r, R』等任何一个字母之后才会进入编辑模式
+-『指令列命令模式』:在一般模式当中，输入『 : / ? 』三个中的任何一个按钮，就可以将光标移动到最底下那一列
+
+
+按键说明：
+```
+
+[Ctrl] + [f] 屏幕『向下』移动一页，相当于 [Page Down]按键 (常用)
+[Ctrl] + [b] 屏幕『向上』移动一页，相当于 [Page Up] 按键 (常用)
+[Ctrl] + [d] 屏幕『向下』移动半页
+[Ctrl] + [u] 屏幕『向上』移动半页
+
+// 搜索字符
+/word: 向光标之下寻找一个名称为 word 的字符串。例如要在文件内搜寻 vbird 这个字符串，就输入 /vbird 即可！ (常用)
+?word: 向光标之上寻找一个字符串名称为 word 的字符串
+n: 这个 n 是英文按键。代表『重复前一个搜寻的动作』。举例来说， 如果刚刚我们执行/vbird 去向下搜寻 vbird 这个字符串，则按下 n 后，会向下继续搜寻下一个名称为vbird 的字符串。如果是执行 ?vbird 的话，那么按下 n 则会向上继续搜寻名称为vbird 的字符串！
+N( shift + n): 这个 N 是英文按键。与 n 刚好相反，为『反向』进行前一个搜寻动作。 例如 /vbird后，按下 N 则表示『向上』搜寻 vbird
+
+
+// 一般模式的操作
+:w   ：将编辑的数据写入硬盘文件中(常用)
+:w!  ：若文件属性为『只读』时，强制写入该文件。不过，到底能不能写入， 还是跟你对该文件的文件权限有关啊！
+:q   ：离开 vi (常用)
+:q!  ：若曾修改过文件，又不想储存，使用 ! 为强制离开不储存文件。
+:wq  ：储存后离开，若为 :wq! 则为强制储存后离开 (常用)
+:w [filename]   : 将编辑的数据储存成另一个文件（类似另存新档）
+:r [filename]   : 在编辑的数据中，读入另一个文件的数据。亦即将 『filename』 这个文件内容加到游标所在列后面
+```
+
+### vim
+vi 的额外功能增强 
+TODO
+
+
+
+## 软件安装
+
+
+
+### rpm
+#### 安装
+`[root@study ~]# rpm -ivh package_name`
+选项与参数：
+- -i ：install 的意思
+- -v ：察看更细部的安装信息画面
+- -h ：以安装信息列显示安装进度
+
+#### 查询
+
+```
+-q ：仅查询，后面接的软件名称是否有安装；
+-qa ：列出所有的，已经安装在本机 Linux 系统上面的所有软件名称；
+-qi ：列出该软件的详细信息 (information)，包含开发商、版本与说明等；
+-ql ：列出该软件所有的文件与目录所在完整文件名 (list)；
+-qc ：列出该软件的所有配置文件 (找出在 /etc/ 底下的檔名而已)
+-qd ：列出该软件的所有说明文件 (找出与 man 有关的文件而已)
+-qR ：列出与该软件有关的相依软件所含的文件 (Required 的意思)
+-qf ：由后面接的文件名，找出该文件属于哪一个已安装的软件；
+-q --scripts：列出是否含有安装后需要执行的脚本档，可用以 debug 喔！
+```
+
+- 查询是否安装，列出详细信息
+```
+[root@VM-0-16-centos logs]# rpm -qa kernel
+kernel-3.10.0-1127.19.1.el7.x86_64
+
+
+[root@VM-0-16-centos logs]# rpm -qi kernel
+Name        : kernel
+Version     : 3.10.0
+Release     : 1127.19.1.el7
+Architecture: x86_64
+Install Date: Thu 03 Sep 2020 11:49:30 AM CST
+Group       : System Environment/Kernel
+Size        : 67368285
+License     : GPLv2
+Signature   : RSA/SHA256, Wed 26 Aug 2020 02:25:08 AM CST, Key ID 24c6a8a7f4a80eb5
+Source RPM  : kernel-3.10.0-1127.19.1.el7.src.rpm
+Build Date  : Wed 26 Aug 2020 01:38:57 AM CST
+Build Host  : kbuilder.bsys.centos.org
+Relocations : (not relocatable)
+Packager    : CentOS BuildSystem <http://bugs.centos.org>
+Vendor      : CentOS
+URL         : http://www.kernel.org/
+Summary     : The Linux kernel
+Description :
+The kernel package contains the Linux kernel (vmlinuz), the core of any
+Linux operating system.  The kernel handles the basic functions
+of the operating system: memory allocation, process allocation, device
+input and output, etc.
+
+```
+
+#### 卸载
+
+`rpm -e xxx`
+
+```
+[root@study ~]# rpm -qa | grep pam
+fprintd-pam-0.5.0-4.0.el7_0.x86_64
+pam-1.1.8-12.el7.x86_64
+gnome-keyring-pam-3.8.2-10.el7.x86_64
+pam-devel-1.1.8-12.el7.x86_64
+pam_krb5-2.4.8-4.el7.x86_64
+
+[root@study ~]# rpm -e pam
+error: Failed dependencies: <==这里提到的是相依性的问题
+libpam.so.0()(64bit) is needed by (installed) systemd-libs-208-20.el7.x86_64
+libpam.so.0()(64bit) is needed by (installed) libpwquality-1.2.3-4.el7.x86_64
+....(以下省略)....
+
+# 2. 若仅移除 pam-devel 这个之前范例安装上的软件呢？
+[root@study ~]# rpm -e pam-devel <==不会出现任何讯息！
+[root@study ~]# rpm -q pam-devel
+package pam-devel is not installed
+```
+
+### yum
+在rpm的基础上发展而来的，在线升级机制.
+
+选项与参数：
+- -y ：当 yum 要等待用户输入时，这个选项可以自动提供 yes 的响应；
+- search ：搜寻某个软件名称或者是描述 (description) 的重要关键字；
+- list ：列出目前 yum 所管理的所有的软件名称与版本，有点类似 rpm -qa；
+- info ：同上，不过有点类似 rpm -qai 的执行结果；
+- provides：从文件去搜寻软件！类似 rpm -qf 的功能！
+
+
+安装： `yum install pam-devel`
+移除： `yum remove pam-devel`
+更新： `yum upgrate xxx`
+
+清除旧数据：
+```
+[root@study ~]# yum clean [packages|headers|all]选项与参数：
+packages：将已下载的软件文件删除
+headers ：将下载的软件文件头删除
+all ：将所有软件库数据都删除！
+
+范例一：删除已下载过的所有软件库的相关数据 (含软件本身与列表)
+[root@study ~]# yum clean all
+
+```
+
+## 其他
+
+### alias
+设置别名命名，如`alias lm='ls -al | more'`
+```
+[root@VM-0-16-centos logs]# alias
+alias cp='cp -i'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+alias ls='ls --color=auto'
+alias mv='mv -i'
+alias rm='rm -i'
+alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
+```
+
+
+### tar 打包
+
+- 压 缩：tar -jcv -f filename.tar.bz2 要被压缩的文件或目录名称
+- 查 询：tar -jtv -f filename.tar.bz2
+- 解压缩：tar -jxv -f filename.tar.bz2 -C 欲解压缩的目录
+
+
+### wget 
+wget是一个下载文件的工具，支持HTTP，HTTPS和FTP协议，可以使用HTTP代理。
+
+wget -O下载并以不同的文件名保存(-O：下载文件到对应目录，并且修改文件名称)
+
+`wget -O wordpress.zip http://www.minjieren.com/download.aspx?id=1080`
+
+wget -b后台下载
+`wget -b <a href="http://www.minjieren.com/wordpress-3.1-zh_CN.zip">http://www.minjieren.com/wordpress-3.1-zh_CN.zip</a>`
+
+
+### sodu(TODO)
+
+sudo是linux下常用的允许普通用户使用超级用户权限的工具，允许系统管理员让普通用户执行一些或者全部的root命令，如halt，reboot，su等等。
+
+```
+sudo mkdir -p /var/lib/mongo
+sudo mkdir -p /var/log/mongodb
 ```

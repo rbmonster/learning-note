@@ -593,7 +593,63 @@ redis-server /path/to/your/sentinel.conf
 ![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/cluster.jpg)
 
 ### 集群下与客户端交互过程
+键命令执行步骤主要分两步：
+1. 计算槽。Redis首先需要计算键所对应的槽。根据键的有效部分使用CRC16函数计算出散列值，再取对16383的余数，使每个键都可以映射到0~16383槽范围内。如指令`127.0.0.1:6379> cluster keyslot key:test:111`
+2. 槽节点查找。Redis计算得到键对应的槽后，需要查找槽所对应的节点。集群内通过消息交换每个节点都会知道所有节点的槽信息，内部保存在clusterState结构中。
+3. 若节点的槽不是当前节点，返回MOVED重定向错误。
 
+MOVED重定向: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/redis-move.jpg)
+
+```
+// 连接redis集群 计算集群定位的值
+127.0.0.1:6379> cluster keyslot key:test:1
+(integer) 5191
+127.0.0.1:6379> cluster nodes
+cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 connected
+1366-4095 4097-5461 12288-13652
+...
+
+// 由于键对应槽是9252，不属于6379节点，则回复MOVED {slot} {ip} {port}格式重定向信息：
+127.0.0.1:6379> set key:test:2 value-2
+(error) MOVED 9252 127.0.0.1:6380
+127.0.0.1:6379> cluster keyslot key:test:2
+(integer) 9252
+```
+
+> 使用redis-cli命令时，可以加入-c参数支持自动重定向，简化手动发起重定向操作，如下所示：
+> - redis-cli自动帮我们连接到正确的节点执行命令，这个过程是在redis-cli内部维护，实质上是client端接到MOVED信息之后再次发起请 求，并不在Redis节点中完成请求转发，如下图所示
+![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/redisClient-move.jpg)
+
+```
+#redis-cli -p 6379 -c
+127.0.0.1:6379> set key:test:2 value-2
+-> Redirected to slot [9252] located at 127.0.0.1:6380
+OK
+```
+
+ASK重定向：在线迁移槽（slot）的过程中，客户端向slot发送请求，若键对象不存在，则可能存在于目标节点，这时源节点会回复 ASK重定向异常。格式如下：(error) ASK {slot} {targetIP}:{targetPort}
+> 客户端从ASK重定向异常提取出目标节点信息，发送asking命令到目标节点打开客户端连接标识，再执行键命令。如果存在则执行，不存在则返 回不存在信息
+
+hash_tag: 提供不同的键可以具备相同slot的功能，常用于Redis IO优化
+> 例如在集群模式下使用mget等命令优化批量调用时，键列表必须具有相同的slot，否则会报错。这时可以利用hash_tag让不同的键具有相同的slot达到优化的目的。命令如下：
+```
+127.0.0.1:6379> cluster keyslot key:test:111
+(integer) 10050
+127.0.0.1:6379> cluster keyslot key:{hash_tag}:111
+(integer) 2515
+127.0.0.1:6379> cluster keyslot key:{hash_tag}:222
+(integer) 2515
+
+127.0.0.1:6385> mget user:10086:frends user:10086:videos
+(error) CROSSSLOT Keys in request don't hash to the same slot
+127.0.0.1:6385> mget user:{10086}:friends user:{10086}:videos
+1) "friends"
+2) "videos"
+
+```
+
+- [集群之（请求路由：请求重定向(MOVED)、ASK重定向）](https://blog.csdn.net/qq_41453285/article/details/106463895)
 
 ### 哈希槽 槽指派
 - 槽指派：Redis集群通过分片的方式保存数据库的键值对。集群的整个数据库被分成16384个槽slot
