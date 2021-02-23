@@ -77,6 +77,7 @@
 | [CS-Notes](https://github.com/CyC2018/CS-Notes) | 技术面试必备基础知识、Leetcode、计算机操作系统、计算机网络、系统设计 |
 | [JavaGuide](https://github.com/Snailclimb/JavaGuide)| 「Java学习+面试指南」一份涵盖大部分 Java 程序员所需要掌握的核心知识。 |
 | [AobingJava](https://github.com/AobingJava/JavaFamily) | 蘑菇街敖丙的Java面试总结 |
+| [bugstack](https://bugstack.cn/) | 虫洞栈Java干货，面试问题带着例子说明得明明白白 |
 | [advanced-java](https://github.com/doocs/advanced-java) | 互联网Java工程师进阶知识完全扫盲：涵盖高并发、分布式、高可用、微服务、海量数据处理等领域知识 |
 | [spring-analysis](https://github.com/seaswalker/spring-analysis) | Spring源码解读(很久未更新了，但是spring基本的精髓都讲到了，适合参考阅读源码) |
 | [fucking-algorithm](https://github.com/labuladong/fucking-algorithm) | labuladong刷算法套路，提供算法题的工具方法思想 |
