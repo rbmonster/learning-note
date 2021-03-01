@@ -565,6 +565,71 @@ JVM 在背后帮我们做了哪些事情：
 7. 线程共享堆和方法区域
 
 
+## 枚举类
+枚举类比较使用==，同样也可以使用equals方法，Enum类中重写了equals实际上还是调用==方法。
+```
+ /**
+     * Returns true if the specified object is equal to this
+     * enum constant.
+     *
+     * @param other the object to be compared for equality with this object.
+     * @return  true if the specified object is equal to this
+     *          enum constant.
+     */
+    public final boolean equals(Object other) {
+        return this==other;
+    }
+```
+为什么使用==比较？
+- 因为枚举类在jvm编译成class文件后，实际编译成使用final 修饰的class，final修饰就意味着实例化后不可修改，且都指向堆中的同一个对象
+
+
+普通的一个枚举类
+```
+public enum t {
+    SPRING,SUMMER,AUTUMN,WINTER;
+}
+```
+
+反编译后的代码
+```
+public final class T extends Enum
+{
+    private T(String s, int i)
+    {
+        super(s, i);
+    }
+    public static T[] values()
+    {
+        T at[];
+        int i;
+        T at1[];
+        System.arraycopy(at = ENUM$VALUES, 0, at1 = new T[i = at.length], 0, i);
+        return at1;
+    }
+
+    public static T valueOf(String s)
+    {
+        return (T)Enum.valueOf(demo/T, s);
+    }
+
+    public static final T SPRING;
+    public static final T SUMMER;
+    public static final T AUTUMN;
+    public static final T WINTER;
+    private static final T ENUM$VALUES[];
+    static
+    {
+        SPRING = new T("SPRING", 0);
+        SUMMER = new T("SUMMER", 1);
+        AUTUMN = new T("AUTUMN", 2);
+        WINTER = new T("WINTER", 3);
+        ENUM$VALUES = (new T[] {
+            SPRING, SUMMER, AUTUMN, WINTER
+        });
+    }
+}
+```
 
 ## 零散的点
 ### 方法调用的知识点

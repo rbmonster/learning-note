@@ -33,11 +33,12 @@
 &emsp;<a href="#30">10. 线程</a>  
 &emsp;&emsp;&emsp;<a href="#31">10.0.3. 线程状态</a>  
 &emsp;&emsp;&emsp;<a href="#32">10.0.4. 创建一个线程的开销</a>  
-&emsp;<a href="#33">11. 零散的点</a>  
-&emsp;&emsp;<a href="#34">11.1. 方法调用的知识点</a>  
-&emsp;&emsp;<a href="#35">11.2. 三大特性</a>  
-&emsp;&emsp;<a href="#36">11.3. 序列化与反序列化</a>  
-&emsp;&emsp;<a href="#37">11.4. java复制</a>  
+&emsp;<a href="#33">11. 枚举类</a>  
+&emsp;<a href="#34">12. 零散的点</a>  
+&emsp;&emsp;<a href="#35">12.1. 方法调用的知识点</a>  
+&emsp;&emsp;<a href="#36">12.2. 三大特性</a>  
+&emsp;&emsp;<a href="#37">12.3. 序列化与反序列化</a>  
+&emsp;&emsp;<a href="#38">12.4. java复制</a>  
 # <a name="0">Java 基础</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">基本数据类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -605,9 +606,74 @@ JVM 在背后帮我们做了哪些事情：
 7. 线程共享堆和方法区域
 
 
+## <a name="33">枚举类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+枚举类比较使用==，同样也可以使用equals方法，Enum类中重写了equals实际上还是调用==方法。
+```
+ /**
+     * Returns true if the specified object is equal to this
+     * enum constant.
+     *
+     * @param other the object to be compared for equality with this object.
+     * @return  true if the specified object is equal to this
+     *          enum constant.
+     */
+    public final boolean equals(Object other) {
+        return this==other;
+    }
+```
+为什么使用==比较？
+- 因为枚举类在jvm编译成class文件后，实际编译成使用final 修饰的class，final修饰就意味着实例化后不可修改，且都指向堆中的同一个对象
 
-## <a name="33">零散的点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="34">方法调用的知识点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+普通的一个枚举类
+```
+public enum t {
+    SPRING,SUMMER,AUTUMN,WINTER;
+}
+```
+
+反编译后的代码
+```
+public final class T extends Enum
+{
+    private T(String s, int i)
+    {
+        super(s, i);
+    }
+    public static T[] values()
+    {
+        T at[];
+        int i;
+        T at1[];
+        System.arraycopy(at = ENUM$VALUES, 0, at1 = new T[i = at.length], 0, i);
+        return at1;
+    }
+
+    public static T valueOf(String s)
+    {
+        return (T)Enum.valueOf(demo/T, s);
+    }
+
+    public static final T SPRING;
+    public static final T SUMMER;
+    public static final T AUTUMN;
+    public static final T WINTER;
+    private static final T ENUM$VALUES[];
+    static
+    {
+        SPRING = new T("SPRING", 0);
+        SUMMER = new T("SUMMER", 1);
+        AUTUMN = new T("AUTUMN", 2);
+        WINTER = new T("WINTER", 3);
+        ENUM$VALUES = (new T[] {
+            SPRING, SUMMER, AUTUMN, WINTER
+        });
+    }
+}
+```
+
+## <a name="34">零散的点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">方法调用的知识点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 按值调用(call by value)表示方法接收的是调用者提供的值，
 - 而按引用调用（call by reference)表示方法接收的是调用者提供的变量地址。
 - 方法体传递参数时，无论是值还是对象都是“值”传递。引用类型传递的是引用变量的地址。
@@ -634,12 +700,12 @@ y:小张
 s1:小张
 s2:小李
 ```
-### <a name="35">三大特性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">三大特性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 封装:封装是指把一个对象的状态信息（也就是属性）隐藏在对象内部，不允许外部对象直接访问对象的内部信息。
 - 继承:不同类型的对象，相互之间经常有一定数量的共同点。 extends
 - 多态:表示一个对象具有多种的状态。具体表现为父类的引用指向子类的实例。
 
-### <a name="36">序列化与反序列化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">序列化与反序列化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - transient 关键字的作用是：阻止实例中那些用此关键字修饰的的变量序列化；当对象被反序列化时，被 transient 修饰的变量值不会被持久化和恢复。transient 只能修饰变量，不能修饰类和方法。
 - 序列化ID：` private static final long serialVersionUID` 该ID决定着是否能够成功反序列化！简单来说，java的序列化机制是通过在运行时判断类的serialVersionUID来验证版本一致性的。
 - 获取键盘输入的两种方式：
@@ -655,7 +721,7 @@ String s = input.readLine();
 ```
 - Arrays.asList():返回的并不是 java.util.ArrayList ，而是 java.util.Arrays 的一个内部类,这个内部类并没有实现集合的add()、remove()、clear()会抛出异常unSupportedOperationException。
 
-### <a name="37">java复制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">java复制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对于基本类型，直接赋值复制，对于对象类型分为浅拷贝与深拷贝
 1. 浅拷贝：对引用数据类型进行引用传递般的拷贝，此为浅拷贝。
 2. 深拷贝：对基本数据类型进行值传递，对引用数据类型，创建一个新的对象，并复制其内容，此为深拷贝。

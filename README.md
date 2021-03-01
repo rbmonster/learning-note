@@ -38,6 +38,7 @@
 - [Linux相关](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LINUX.md)
 - [Netty](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETTY.md)
 - [FastDFS](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FASTDFS.md)
+- [Drools规则引擎](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/RULE_ENGINE.md)
 
 ## 系统设计
 - [Java接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/INTERFACE_DESIGN.md)
