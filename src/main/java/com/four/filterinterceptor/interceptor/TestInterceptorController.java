@@ -25,4 +25,9 @@ public class TestInterceptorController {
     public void test() {
         log.info("this is interceptor");
     }
+
+    @GetMapping("/one")
+    public String fixReturn() {
+        return "123";
+    }
 }
