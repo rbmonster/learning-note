@@ -1,5 +1,6 @@
 import com.four.filterinterceptor.interceptor.TestInterceptorController;
 import com.four.transaction.TransactionApplication;
+import com.four.unittest.UnitTestApplication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,10 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = "test")
-@SpringBootTest(classes = TransactionApplication.class,
+@SpringBootTest(classes = UnitTestApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-public class SpringTestDemo {
+public class JunitSpringTestDemo {
 
     @LocalServerPort
     private int port;
