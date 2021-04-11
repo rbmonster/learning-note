@@ -2,6 +2,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.*;
 
+import java.util.concurrent.TimeUnit;
+
 @Slf4j
 public class JunitDemo {
 
@@ -19,6 +21,17 @@ public class JunitDemo {
     @Test
     public void testDemo() {
         log.info("hello junit world~");
+    }
+
+
+    @Test(expected = ArithmeticException.class)
+    public void testException() {
+        log.info(String.valueOf(123123/0));
+    }
+
+    @Test(timeout = 2000)
+    public void testTimeout() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(1);
     }
 
     @Ignore

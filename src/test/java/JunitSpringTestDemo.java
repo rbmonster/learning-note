@@ -1,6 +1,6 @@
-import com.four.filterinterceptor.interceptor.TestInterceptorController;
-import com.four.transaction.TransactionApplication;
 import com.four.unittest.UnitTestApplication;
+import com.four.unittest.service.UnitTestService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import javax.sql.DataSource;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,11 +46,8 @@ public class JunitSpringTestDemo {
     @LocalServerPort
     private int port;
 
-    @MockBean
-    private JdbcTemplate jdbcTemplate;
-
-    @MockBean
-    private PlatformTransactionManager platformTransactionManager;
+    @Autowired
+    private UnitTestService unitTestService;
 
     @MockBean
     private TransactionTemplate transactionTemplate;
@@ -80,5 +75,11 @@ public class JunitSpringTestDemo {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("one")));
+    }
+
+    @Test
+    public void testTemplate() {
+        String s = unitTestService.testJdbcTemplate();
+        Assert.assertEquals("return result should be bbb", "bbb", s);
     }
 }

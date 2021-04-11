@@ -88,6 +88,17 @@ public class JunitDemo {
         log.info("hello junit world~");
     }
 
+
+    @Test(expected = ArithmeticException.class)
+    public void testException() {
+        log.info(String.valueOf(123123/0));
+    }
+
+    @Test(timeout = 2000)
+    public void testTimeout() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(1);
+    }
+
     @Ignore
     public void testIgnore(){
         log.info("this is ignore method");
@@ -105,7 +116,83 @@ public class JunitDemo {
 }
 ```
 ### spring相关测试
+启动spring容器相关注解
 
+@SpringBootTest注解: 告诉Spring Boot查找一个主要的配置类（例如，一个带有@SpringBootApplication的类），并使用该类来启动Spring应用程序上下文。
+- webEnvironment=RANDOM_PORT: 使用webEnvironment = RANDOM_PORT可以使用随机端口启动服务器（用于避免测试环境中的冲突），并使用@LocalServerPort注入端口。
+
+@AutoConfigureMockMvc: 使用Spring的MockMvc，并通过在测试用例上使用@AutoConfigureMockMvc注释，要求为测试用力注入该代码MockMvc代码。
+
+@WebMvcTest : 在测试中，Spring Boot仅实例化了Web层，而不是整个上下文。 在具有多个控制器的应用程序中，甚至可以使用例如@WebMvcTest（HomeController.class）来仅请求实例化一个。
+> 可以加快整个applicaiton的启动速度，因为该注解只指定扫描了部分annotation
+
+@Runwith(SpringRunner.class): 说明了改测试用例要在什么环境下进行测试，在Junit4中需要将@RunWith（SpringRunner.class）添加到测试中，否则注释将被忽略。如果使用的是JUnit 5，则无需添加等效的@ExtendWith（ SpringExtension.class）（如@SpringBootTest）和其他@…Test注释已使用它进行注释。
+   - > @ExtendWith（ SpringExtension.class） 暂时未研究，主要是@Runwith的拓展类提供能力的增强，应用于Junit5中。
+     
+@MockBean:可用于为ApplicationContext中的bean定义Mockito模拟
+
+
+@DirtiesContext：Spring @DirtiesContext从与测试关联的上下文缓存中删除脏的ApplicationContext
+
+
+测试用例demo
+```
+
+@AutoConfigureMockMvc
+@ActiveProfiles(profiles = "test")
+@SpringBootTest(classes = UnitTestApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
+public class JunitSpringTestDemo {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private UnitTestService unitTestService;
+
+    @MockBean
+    private TransactionTemplate transactionTemplate;
+
+    @Before
+    public void setUp() {
+
+    }
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Test
+    public void greetingShouldReturnDefaultMessage() throws Exception {
+        String forObject = this.restTemplate.getForObject("http://localhost:" + port + "/learning/unit/one", String.class);
+        System.out.println(forObject);
+    }
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    public void shouldReturnDefaultMessage() throws Exception {
+        this.mockMvc.perform(get("/unit/one"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("one")));
+    }
+
+    @Test
+    public void testTemplate() {
+        String s = unitTestService.testJdbcTemplate();
+        Assert.assertEquals("return result should be bbb", "bbb", s);
+    }
+}
+
+```
+
+### 参考资料
+- [spring boot 单元测试官网文档全说明](https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-testing)
+- [spring test guides](https://spring.io/guides/gs/testing-web/)
+- [baeldung spring-boot test](https://www.baeldung.com/spring-boot-testing)
+- [spring boot Test Auto-configuration Annotations](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-test-auto-configuration.html#test-auto-configuration)
 
 ## testNG
 
@@ -114,5 +201,3 @@ public class JunitDemo {
 
 
 ## BDDMockito
-
-MockitounitTestTower.png

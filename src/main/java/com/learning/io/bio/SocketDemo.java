@@ -1,12 +1,8 @@
 package com.learning.io.bio;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.nio.CharBuffer;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <pre>

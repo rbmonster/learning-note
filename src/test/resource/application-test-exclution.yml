@@ -1,0 +1,39 @@
+spring:
+  application:
+    name:  test
+  autoconfigure:
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration
+      - org.mybatis.spring.boot.autoconfigure.MybatisLanguageDriverAutoConfiguration
+      - org.redisson.spring.cache.RedissonCacheStatisticsAutoConfiguration
+      - org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration
+      - org.springframework.cloud.autoconfigure.LifecycleMvcEndpointAutoConfiguration
+      - org.springframework.cloud.autoconfigure.RefreshAutoConfiguration
+      - org.springframework.cloud.openfeign.FeignAutoConfiguration
+      - org.springframework.cloud.openfeign.encoding.FeignAcceptGzipEncodingAutoConfiguration
+      - org.springframework.cloud.openfeign.encoding.FeignContentGzipEncodingAutoConfiguration
+      - org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration
+      - org.springframework.cloud.netflix.archaius.ArchaiusAutoConfiguration
+      - org.springframework.cloud.client.CommonsClientAutoConfiguration
+      - org.springframework.cloud.client.ReactiveCommonsClientAutoConfiguration
+      - org.springframework.cloud.client.discovery.composite.CompositeDiscoveryClientAutoConfiguration
+      - org.springframework.cloud.client.discovery.composite.reactive.ReactiveCompositeDiscoveryClientAutoConfiguration
+      - org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration
+      - org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration
+      - org.springframework.cloud.client.discovery.simple.reactive.SimpleReactiveDiscoveryClientAutoConfiguration
+      - org.springframework.cloud.client.hypermedia.CloudHypermediaAutoConfiguration
+      - org.springframework.cloud.client.loadbalancer.AsyncLoadBalancerAutoConfiguration
+      - org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration
+      - org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration
+      - org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerClientAutoConfiguration
+      - org.springframework.cloud.client.loadbalancer.reactive.ReactiveLoadBalancerAutoConfiguration
+      - org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration
+      - org.springframework.cloud.commons.httpclient.HttpClientConfiguration
+      - org.springframework.cloud.commons.util.UtilAutoConfiguration
+      - org.springframework.cloud.configuration.CompatibilityVerifierAutoConfiguration
+      - org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
