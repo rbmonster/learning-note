@@ -509,8 +509,8 @@ RuntimeException是一种Unchecked Exception，即表示编译器不会检查程
 - 在不指定泛型的情况下，泛型变量的类型为该方法中的几种类型的同一父类的最小级，直到Object
 - 在指定泛型的情况下，该方法的几种类型必须是该泛型的实例的类型或者其子类
 ```
-Number f = Test.add(1, 1.2); //这两个参数一个是Integer，以风格是Float，所以取同一父类的最小级，为Number  
-Object o = Test.add(1, "asd"); //这两个参数一个是Integer，以风格是Float，所以取同一父类的最小级，为Object  
+Number f = Test.add(1, 1.2); //这两个参数一个是Integer，另一个是Float，所以取同一父类的最小级，为Number  
+Object o = Test.add(1, "asd"); //这两个参数一个是Integer，另一个是String，所以取同一父类的最小级，为Object  
   
 //这是一个简单的泛型方法  
 public static <T> T add(T x,T y){  
