@@ -12,24 +12,23 @@ spring:
     encoding: UTF-8
   datasource:
     druid:
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat
       testOnReturn: false
       testWhileIdle: true
       maxActive: 1
-      removeAbandoned: true
       removeAbandonedTimeoutMillis: 1
       name: datasource
       testOnBorrow: false
       minIdle: 1
       initialSize: 1
       poolPreparedStatements: true
-      url: jdbc:mysql://58.87.106.44:3306/tms?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://121.5.73.118:3306/tms?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
       type: com.alibaba.druid.pool.DruidDataSource
       validationQuery: select 1
       maxOpenPreparedStatements: 300
       username: root
-      password: 'Hsanwu123~'
+      password: 'Hsql~112233'
   jackson:
     default-property-inclusion: non_null
 #logging:
