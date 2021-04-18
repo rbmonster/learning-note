@@ -195,6 +195,13 @@
             <artifactId>shims</artifactId>
             <version>0.7.45</version>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>7.3.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
