@@ -23,7 +23,7 @@ spring:
       minIdle: 1
       initialSize: 1
       poolPreparedStatements: true
-      url: jdbc:mysql://121.5.73.118:3306/tms?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://58.87.106.44:3306/tms?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
       type: com.alibaba.druid.pool.DruidDataSource
       validationQuery: select 1
       maxOpenPreparedStatements: 300
