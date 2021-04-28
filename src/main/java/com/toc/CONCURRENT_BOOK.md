@@ -1,29 +1,29 @@
 <a name="index">**Index**</a>
 
-&emsp;&emsp;<a href="#0">9.1. 线程</a>  
-&emsp;&emsp;&emsp;<a href="#1">9.1.1. 线程状态</a>  
-&emsp;&emsp;&emsp;<a href="#2">9.1.2. 创建一个线程的开销</a>  
-&emsp;&emsp;<a href="#3">9.2. 线程池</a>  
-&emsp;&emsp;&emsp;<a href="#4">9.2.1. 线程池状态</a>  
-&emsp;&emsp;&emsp;<a href="#5">9.2.2. 线程池创建</a>  
-&emsp;&emsp;&emsp;<a href="#6">9.2.3. 阿里开发规范</a>  
-&emsp;&emsp;&emsp;<a href="#7">9.2.4. 线程池的队列</a>  
-&emsp;&emsp;&emsp;<a href="#8">9.2.5. 线上线程池的配置</a>  
-&emsp;&emsp;<a href="#9">9.3. 解决共享资源竞争</a>  
-&emsp;&emsp;&emsp;<a href="#10">9.3.1. synchronized:</a>  
-&emsp;&emsp;&emsp;<a href="#11">9.3.2. lock对象 </a>  
-&emsp;&emsp;&emsp;<a href="#12">9.3.3. 原子性</a>  
-&emsp;&emsp;<a href="#13">9.4. 可见性</a>  
-&emsp;&emsp;<a href="#14">9.5. 有序性</a>  
-&emsp;&emsp;&emsp;<a href="#15">9.5.1. ThreadLocal</a>  
-&emsp;&emsp;&emsp;<a href="#16">9.5.2. 退出线程的方法</a>  
-&emsp;&emsp;<a href="#17">9.6. daemon Thread 守护线程应用场景</a>  
-&emsp;&emsp;<a href="#18">9.7. 线程间协作</a>  
-&emsp;&emsp;<a href="#19">9.8. 死锁产生条件</a>  
-&emsp;&emsp;<a href="#20">9.9. 其他的一些工具类</a>  
-&emsp;&emsp;<a href="#21">9.10. 性能对比</a>  
-### <a name="0">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="1">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+<a href="#0">线程</a>  
+&emsp;<a href="#1">1. 线程状态</a>  
+&emsp;<a href="#2">2. 创建一个线程的开销</a>  
+&emsp;<a href="#3">3. 线程池</a>  
+&emsp;&emsp;<a href="#4">3.1. 线程池状态</a>  
+&emsp;&emsp;<a href="#5">3.2. 线程池创建</a>  
+&emsp;&emsp;<a href="#6">3.3. 阿里开发规范</a>  
+&emsp;<a href="#7">4. 线程池的队列</a>  
+&emsp;&emsp;<a href="#8">4.1. 线上线程池的配置</a>  
+&emsp;<a href="#9">5. 解决共享资源竞争</a>  
+&emsp;&emsp;<a href="#10">5.1. synchronized:</a>  
+&emsp;&emsp;<a href="#11">5.2. lock对象 </a>  
+&emsp;&emsp;<a href="#12">5.3. 原子性</a>  
+&emsp;&emsp;<a href="#13">5.4. 可见性</a>  
+&emsp;&emsp;<a href="#14">5.5. 有序性</a>  
+&emsp;<a href="#15">6. ThreadLocal</a>  
+&emsp;<a href="#16">7. 退出线程的方法</a>  
+&emsp;<a href="#17">8. daemon Thread 守护线程应用场景</a>  
+&emsp;<a href="#18">9. 线程间协作</a>  
+&emsp;<a href="#19">10. 死锁产生条件</a>  
+&emsp;<a href="#20">11. 其他的一些工具类</a>  
+&emsp;&emsp;<a href="#21">11.1. 性能对比</a>  
+# <a name="0">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="1">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState.jpg)
 
 - 新建（NEW）：创建后尚未启动。
@@ -51,7 +51,7 @@
 
 - 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
-#### <a name="2">创建一个线程的开销</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="2">创建一个线程的开销</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - JVM 在背后帮我们做了哪些事情：
 
 1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
@@ -68,8 +68,8 @@
 - 用 Java8 的测试结果，19个线程，预留和提交的大概都是19000+KB，平均每个线程大概需要 1M 左右的大小
 
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState2.jpg)
-### <a name="3">线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="4">线程池状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="3">线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="4">线程池状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPool.jpg)
 
@@ -92,7 +92,7 @@
 - TERMINATED
   1. 状态说明：线程池彻底终止，就变成TERMINATED状态。 
   2. 状态切换：线程池处在TIDYING状态时，执行完terminated()之后，就会由 TIDYING -> TERMINATED当线程池在STOP状态下，线程池中执行的任务为空时，就会由STOP -> TIDYING。
-#### <a name="5">线程池创建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="5">线程池创建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 线程池的初始化：
 ```
 /**
@@ -126,13 +126,13 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadPoolProcess.jpg)
 
 
-#### <a name="6">阿里开发规范</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="6">阿里开发规范</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。
   - 说明： Executors 返回的线程池对象的弊端如下：
 1. FixedThreadPool 和 SingleThreadPool:允许的请求队列长度为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。
 2. CachedThreadPool 和 ScheduledThreadPool:允许的创建线程数量为 Integer.MAX_VALUE， 可能会创建大量的线程，从而导致 OOM。
 
-#### <a name="7">线程池的队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="7">线程池的队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 1. SynchronousQueue（CachedThreadPool） 类似交警只是指挥车辆，并不管理车辆
   - SynchronousQueue没有容量，是无缓冲等待队列，是一个不存储元素的阻塞队列，会直接将任务交给消费者，必须等队列中的添加元素被消费后才能继续添加新的元素。超出直接corePoolSize个任务，直接创建新的线程来执行任务，直到(corePoolSize＋新建线程)> maximumPoolSize。不是核心线程就是新建线程。
@@ -143,7 +143,7 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 3. ArrayBlockingQueue
   - ArrayBlockingQueue是一个有界缓存等待队列，可以指定缓存队列的大小，当正在执行的线程数等于corePoolSize时，多余的元素缓存在ArrayBlockingQueue队列中等待有空闲的线程时继续执行，当ArrayBlockingQueue已满时，加入ArrayBlockingQueue失败，会开启新的线程去执行，当线程数已经达到最大的maximumPoolSizes时，再有新的元素尝试加入ArrayBlockingQueue时会报错
   
-#### <a name="8">线上线程池的配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="8">线上线程池的配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - CPU密集: CPU密集的意思是该任务需要大量的运算，而没有阻塞，CPU一直全速运行。
   - CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
 - IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程上运行IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即时在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。
@@ -180,19 +180,19 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 > 假设： 1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。
 
 > 临界区都是串行的，非临界区都是并行的，用单线程执行 临界区的时间/用单线程执行(临界区+非临界区)的时间 就是串行百分比
-### <a name="9">解决共享资源竞争</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="9">解决共享资源竞争</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="10">synchronized:</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">synchronized:</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 在对象上调用其任意的synchronized方法的时候，此对象都会被加锁，此时该对象的其他synchronized方法只有等到前一个方法调用完毕，并释放了锁之后才能被调用。
 - 如果一个方法在同一个对象上调用了第二个方法，后者又调用了同一对象上的另一个方法。JVM负责跟踪对象被加锁的次数，在任务第一次给对象加锁的时候，计数变为1，每当这个相同的任务在这个对象上获得锁时，技术都会增加，每当任务离开一个synchronized的方法，计数递减。当计数为0时，锁完全释放。（前提是首先获得了锁的任务才能允许继续获取多个锁）
 - 针对每个类，也有一个锁（作为类的Class对象的一部分），所以synchronized static 方法可以在类的范围内防止对static数据的并发访问。
 - 对比synchronized 同步方法和同步控制块的效率，同步控制块对象不加锁的时间更长，效率更高。
 
-#### <a name="11">lock对象 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="11">lock对象 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - ReentrantLock 允许尝试着获取但最终未获取锁。
 - 相比于synchronized锁，lock对象可以做到更细粒度的控制力。
 
-#### <a name="12">原子性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">原子性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 原子操作是不能被线程调度机制中断的操作，一旦操作开始，那么它一定可以在可能发生的，线程上下文切换操作之前执行完毕。
 - 原子性可以应用于除long和double之外的所有基本类型之上的基本操作。
 - 因为JVM可以将64位（long和double变量）的读取和写入当做两个分离的32位操作来执行，这就产生了在一个读取和写入操作中间发生上下文切换，从而导致结果有误。当然加上volatile，就能获得原子性。
@@ -237,11 +237,11 @@ void f2();
 ### <a name="14">有序性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 定义：本线程中，执行结果一致，但其他线程观察其过程是无序的。指的是“指令重排序”和“工作内存与主内存同步延迟”的现象。
 
-#### <a name="15">ThreadLocal</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="15">ThreadLocal</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 通常当做静态域存储，因为ThreadLocal为每个线程都分配了自己的空间。使用当前线程作为key，因此不会出现线程冲突。
 - 注意不同线程在ThreadLocal存储的值为同一个对象的情况，由于引用都是同一个对象，因此会出现线程问题。
 
-#### <a name="16">退出线程的方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="16">退出线程的方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 与synchronized相关
 1. 线程中使用一个静态的volatile的标志判断退出。
 2. 调用Executors的submit方法，获取线程上下文对象Future，调用cancel方法。（注：无法中断正在试图获取synchronized锁或者试图执行I/O操作的线程）IO的中断，关闭底层资源之后，任务将解除阻塞。如socket连接，调用socket的close 或者 system.in 的输入连接调用in.close().
@@ -257,12 +257,12 @@ void f2();
   - 此线程在运行中， 则不会收到提醒。但是 此线程的 “打扰标志”会被设置， 可以通过isInterrupted()查看并 作出处理。
   - 结论：lockInterruptibly()和上面的第一种情况是一样的， 线程在请求lock并被阻塞时，如果被interrupt，则“此线程会被唤醒并被要求处理InterruptedException”。并且如果线程已经被interrupt，再使用lockInterruptibly的时候，此线程也会被要求处理interruptedException
  
-### <a name="17">daemon Thread 守护线程应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="17">daemon Thread 守护线程应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 典型的应用场景就是java的GC垃圾回收线程
 - 平常在系统的应用中，同样可以用于缓存清理这方面的工作
 - 固定取消过期订单。
 
-### <a name="18">线程间协作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="18">线程间协作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. wait()、notify()以及notifyAll()是基类Object的方法，尽管是线程的操作，放到基类中，便于操作所有对象。而这三个方法只能在==同步方法或者同步控制块中调用==。如果在非同步控制方法调用，程序能通过，但是运行时会得到IllegalMonitorStateException，表示调用该方法必须获得对象锁。 
 2. notifyAll()的并不是唤醒所有正在等待的任务。本质是notifyALl()因特定锁而被调用时，只有等待这个锁的任务才会被唤醒。
 3. 使用ReentrantLock，通过lock.newCondition()，使用lock的signAll的方法实现线程间的协作
@@ -270,13 +270,13 @@ void f2();
 - 通常可以使用LinkedBlockingQueue一个无界队列，ArrayBlockingQueue一个固定尺寸的队列。SynchronousQueue 只能包含一个元素的队列。
 5.管道通信，线程之间通过管道进行连接传输信息。涉及的类PipedWriter和PipedReader，两者需要建立管道连接new PipedReader(sender.getPipedWriter())。
 
-### <a name="19">死锁产生条件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="19">死锁产生条件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1.互斥条件：任务使用的资源至少有一个不能共享。
 2.至少有一个任务它必须持有一个资源，且正在等待获取当前被别的任务持有的资源。
 3.资源不能被任务抢占，必须等待。（资源必须等别的任务使用完成释放）
 4.必须有等待循环。（即一个任务等待其他任务的资源，一个循环的等待）
 
-### <a name="20">其他的一些工具类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="20">其他的一些工具类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - CountDownLatch计时器，主要方法countDown()、await()
 - CyclicBarrier 栅栏，主要方法await(), 实例化可指定拦截的数量，和一个栅栏动作，一个自动执行的线程。
 - DelayQueue 无界的BlockingQueue，用于放置实现了Delayed接口（在一段时间后只运行一次，其中的对象只能在其到期时才能从队列中取走）的对象

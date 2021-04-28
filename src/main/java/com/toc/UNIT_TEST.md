@@ -5,15 +5,17 @@
 &emsp;<a href="#2">2. 单元测试相关方法论</a>  
 &emsp;&emsp;<a href="#3">2.1. 优缺点分析</a>  
 &emsp;&emsp;<a href="#4">2.2. TDD 测试驱动开发</a>  
-&emsp;<a href="#5">3. 相关资料</a>  
-&emsp;<a href="#6">4. Junit测试</a>  
-&emsp;&emsp;<a href="#7">4.1. 基本注解</a>  
-&emsp;&emsp;<a href="#8">4.2. spring相关测试</a>  
-&emsp;&emsp;<a href="#9">4.3. 参考资料</a>  
-&emsp;<a href="#10">5. testNG</a>  
-&emsp;<a href="#11">6. Mockito</a>  
-&emsp;<a href="#12">7. BDDMockito</a>  
-
+&emsp;&emsp;<a href="#5">2.3. 相关资料</a>  
+&emsp;<a href="#6">3. Junit测试</a>  
+&emsp;&emsp;<a href="#7">3.1. 基本注解</a>  
+&emsp;&emsp;<a href="#8">3.2. spring相关测试</a>  
+&emsp;&emsp;<a href="#9">3.3. 参考资料</a>  
+&emsp;<a href="#10">4. testNG</a>  
+&emsp;&emsp;<a href="#11">4.1. 基本介绍</a>  
+&emsp;&emsp;<a href="#12">4.2. spring相关的使用</a>  
+&emsp;&emsp;<a href="#13">4.3. 相关资料</a>  
+&emsp;<a href="#14">5. Mockito</a>  
+&emsp;<a href="#15">6. BDDMockito</a>  
 # <a name="0">单元测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">测试名词</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 单元测试：单元测试（模块测试）是开发者编写的一小段代码，用于检验被测代码的一个很小的、很明确的功能是否正确。
@@ -67,7 +69,7 @@ TDD开发应该达到100%的单元测试覆盖率？
 参考资料：
 - [深度解读 - TDD（测试驱动开发)](https://www.jianshu.com/p/62f16cd4fef3)
 
-## <a name="5">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="5">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [InfoQ测试微服务之单元测试](https://www.infoq.cn/article/2017/11/Unit-test-micro-services)
 - [微服务测试之单元测试](https://zhuanlan.zhihu.com/p/54267816)
 
@@ -152,7 +154,7 @@ public class JunitDemo {
 
 
 测试用例demo
-```
+```java
 
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = "test")
@@ -212,8 +214,212 @@ public class JunitSpringTestDemo {
 
 ## <a name="10">testNG</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
+### <a name="11">基本介绍</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+TestNG不是一个JUnit扩展。它的灵感来源于JUnit。它的目的是优于JUnit的，尤其是当测试集成的类
+-[与UnitTest比较](http://www.testng.org.cn/1723.html)
 
-## <a name="11">Mockito</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+使用套件，指定某几个test中的group 为一个套件。在IDEA中直接运行xml文件，可以执行套件的测试。
+```
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="testng-demo">
+    <test name="testGroup1">
+        <parameter name="dbconfig" value="db.properties!~" />
+        <parameter name="poolsize" value="10" />
+        <groups>
+            <run>
+                <include name="group1"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="TestNGDemo"/>
+        </classes>
+    </test>
+
+    <test name="testGroup2">
+        <groups>
+            <run>
+                <include name="group2"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="TestNGDemo"/>
+        </classes>
+    </test>
+</suite>
+```
+
+- 基本注解使用的demo
+```java
+@Slf4j
+public class TestNGDemo {
+
+    @BeforeSuite(groups = "group1")
+    public void testBeforeSuite() {
+        log.info("testBeforeSuite()");
+    }
+
+    @AfterSuite(groups = "group1")
+    public void testAfterSuite() {
+        log.info("testAfterSuite()");
+    }
+
+    @BeforeClass
+    public void setup(){
+        log.info("this is beforeClass");
+    }
+
+    @AfterClass
+    public void shutdown(){
+        log.info("this is AfterClass");
+    }
+
+    @BeforeMethod
+    public void testBeforeMethod(){
+        log.info("this is beforeMethod");
+    }
+
+    @AfterMethod
+    public void testAfterMethod(){
+        log.info("this is afterMethod");
+    }
+
+    @BeforeGroups("group1")
+    public void setupGroup1() {
+        log.info("setupGroup1()");
+    }
+
+    @AfterGroups("group1")
+    public void cleanGroup1() {
+        log.info("cleanGroup1()");
+    }
 
 
-## <a name="12">BDDMockito</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+    @Test(groups = "group1")
+    public void test1() {
+        log.info("this is test1");
+    }
+
+    @Test(groups = "group1", expectedExceptions = ArithmeticException.class)
+    public void testException() {
+        log.info("this is test2");
+        int i = 1 / 0;
+        log.info("After division the value of i is :"+ i);
+    }
+
+    @Test(enabled = false)
+    public void testIgnoreTestcase() {
+        log.info("~~~~~~~~~~~~~~~~~ignore ");
+    }
+
+    @Test(groups = "group2", timeOut = 5000) // time in mulliseconds
+    public void testThisShouldPass() throws InterruptedException {
+        Thread.sleep(4000);
+    }
+
+    @Test(groups = "group1", dependsOnMethods = "test1")
+    public void testDependOn() {
+        log.info("this is dependOnMethod~");
+    }
+
+    @Test(groups = "group1")
+    @Parameters({ "dbconfig", "poolsize" })
+    public void createConnection(String dbconfig, int poolsize) {
+        log.info("this is parameter Test, parameter is: {}, {}", dbconfig, poolsize);
+    }
+
+    @Test(groups = "group2", dataProvider = "addDataProvider")
+    public void testDataProvider( String data) {
+        log.info("this is testDataProvider, test data: {}",data);
+    }
+
+    @DataProvider
+    public Iterator<Object> addDataProvider() {
+        List<Object> list = Lists.newArrayList();
+        list.add("123");
+        list.add(("123wesdf"));
+        return list.iterator();
+    }
+}
+```
+### <a name="12">spring相关的使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+通过`extends AbstractTestNGSpringContextTests`提供一个测试使用的spring 上下文，类似于Junit4中@RunWith(SpringExtend)
+> AbstractTestNGSpringContextTests is an abstract base test class that integrates the Spring TestContext Framework with explicit ApplicationContext testing support in a TestNG environment. When you extend AbstractTestNGSpringContextTests, you can access a protected applicationContext instance variable that you can use to perform explicit bean lookups or to test the state of the context as a whole.
+### <a name="13">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [易百中文文档](https://www.yiibai.com/testng)
+- [testng中文官网](http://www.testng.org.cn/)
+- [testng英语官网](https://testng.org/doc/index.html)
+
+## <a name="14">Mockito</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Mockito 主要用来辅助编写测试用例的。比如在微服务中的跨服务调用，在单个服务的单元测试中跨服务调用是不可能成功的，因为另外一个服务未启动，这是用就要使用mock 的方式，模拟服务请求返回的情形。
+
+- 以下为一个demo，在Mockito最常用的都是spy一个实例，在该实例调用某种方法是Mock回预期的结果。
+```java
+@Slf4j
+@AutoConfigureMockMvc
+@ActiveProfiles(profiles = "test")
+@SpringBootTest(classes = UnitTestApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
+public class MockitoTestDemo {
+
+    @Autowired
+    private UnitTestService unitTestService;
+
+    @Test
+    public void test() {
+        UnitTestService spy = Mockito.spy(unitTestService);
+        Mockito.when(spy.testSql()).thenReturn("fadsfasdfasdf");
+        String result = spy.testSql();
+        log.info(result);   // return fadsfasdfasdf
+
+        Mockito.when(spy.testParameter(Mockito.anyInt(),
+                        Mockito.anyString(),
+                        Mockito.any(),
+                        Mockito.anyList(),
+                        Mockito.anyMap()))
+                .thenReturn("mock success");
+
+        String res = spy.testParameter(1, "sddf", BigDecimal.ZERO, new ArrayList<>(), new HashMap<>());
+        log.info(res);
+    }
+}
+```
+
+相关资料：
+- [Mockito Tutorial](https://www.baeldung.com/mockito-series)
+
+## <a name="15">BDDMockito</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+BDDMockito对比Mockito可以使用BDDMockito为各种Mockito方法提供BDD别名，代码看起来更易理解。
+
+结合Testng的注解@BeforeClass，可以在一个测试用例类中直接把需要Mock的类方法及预期的返回值，设置好
+- > Junit4中@BeforeClass，要求方法体内要为静态的。
+- > BDDMockito 对于Mock类提供更为简便的表达
+- > testng中对于@MockBean 需要配合使用 `@TestExecutionListeners(MockitoTestExecutionListener.class)`
+```java
+
+@Slf4j
+@ActiveProfiles(profiles = "test")
+@SpringBootTest(classes = UnitTestApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestExecutionListeners(MockitoTestExecutionListener.class)
+public class BDDMockitoTestDemo extends AbstractTestNGSpringContextTests {
+
+    @MockBean
+    UnitInterface unitInterface;
+
+    @BeforeClass
+    public void setup() {
+        given(unitInterface.register(anyString())).willReturn("register success");
+        given(unitInterface.calculate(anyDouble())).willThrow(new IllegalArgumentException());
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void test(){
+        BigDecimal calculate = unitInterface.calculate(123.112d);
+        log.info(String.valueOf(calculate));
+    }
+}
+```
+
+相关资料：
+[Quick Guide to BDDMockito](https://www.baeldung.com/bdd-mockito)

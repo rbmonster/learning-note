@@ -73,9 +73,9 @@
 ## 其他
 ### 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
-- [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
-- [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
-- [MySql45讲](https://github.com/rbmonster/learningA-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
+- [深入理解Java虚拟机(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
+- [Redis-基于Redis的设计与实现](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
+- [MySql 45讲-丁奇](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
 - [java集合类(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/COLLECTION_BOOK.md)
 - [java并发(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CONCURRENT_BOOK.md)
 
