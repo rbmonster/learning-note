@@ -1,0 +1,26 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="testng-demo">
+    <test name="testGroup1">
+        <parameter name="dbconfig" value="db.properties!~" />
+        <parameter name="poolsize" value="10" />
+        <groups>
+            <run>
+                <include name="group1"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="TestNGDemo"/>
+        </classes>
+    </test>
+
+    <test name="testGroup2">
+        <groups>
+            <run>
+                <include name="group2"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="TestNGDemo"/>
+        </classes>
+    </test>
+</suite>

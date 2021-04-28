@@ -12,12 +12,11 @@ spring:
     encoding: UTF-8
   datasource:
     druid:
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       filters: stat
       testOnReturn: false
       testWhileIdle: true
       maxActive: 1
-      removeAbandoned: true
       removeAbandonedTimeoutMillis: 1
       name: datasource
       testOnBorrow: false
@@ -29,7 +28,7 @@ spring:
       validationQuery: select 1
       maxOpenPreparedStatements: 300
       username: root
-      password: 'Hsanwu123~'
+      password: 'Hsql~112233'
   jackson:
     default-property-inclusion: non_null
 #logging:

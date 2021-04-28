@@ -1,5 +1,11 @@
 # learning-note
 > Motivation、Passion、Evolution
+
+一个技术点，面试官常见的三连问：
+1. xxx是什么？
+2. xxx优缺点是什么？
+3. xxx应用及使用场景是什么？
+
 ## Java相关
 - [Java基础](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JAVA_BASE.md)
 - [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/COLLECTION.md)
