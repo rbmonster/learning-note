@@ -11,6 +11,9 @@
 - [Java集合类](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/COLLECTION.md)
 - [Java IO](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JAVA_IO.md)
 - [Java虚拟机](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JVM.md)
+- [Java 单元测试](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/UNIT_TEST.md)
+- [Netty](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETTY.md)
+- [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYBATIS.md)
 
 ## Java并发相关
 - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/THREAD.md)
@@ -31,21 +34,18 @@
 - [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
 - [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ZOOKEEPER.md)
 - [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGEQUEUE.md)
+- [MySQL](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYSQL.md) 
 
 ## 算法
 - [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/ALGORITHM.md)
 - [排序算法](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/SORT_ALGORITHM.md)
 
 ## 其他
-- [MySQL](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYSQL.md) 
-- [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYBATIS.md)
 - [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
 - [Elasticsearch 基本知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/ES.md)
 - [Linux相关](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LINUX.md)
-- [Netty](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETTY.md)
 - [FastDFS](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FASTDFS.md)
 - [Drools规则引擎](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/RULE_ENGINE.md)
-- [Java 单元测试](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/UNIT_TEST.md)
 
 ## 系统设计
 - [Java接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/INTERFACE_DESIGN.md)
@@ -75,20 +75,20 @@
 
 ## 其他
 ### 记录平常学习java 的一些知识点
-- [设计模式(head first)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
-- [深入理解Java虚拟机(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
-- [Redis-基于Redis的设计与实现](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
-- [MySql 45讲-丁奇](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
-- [java集合类(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/COLLECTION_BOOK.md)
-- [java并发(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CONCURRENT_BOOK.md)
+- [【设计模式 head first】](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
+- [【深入理解Java虚拟机(周志明)】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
+- [【基于Redis的设计与实现】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
+- [【MySql 45讲-丁奇】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
+- [【Java编程思想-集合类】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/COLLECTION_BOOK.md)
+- [【Java编程思想-并发】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CONCURRENT_BOOK.md)
 
 ## 参考资料
 | 地址 | 简介 |
 | --- | --- |
 | [CS-Notes](https://github.com/CyC2018/CS-Notes) | 技术面试必备基础知识、Leetcode、计算机操作系统、计算机网络、系统设计 |
 | [JavaGuide](https://github.com/Snailclimb/JavaGuide)| 「Java学习+面试指南」一份涵盖大部分 Java 程序员所需要掌握的核心知识。 |
-| [AobingJava](https://github.com/AobingJava/JavaFamily) | 蘑菇街敖丙的Java面试总结 |
-| [bugstack](https://bugstack.cn/) | 虫洞栈Java干货，面试问题带着例子说明得明明白白 |
+| [AobingJava](https://github.com/AobingJava/JavaFamily) | 敖丙的Java面试总结 |
+| [bugstack](https://bugstack.cn/) | 虫洞栈Java干货，设计模式 面试问题带着例子说明得明明白白 |
 | [advanced-java](https://github.com/doocs/advanced-java) | 互联网Java工程师进阶知识完全扫盲：涵盖高并发、分布式、高可用、微服务、海量数据处理等领域知识 |
 | [spring-analysis](https://github.com/seaswalker/spring-analysis) | Spring源码解读(很久未更新了，但是spring基本的精髓都讲到了，适合参考阅读源码) |
 | [fucking-algorithm](https://github.com/labuladong/fucking-algorithm) | labuladong刷算法套路，提供算法题的工具方法思想 |
