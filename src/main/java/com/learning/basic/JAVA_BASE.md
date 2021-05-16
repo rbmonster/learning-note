@@ -527,7 +527,7 @@ java.lang.annotation 提供了四种元注解，专门注解其他的注解（�
 
 ## 线程
 #### 线程状态
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/concurrent/picture/threadState.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadState.jpg)
 
 - 新建（NEW）：创建后尚未启动。
 - 可运行（RUNABLE）：正在 Java 虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。

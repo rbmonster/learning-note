@@ -1,46 +1,8 @@
-<a name="index">**Index**</a>
-
-<a href="#0">Redis 设计与实现</a>  
-&emsp;<a href="#1">1. Redis底层数据结构</a>  
-&emsp;&emsp;<a href="#2">1.1. 简单动态字符串SDS</a>  
-&emsp;&emsp;<a href="#3">1.2. 链表</a>  
-&emsp;&emsp;<a href="#4">1.3. 字典</a>  
-&emsp;&emsp;<a href="#5">1.4. 跳跃表</a>  
-&emsp;&emsp;<a href="#6">1.5. 整数集合</a>  
-&emsp;&emsp;<a href="#7">1.6. 压缩列表</a>  
-&emsp;<a href="#8">2. Redis的数据对象类型</a>  
-&emsp;&emsp;<a href="#9">2.1. 字符串对象(String)</a>  
-&emsp;&emsp;<a href="#10">2.2. 列表对象(list)</a>  
-&emsp;&emsp;<a href="#11">2.3. 哈希对象(hash)</a>  
-&emsp;&emsp;<a href="#12">2.4. 集合对象(set)</a>  
-&emsp;&emsp;<a href="#13">2.5. 有序集合对象(zset)</a>  
-&emsp;&emsp;<a href="#14">2.6. 类型检查与命令多态</a>  
-&emsp;&emsp;<a href="#15">2.7. 内存回收</a>  
-&emsp;&emsp;<a href="#16">2.8. 对象共享</a>  
-&emsp;&emsp;<a href="#17">2.9. 对象的空转时间</a>  
-&emsp;<a href="#18">3. 数据库</a>  
-&emsp;&emsp;<a href="#19">3.1. 数据库键空间</a>  
-&emsp;&emsp;<a href="#20">3.2. 过期键</a>  
-&emsp;<a href="#21">4. RDB 持久化</a>  
-&emsp;&emsp;<a href="#22">4.1. RDB文件创建与载入</a>  
-&emsp;<a href="#23">5. AOF持久化</a>  
-&emsp;<a href="#24">6. 事件</a>  
-&emsp;<a href="#25">7. 客户端的关闭</a>  
-&emsp;<a href="#26">8. 服务器</a>  
-&emsp;<a href="#27">9. 复制</a>  
-&emsp;<a href="#28">10. Sentinel 哨兵</a>  
-&emsp;<a href="#29">11. 集群</a>  
-&emsp;<a href="#30">12. 发布与订阅</a>  
-&emsp;<a href="#31">13. 事务</a>  
-&emsp;<a href="#32">14. Lua脚本</a>  
-&emsp;<a href="#33">15. 排序</a>  
-&emsp;<a href="#34">16. 二进制位数据</a>  
-&emsp;<a href="#35">17. 慢查询日志</a>  
-# <a name="0">Redis 设计与实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# Redis 设计与实现
 [toc]
 
-## <a name="1">Redis底层数据结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="2">简单动态字符串SDS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## Redis底层数据结构
+### 简单动态字符串SDS
 ```
 struct sdshdr {
     // 记录SDS所保存的字符串长度
@@ -57,7 +19,7 @@ struct sdshdr {
   - 惰性释放：程序不立即使用内存重分配来回收缩短后多出来的字节，而是使用free属性，记录字节数量，静待下次使用。
 - SDS的buf属性成为字节数组的原因（二进制安全）：Redis不是用这个数组来保存字符，而是保存一系列的二进制。
 
-### <a name="3">链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 链表
 - 双向链表
 ```
 typedef struct listNode {
@@ -83,7 +45,7 @@ typedef struct list {
 }list;
 ```
 
-### <a name="4">字典</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 字典
 - 字典中的每个键都是独一无二的，Redis字典使用哈希表作为底层实现。
 - 哈希表：
 ```
@@ -124,23 +86,23 @@ typedef struct dict {
   - 在ht[1]上建立空间后，字典中维护一个索引计数器变量rehashidx，并将其设置为0，表示rehash工作开始。
   - 渐进式hash可以避免rehash对服务器性能造成影响。
  
-### <a name="5">跳跃表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 跳跃表
 - 跳跃表是一种有序的数据结构，支持O(logN)、最坏O(N)复杂度的节点的查找。
 - 跳跃表是有序集合的底层实现之一。
 - 跳跃表节点按照分值大小排序，分值相同时节点按照成员对象的大小排序。
 
-### <a name="6">整数集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 整数集合
 - 整数集合是redis用于保存整数值的集合抽象数据结构，可以保存为int16_t、int32_t、int64_t的整数值，保证集合中不会出现重复元素。
 - 整数集合的底层实现是数组，数组以有序、无重复的方式保存集合元素，在有需要时根据添加元素改变数组类型。
 - 整数数组只支持升级操作，不支持降级操作。
 
-### <a name="7">压缩列表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 压缩列表
 - 压缩列表是列表键和哈希键的地城实现之一。
 - 压缩列表是一种为节约内存而开发的顺序性数据结构。
 - 压缩列表可以包含多个节点，每个节点可以保存一个字节数组或者整数值。
 - 添加新节点到压缩列表或者删除可能会引起连锁更新。
 
-## <a name="8">Redis的数据对象类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## Redis的数据对象类型
 - Redis包含字符串对(String)、列表对象(list)、哈希对象(Hash)、集合对象(Set)和有序结合对象(zSet)
 - Redis的对象的数据结构：
 ```
@@ -156,7 +118,7 @@ typedef struct redisObject{
 ```
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/encodingCode.jpg)
 
-### <a name="9">字符串对象(String)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 字符串对象(String)
 - 如果字符串保存的是一个字符串值，且长度<=39，则字符串对象使用的是embstr编码方式保存。
   - embstr方式在内存分配时仅会调用一次内存分配函数，而raw会调用两次
   - embstr字符串对象保存在一块连续的内存里面。
@@ -178,7 +140,7 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/stringCommand.jpg)
 
 
-### <a name="10">列表对象(list)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 列表对象(list)
 - 列表元素较少时使用压缩列表(ziplist)，而元素多的时候使用双链表(linkedlist)
   - 此处使用ziplist就是存列表连接
 - 编码转换条件：同时满足一下两条件使用ziplist,否则linkedlist。
@@ -198,7 +160,7 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/listCommand.jpg)
 
 
-### <a name="11">哈希对象(hash)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 哈希对象(hash)
 - 哈希对象的编码可以是ziplist或hashtable
   - ziplist会先保存键再保存值，因此键与值总是靠在一起，其中键的方向为压缩列表的表头方向。
 - 编码转换条件：同时以下条件的哈希对象使用ziplist编码，否则使用hashtable
@@ -226,7 +188,7 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/hashCommand.jpg)
 
 
-### <a name="12">集合对象(set)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 集合对象(set)
 - 集合对象的编码可以是intset或者 hashtable
   - intset整数集合作为底层实现，包含的所有元素都被保存在整数集合里面。
   
@@ -248,7 +210,7 @@ typedef struct redisObject{
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/setCommand.jpg)
 
 
-### <a name="13">有序集合对象(zset)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 有序集合对象(zset)
 - 有序集合的编码可以是ziplist或者skiplist
   - ziplist按分值从小到大的进行排序，分值小的元素放在靠近表头方向，对象在前值在后，两者紧凑。
   - skiplist编码的有序集合使用zset结构作为底层实现，一个zset结构同时包含一个字典和跳跃表
@@ -277,15 +239,15 @@ typedef struct redisObject{
 ```
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/zsetCommand.jpg)
 
-### <a name="14">类型检查与命令多态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 类型检查与命令多态
 - DEL、EXPIRE、RENAME、TYPE、OBJECT可以对任何键执行
 - 类型检查，Redis会先检查输入键的类型是否正确，然后在执行给定的命令。
 - 命令多态：由于基本类型的底层数据结构不确定，因此在执行命令时会先判断底层的数据结构类型再调用对应的命令函数。
 
-### <a name="15">内存回收</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 内存回收
 - Redis的内存回收使用的是引用计数的方式进行数据回收。对象的引用计数值为0时，对象所占用的内存会释放。
 
-### <a name="16">对象共享</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 对象共享
 - Redis数据库初始化时会创建一万个字符串对象，这些对象包含了从0到9999的所有整数值，当数据库需要用到这些字符串对象时，会共享这部分对象而不是新创建对象。
 - Redis 对象不共享字符串对象，因为整数性字符串对象的验证操作是O(1)，而字符串对象的验证操作是O(N)。为了节省内存反而会造成大量的CPU浪费，得不偿失。
 - 对象共享过程：
@@ -298,7 +260,7 @@ OK
 >OBJECT REFCOUNT A
 (integer)2
 ```
-### <a name="17">对象的空转时间</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 对象的空转时间
 - redisObject的结构最后一个属性为lru属性，该属性记录了对象最后一次被命令层序访问的时间
 - 当内存开启maxmemory选项时，且回收算法是volatile-lru 或者 allkeys-lru，超过maxmemory设置上限值的部分，空转时间较高的会被服务器优先释放，回收内存。
 ```
@@ -308,7 +270,7 @@ OK
 20
 ```
 
-## <a name="18">数据库</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 数据库
 - Redis默认会创建16个数据库
 - 可以使用SELECT 选择目标数据库。
   - ```
@@ -320,7 +282,7 @@ OK
     >GET msg
     (nil)
     ```
-### <a name="19">数据库键空间</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 数据库键空间
 - Redis 是一个键值对的数据库服务器。服务器中每个数据库都由一个redisDb结构的dict字典保存数据库中所有键值对，称为键空间。
   - 键空间的键也就是数据库的键，每个键都是字符串对象。
   - 键空间的值也就是数据库的值，每个值可以是五中基本类型对象。
@@ -330,7 +292,7 @@ OK
 - 随机返回数据库中某个键：RANDOMKEY
 - 返回数据库数量：DBSIZE
 
-### <a name="20">过期键</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 过期键
 - 设置键的生存时间(TTL time to live)或过期时间(PTTL)
   - EXPIRE: 将键key的生存时间设成ttl秒。
   - PEXPIRE: 将键key的生存时间设成ttl毫秒。
@@ -385,11 +347,11 @@ OK
 
 - Redis可配置对于数据键发生修改时，发送通知事件。
 
-## <a name="21">RDB 持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## RDB 持久化
 - 解决服务器退出，数据库中数据库状态消失的问题。
 - RDB持久化可以手工执行，也可以根据服务器配置选项定期执行，该功能可以将某个时间点上的数据库状态保存在RDB文件中。
 
-### <a name="22">RDB文件创建与载入</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### RDB文件创建与载入
 - SAVE命令，阻塞Redis服务器进程，直到RDB文件创建完毕为止。
 - BGSAVE命令会派生出一个子进程，然后由子进程创建EDB文件。
 
@@ -415,7 +377,7 @@ save 60 10000
 - RDB文件结构（TODO暂时不需要了解）
   - |REDIS|db_version|database|EOF|check_sum|
   
-## <a name="23">AOF持久化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## AOF持久化
 - AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF文件中。
 
 - 持久化的三个过程：命令追加、文件写入、文件同步
@@ -430,7 +392,7 @@ save 60 10000
  
 - AOF重写，指的是对命令进行压缩，将RPUSH、LPOP的类似命令进行压缩，减少AOF文件大小
 
-## <a name="24">事件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 事件
 - Redis服务器是一个事件驱动程序，服务器需要处理一下两事件。
   - 文件事件：服务器通过Socket与客户端连接
   - 时间事件：服务器中的一些操作，需要在特定时间点执行。
@@ -446,7 +408,7 @@ save 60 10000
 - 时间事件（2.8版本的redis只有周期性事件，没有定时事件）
   - 服务器将所有时间事件放在一个无序链表中，每当时间事件执行器运行时，遍历整个链表。
   
-## <a name="25">客户端的关闭</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 客户端的关闭
 - 客户端进程退出或杀死
 - 客户端发送不符合协议的命令请求
 - 客户端成了CLIENT KILL命令的目标
@@ -454,7 +416,7 @@ save 60 10000
 - 客户端发送的请求超过了输出缓冲区的限制大小（1GB）
 - 服务器要发送给客户端的返回命令请求大小超过了输出缓冲区的限制
 
-## <a name="26">服务器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 服务器
 - 命令请求的执行过程
   1. 向服务器发送命令请求SET KEY VALUE.
   2. 服务接收命令请求，在数据库中设置操作，并产生命令回复OK
@@ -463,7 +425,7 @@ save 60 10000
   
 - 每个Redis对象都会有一个lru属性，保存了对象最后一次被命令访问的时间。
 
-## <a name="27">复制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 复制
 - 设置的操作流程
   1. 设置主服务器的地址和端口。>SLAVEOF 127.0.0.1 6379
   2. 建立socket连接
@@ -490,7 +452,7 @@ save 60 10000
 
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/psync.jpg)
 
-## <a name="28">Sentinel 哨兵</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## Sentinel 哨兵
 - Sentinel是Redis的一个高可用的解决方案：由一个或者多个Sentinel实例组成Sentinel系统。
 - 启动命令：
 ```
@@ -521,7 +483,7 @@ redis-server /path/to/your/sentinel.conf
 
 - 客观下线：当一个Sentinel判断一个服务器下线时，会询问其他的Sentinel是否真的是下线。
 
-## <a name="29">集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 集群
 - Redis集群是Redis提供的分布式数据库方案，集群通过分片实现数据共享，并提供复制和故障转移功能。
 - 建立一个集群 至少需要三主三从六台服务器。
 - 集群建立
@@ -574,7 +536,7 @@ OK
     4. 新的主节点在集群中发送PONG消息，通知其他节点该节点变成主节点。
     5. 新主节点开始接受和处理指派槽的消息。
     
-## <a name="30">发布与订阅</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 发布与订阅
 ```
 //查看服务器目前订阅的通道
 >PUBSUB CHANNELS
@@ -594,7 +556,7 @@ OK
   1. 将消息发送给channel频道的所有订阅者。
   2. 如果有一个或者多个模式patten与channel匹配，那么将message发送给patten的订阅者。
   
-## <a name="31">事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 事务
 - Redis通过MULTI、EXEC、WATCH等命令来实现事务。
 ```
 >MULTI
@@ -648,13 +610,13 @@ QUEUED
   - 隔离性：并发执行和串行执行结果一致。Redis事务总是以串行执行，因此保证了隔离性。
   - 耐久性：一个事务执行完毕，结果会被保存到硬盘中，停机不丢失。
   
-## <a name="32">Lua脚本</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## Lua脚本
 - 客户端可执行的脚本语言
 ```
 >EVAL "return 'hello world'" 0
 ```
 
-## <a name="33">排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 排序
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sort.jpg)
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sort2.jpg)
 - SORT <key> :对一个包含数字值的键key进行排序
@@ -676,9 +638,9 @@ QUEUED
     // 保存结果在sorted_students中
     ```
     
-## <a name="34">二进制位数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 二进制位数据
 - Redis 提供SETBIT、GETBIT、BITCOUNT、BITOP四个命令用于处理二进制位数组。
 
-## <a name="35">慢查询日志</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 慢查询日志
 - slowlog-log-slower-than选项：指定超过多少微妙记录到慢查询日志上。
 - slowlog-max-len选项：指定服务器最多保存多少条慢查询日志。

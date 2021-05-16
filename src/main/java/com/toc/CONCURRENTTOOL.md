@@ -80,7 +80,7 @@ AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高�
 
 #### <a name="3">AQS 相关方法处理说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ##### <a name="4">获取锁的框架方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/aqsblocklock.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/aqsblocklock.jpg)
 ```
  // 尝试获取锁
  public final void acquire(int arg) {
@@ -155,7 +155,7 @@ unparkSuccessor：资源释放后的队列抢资源逻辑
   
   
 #### <a name="6">条件队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/conditionqueue.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/conditionqueue.jpg)
 condition：条件队列的实现，常可以用在生产者-消费者的场景中。
   - 在所对象中内置一个newCondition方法，用于创建一个条件队列。
   - condition 的方法主要就两个await等待、signal唤醒
@@ -384,7 +384,7 @@ countdown方法：CAS+自旋扣减statue状态。当状态为0时，唤醒await�
   - 数量扣减为0时，如果有定义栅栏开始的方法则执行，并调用condition的signAll，条件单链表逐个唤醒。
   - generation 代表栅栏重复使用的一代或者一个周期。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/cyclicBarrier.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/cyclicBarrier.jpg)
   
 什么时候栅栏会被打破，总结如下：
   - 中断，如果某个等待的线程发生了中断，那么会打破栅栏，同时抛出 InterruptedException 异常；

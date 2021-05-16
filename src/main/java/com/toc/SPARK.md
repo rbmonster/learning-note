@@ -64,11 +64,11 @@ scala>
 ```
 
 - master
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/sparkMaster.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/sparkMaster.jpg)
 
 
 - submit job
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/sparkWoker.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/sparkWoker.jpg)
 
 
 

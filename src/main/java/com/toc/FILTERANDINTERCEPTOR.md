@@ -7,7 +7,7 @@
 &emsp;&emsp;<a href="#4">2.2. MethodInterceptor</a>  
 # <a name="0">MVC 拦截器与过滤器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/four/picture/filter2intercept.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/filter2intercept.jpg)
 ## <a name="1">过滤器 servlet</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 filter（过滤器）作用于在intreceptor(拦截器)之前，不像intreceptor一样依赖于springmvc框架，只需要依赖于serverlet。
 - 比较原始的一种方法是定义一个类实现javax.servlet.Filter接口

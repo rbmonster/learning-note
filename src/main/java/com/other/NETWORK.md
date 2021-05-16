@@ -4,14 +4,14 @@
 - 网络层最重要的协议是 IP 协议、ping使用ICMP协议。
 - 传输层最主要的协议是 TCP 和 UDP 协议。
 - 应用层：HTTP、FTP、SMTP、TELNET、POP3、DNS
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/network1.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/network1.jpg)
 
 7层结构明细
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/network2.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/network2.png)
 
 一个请求在网络模型中的传输过程
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/other/picture/networkFloat.jpeg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/networkFloat.jpeg)
 
 
 ## TCP 三次握手和四次挥手
@@ -28,7 +28,7 @@ TCP 用顺序号对每个字节进行计数。序号是 32bit 的无符号数，
 须保持每个方向上的传输数据顺序号。
 
 ### 三次握手
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/tcpconnect.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/tcpconnect.png)
 
 第一次握手：主机 A 发送位码为 syn＝ 1,随机产生 seq number=1234567 的数据包到服务器，主机 B
 由 SYN=1 知道， A 要求建立联机；
@@ -56,7 +56,7 @@ ack 是否为 1，若正确， 主机 A 会再发送 ack number=(主机 B 的 se
 
 
 ### 四次挥手
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/tcpdisconnect.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/tcpdisconnect.jpg)
 
 断开一个 TCP 连接需要“四次挥手”：
 - 客户端 - 发送一个 FIN、seq数据包，用来关闭客户端到服务器的数据传送
@@ -186,7 +186,7 @@ Https采用混合的加密机制。
    5. 客户端使用自己的RSA秘钥解密，获取服务端会话秘钥。
 2. 第二阶段使用对称加密的方式，进行消息传输。第一阶段通过非对称加密传输的方式，客户端及服务端都获取了对称加密所需的秘钥。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/HttpsFlow.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/HttpsFlow.png)
 
 
 ## 证书认证
@@ -321,7 +321,7 @@ x7faqgjw**abcdefghijklmnopqrstuvwxyz**
 > 原始报文->(hash)报文摘要->(私钥加密)数字签名
 
 验签：接收方拿到原始报文和数字签名后，用「同一个Hash函数」从报文中生成摘要A。另外，用对方提供的公钥对数字签名进行解密，得到摘要B，对比A和B是否相同，就可以得知报文有没有被篡改过。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/other/picture/Endorsement.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/Endorsement.png)
 
 **假如整个公私钥传递的过程都被人窃取了，但是窃取人仍然不知道报文的hash算法，伪造不了报文。**
 ### 相关资料

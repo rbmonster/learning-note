@@ -384,7 +384,7 @@
   - 向布隆过滤器中添加数据时，会使用 多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
   - 判断数据是否存在时，同样使用多个hash函数计算key，只要有一个位为 0，说明key不存在。但是都是1，并不能说明key必定存在，可能位置都是其他元素添加导致的，因此说存在一定的误判率。
   - 布隆过滤器有两关键的参数，一个是元素大小，一个是误差率。当误差率设置越小，布隆过滤器需要的空间越大。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/bloomFilter.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/bloomFilter.png)
   
 - 数据结构： bitmap 比特位的集合。bitmap是一个以比特为基本单位的数组，如一个int类型32个比特，那我们使用比特来应用就可以节省很大的空间。
 
@@ -396,7 +396,7 @@
   - 布隆过滤器有一个可以预判误判率的公式，查询缓存可能误判的名单存在，进行正常的查询。
 - 爬虫/ 邮箱等系统的过滤：平时不知道你有没有注意到有一些正常的邮件也会被放进垃圾邮件目录中，这就是使用布隆过滤器 误判 导致的。 
 - 应用介绍：在查询缓存的前面加一层布隆过滤器的过滤判断，判断缓存是否存在。
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/cacheQueryBloomFilter.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/cacheQueryBloomFilter.jpg)
 
  
  #### <a name="27">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -431,7 +431,7 @@
    ```
  
  
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/cacheQueryNormal.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/cacheQueryNormal.jpg)
   
 
 ### <a name="28">其他命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -470,7 +470,7 @@ QUEUED
 ```
   
 - 事务开始后，若客户端发送的命令为EXEC、DISCARD、WATCH、MULTI四个命令其中一个，服务器会立即执行，否则执行命令入队操作。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/transaction.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/transaction.png)
 
 - MULTI命令标志着事务的开始
 - EXEC命令会让服务器立即执行事务队列语句。
@@ -484,7 +484,7 @@ QUEUED
     >EXEC
     (nil)
     ```
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/optiLock.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/optiLock.jpg)
 
 - redis 事务的ACID
   - 原子性：事务的多个操作当成一个整体来执行，要么全部执行，要么都不执行。
@@ -646,7 +646,7 @@ redis-server /path/to/your/sentinel.conf
     - 从服务器的选择：1)删除下线或断开连接的从服务。2)删除5s无回复从服务。3)按照复制偏移量排名，最大的表示具有最新的数据信息。相同偏移量则按照ID从小到大选取。
   3. Sentinel系统向Server1属下的从服务器发送新的复制指令，让其成为新主服务器的从服务。当复制完成，故障转移完毕。
   4. Sentinel系统继续监视下线的server1，当其重新上线时设置成主服务器的从服务。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/sentinel.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sentinel.jpg)
 
 
 ## <a name="46">集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -663,7 +663,7 @@ redis-server /path/to/your/sentinel.conf
 
 127.0.0.1:7000>CLUSTER MEET 127.0.0.1 7002
 ```
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/cluster.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/cluster.jpg)
 
 ### <a name="47">集群下与客户端交互过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 键命令执行步骤主要分两步：
@@ -672,7 +672,7 @@ redis-server /path/to/your/sentinel.conf
 3. 若节点的槽不是当前节点，返回MOVED重定向错误。
 
 MOVED重定向: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/redis-move.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/redis-move.jpg)
 
 ```
 // 连接redis集群 计算集群定位的值
@@ -692,7 +692,7 @@ cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 c
 
 > 使用redis-cli命令时，可以加入-c参数支持自动重定向，简化手动发起重定向操作，如下所示：
 > - redis-cli自动帮我们连接到正确的节点执行命令，这个过程是在redis-cli内部维护，实质上是client端接到MOVED信息之后再次发起请 求，并不在Redis节点中完成请求转发，如下图所示
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/redisClient-move.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/redisClient-move.jpg)
 
 ```
 #redis-cli -p 6379 -c
@@ -747,8 +747,8 @@ OK
 - 节点数据库和单机数据库在数据库方面的一个区别是，**节点只能使用0号数据库**，而单机Redis服务器则没有这个限制。 
 - 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
   - 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/askError.jpg)
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/redis/picture/slotReadd.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/askError.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/slotReadd.jpg)
 
 #### <a name="49">哈希槽</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - Redis 集群并没有直接使用一致性哈希，而是使用了哈希槽 （slot） 的概念。没有使用Hash算法，而是使用了crc16校验算法。槽位其实就是一个个的空间的单位。

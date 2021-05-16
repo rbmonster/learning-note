@@ -1,6 +1,6 @@
 <a name="index">**Index**</a>
 
-<a href="#0">JWT、MFA及相关应用</a>  
+<a href="#0">jwt 应用</a>  
 &emsp;<a href="#1">1. 验证码登陆</a>  
 &emsp;<a href="#2">2. 递进式提交问题</a>  
 # <a name="0">jwt 应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

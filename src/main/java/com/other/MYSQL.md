@@ -1,7 +1,7 @@
 # MySQL
 
 ## MySQL基本架构
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/mysqlprocess.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/mysqlprocess.jpg)
 - MySQL可以分为Server层和存储引擎层两部分
   - Server层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。
   - 存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持InnoDB、MyISAM、Memory等多个存储引擎。现在最常用的存储引擎是InnoDB，它从MySQL5.5.5版本开始成为了默认存储引擎
@@ -36,7 +36,7 @@
 回到主键索引树搜索的过程， 我们称为**回表**。
   
 图解索引结构
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/indexquery.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/indexquery.jpg)
 主键长度越小， 普通索引的叶子节点就越小， 普通索引占用的空间也就越小。所以，从**性能和存储空间**方面考量， 自增主键往往是更合理的选择。
 
 
@@ -65,7 +65,7 @@ InnoDB里面索引对应一棵B+树
 2. 子节点数：非叶节点的子节点数>1，且<=M ，且M>=2，空树除外（注：M阶代表一个树节点最多有多少个查找路径，M=M路,当M=2则是2叉树,M=3则是3叉）；
 3. 所有叶子节点均在同一层、叶子节点除了包含了关键字和关键字记录的指针外也有指向其子节点的指针只不过其指针地址都为null对应下图最后一层节点的空格子;
 4. 关键字数：枝节点的关键字数量大于等于ceil(m/2)-1个且小于等于M-1个（注：ceil()是个朝正无穷方向取整的函数 如ceil(1.1)结果为2);
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/Btree.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/Btree.jpg)
 
 - B树插入与删除操作：https://zhuanlan.zhihu.com/p/27700617
 
@@ -217,12 +217,12 @@ MySQL的行锁是在引擎层由各个引擎自己实现的。 MyISAM引擎就�
 
 #### 两阶段锁
 两阶段锁协议：在InnoDB事务中， 行锁是在需要的时候才加上的， 但并不是不需要了就立刻释放， 而是要等到事务结束时才释放。 
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/linelock.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/linelock.jpg)
 - 事务B的update语句会被阻塞， 直到事务A执行commit之后， 事务B才能继续执行
 - 如果你的事务中需要锁多个行， 要把最可能造成锁冲突、 最可能影响并发度的锁尽量往后放。
 
 ### 死锁
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/deadlock.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/deadlock.jpg)
 事务A在等待事务B释放id=2的行锁， 而事务B在等待事务A释放id=1的行锁。 事务A和事务B在互相等待对方的资源释放， 就是进入了死锁状态。 
 
 #### 死锁策略
@@ -233,7 +233,7 @@ MySQL的行锁是在引擎层由各个引擎自己实现的。 MyISAM引擎就�
 - 解决方案：1.确定不会出现死锁，关闭死锁检测。2.控制并发度。3.改写mysql源码。
     
 ### 幻读(间隙锁)
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead.jpg)
 - session A里执行了三次查询， 分别是Q1、 Q2和Q3。 它们的SQL语句相同， 都是select * from t where d=5 for update。 表示查所有d=5的行， 而且使用的是当前读， 并且加上写锁。 
 - 其中， Q3读到id=1这一行的现象， 被称为“幻读”。 也就是说， 幻读指的是一个事务在前后两次查询同一个范围的时候， 后一次查询看到了前一次查询没有看到的行
 
@@ -241,7 +241,7 @@ MySQL的行锁是在引擎层由各个引擎自己实现的。 MyISAM引擎就�
 1. 在可重复读隔离级别下， 普通的查询是快照读， 是不会看到别的事务插入的数据的。 因此，幻读在“当前读”下才会出现。
 2. 上面session B的修改结果， 被session A之后的select语句用“当前读”看到， 不能称为幻读。幻读仅专指“新插入的行”
 
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/phantomRead2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead2.jpg)
 - 尝试解决幻读，把所有语句都上锁，查询语句改成select * from t for update。但是仍然无法解决插入新语句出现的幻读现象。
 
 #### 如何解决幻读？
@@ -288,7 +288,7 @@ MVCC: 内部使用的一致性读快照称为Read View，在不同的隔离级�
 - 创建版本号：insert操作时事务的id
 - 删除版本号：insert时为null，删除时为当前事务的id
 当读操作时，读取的是删除版本号为null，或者创建版本号最大的数据，保证我们读取的是最新的数据
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mvcc-line.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/mvcc-line.png)
 
 
 ### redo log
@@ -296,12 +296,12 @@ MySQL里经常说到的WAL技术，WAL的全称是WriteAheadLogging，它的关�
 - 当有一条记录需要更新的时候， InnoDB引擎就会先把记录写到redo log（粉板） 里面， 并更新内存， 这个时候更新就算完成了。 同时， InnoDB引擎会在适当的时候， 将这个操作记录更新到磁盘里面， 而这个更新往往是在系统比较空闲的时候做， 这就像打烊以后掌柜做的事。(由于磁盘连接开销大，)
 - InnoDB的redo log是固定大小的， 比如可以配置为一组4个文件， 每个文件的大小是1GB， 那么这块“粉板”总共就可以记录4GB的操作。 从头开始写， 写到末尾就又回到开头循环写， 如下面这个图所示
 
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologwrite.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/redologwrite.jpg)
 
 redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志的。 在执行事务的时候，如insert、update会先存在buffer中。等事务commit，再一起写入redo log
 
 #### redo log 写入机制
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/redologwrite.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/redologwrite.png)
 这三种状态分别是：
 1. 存在redo log buffer中， 物理上是在MySQL进程内存中， 就是图中的红色部分；
 2. 写到磁盘(write)， 但是没有持久化（fsync)， 物理上是在文件系统的page cache里面， 也就是图中的黄色部分；
@@ -321,7 +321,7 @@ InnoDB写盘的三种情况：
 MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
 
 #### bin log写入机制
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/binlogwrite.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/binlogwrite.jpg)
 每个线程有自己binlog cache， 但是共用同一份binlog文件。
 1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
 2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下，我们认为fsync才占磁盘的IOPS
@@ -338,7 +338,7 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
 4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
 
 ### 两阶段提交
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/twocommit.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/twocommit.jpg)
 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
 
 图中 两个“commit”的概念：
@@ -366,7 +366,7 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
     
     
 #### 两阶段提交的实际执行流程
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/actualWrite.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/actualWrite.jpg)
 WAL机制主要得益于两个方面：
 1. redo log 和 binlog都是顺序写， 磁盘的顺序写比随机写速度要快；
 2. 组提交机制， 可以大幅度降低磁盘的IOPS消耗。
@@ -410,9 +410,9 @@ KEY `city` (`city`)
 
 select city,name,age from t where city='杭州' order by name limit 1000 ;
 ```
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby1.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby1.jpg)
 Extra这个字段中的“Using filesort”表示的就是需要排序， MySQL会给每个线程分配一块内存用于排序， 称为sort_buffer。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby2.jpg)
 这个语句执行流程如下所示 ：
   1. 初始化sort_buffer， 确定放入name、 city、 age这三个字段；
   2. 从索引city找到第一个满足city='杭州’条件的主键id， 也就是图中的ID_X；
@@ -436,7 +436,7 @@ sort_buffer_size， 是MySQL为排序开辟的内存（sort_buffer） 的大小�
 
 #### rowId排序
 max_length_for_sort_data: 是MySQL中专门控制用于排序的行数据的长度的一个参数。 它的意思是， 如果单行的长度超过这个值， MySQL就认为单行太大， 要换一个算法。
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/orderby3.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby3.jpg)
 - 主要体现在内存排序完毕之后要多一次查询。
 
 对于InnoDB表来说， 执行全字段排序会减少磁盘访问， 因此会被优先选择。
@@ -497,7 +497,7 @@ Batched Key Access （BAK）
 ```
 (select 1000 as f) union (select id from t1 order by id desc limit 2);
 ```
-![image](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/mysql/picture/union.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/union.jpg)
 
 执行流程是这样的：
 1. 创建一个内存临时表， 这个临时表只有一个整型字段f， 并且f是主键字段。

@@ -19,7 +19,7 @@
 定义： 一个线程对共享变量的修改，另外一个线程能够立刻看到，我们称为可见性
 
 - Java 内存模型规定，将所有的变量都存放在 主内存中，当线程使用变量时，会把主内存里面的变量 复制 到自己的工作空间或者叫作 私有内存
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/workingmemory.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/workingmemory.jpg)
 - 刷新的场景:
 >1. 主内存中有变量 x，初始值为 0
 >2. 线程 A 要将 x 加 1，先将 x=0 拷贝到自己的私有内存中，然后更新 x 的值
@@ -157,7 +157,7 @@ publicclass SynchronizedDemo {
 
 javap -c -s -v -l SynchronizedDemo.class 反编译
 ```
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/synchronizeCode.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeCode.jpg)
 - synchronized 同步语句块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。 
   - 当计数器为0则可以成功获取，获取后将锁计数器设为1也就是加1。相应的在执行 monitorexit 指令后，将锁计数器设为0，表明锁被释放。
 
@@ -169,7 +169,7 @@ public class SynchronizedDemo2 {
 	}
 }
 ```
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/synchronizeMethod.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeMethod.jpg)
 -  方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
 
 
@@ -238,7 +238,7 @@ public class SynchronizedDemo2 {
 重量级锁：阻塞所有等待竞争的线程，防止CPU空转，阻塞等待线程1释放锁后进入无锁状态重新竞争。
 
 ##### 工作原理
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/synchronizeHeavyLock.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeHeavyLock.jpg)
 
 ```
 ContentionList：所有请求锁的线程将被首先放在该竞争队列。

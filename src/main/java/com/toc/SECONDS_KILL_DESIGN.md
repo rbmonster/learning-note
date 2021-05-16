@@ -20,7 +20,7 @@
 &emsp;&emsp;<a href="#17">2.5. 数据库</a>  
 &emsp;<a href="#18">3. 相关资料</a>  
 # <a name="0">秒杀系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/picture/secondKill.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/secondKill.jpg)
 
 ## <a name="1">前端</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 秒杀场景入口商城网页、H5、APP、小程序

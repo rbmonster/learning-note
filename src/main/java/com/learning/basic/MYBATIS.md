@@ -116,7 +116,7 @@
     </update>
 ```
 ## 执行流程
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mybatisgo.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mybatisgo.png)
 1. mapper.xml中的配置⽂件⾥的每条sql语句，每一个`<select>、<insert>、<update>、<delete>`标签，都会被解析为带有Id信息的一个个MappedStatement对象，再通过⼀个HashMap集合保存起来。
 2. Mapper接口是没有实现类的，当调用接口方法时，接口全限名+方法名拼接字符串作为 key 值，可唯一定位一个MappedStatement。
 3. 执⾏getMapper()⽅法，判断是否注册过mapper接⼝，注册了就会使⽤mapperProxyFactory去⽣成代理类MapperProxy执⾏⽬标⽅法时，会调⽤MapperProxy代理类的invoke()⽅法
@@ -124,7 +124,7 @@
 5. 缓存无命中则，创建connect连接，通过statement对象执行execute方法。
 6. 执⾏execute()⽅法返回结果使用resultSetHandler进行结果集的封装，添加到缓存中，最后返回结果。
 
-![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/mybatisProcess.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mybatisProcess.jpg)
 - 四大组件:StatementHandler、Executor、ParameterHandler、ResultSetHandler
 
 下面的执行流程简要描述，只是为了辅助理解，相关初始化方法：
