@@ -9,6 +9,10 @@
 7层结构明细
 ![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/learning/basic/picture/network2.png)
 
+一个请求在网络模型中的传输过程
+
+![avatar](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/other/picture/networkFloat.jpeg)
+
 
 ## TCP 三次握手和四次挥手
 
@@ -105,13 +109,10 @@ UDP协议（不可靠协议）：无连接的不可靠传输，以数据报文�
 - 缺点：缺点在于每次请求会传输大量重复的内容信息，缺少状态意味着如果后续处理需要前面的信息，则它必须重传，这样可能导致每次连接传送的数据量增大。
 - 优点：在于解放了服务器，每一次请求“点到为止”不会造成不必要连接占用。
 
-**客户端与服务器进行动态交互的 Web 应用程序**出现之后，HTTP 无状态的特性严重阻碍了这些应用程序的实现。解决无状态的两个技术Session、Cookies
+**客户端与服务器进行动态交互的 Web 应用程序**出现之后，HTTP 无状态的特性严重阻碍了这些应用程序的实现。**解决无状态的两个技术Session、Cookies**
 
 
-## Cookies与 Session （TODO）
-- https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md
-
-http://www.ruanyifeng.com/blog/2019/04/github-oauth.html
+## Cookies与 Session
 
 ### Cookies
 Cookies 是**服务器发送到用户浏览器并保存在本地的一小块数据**，它会在浏览器之后向同一服务器再次发起请求时被携带上，用于告知服务端两个请求是否来自同一浏览器。
@@ -122,6 +123,32 @@ Cookies 存储于浏览器中，只能存储 ASCII 码字符串，每次请求�
 - 浏览器行为跟踪（如跟踪分析用户行为等）   
 - 会话状态管理（如用户登录状态、购物车、游戏分数或其它需要记录的信息）
 
+#### 浏览器同源策略
+浏览器同源策略，当以下三个相同才算同源
+- 协议相同
+- 域名相同
+- 端口相同
+
+比如 https://www.baidu.com
+- 协议: https
+- 域名: www.baidu.com
+- 端口: 80
+> 采用同源策略的目的：是为了保证用户信息的安全，防止恶意的网站窃取数据。设想这样一种情况：A网站是一家银行，用户登录以后，又去浏览其他网站。 如果其他网站可以读取A网站的 Cookie，会发生什么？如果 Cookie包含隐私（比如存款总额），这些信息就会泄漏。
+
+如果不是同源的缺点：
+- Cookie、LocalStorage和IndexDB 无法读取
+- DOM无法获得
+- AJAX请求不能发送
+
+#### Cookies 作用域
+Cookie有两个很重要的属性:Domain和Path，用来指示此Cookie的作用域：
+
+Domain告诉浏览器当前要添加的Cookie的域名归属，如果没有明确指明则默认为当前域名。
+> 比如通过访问`www.vinceruan.info`添加的Cookie的域名默认就是`www.vinceruan.info`,通过访问`blog.vinceruan.info`所生成的Cookie的域名就是`blog.vinceruan.info`
+- 在父域名上设置cookie，其子域名都可以共享获得cookie。比如在`zydya.com`设置cookie值，`blog.zyday.com`子域名也可以获取到。
+
+Path告诉浏览器当前要添加的Cookie的路径归属，如果没有明确指明则默认为当前路径
+> 比如通过访问www.vinceruan.info/java/hotspot.html添加的Cookie的默认路径就是/java/,通过blog.vinceruan.info/java/hotspot.html生成的Cookie的路径也是/java/
 ### Session
 定义：当用户访问服务器否个网页的时候，服务器会在的内存里开辟一块内存，这块内存就叫做session空间。
 
@@ -134,6 +161,9 @@ Session通常用于执行以下操作
 - 存储只需要在页面重新加载过程中或按功能分组的一组页之间保持其状态的对象。
 - Session的作用就是它在Web服务器上保持用户的状态信息供在任何时间从任何设备上的页面进行访问。因为浏览器不需要存储任何这种信息，所以可以使用任何浏览器，即使是像Pad或手机这样的浏览器设备。
 
+### 参考资料
+- [Java Guide 授权与认证](https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md)
+- [浏览器同源策略及Cookie的作用域](https://www.cnblogs.com/liaojie970/p/7606168.html)
 
 ## https
 
@@ -190,3 +220,49 @@ Https采用混合的加密机制。
 总结：
 1. 单连接多资源的方式,减少服务端的链接压力,内存占用更少,连接吞吐量更大 
 2. 由于 TCP 连接的减少而使网络拥塞状况得以改善,同时慢启动时间的减少,使拥塞和丢包恢复速度更快
+
+
+## 前端相关存储空间的使用
+
+### cookie
+作用：cookie是纯文本，没有可执行代码。存储数据，当用户访问了某个网站（网页）的时候，我们就可以通过cookie来向访问者电脑上存储数据，或者某些网站为了辨别用户身份、进行session跟踪而储存在用户本地终端上的数据（通常经过加密）
+
+如何工作：当网页要发http请求时，**浏览器会先检查是否有相应的cookie，有则自动添加在request header中的cookie字段中。这些是浏览器自动帮我们做的，而且每一次http请求浏览器都会自动帮我们做。** 这个特点很重要，因为这关系到“什么样的数据适合存储在cookie中”。
+
+### localStorage（本地存储）
+
+HTML5新方法，不过IE8及以上浏览器都兼容。
+特点：
+1. 生命周期：持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的。
+2. 存储的信息在同一域中是共享的。
+3. 当本页操作（新增、修改、删除）了localStorage的时候，本页面不会触发storage事件,但是别的页面会触发storage事件。
+4. 大小：据说是5M（跟浏览器厂商有关系）
+5. 在非IE下的浏览中可以本地打开。IE浏览器要在服务器中打开。
+6. localStorage本质上是对字符串的读取，如果存储内容多的话会消耗内存空间，会导致页面变卡
+7. localStorage受同源策略的限制
+
+
+### sessionStorage
+其实跟localStorage差不多，也是本地存储，会话本地存储
+
+特点：
+用于本地存储一个会话（session）中的数据，这些数据**只有在同一个会话中的页面才能访问并且当会话结束后数据也随之销毁**。因此sessionStorage不是一种持久化的本地存储，仅仅是会话级别的存储。也就是说只要这个浏览器窗口没有关闭，即使刷新页面或进入同源另一页面，数据仍然存在。关闭窗口后，sessionStorage即被销毁，或者在新窗口打开同源的另一个页面，sessionStorage也是没有的。
+
+### cookie、localStorage、sessionStorage区别
+localStorage只要在相同的协议、相同的主机名、相同的端口下，就能读取/修改到同一份localStorage数据。
+
+sessionStorage比localStorage更严苛一点，除了协议、主机名、端口外，还要求在同一窗口（也就是浏览器的标签页）下。
+
+localStorage是永久存储，除非手动删除。
+
+sessionStorage当会话结束（当前页面关闭的时候，自动销毁）
+
+cookie的数据会在每一次发送http请求的时候，同时发送给服务器而localStorage、sessionStorage不会。
+
+### 其他
+- web SQL database
+- indexedDB
+
+### 相关文章
+
+http://www.ruanyifeng.com/blog/2019/04/github-oauth.html
