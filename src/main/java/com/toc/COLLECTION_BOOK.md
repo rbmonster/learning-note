@@ -1,17 +1,17 @@
 <a name="index">**Index**</a>
 
-&emsp;<a href="#0">8. 集合容器</a>  
-&emsp;&emsp;<a href="#1">8.1. list相关</a>  
-&emsp;&emsp;<a href="#2">8.2. Set相关：</a>  
-&emsp;&emsp;<a href="#3">8.3. Map 相关：</a>  
-&emsp;&emsp;<a href="#4">8.4. 快速报错机制</a>  
-&emsp;&emsp;<a href="#5">8.5. 散列</a>  
-&emsp;&emsp;<a href="#6">8.6. 持有引用(java.lang.ref)</a>  
-&emsp;&emsp;<a href="#7">8.7. 性能测试</a>  
-&emsp;<a href="#8">9. 面试相关</a>  
+<a href="#0">集合容器</a>  
+&emsp;<a href="#1">1. list相关</a>  
+&emsp;<a href="#2">2. Set相关：</a>  
+&emsp;<a href="#3">3. Map 相关：</a>  
+&emsp;<a href="#4">4. 快速报错机制</a>  
+&emsp;&emsp;<a href="#5">4.1. 散列</a>  
+&emsp;<a href="#6">5. 持有引用(java.lang.ref)</a>  
+&emsp;<a href="#7">6. 性能测试</a>  
+&emsp;<a href="#8">7. 面试相关</a>  
 -  记录一下在Thinking in java 里面的一些方法
-## <a name="0">集合容器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="1">list相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="0">集合容器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="1">list相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - CopyOnWriteArrayList：使用了读写分离的思想，在写数据的时候上ReentrantLock锁并新建一个数组，读数据仍从旧数组中读取，而新数据在新增或删除完成之后直接替换旧数组。虽然线程安全，对于频繁写数据的场景效率很低。
 - ListIterator： 更强大的Iterator的子类，用于各种List类的访问，并支持双向移动。
 - LinkedList：
@@ -20,7 +20,7 @@
   - removeFirst() 和 remove() 类似，移除并返回列表的头，只是列表为空抛出NoSuchElementException。
   - poll() 同样移除并返回列表头，只是列表为空返回Null
 - Stack：pop()、push()、 peek()方法，其中peek()返回栈顶元素，而不将其移除。
-### <a name="2">Set相关：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="2">Set相关：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - TreeSet:将元素存储在红-黑树的数据结构中，而HashSet使用的是散列函数。
   - LinkedHashSet：具有HashSet的查询速度，且内部使用链表维护元素的顺序。
   - HashSet: 存入的元素必须实现hashSet()方法。
@@ -33,7 +33,7 @@
   - poll() 在队列为空时返回null,而remove()会抛出NoSuchElementException()。
   - PriorityQueue：优先级队列弹出的元素具有最高的优先级。
 
-### <a name="3">Map 相关：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="3">Map 相关：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - HashMap: 给予散列表实现。可以通过构造器设置容量和负载因子，以调整容器的性能
   - LinkedHashMap：类似HashMap，但是迭代访问时，取得“键值对”的顺序是按其插入对的顺序，或者是最近最少使用(LRU)的次序。
     - 在构造器可以指定参数为new LinkedHashMap<>(initialCapacity, loadFactor, true),initialCapacity为初始容量，loadFactor为加载因子，true表示使用LRU访问。
@@ -53,20 +53,20 @@
     - 再散列：达到该负载因子水平时，容器将自动增加容量，使容器的容量大致加倍，并重新分布到新的桶位集中（再散列）。
     - HashMap中的默认负载因子为0.75，这个因子在时间和空间代价之间达到了平衡。
 
-### <a name="4">快速报错机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="4">快速报错机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  - 定义探查容器上的任何除了你的进程所进行的操作之外的所有变化，一旦发现立即抛出ConCurrentModificationException的异常。
 
 ### <a name="5">散列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - 散列的价值在于速度，散列是的查询得以快速进行。数组并不保存键本身，而是通过键对象生成一个对象，将其作为数组的下表，这个数字就是散列码。
   - 不同的键可以产生相同的下标，为了解决数组容量被固定的问题，相当于换算的键可能冲突。冲突通过外部链接处理，即链表。然后对链表中的值调用equals的方法进行线性查询。
  
-### <a name="6">持有引用(java.lang.ref)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="6">持有引用(java.lang.ref)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - SoftReference用以实现内存敏感的高速缓存。
   - WeakReference是为实现“规范映射”而设计的，它不妨碍垃圾回收器回收映射的键和值。
   - PhantomReference用以调度回收前的清理工作，它比java机制更成熟。
   - 引用的强弱顺序，为SoftReference、WeakReference、PhantomReference
 
-### <a name="7">性能测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="7">性能测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
   - List 的结果如下
 ```
 --------------------- ArrayList ---------------------

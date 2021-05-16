@@ -60,6 +60,9 @@
 - [Spring侵入式数据库读写分离实现](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/READ_WRITE_DB.md)
 - [数据库表相关设计题](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TABLE_DESIGN.md)
 - [会议系统设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MEETING_DESIGN.md)
+- [消息批量发送设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGE_BATCH_SEND.md)
+- [购物活动金额结算设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SHOPPING_SETTLEMENT.md)
+- [JWT、MFA及相关应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JWT_APPLICATION.md)
 - [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
 
 ## 分布式与微服务
@@ -73,9 +76,9 @@
 ## 其他
 ### 记录平常学习java 的一些知识点
 - [设计模式(head first)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
-- [JVM基础(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
-- [Redis基础(基于Redis的设计与实现)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
-- [MySql45讲](https://github.com/rbmonster/learningA-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
+- [深入理解Java虚拟机(周志明)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
+- [Redis-基于Redis的设计与实现](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
+- [MySql 45讲-丁奇](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
 - [java集合类(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/COLLECTION_BOOK.md)
 - [java并发(Java编程思想)](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CONCURRENT_BOOK.md)
 
