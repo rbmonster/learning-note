@@ -83,18 +83,18 @@ sdfadf
 
 挂载点：那个进入点的目录我们称为『挂载点』。 
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/linuxFolder.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxFolder.jpg)
 
 ### 权限修改 —— chown、chmod
 - chgrp ：改变文件所属群组
 - chown ：改变文件拥有者
 - chmod ：改变文件的权限, SUID, SGID, SBIT 等等的特性
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/linuxfile.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxfile.jpg)
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/linuxfile1.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxfile1.jpg)
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/linuxfile2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxfile2.jpg)
 ## 其他资料
 
 ### 单引号与双引号

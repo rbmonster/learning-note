@@ -311,7 +311,7 @@
   - 向布隆过滤器中添加数据时，会使用 多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
   - 判断数据是否存在时，同样使用多个hash函数计算key，只要有一个位为 0，说明key不存在。但是都是1，并不能说明key必定存在，可能位置都是其他元素添加导致的，因此说存在一定的误判率。
   - 布隆过滤器有两关键的参数，一个是元素大小，一个是误差率。当误差率设置越小，布隆过滤器需要的空间越大。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/bloomFilter.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/bloomFilter.png)
   
 - 数据结构： bitmap 比特位的集合。bitmap是一个以比特为基本单位的数组，如一个int类型32个比特，那我们使用比特来应用就可以节省很大的空间。
 
@@ -323,7 +323,7 @@
   - 布隆过滤器有一个可以预判误判率的公式，查询缓存可能误判的名单存在，进行正常的查询。
 - 爬虫/ 邮箱等系统的过滤：平时不知道你有没有注意到有一些正常的邮件也会被放进垃圾邮件目录中，这就是使用布隆过滤器 误判 导致的。 
 - 应用介绍：在查询缓存的前面加一层布隆过滤器的过滤判断，判断缓存是否存在。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/cacheQueryBloomFilter.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/cacheQueryBloomFilter.jpg)
 
  
  #### 相关指令
@@ -358,7 +358,7 @@
    ```
  
  
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/cacheQueryNormal.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/cacheQueryNormal.jpg)
   
 
 ### 其他命令
@@ -599,7 +599,7 @@ redis-server /path/to/your/sentinel.conf
 3. 若节点的槽不是当前节点，返回MOVED重定向错误。
 
 MOVED重定向: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/redis-move.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redis-move.jpg)
 
 ```
 // 连接redis集群 计算集群定位的值
@@ -619,7 +619,7 @@ cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 c
 
 > 使用redis-cli命令时，可以加入-c参数支持自动重定向，简化手动发起重定向操作，如下所示：
 > - redis-cli自动帮我们连接到正确的节点执行命令，这个过程是在redis-cli内部维护，实质上是client端接到MOVED信息之后再次发起请 求，并不在Redis节点中完成请求转发，如下图所示
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/redisClient-move.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redisClient-move.jpg)
 
 ```
 #redis-cli -p 6379 -c

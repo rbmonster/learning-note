@@ -384,7 +384,7 @@ MVCC: 内部使用的一致性读快照称为Read View，在不同的隔离级�
 - 创建版本号：insert操作时事务的id
 - 删除版本号：insert时为null，删除时为当前事务的id
 当读操作时，读取的是删除版本号为null，或者创建版本号最大的数据，保证我们读取的是最新的数据
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/mvcc-line.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mvcc-line.png)
 
 
 ### <a name="40">redo log</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

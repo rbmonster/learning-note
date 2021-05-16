@@ -45,10 +45,10 @@
 - 网络层最重要的协议是 IP 协议、ping使用ICMP协议。
 - 传输层最主要的协议是 TCP 和 UDP 协议。
 - 应用层：HTTP、FTP、SMTP、TELNET、POP3、DNS
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/network1.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/network1.jpg)
 
 7层结构明细
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/network2.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/network2.png)
 
 一个请求在网络模型中的传输过程
 
@@ -69,7 +69,7 @@ TCP 用顺序号对每个字节进行计数。序号是 32bit 的无符号数，
 须保持每个方向上的传输数据顺序号。
 
 ### <a name="3">三次握手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/tcpconnect.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/tcpconnect.png)
 
 第一次握手：主机 A 发送位码为 syn＝ 1,随机产生 seq number=1234567 的数据包到服务器，主机 B
 由 SYN=1 知道， A 要求建立联机；
@@ -97,7 +97,7 @@ ack 是否为 1，若正确， 主机 A 会再发送 ack number=(主机 B 的 se
 
 
 ### <a name="4">四次挥手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/tcpdisconnect.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/tcpdisconnect.jpg)
 
 断开一个 TCP 连接需要“四次挥手”：
 - 客户端 - 发送一个 FIN、seq数据包，用来关闭客户端到服务器的数据传送
@@ -227,7 +227,7 @@ Https采用混合的加密机制。
    5. 客户端使用自己的RSA秘钥解密，获取服务端会话秘钥。
 2. 第二阶段使用对称加密的方式，进行消息传输。第一阶段通过非对称加密传输的方式，客户端及服务端都获取了对称加密所需的秘钥。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basic/HttpsFlow.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/HttpsFlow.png)
 
 
 ## <a name="16">证书认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
