@@ -691,7 +691,7 @@ show processlist;显示哪些线程正在运行。您也可以使用mysqladmin p
         7. mysql优化器分析有误，不走索引（重新执行分析或者牵制走索引）
     4. group by部分，查看是否可以加索引，若无法优化可考虑冗余索引字段
     5. order by部分，检查字段排序顺序，是否与联合索引一致
-    6. limit m,n要慎重， m的值越高，sql消耗时间越长
+    6. limit m,n要慎重， m的值越高，sql消耗时间越长。需要使用延迟关联优化。
 3. 执行explain语句 查看SQL执行情况。
 4. 针对未走索引的情况，可以使用强制走索引的方式
 5. 针对复合索引创建顺序有误，导致了索引生效，修改索引。
@@ -758,7 +758,7 @@ order by salary_id desc limit 900000,10;
 10 rows in set (0.82 sec)
 ```
 
-- 延迟优化:通过id查询减少回表次数
+- 延迟关联优化:通过id查询减少回表次数
 ```
 SELECT *
 FROM test_table a
@@ -773,8 +773,11 @@ INNER JOIN
 10 rows in set (0.52 sec)
 ```
 
-最大id查询法
 
+- 最大id查询法
+
+#### 相关资料
+[mysql优化：覆盖索引（延迟关联）](https://cloud.tencent.com/developer/article/1446974?from=information.detail.mysql%20%E5%BB%B6%E8%BF%9F%E5%85%B3%E8%81%94)
 
 ### InnoDB 和 MyIsam 数据库引擎的区别
 1. 事务处理：MyISAM是非事务安全型的，而InnoDB是事务安全型的（支持事务处理等高级处理）；

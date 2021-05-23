@@ -60,7 +60,6 @@
 - [Spring侵入式数据库读写分离实现](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/READ_WRITE_DB.md)
 - [数据库表相关设计题](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TABLE_DESIGN.md)
 - [会议系统设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MEETING_DESIGN.md)
-- [消息批量发送设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGE_BATCH_SEND.md)
 - [购物活动金额结算设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SHOPPING_SETTLEMENT.md)
 - [JWT、MFA及相关应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JWT_APPLICATION.md)
 - [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
