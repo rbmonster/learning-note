@@ -15,6 +15,11 @@
 &emsp;&emsp;<a href="#12">3.1. 枚举类为什么是线程安全？</a>  
 &emsp;<a href="#13">4. 单订单重复退款请求</a>  
 &emsp;&emsp;<a href="#14">4.1. 分布式锁的处理方案</a>  
+&emsp;<a href="#15">5. 消息批量发送设计</a>  
+&emsp;&emsp;<a href="#16">5.1. 问题场景</a>  
+&emsp;&emsp;<a href="#17">5.2. 解决方法</a>  
+&emsp;&emsp;<a href="#18">5.3. 进阶问题处理</a>  
+&emsp;&emsp;<a href="#19">5.4. 相关类似资料</a>  
 # <a name="0">Java并发应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">生产者与消费者模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -374,3 +379,54 @@ public final class T extends Enum
 2. redis 锁 或者 ZooKeeper锁
 
 3. 使用消息队列顺序消费，保证不重复退款
+
+## <a name="15">消息批量发送设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+某个活动需要对平台的客户进行短信的推销发送，假设对平台的10w用户推送某个活动。推送的用户数据由数据仓库已经推送到表t_user_promotion总共10w条数据。
+
+而在调用短信批量发送服务的时候，经常有限制批量发送的手机号数目的，比如限制100个手机号。
+1. 如何对10w条消息进行发送
+2. 假设推送由运营人员进行触发，如何防止10w条消息出现重复触发的情况。
+
+进阶问题：假如10w条消息，消息模板是不一致的，如何设计打批次的逻辑
+
+设计点：
+1. 表结构设计
+2. 查询效率问题
+
+### <a name="17">解决方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+方法1：
+设计一张中间表作为批次表，每100个用户打一个批次。用户表中增加批次id。
+
+整体发送的步骤如下：
+1. 用户表增加批次号字段，每100个号码打成一个批次，记录插入批次表。
+2. 批次表有线程进行短信发送的调用，发送成功更新批次表状态。
+   好处为：短信发送与数据处理逻辑分离。
+
+方法2：
+1. 用户表使用状态代表发送和未发送。
+
+---
+
+问题点：
+该问题的难点在于如何处理多线程的分工及互斥问题。多线程三大核心问题：分工、协作、互斥。
+
+- 分工：每个批量发送的接口只能固定发送100个手机号，因此每个线程负责100条记录的处理。
+- 协作：该场景的线程协作，只用通知短信发送的主线线程这个数据处理完了。比如countDownLaunch，自线程完成之后countDown
+- 互斥：每个线程负责处理100条数据，如果默认limit 100，那么必然会有互斥问题。
+
+解决分工及互斥几种方式：
+1. 避免互斥。
+   1. 如果取10个线程，那么每个线程可以默认取主键id%10=y的记录进行处理，避免了互斥。
+   2. 查询出所需要处理的记录，使用id排序，每个线程根据pageIndex+pageNo，进行数据的处理。
+      - > sql可能会因为pageIndex+pageNo 导致慢查询，需要使用延迟关联的方式进行sql优化
+2. 加锁
+   1. 悲观锁，使用mysql的行锁。
+   2. 使用mysql的version乐观锁，会造成大量的乐观锁更新失败问题，不建议使用。
+
+### <a name="18">进阶问题处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 如何解决重复发送问题，短信批量发送的请求更新为中间状态发送中。
+2. 消息模版不一致问题，使用数据分组，相同消息模版的数据统一处理。
+
+### <a name="19">相关类似资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+[批量任务体现多线程的威力！](https://juejin.cn/post/6844903774234869774)
