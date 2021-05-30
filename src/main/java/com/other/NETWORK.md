@@ -113,7 +113,7 @@ UDP协议（不可靠协议）：无连接的不可靠传输，以数据报文�
 
 
 ## Cookies与 Session
-
+强烈建议阅读：[MDN-cookies的相关资料](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies)
 ### Cookies
 Cookies 是**服务器发送到用户浏览器并保存在本地的一小块数据**，它会在浏览器之后向同一服务器再次发起请求时被携带上，用于告知服务端两个请求是否来自同一浏览器。
 > HTTP 协议是无状态的，主要是为了让 HTTP 协议尽可能简单，使得它能够处理大量事务。HTTP/1.1 引入 Cookie 来保存状态信息。
@@ -122,6 +122,30 @@ Cookies 存储于浏览器中，只能存储 ASCII 码字符串，每次请求�
 - 个性化设置（如用户自定义设置、主题等）
 - 浏览器行为跟踪（如跟踪分析用户行为等）   
 - 会话状态管理（如用户登录状态、购物车、游戏分数或其它需要记录的信息）
+
+#### Cookie 创建
+当服务器收到 HTTP 请求时，**服务器**可以在响应头里面添加一个 Set-Cookie 选项。浏览器收到响应后通常会保存下 Cookie，之后对该服务器每一次请求中都通过  Cookie 请求头部将 Cookie 信息发送给服务器。另外，Cookie 的过期时间、域、路径、有效期、适用站点都可以根据需要来指定。
+
+- Set-Cookie响应头部和Cookie请求头部
+
+服务器使用 Set-Cookie 响应头部向用户代理（一般是浏览器）发送 Cookie信息。一个简单的 Cookie 可能像这样：
+`Set-Cookie: <cookie名>=<cookie值>`
+
+服务器通过该头部告知客户端保存 Cookie 信息。
+```
+HTTP/1.0 200 OK
+Content-type: text/html
+Set-Cookie: yummy_cookie=choco
+Set-Cookie: tasty_cookie=strawberry
+
+[页面内容]
+```
+现在，对该服务器发起的每一次新请求，浏览器都会将之前保存的Cookie信息通过 Cookie 请求头部再发送给服务器。
+```
+GET /sample_page.html HTTP/1.1
+Host: www.example.org
+Cookie: yummy_cookie=choco; tasty_cookie=strawberry
+```
 
 #### 浏览器同源策略
 浏览器同源策略，当以下三个相同才算同源
@@ -140,7 +164,45 @@ Cookies 存储于浏览器中，只能存储 ASCII 码字符串，每次请求�
 - DOM无法获得
 - AJAX请求不能发送
 
-#### Cookies 作用域
+
+#### Cookies属性
+cookie 属性有：
+- Domain
+- path
+- Expires/Max-Age
+- Size
+- HttpOnly
+- Secure
+- SameSite
+- SameParty
+- Priority
+
+##### Domain 属性
+ Domain 指定了哪些主机可以接受 Cookie。如果不指定，默认为 origin，不包含子域名。如果指定了Domain，则一般包含子域名。
+
+##### Path 属性
+Path 标识指定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。以字符 %x2F ("/") 作为路径分隔符，子路径也会被匹配。
+
+##### Expires/Max-Age
+- Expires: cookie 的最长有效时间，形式为符合 HTTP-date 规范的时间戳。参考 Date 可以获取详细信息。如果没有设置这个属性，那么表示这是一个会话期 cookie 。
+- Max-Age: 在 cookie 失效之前需要经过的秒数。秒数为 0 或 -1 将会使 cookie 直接过期。一些老的浏览器（ie6、ie7 和 ie8）不支持这个属性。
+
+##### Secure 属性
+标记为 Secure 的 Cookie 只应通过被 HTTPS 协议加密过的请求发送给服务端，因此可以预防 man-in-the-middle 攻击者的攻击。
+
+##### HttpOnly 属性
+JavaScript Document.cookie API 无法访问带有 HttpOnly 属性的cookie；此类 Cookie 仅作用于服务器。例如，持久化服务器端会话的 Cookie 不需要对 JavaScript 可用，而应具有 HttpOnly 属性。此预防措施有助于缓解跨站点脚本（XSS）攻击。
+
+##### SameSite 属性
+SameSite Cookie 允许服务器要求某个 cookie 在跨站请求时不会被发送，（其中  Site (en-US) 由可注册域定义），从而可以阻止跨站请求伪造攻击
+
+SameSite 可以有下面三种值：
+- None。浏览器会在同站请求、跨站请求下继续发送 cookies，不区分大小写。
+- Strict。浏览器将只在访问相同站点时发送 cookie。（在原有 Cookies 的限制条件上的加强，如上文 “Cookie 的作用域” 所述）
+- Lax。与 Strict 类似，但用户从外部站点导航至URL时（例如通过链接）除外。 在新版本浏览器中，为默认选项，Same-site cookies 将会为一些跨站子请求保留，如图片加载或者 frames 的调用，但只有当用户从外部站点导航到URL时才会发送。
+
+
+#### Cookie 作用域
 Cookie有两个很重要的属性:Domain和Path，用来指示此Cookie的作用域：
 
 Domain告诉浏览器当前要添加的Cookie的域名归属，如果没有明确指明则默认为当前域名。
@@ -160,6 +222,7 @@ Session通常用于执行以下操作
 - 存储需要在整个用户会话过程中保持其状态的信息，例如登录信息或用户浏览Web应用程序时需要的其它信息。
 - 存储只需要在页面重新加载过程中或按功能分组的一组页之间保持其状态的对象。
 - Session的作用就是它在Web服务器上保持用户的状态信息供在任何时间从任何设备上的页面进行访问。因为浏览器不需要存储任何这种信息，所以可以使用任何浏览器，即使是像Pad或手机这样的浏览器设备。
+
 
 ### 参考资料
 - [Java Guide 授权与认证](https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md)
