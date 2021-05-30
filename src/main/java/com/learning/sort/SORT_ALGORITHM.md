@@ -46,7 +46,26 @@
 ```
 
 ## 快速排序
-
+常见的左右指针交换的快拍的写法中：为什么要先从右开始查找，再从左边开始查找？
+- 主要的区别在于最后执行基点与指针交换的操作。基点定于左侧，若先从左边开始查找，可能会导致找到一个大于的数，而指针相遇了，此时与基点位置坐交换会把一个大于基点的数交换至左侧。
+```
+    private static void sort1(int[] nums, int left, int right) {
+        if (left > right) {
+            return;
+        }
+        int i = left;
+        int j = right;
+        int tmp = nums[right];
+        while (i < j) {
+            while (i < j && nums[i] <= tmp) i++;
+            while (i < j && nums[j] >= tmp) j--;
+            swap(nums, i, j);
+        }
+        swap(nums, i, right);  // 区别
+        sort1(nums, left, i - 1);
+        sort1(nums, i + 1, right);
+    }
+```
 ### 挖坑法
 ```
 public void quickSort(int[] arr, int start, int end) {
@@ -97,6 +116,44 @@ public static int partition(int[] arr, int left, int right) {
     swap(arr, i, left);
     return i;
 }
+```
+
+### 非递归写法
+用栈模拟递归过程
+```
+ public static void sort(int[] nums) {
+        Stack<int[]> stack = new Stack<>();
+        int[] sortElement = {0, nums.length-1};
+        stack.push(sortElement);
+        while (!stack.isEmpty()) {
+            int[] item = stack.pop();
+            if (item[0] > item[1]){
+                continue;
+            }
+            int partition = partition(nums, item[0], item[1]);
+            stack.push(new int[]{item[0], partition-1});
+            stack.push(new int[]{partition+1, item[1] });
+        }
+    }
+
+    private static int partition(int[] nums, int left, int right) {
+        int i = left;
+        int j = right;
+        int tmp = nums[left];
+        while (i < j) {
+            while (i < j && nums[j] >= tmp) j--;
+            while (i < j && nums[i] <= tmp) i++;
+            swap(nums, i, j);
+        }
+        swap(nums, i, left);
+        return i;
+    }
+
+    private static void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
 ```
 
 ### 快排常见优化
