@@ -4,9 +4,11 @@
 - 网络层最重要的协议是 IP 协议、ping使用ICMP协议。
 - 传输层最主要的协议是 TCP 和 UDP 协议。
 - 应用层：HTTP、FTP、SMTP、TELNET、POP3、DNS
+
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/network1.jpg)
 
 7层结构明细
+
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/network2.png)
 
 一个请求在网络模型中的传输过程
@@ -176,6 +178,8 @@ cookie 属性有：
 - SameSite
 - SameParty
 - Priority
+
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/cookies-attribute.png)
 
 ##### Domain 属性
  Domain 指定了哪些主机可以接受 Cookie。如果不指定，默认为 origin，不包含子域名。如果指定了Domain，则一般包含子域名。
@@ -384,6 +388,7 @@ x7faqgjw**abcdefghijklmnopqrstuvwxyz**
 > 原始报文->(hash)报文摘要->(私钥加密)数字签名
 
 验签：接收方拿到原始报文和数字签名后，用「同一个Hash函数」从报文中生成摘要A。另外，用对方提供的公钥对数字签名进行解密，得到摘要B，对比A和B是否相同，就可以得知报文有没有被篡改过。
+
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/Endorsement.png)
 
 **假如整个公私钥传递的过程都被人窃取了，但是窃取人仍然不知道报文的hash算法，伪造不了报文。**
@@ -439,8 +444,6 @@ CSP 本质上是建立白名单，规定了浏览器只能够执行特定来源�
 
 `<img src="http://www.examplebank.com/withdraw?account=Alice&amount=1000&for=Badman">`
 如果有账户名为Alice的用户访问了恶意站点，而她之前刚访问过银行不久，登录信息尚未过期，那么她就会损失1000资金。
-
-
 
 ### 中间人攻击
 中间人攻击(Man-in-the-MiddleAttack，简称“MITM攻击”)是指攻击者与通讯的两端分别创建独立的联系，并交换其所收到的数据，使通讯的两端认为他们正在通过一个私密的连接与对方 直接对话，但事实上整个会话都被攻击者完全控制。

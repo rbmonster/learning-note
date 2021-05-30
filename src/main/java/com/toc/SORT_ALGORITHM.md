@@ -5,22 +5,23 @@
 &emsp;<a href="#2">2. 快速排序</a>  
 &emsp;&emsp;<a href="#3">2.1. 挖坑法</a>  
 &emsp;&emsp;<a href="#4">2.2. 左右指针交换</a>  
-&emsp;&emsp;<a href="#5">2.3. 快排常见优化</a>  
-&emsp;&emsp;<a href="#6">2.4. Arrays.sort()的算法</a>  
-&emsp;&emsp;&emsp;<a href="#7">2.4.1. 对于小的数据排序使用插入排序</a>  
-&emsp;&emsp;&emsp;<a href="#8">2.4.2. 对于中等的数据使用快排</a>  
-&emsp;&emsp;&emsp;<a href="#9">2.4.3. 具备结构化的数组使用归并排序</a>  
-&emsp;<a href="#10">3. 插入排序</a>  
-&emsp;<a href="#11">4. 希尔排序</a>  
-&emsp;<a href="#12">5. 简单选择排序</a>  
-&emsp;<a href="#13">6. 堆排序</a>  
-&emsp;<a href="#14">7. 归并排序</a>  
-&emsp;<a href="#15">8. 桶排序</a>  
-&emsp;<a href="#16">9. 计数排序</a>  
-&emsp;<a href="#17">10. 基数排序</a>  
-&emsp;<a href="#18">11. Top K 问题</a>  
-&emsp;&emsp;<a href="#19">11.1. 三路快排 + 二分</a>  
-&emsp;<a href="#20">12. 双轴快排、二分插入排序、TimeSort(TODO)</a>  
+&emsp;&emsp;<a href="#5">2.3. 非递归写法</a>  
+&emsp;&emsp;<a href="#6">2.4. 快排常见优化</a>  
+&emsp;&emsp;<a href="#7">2.5. Arrays.sort()的算法</a>  
+&emsp;&emsp;&emsp;<a href="#8">2.5.1. 对于小的数据排序使用插入排序</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.5.2. 对于中等的数据使用快排</a>  
+&emsp;&emsp;&emsp;<a href="#10">2.5.3. 具备结构化的数组使用归并排序</a>  
+&emsp;<a href="#11">3. 插入排序</a>  
+&emsp;<a href="#12">4. 希尔排序</a>  
+&emsp;<a href="#13">5. 简单选择排序</a>  
+&emsp;<a href="#14">6. 堆排序</a>  
+&emsp;<a href="#15">7. 归并排序</a>  
+&emsp;<a href="#16">8. 桶排序</a>  
+&emsp;<a href="#17">9. 计数排序</a>  
+&emsp;<a href="#18">10. 基数排序</a>  
+&emsp;<a href="#19">11. Top K 问题</a>  
+&emsp;&emsp;<a href="#20">11.1. 三路快排 + 二分</a>  
+&emsp;<a href="#21">12. 双轴快排、二分插入排序、TimeSort(TODO)</a>  
 # <a name="0">排序算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 交换
@@ -69,7 +70,26 @@
 ```
 
 ## <a name="2">快速排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
+常见的左右指针交换的快拍的写法中：为什么要先从右开始查找，再从左边开始查找？
+- 主要的区别在于最后执行基点与指针交换的操作。基点定于左侧，若先从左边开始查找，可能会导致找到一个大于的数，而指针相遇了，此时与基点位置坐交换会把一个大于基点的数交换至左侧。
+```
+    private static void sort1(int[] nums, int left, int right) {
+        if (left > right) {
+            return;
+        }
+        int i = left;
+        int j = right;
+        int tmp = nums[right];
+        while (i < j) {
+            while (i < j && nums[i] <= tmp) i++;
+            while (i < j && nums[j] >= tmp) j--;
+            swap(nums, i, j);
+        }
+        swap(nums, i, right);  // 区别
+        sort1(nums, left, i - 1);
+        sort1(nums, i + 1, right);
+    }
+```
 ### <a name="3">挖坑法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 public void quickSort(int[] arr, int start, int end) {
@@ -122,7 +142,45 @@ public static int partition(int[] arr, int left, int right) {
 }
 ```
 
-### <a name="5">快排常见优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="5">非递归写法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+用栈模拟递归过程
+```
+ public static void sort(int[] nums) {
+        Stack<int[]> stack = new Stack<>();
+        int[] sortElement = {0, nums.length-1};
+        stack.push(sortElement);
+        while (!stack.isEmpty()) {
+            int[] item = stack.pop();
+            if (item[0] > item[1]){
+                continue;
+            }
+            int partition = partition(nums, item[0], item[1]);
+            stack.push(new int[]{item[0], partition-1});
+            stack.push(new int[]{partition+1, item[1] });
+        }
+    }
+
+    private static int partition(int[] nums, int left, int right) {
+        int i = left;
+        int j = right;
+        int tmp = nums[left];
+        while (i < j) {
+            while (i < j && nums[j] >= tmp) j--;
+            while (i < j && nums[i] <= tmp) i++;
+            swap(nums, i, j);
+        }
+        swap(nums, i, left);
+        return i;
+    }
+
+    private static void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+    }
+```
+
+### <a name="6">快排常见优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. **随机基准**。每次随机选取基准值，而不是固定选取左或右边界值。使用random
 2. **三数取中法**。队头、队尾、队中三个数，取中间值。
 3. **当待排序序列的长度分割到一定大小后，使用插入排序**。在子序列比较小的时候，直接插入排序性能较好，因为对于有序的序列，插排可以达到O(n)的复杂度，如果序列比较小，使用插排效率要比快排高。可以设置一个阈值n，之后使用插排。
@@ -182,7 +240,7 @@ public static int partition(int[] arr, int left, int right) {
 
 ```
 
-### <a name="6">Arrays.sort()的算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="7">Arrays.sort()的算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Arrays.sort并不是单一的排序，而是插入排序，快速排序，归并排序三种排序的组合
 - 数量非常小的情况下（就像上面说到的，少于47的），插入排序等可能会比快速排序更快。 所以数组少于47的会进入插入排序。
 - 快排数据越无序越快（加入随机化后基本不会退化），平均常数最小，不需要额外空间，不稳定排序。
@@ -191,7 +249,7 @@ Arrays.sort并不是单一的排序，而是插入排序，快速排序，归并
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/sort/ArraysSort.png)
 
 
-#### <a name="7">对于小的数据排序使用插入排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="8">对于小的数据排序使用插入排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 小于47个元素的数据使用插入排序
 ```
 // Use insertion sort on tiny arrays
@@ -217,13 +275,13 @@ for (int i = left, j = i; i < right; j = ++i) {
 }
 ```
 
-#### <a name="8">对于中等的数据使用快排</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="9">对于中等的数据使用快排</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 范围大小: 47< len <286
 
 主要流程：对数组长度乘以7，获取五个基准点，取排序后的第2和第4个基准点为双轴排序的初值，接着就是进行双轴快速排序。
 
 - 双轴排序相关资料：https://www.cnblogs.com/nullzx/p/5880191.html
-#### <a name="9">具备结构化的数组使用归并排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="10">具备结构化的数组使用归并排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
   for (int last; count > 1; count = last) {
     for (int k = (last = 0) + 2; k <= count; k += 2) {
@@ -249,7 +307,7 @@ for (int i = left, j = i; i < right; j = ++i) {
 ```
 
 
-## <a name="10">插入排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="11">插入排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     /**
      * 插入排序
@@ -275,7 +333,7 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="11">希尔排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="12">希尔排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
  public static void sort(int[]arr) {
     int gap = arr.length;
@@ -304,7 +362,7 @@ for (int i = left, j = i; i < right; j = ++i) {
 }
 ```
 
-## <a name="12">简单选择排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="13">简单选择排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     /**
      * 选择一个最小的元素交换至第一位
@@ -329,7 +387,7 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="13">堆排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="14">堆排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     public static void sort(int[] arr) {
         //1.构建大顶堆
@@ -381,7 +439,7 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="14">归并排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="15">归并排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     /**
      * 递归归并排序
@@ -446,7 +504,7 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="15">桶排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="16">桶排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     /**
      * 桶排序
@@ -480,7 +538,7 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="16">计数排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="17">计数排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     /**
      * 不稳定排序版本
@@ -552,7 +610,7 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="17">基数排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="18">基数排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     /**
      * 基数排序
@@ -591,9 +649,9 @@ for (int i = left, j = i; i < right; j = ++i) {
     }
 ```
 
-## <a name="18">Top K 问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="19">Top K 问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="19">三路快排 + 二分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">三路快排 + 二分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     public static void main(String[] args) {
         int[] array = {12, 3, 12, 3, 1, 12, 12, 12, 1,  5, 7, 23, 123, 45, 2, 15, 12};
@@ -650,7 +708,7 @@ for (int i = left, j = i; i < right; j = ++i) {
 - 相关资料：https://zhuanlan.zhihu.com/p/76734219
 
 
-## <a name="20">双轴快排、二分插入排序、TimeSort(TODO)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="21">双轴快排、二分插入排序、TimeSort(TODO)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 TimeSort： 一个稳定的具有自适应性的MergeSort算法
 - [参考资料](https://mp.weixin.qq.com/s?__biz=MzI2MTY0OTg2Nw==&mid=2247483816&idx=1&sn=079af3d70efcb68efa7400f09decb59c&chksm=ea56650cdd21ec1ace7c8fd168d62feb636e4b32f9a4d90329fe479489d8e7a70e612df8920b&token=2074049324&lang=zh_CN#rd)
 

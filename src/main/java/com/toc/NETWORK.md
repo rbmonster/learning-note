@@ -11,43 +11,53 @@
 &emsp;<a href="#8">6. http 无状态、无连接</a>  
 &emsp;<a href="#9">7. Cookies与 Session</a>  
 &emsp;&emsp;<a href="#10">7.1. Cookies</a>  
-&emsp;&emsp;&emsp;<a href="#11">7.1.1. 浏览器同源策略</a>  
-&emsp;&emsp;&emsp;<a href="#12">7.1.2. Cookies 作用域</a>  
-&emsp;&emsp;<a href="#13">7.2. Session</a>  
-&emsp;&emsp;<a href="#14">7.3. 参考资料</a>  
-&emsp;<a href="#15">8. https</a>  
-&emsp;<a href="#16">9. 证书认证</a>  
-&emsp;<a href="#17">10. Http2.0</a>  
-&emsp;<a href="#18">11. 前端相关存储空间的使用</a>  
-&emsp;&emsp;<a href="#19">11.1. cookie</a>  
-&emsp;&emsp;<a href="#20">11.2. localStorage（本地存储）</a>  
-&emsp;&emsp;<a href="#21">11.3. sessionStorage</a>  
-&emsp;&emsp;<a href="#22">11.4. cookie、localStorage、sessionStorage区别</a>  
-&emsp;&emsp;<a href="#23">11.5. 其他</a>  
-&emsp;<a href="#24">12. 密码学与网络安全</a>  
-&emsp;&emsp;<a href="#25">12.1. 对称加密</a>  
-&emsp;&emsp;<a href="#26">12.2. 非对称密钥加密</a>  
-&emsp;&emsp;<a href="#27">12.3. 单向散列加密</a>  
-&emsp;&emsp;<a href="#28">12.4. 彩虹表</a>  
-&emsp;&emsp;<a href="#29">12.5. 加盐</a>  
-&emsp;&emsp;&emsp;<a href="#30">12.5.1. 动态盐</a>  
-&emsp;&emsp;<a href="#31">12.6. 加签验签</a>  
-&emsp;&emsp;<a href="#32">12.7. 相关资料</a>  
-&emsp;<a href="#33">13. 网络攻击</a>  
-&emsp;&emsp;<a href="#34">13.1. XSS攻击</a>  
-&emsp;&emsp;<a href="#35">13.2. CSP内容安全策略</a>  
-&emsp;&emsp;<a href="#36">13.3. CSRF 攻击</a>  
-&emsp;&emsp;<a href="#37">13.4. 中间人攻击</a>  
-&emsp;&emsp;<a href="#38">13.5. 参考资料</a>  
+&emsp;&emsp;&emsp;<a href="#11">7.1.1. Cookie 创建</a>  
+&emsp;&emsp;&emsp;<a href="#12">7.1.2. 浏览器同源策略</a>  
+&emsp;&emsp;&emsp;<a href="#13">7.1.3. Cookies属性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#14">7.1.3.1. Domain 属性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#15">7.1.3.2. Path 属性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#16">7.1.3.3. Expires/Max-Age</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#17">7.1.3.4. Secure 属性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#18">7.1.3.5. HttpOnly 属性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#19">7.1.3.6. SameSite 属性</a>  
+&emsp;&emsp;&emsp;<a href="#20">7.1.4. Cookie 作用域</a>  
+&emsp;&emsp;<a href="#21">7.2. Session</a>  
+&emsp;&emsp;<a href="#22">7.3. 参考资料</a>  
+&emsp;<a href="#23">8. https</a>  
+&emsp;<a href="#24">9. 证书认证</a>  
+&emsp;<a href="#25">10. Http2.0</a>  
+&emsp;<a href="#26">11. 前端相关存储空间的使用</a>  
+&emsp;&emsp;<a href="#27">11.1. cookie</a>  
+&emsp;&emsp;<a href="#28">11.2. localStorage（本地存储）</a>  
+&emsp;&emsp;<a href="#29">11.3. sessionStorage</a>  
+&emsp;&emsp;<a href="#30">11.4. cookie、localStorage、sessionStorage区别</a>  
+&emsp;&emsp;<a href="#31">11.5. 其他</a>  
+&emsp;<a href="#32">12. 密码学与网络安全</a>  
+&emsp;&emsp;<a href="#33">12.1. 对称加密</a>  
+&emsp;&emsp;<a href="#34">12.2. 非对称密钥加密</a>  
+&emsp;&emsp;<a href="#35">12.3. 单向散列加密</a>  
+&emsp;&emsp;<a href="#36">12.4. 彩虹表</a>  
+&emsp;&emsp;<a href="#37">12.5. 加盐</a>  
+&emsp;&emsp;&emsp;<a href="#38">12.5.1. 动态盐</a>  
+&emsp;&emsp;<a href="#39">12.6. 加签验签</a>  
+&emsp;&emsp;<a href="#40">12.7. 相关资料</a>  
+&emsp;<a href="#41">13. 网络攻击</a>  
+&emsp;&emsp;<a href="#42">13.1. XSS攻击</a>  
+&emsp;&emsp;<a href="#43">13.2. CSP内容安全策略</a>  
+&emsp;&emsp;<a href="#44">13.3. CSRF 攻击</a>  
+&emsp;&emsp;<a href="#45">13.4. 中间人攻击</a>  
+&emsp;&emsp;<a href="#46">13.5. 参考资料</a>  
 # <a name="0">计算机网络</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">网络模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 5层模型应用层，运输层，网络层，数据链路层，物理层组成。
 - 网络层最重要的协议是 IP 协议、ping使用ICMP协议。
 - 传输层最主要的协议是 TCP 和 UDP 协议。
 - 应用层：HTTP、FTP、SMTP、TELNET、POP3、DNS
+
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/network1.jpg)
 
 7层结构明细
+
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/network2.png)
 
 一个请求在网络模型中的传输过程
@@ -154,7 +164,7 @@ UDP协议（不可靠协议）：无连接的不可靠传输，以数据报文�
 
 
 ## <a name="9">Cookies与 Session</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
+强烈建议阅读：[MDN-cookies的相关资料](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies)
 ### <a name="10">Cookies</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Cookies 是**服务器发送到用户浏览器并保存在本地的一小块数据**，它会在浏览器之后向同一服务器再次发起请求时被携带上，用于告知服务端两个请求是否来自同一浏览器。
 > HTTP 协议是无状态的，主要是为了让 HTTP 协议尽可能简单，使得它能够处理大量事务。HTTP/1.1 引入 Cookie 来保存状态信息。
@@ -164,7 +174,31 @@ Cookies 存储于浏览器中，只能存储 ASCII 码字符串，每次请求�
 - 浏览器行为跟踪（如跟踪分析用户行为等）   
 - 会话状态管理（如用户登录状态、购物车、游戏分数或其它需要记录的信息）
 
-#### <a name="11">浏览器同源策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="11">Cookie 创建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+当服务器收到 HTTP 请求时，**服务器**可以在响应头里面添加一个 Set-Cookie 选项。浏览器收到响应后通常会保存下 Cookie，之后对该服务器每一次请求中都通过  Cookie 请求头部将 Cookie 信息发送给服务器。另外，Cookie 的过期时间、域、路径、有效期、适用站点都可以根据需要来指定。
+
+- Set-Cookie响应头部和Cookie请求头部
+
+服务器使用 Set-Cookie 响应头部向用户代理（一般是浏览器）发送 Cookie信息。一个简单的 Cookie 可能像这样：
+`Set-Cookie: <cookie名>=<cookie值>`
+
+服务器通过该头部告知客户端保存 Cookie 信息。
+```
+HTTP/1.0 200 OK
+Content-type: text/html
+Set-Cookie: yummy_cookie=choco
+Set-Cookie: tasty_cookie=strawberry
+
+[页面内容]
+```
+现在，对该服务器发起的每一次新请求，浏览器都会将之前保存的Cookie信息通过 Cookie 请求头部再发送给服务器。
+```
+GET /sample_page.html HTTP/1.1
+Host: www.example.org
+Cookie: yummy_cookie=choco; tasty_cookie=strawberry
+```
+
+#### <a name="12">浏览器同源策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 浏览器同源策略，当以下三个相同才算同源
 - 协议相同
 - 域名相同
@@ -181,7 +215,47 @@ Cookies 存储于浏览器中，只能存储 ASCII 码字符串，每次请求�
 - DOM无法获得
 - AJAX请求不能发送
 
-#### <a name="12">Cookies 作用域</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+#### <a name="13">Cookies属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+cookie 属性有：
+- Domain
+- path
+- Expires/Max-Age
+- Size
+- HttpOnly
+- Secure
+- SameSite
+- SameParty
+- Priority
+
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/cookies-attribute.png)
+
+##### <a name="14">Domain 属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+ Domain 指定了哪些主机可以接受 Cookie。如果不指定，默认为 origin，不包含子域名。如果指定了Domain，则一般包含子域名。
+
+##### <a name="15">Path 属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Path 标识指定了主机下的哪些路径可以接受 Cookie（该 URL 路径必须存在于请求 URL 中）。以字符 %x2F ("/") 作为路径分隔符，子路径也会被匹配。
+
+##### <a name="16">Expires/Max-Age</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- Expires: cookie 的最长有效时间，形式为符合 HTTP-date 规范的时间戳。参考 Date 可以获取详细信息。如果没有设置这个属性，那么表示这是一个会话期 cookie 。
+- Max-Age: 在 cookie 失效之前需要经过的秒数。秒数为 0 或 -1 将会使 cookie 直接过期。一些老的浏览器（ie6、ie7 和 ie8）不支持这个属性。
+
+##### <a name="17">Secure 属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+标记为 Secure 的 Cookie 只应通过被 HTTPS 协议加密过的请求发送给服务端，因此可以预防 man-in-the-middle 攻击者的攻击。
+
+##### <a name="18">HttpOnly 属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+JavaScript Document.cookie API 无法访问带有 HttpOnly 属性的cookie；此类 Cookie 仅作用于服务器。例如，持久化服务器端会话的 Cookie 不需要对 JavaScript 可用，而应具有 HttpOnly 属性。此预防措施有助于缓解跨站点脚本（XSS）攻击。
+
+##### <a name="19">SameSite 属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+SameSite Cookie 允许服务器要求某个 cookie 在跨站请求时不会被发送，（其中  Site (en-US) 由可注册域定义），从而可以阻止跨站请求伪造攻击
+
+SameSite 可以有下面三种值：
+- None。浏览器会在同站请求、跨站请求下继续发送 cookies，不区分大小写。
+- Strict。浏览器将只在访问相同站点时发送 cookie。（在原有 Cookies 的限制条件上的加强，如上文 “Cookie 的作用域” 所述）
+- Lax。与 Strict 类似，但用户从外部站点导航至URL时（例如通过链接）除外。 在新版本浏览器中，为默认选项，Same-site cookies 将会为一些跨站子请求保留，如图片加载或者 frames 的调用，但只有当用户从外部站点导航到URL时才会发送。
+
+
+#### <a name="20">Cookie 作用域</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Cookie有两个很重要的属性:Domain和Path，用来指示此Cookie的作用域：
 
 Domain告诉浏览器当前要添加的Cookie的域名归属，如果没有明确指明则默认为当前域名。
@@ -190,7 +264,7 @@ Domain告诉浏览器当前要添加的Cookie的域名归属，如果没有明�
 
 Path告诉浏览器当前要添加的Cookie的路径归属，如果没有明确指明则默认为当前路径
 > 比如通过访问www.vinceruan.info/java/hotspot.html添加的Cookie的默认路径就是/java/,通过blog.vinceruan.info/java/hotspot.html生成的Cookie的路径也是/java/
-### <a name="13">Session</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">Session</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：当用户访问服务器否个网页的时候，服务器会在的内存里开辟一块内存，这块内存就叫做session空间。
 
 Session对象存储特定用户会话所需的属性及配置信息。这样，当用户在应用程序的Web页之间跳转时，存储在Session对象中的变量将不会丢失，而是在整个用户会话中一直存在下去。
@@ -202,11 +276,12 @@ Session通常用于执行以下操作
 - 存储只需要在页面重新加载过程中或按功能分组的一组页之间保持其状态的对象。
 - Session的作用就是它在Web服务器上保持用户的状态信息供在任何时间从任何设备上的页面进行访问。因为浏览器不需要存储任何这种信息，所以可以使用任何浏览器，即使是像Pad或手机这样的浏览器设备。
 
-### <a name="14">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="22">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [Java Guide 授权与认证](https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md)
 - [浏览器同源策略及Cookie的作用域](https://www.cnblogs.com/liaojie970/p/7606168.html)
 
-## <a name="15">https</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="23">https</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 HTTP 有以下安全性问题：
 
@@ -230,12 +305,12 @@ Https采用混合的加密机制。
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/HttpsFlow.png)
 
 
-## <a name="16">证书认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="24">证书认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 数字证书认证机构（CA，Certificate Authority）是客户端与服务器双方都可信赖的第三方机构。
 
 进行 HTTPS 通信时，服务器会把证书发送给客户端。客户端取得其中的公开密钥之后，先使用数字签名进行验证，如果验证通过，就可以开始通信了。
 
-## <a name="17">Http2.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="25">Http2.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 多路复用：允许同时通过单一的 HTTP/2 连接发起多重的请求-响应消息。
   > 在 HTTP/1.1 协议中 「浏览器客户端在同一时间，针对同一域名下的请求有一定数量限制。超过限制数目的请求会被阻塞」。
@@ -246,14 +321,14 @@ Https采用混合的加密机制。
 2. 由于 TCP 连接的减少而使网络拥塞状况得以改善,同时慢启动时间的减少,使拥塞和丢包恢复速度更快
 
 
-## <a name="18">前端相关存储空间的使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="26">前端相关存储空间的使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="19">cookie</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="27">cookie</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 作用：cookie是纯文本，没有可执行代码。存储数据，当用户访问了某个网站（网页）的时候，我们就可以通过cookie来向访问者电脑上存储数据，或者某些网站为了辨别用户身份、进行session跟踪而储存在用户本地终端上的数据（通常经过加密）
 
 如何工作：当网页要发http请求时，**浏览器会先检查是否有相应的cookie，有则自动添加在request header中的cookie字段中。这些是浏览器自动帮我们做的，而且每一次http请求浏览器都会自动帮我们做。** 这个特点很重要，因为这关系到“什么样的数据适合存储在cookie中”。
 
-### <a name="20">localStorage（本地存储）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="28">localStorage（本地存储）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 HTML5新方法，不过IE8及以上浏览器都兼容。
 特点：
@@ -266,13 +341,13 @@ HTML5新方法，不过IE8及以上浏览器都兼容。
 7. localStorage受同源策略的限制
 
 
-### <a name="21">sessionStorage</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">sessionStorage</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 其实跟localStorage差不多，也是本地存储，会话本地存储
 
 特点：
 用于本地存储一个会话（session）中的数据，这些数据**只有在同一个会话中的页面才能访问并且当会话结束后数据也随之销毁**。因此sessionStorage不是一种持久化的本地存储，仅仅是会话级别的存储。也就是说只要这个浏览器窗口没有关闭，即使刷新页面或进入同源另一页面，数据仍然存在。关闭窗口后，sessionStorage即被销毁，或者在新窗口打开同源的另一个页面，sessionStorage也是没有的。
 
-### <a name="22">cookie、localStorage、sessionStorage区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">cookie、localStorage、sessionStorage区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 localStorage只要在相同的协议、相同的主机名、相同的端口下，就能读取/修改到同一份localStorage数据。
 
 sessionStorage比localStorage更严苛一点，除了协议、主机名、端口外，还要求在同一窗口（也就是浏览器的标签页）下。
@@ -283,14 +358,14 @@ sessionStorage当会话结束（当前页面关闭的时候，自动销毁）
 
 cookie的数据会在每一次发送http请求的时候，同时发送给服务器而localStorage、sessionStorage不会。
 
-### <a name="23">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="31">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - web SQL database
 - indexedDB
 
 
-## <a name="24">密码学与网络安全</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="32">密码学与网络安全</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="25">对称加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">对称加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对称密钥加密：加密和解密使用同一密钥。
 
 - 优点：加密解密的速度比较快，适合数据比较长时的使用。
@@ -301,7 +376,7 @@ cookie的数据会在每一次发送http请求的时候，同时发送给服务�
 > - 3DES（Triple DES）：是基于DES，对一块数据用三个不同的密钥进行三次加密，强度更高。
 > - AES（Advanced Encryption Standard）：高级加密标准，是下一代的加密算法标准，速度快，安全级别高；
 
-### <a name="26">非对称密钥加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">非对称密钥加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 非对称密钥加密，又称公开密钥加密，加密和解密使用不同的密钥。 接收方发送公开的秘钥，公开的秘钥用于加密。接收到消息之后，接收方使用私有秘钥进行解密。
 - 优点：可以更安全地将公开数据传输给通信发送方；
@@ -314,7 +389,7 @@ cookie的数据会在每一次发送http请求的时候，同时发送给服务�
 > - DSA（Digital Signature Algorithm）：数字签名算法，是一种标准的 DSS（数字签名标准）;
 > - ECC（Elliptic Curves Cryptography）：椭圆曲线密码编码学。
 
-### <a name="27">单向散列加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">单向散列加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 单向加密：不可逆加密，根据密文无法解析出原文，适用于数据校验的场景，例如登录密码。
 
 常见的算法：
@@ -322,11 +397,11 @@ cookie的数据会在每一次发送http请求的时候，同时发送给服务�
 > - SHA(Secure Hash Algorithm，安全散列算法），数字签名等密码学应用中重要的工具，被广泛地应用于电子商务等信息安全领域。虽然SHA与MD5通过碰撞法都被破解了，但是SHA仍然是公认的安全加密算法，较之MD5更为安全。常见的算法如SHA256是SHA-2下细分出的一种算法。
 > - HMAC(Hash Message Authentication Code，散列消息鉴别码，基于密钥的Hash算法的认证协议。消息鉴别码实现鉴别的原理是，用公开函数和密钥产生一个固定长度的值作为认证标识，用这个标识鉴别消息的完整性。使用一个密钥生成一个固定大小的小数据块，即MAC，并将其加入到消息中，然后传输。接收方利用与发送方共享的密钥进行鉴别认证等。
 
-### <a name="28">彩虹表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">彩虹表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 彩虹表是一个用于加密散列函数逆运算的预先计算好的表，常用于破解加密过的密码散列。 
 > 彩虹表常常用于破解长度固定且包含的字符范围固定的密码（如信用卡、数字等）。这是以空间换时间（英语：space-time tradeoff）的典型实践，比暴力破解（Brute-force attack）使用的时间更少，空间更多；但与储存密码空间中的每一个密码及其对应的哈希值（Hash）实现的查找表相比，其花费的时间更多，空间更少。使用加盐的密钥派生函数可以使这种攻击难以实现。
 
-### <a name="29">加盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">加盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 盐（Salt），在密码学中，是指在散列之前将散列内容（例如：密码）的任意固定位置插入特定的字符串。这个在散列中加入字符串的方式称为“加盐”。其作用是让加盐后的散列结果和没有加盐的结果不相同，在不同的应用情景中，这个处理可以增加额外的安全性。
 
 
@@ -345,7 +420,7 @@ x7faqgjw**abcdefghijklmnopqrstuvwxyz**
 
 以上就是加盐过程的简单描述，在实际使用过程中，还需要通过特定位数插入、倒序或多种方法对原始密码进行固定的加盐处理，使得散列的结果更加不容易被破解或轻易得到原始密码，比如： x7**a**fa**b**qg**c**jw
 
-#### <a name="30">动态盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="38">动态盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对于静态的加盐
 1. 基于特定的静态盐，可以生成特定的彩虹表.
 2. 对静态盐处理过的散列密码，可以按出现频率进行排序，最常出现的散列密码，对应的明文密码必然还是那些111111、123456之类的。
@@ -355,22 +430,23 @@ x7faqgjw**abcdefghijklmnopqrstuvwxyz**
 
 对于动态盐，可以使用多个加密算法混合保证密码难以破解。
 
-### <a name="31">加签验签</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="39">加签验签</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 加签验签的操作是为了防止报文传输的过程中报文被篡改。**加签与验签是用来证明身份**
 
 加签：用Hash函数把原始报文生成报文摘要，然后用私钥对这个摘要进行加密，就得到这个报文对应的数字签名。通常来说呢，请求方会把「数字签名和报文原文」一并发送给接收方。
 > 原始报文->(hash)报文摘要->(私钥加密)数字签名
 
 验签：接收方拿到原始报文和数字签名后，用「同一个Hash函数」从报文中生成摘要A。另外，用对方提供的公钥对数字签名进行解密，得到摘要B，对比A和B是否相同，就可以得知报文有没有被篡改过。
+
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/Endorsement.png)
 
 **假如整个公私钥传递的过程都被人窃取了，但是窃取人仍然不知道报文的hash算法，伪造不了报文。**
-### <a name="32">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="40">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [Https/SSL/对称加密/非对称加密](https://blog.csdn.net/user11223344abc/article/details/83658812#1Https_1)
 - [程序员必备基础：加签验签](https://cloud.tencent.com/developer/article/1665989)
 
-## <a name="33">网络攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="34">XSS攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="41">网络攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">XSS攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 XSS攻击是Web攻击中最常见的攻击方法之一，它是通过对网页注入可执行代码且成功地被浏览器执行，达到攻击的目的，形成了一次有效XSS攻击。
 > 一旦攻击成功，它可以获取用户的联系人列表，然后向联系人发送虚假诈骗信息，可以删除用户的日志等等，有时候还和其他攻击方式同时实 施比如SQL注入攻击服务器和数据库、Click劫持、相对链接劫持等实施钓鱼，它带来的危害是巨 大的，是web安全的头号大敌。
 
@@ -385,7 +461,7 @@ XSS攻击是Web攻击中最常见的攻击方法之一，它是通过对网页�
 2. 劫持流量实现恶意跳转
 3. 注入脚本获得其他信息
 
-### <a name="35">CSP内容安全策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="43">CSP内容安全策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 内容安全策略 (CSP) 是一个额外的安全层，用于检测并削弱某些特定类型的攻击，包括跨站脚本 (XSS) 和数据注入攻击等。无论是数据盗取、网站内容污染还是散发恶意软件，这些攻击都是主要的手段；
 
 遵循CSP,在网站的http头部定义了 Content-Security-Policy：
@@ -405,7 +481,7 @@ server: CLOUD ELB 1.0.0
 ```
 CSP 本质上是建立白名单，规定了浏览器只能够执行特定来源的代码;那么即使发生了xss攻击，也不会加载来源不明的第三方脚本；
 
-### <a name="36">CSRF 攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="44">CSRF 攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 跨站请求伪造（英语：Cross-site request forgery），也被称为 one-click attack 或者 session riding，通常缩写为 CSRF 或者 XSRF， 是一种挟制用户在当前已登录的Web应用程序上执行非本意的操作的攻击方法。跟跨网站指令码（XSS）相比，XSS 利用的是用户对指定网站的信任，CSRF 利用的是网站对用户网页浏览器的信任。
 
@@ -418,12 +494,10 @@ CSP 本质上是建立白名单，规定了浏览器只能够执行特定来源�
 `<img src="http://www.examplebank.com/withdraw?account=Alice&amount=1000&for=Badman">`
 如果有账户名为Alice的用户访问了恶意站点，而她之前刚访问过银行不久，登录信息尚未过期，那么她就会损失1000资金。
 
-
-
-### <a name="37">中间人攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="45">中间人攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 中间人攻击(Man-in-the-MiddleAttack，简称“MITM攻击”)是指攻击者与通讯的两端分别创建独立的联系，并交换其所收到的数据，使通讯的两端认为他们正在通过一个私密的连接与对方 直接对话，但事实上整个会话都被攻击者完全控制。
 > 两端的通讯请求都被窃听，并使用自己的公私钥当成对方的公私钥传递给另一端。
 
 
-### <a name="38">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="46">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [浅谈网络安全--xss、csrf、csp](https://zhuanlan.zhihu.com/p/47678785)

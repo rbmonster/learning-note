@@ -50,7 +50,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 使用哈希映射的第一个场景是，我们需要更多的信息，而不仅仅是键。然后通过哈希映射建立密钥与信息之间的映射关系。
 - [同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
 
-另一个常见的场景是按键聚合所有信息。我们也可以使用哈希映射来实现这一目标。
+另一个常见的场景是按键聚合所有信息，我们也可以使用哈希映射来实现这一目标。
 - [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
 - [字符串中的第一个唯一字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 - [寻找重复的子树（hash表与树的结合）](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
@@ -85,7 +85,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 - [环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 - [环形链表2](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 - [相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
-    - 两链表相接最后一段common
+    - > 两链表相接最后一段common
 - 删除链表的倒数第N个节点
 - 移除链表元素
 - [旋转链表](https://leetcode-cn.com/problems/rotate-list/)
@@ -99,14 +99,14 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 反转链表递归写法:
 ```
 public ListNode reverseList(ListNode head) {
-        if(head ==null || head.next == null ) {
-            return head;
-        }
-        ListNode res = reverseList(head.next);
-        head.next.next = head;
-        head.next = null;
-        return res;
+    if(head ==null || head.next == null ) {
+        return head;
     }
+    ListNode res = reverseList(head.next);
+    head.next.next = head;
+    head.next = null;
+    return res;
+}
 ```
 
 ## 队列与栈
@@ -462,22 +462,22 @@ private int maximum_depth(TreeNode root) {
               }
           }
       ```
-  - [组合](https://leetcode-cn.com/problems/combinations/submissions/)
-  - [组合总和（review）](https://leetcode-cn.com/problems/combination-sum/)
-  - [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
-    - 通过传递每次迭代的索引，避免重复记录
-  - [组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
-  - [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
-  - [括号生成（review）](https://leetcode-cn.com/problems/generate-parentheses/)
-  - [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
-  - [分割回文串（review）](https://leetcode-cn.com/problems/palindrome-partitioning/)
-    - 动态规划 + dfs + 回溯 或者 dfs + 回溯 
-  - [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
-  - [子集（review）](https://leetcode-cn.com/problems/subsets/)
-  - [子集 II（review）](https://leetcode-cn.com/problems/subsets-ii/)
-  - [解数独](https://leetcode-cn.com/problems/sudoku-solver/)
-  - [单词搜索](https://leetcode-cn.com/problems/word-search/)
-  - [二叉树路径](https://leetcode-cn.com/problems/binary-tree-paths/)
+- [组合](https://leetcode-cn.com/problems/combinations/submissions/)
+- [组合总和（review）](https://leetcode-cn.com/problems/combination-sum/)
+- [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
+    - > 通过传递每次迭代的索引，避免重复记录
+- [组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
+- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
+- [括号生成（review）](https://leetcode-cn.com/problems/generate-parentheses/)
+- [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+- [分割回文串（review）](https://leetcode-cn.com/problems/palindrome-partitioning/)
+    - > 动态规划 + dfs + 回溯 或者 dfs + 回溯 
+- [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+- [子集（review）](https://leetcode-cn.com/problems/subsets/)
+- [子集 II（review）](https://leetcode-cn.com/problems/subsets-ii/)
+- [解数独](https://leetcode-cn.com/problems/sudoku-solver/)
+- [单词搜索](https://leetcode-cn.com/problems/word-search/)
+- [二叉树路径](https://leetcode-cn.com/problems/binary-tree-paths/)
   
   ```
   回溯中常常使用的避免重复解的条件：
@@ -487,7 +487,7 @@ private int maximum_depth(TreeNode root) {
   ```
 
 ## 动态规划
-- [[数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+- [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
 
 
 
@@ -601,7 +601,6 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 3. [投飞镖刺破气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
     - 与上述类似，每次取结尾最小的区间，
     
- 
- 
+
 ## TODO List
 计算1的个数
