@@ -163,7 +163,8 @@ TODO 待补充代码模板
 ### 二叉树
 - [前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
 - [中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
-- 前中后序遍历递归与迭代写法
+
+> 前中后序遍历递归与迭代写法
 ```
 //前序遍历 迭代写法
 public List<Integer> preorderTraversal1(TreeNode root) {
@@ -403,7 +404,7 @@ private int maximum_depth(TreeNode root) {
   - [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
   - [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
   
-## 二分法
+### 二分法
 - [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
@@ -414,9 +415,9 @@ private int maximum_depth(TreeNode root) {
 - [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
 
-## DFS & BFS
+### DFS & BFS
 
-### BFS & DFS：
+#### BFS & DFS：
 - [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
 - [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
 - [判断二分图（review）](https://leetcode-cn.com/problems/is-graph-bipartite/)
@@ -428,11 +429,11 @@ private int maximum_depth(TreeNode root) {
 - [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
   
   
-### 拓扑排序
+#### 拓扑排序
 - [课程表](https://leetcode-cn.com/problems/course-schedule/)
 - [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
 
-### dfs+回溯
+#### dfs+回溯
 - [全排列【review】](https://leetcode-cn.com/problems/permutations/)
 - [全排列 II【review】](https://leetcode-cn.com/problems/permutations-ii/)
 - [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
@@ -486,12 +487,12 @@ private int maximum_depth(TreeNode root) {
    }
   ```
 
-## 动态规划
+### 动态规划
 - [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
 
 
 
-## 并查集
+### 并查集
 ```
 class UnionFindSet {
         int[] rank;
@@ -528,7 +529,7 @@ class UnionFindSet {
 
 
 
-## 单调栈
+### 单调栈
 单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
 
      
@@ -552,7 +553,7 @@ public int[] dailyTemperatures(int[] T) {
 }
 ```
 
-## 单调队列
+### 单调队列
 
 - [剑指 Offer 59 - I. 滑动窗口的最大值]( https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
 ```
@@ -584,14 +585,14 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 }
 ```
 
-## 前缀树
+### 前缀树
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
 
 典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
-## 贪心算法
+### 贪心算法
 [CS-Note](http://www.cyc2018.xyz/%E7%AE%97%E6%B3%95/Leetcode%20%E9%A2%98%E8%A7%A3/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E8%B4%AA%E5%BF%83%E6%80%9D%E6%83%B3.html#_1-%E5%88%86%E9%85%8D%E9%A5%BC%E5%B9%B2)
 
 1. [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
@@ -602,5 +603,5 @@ public int[] maxSlidingWindow(int[] nums, int k) {
     - 与上述类似，每次取结尾最小的区间，
     
 
-## TODO List
+### TODO List
 计算1的个数
