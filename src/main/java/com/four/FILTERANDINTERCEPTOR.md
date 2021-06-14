@@ -2,7 +2,7 @@
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/filter2intercept.jpg)
 ## 过滤器 servlet
-filter（过滤器）作用于在intreceptor(拦截器)之前，不像intreceptor一样依赖于springmvc框架，只需要依赖于serverlet。
+filter（过滤器）作用于在interceptor(拦截器)之前，不像interceptor一样依赖于springmvc框架，只需要依赖于serverlet。
 - 比较原始的一种方法是定义一个类实现javax.servlet.Filter接口
 - 另一种方法的自定义Filter，继承springframework.web.filter.OncePerRequestFilter，可以对同一个请求，只经过一次过滤
 
