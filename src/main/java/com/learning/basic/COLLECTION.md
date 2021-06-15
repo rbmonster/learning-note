@@ -14,19 +14,18 @@
   - poll() 同样移除并返回列表头，只是列表为空返回Null
 - Stack：pop()、push()、 peek()方法，其中peek()返回栈顶元素，而不将其移除。
 
-### 数据结构及源码分析
-#### ArrayList:  Object[]数组
-- 默认初始化容量：10
-  - ```
-    private static final int DEFAULT_CAPACITY = 10;
-    ```
+### ArrayList 部分源码
+#### Object[]数组
+默认初始化容量：10
+> ` private static final int DEFAULT_CAPACITY = 10;`
 
-#####  扩容
-- 添加元素时使用 ensureCapacityInternal() 方法来保证容量足够，如果不够时，需要使用 grow() 方法进行扩容，新容量的大小为 oldCapacity + (oldCapacity >> 1)，也就是旧容量的 1.5 倍。
-- 主要一个超精度负数判断，如果经度过长，则默认使用当前长度
-- 数据复制使用Arrays.copyOf(elementData, newCapacity);
 
-- 因为为一步操作因此用于快速失败的modCount+1
+####  扩容
+添加元素时使用 ensureCapacityInternal() 方法来保证容量足够，如果不够时，需要使用 grow() 方法进行扩容，新容量的大小为 oldCapacity + (oldCapacity >> 1)，也就是旧容量的 1.5 倍。
+> - 主要一个超精度负数判断，如果经度过长，则默认使用当前长度
+> - 数据复制使用Arrays.copyOf(elementData, newCapacity);
+
+因为是一步操作，所以用于快速失败的modCount+1
 ```
 // size为当前的list长度
 public boolean add(E e) {
@@ -68,17 +67,18 @@ private void grow(int minCapacity) {
 }
 ```
 
-思考：arrayList 为啥1.5倍扩容？
+**思考：arrayList 为啥1.5倍扩容？**
 
-##### 删除元素
-- 调用 System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)，可以看到 ArrayList 删除元素的代价是非常高的。
-  -  System.arraycopy(elementData, index+1, elementData, index, numMoved);
+#### 删除元素
+调用 System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)，可以看到 ArrayList 删除元素的代价是非常高的。
+> `System.arraycopy(elementData, index+1, elementData, index, numMoved);`
 
-##### 快速失败
-- 快速失败(fail-fast) 是 Java 集合的一种错误检测机制。在使用迭代器对集合进行遍历的时候，我们在多线程下操作非安全失败(fail-safe)的集合类可能就会触发 fail-fast 机制，导致抛出 ConcurrentModificationException 异常。
-   - 另外，在单线程下，如果在遍历过程中对集合对象的内容进行了修改的话也会触发 fail-fast 机制。
-- modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化是指添加或者删除至少一个元素的所有操作，或者是调整内部数组的大小，仅仅只是设置元素的值不算结构发生变化。
-  - 使用迭代器遍历时默认会传入当前的数组的modCount，每次操作进行检测
+#### 快速失败
+快速失败(fail-fast) 是 Java 集合的一种错误检测机制。在使用迭代器对集合进行遍历的时候，我们在多线程下操作非安全失败(fail-safe)的集合类可能就会触发 fail-fast 机制，导致抛出 ConcurrentModificationException 异常。
+> 另外，在单线程下，如果在遍历过程中对集合对象的内容进行了修改的话也会触发 fail-fast 机制。
+
+modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化是指添加或者删除至少一个元素的所有操作，或者是调整内部数组的大小，仅仅只是设置元素的值不算结构发生变化。
+> 使用迭代器遍历时默认会传入当前的数组的modCount，每次操作进行检测
 ```
     private class Itr implements Iterator<E> {
         int expectedModCount = modCount;
@@ -91,13 +91,16 @@ private void grow(int minCapacity) {
     }
 ```
 
-- 内存空间占用： ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
+内存空间占用： ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
 
-#### CopyOnWriteArrayList 读写分离list
-- 写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。
-  - 写操作需要加锁，防止并发写入时导致写入数据丢失。
-  - 写操作结束之后需要把原始数组指向新的复制数组
-- 适用于读多写少的场景
+### CopyOnWriteArrayList
+CopyOnWriteArrayList读写分离list
+
+写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。
+> 写操作需要加锁，防止并发写入时导致写入数据丢失。
+> 写操作结束之后需要把原始数组指向新的复制数组
+
+适用于读多写少的场景
 ```
     public boolean add(E e) {
         final ReentrantLock lock = this.lock;
@@ -120,13 +123,14 @@ private void grow(int minCapacity) {
     }
 ```
 
-#### LinkedList
-- 定义了一个内部的Node 节点，基于双向链表实现，使用 Node 存储链表节点信息。
-- 相关操作：
-   - getFirst() 和element() 完全一样，都返回第一个元素。如果为空，抛NoSuchElementException.
-   - peek() 方法与上诉类似，只时列表为空返回null
-   - removeFirst() 和 remove() 类似，移除并返回列表的头，只是列表为空抛出NoSuchElementException。
-   - poll() 同样移除并返回列表头，只是列表为空返回Null
+### LinkedList
+LinkedList定义了一个内部的Node 节点，基于双向链表实现，使用 Node 存储链表节点信息。
+
+相关操作：
+- getFirst() 和element() 完全一样，都返回第一个元素。如果为空，抛NoSuchElementException.
+- peek() 方法与上诉类似，只时列表为空返回null
+- removeFirst() 和 remove() 类似，移除并返回列表的头，只是列表为空抛出NoSuchElementException。
+- poll() 同样移除并返回列表头，只是列表为空返回Null
 ```
  private static class Node<E> {
         E item;
@@ -155,15 +159,13 @@ private void grow(int minCapacity) {
 - EnumMap:要求键必须来自一个Enum。
 ### HashMap
 #### 基本知识
-基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点
-- 基本的存储的结构为Node 节点的数组
-  - ```
-    transient Node<K,V>[] table;
-    ```
-threshold:临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
+数据结构：基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点。
+基本的存储的结构为Node 节点的数组 `transient Node<K,V>[] table;`
+
+threshold：临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
 
 TREEIFY_THRESHOLD：树化的最小长度8。
-- 为啥设定为8，TreeNodes占用空间是普通Nodes的两倍，建立树是需要时间及空间成本的。因此此处基于时间与空间的权衡定位8,具体可以看源码。
+> 为啥设定为8，TreeNodes占用空间是普通Nodes的两倍，建立树是需要时间及空间成本的。因此此处基于时间与空间的权衡定位8，具体可以看源码。
 
 UNTREEIFY_THRESHOLD：树变成链表的阀值6。
 
@@ -248,9 +250,8 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 
 ```
 
-针对建立红黑树或者添加树节点的情况
-- 若使用equal及class 的compare 均无法确定添加节点的方向
-- 使用对象的类名进行判断，若类名依然相同，则使用System根据对象地址换算的hashcode编码判断添加方向。
+针对建立红黑树或者添加树节点，若使用equal及class的compare 均无法确定添加节点的方向。
+则使用对象的类名进行判断，若类名依然相同，则使用System根据对象地址换算的hashcode编码判断添加方向。
 ```
   static int tieBreakOrder(Object a, Object b) {
         int d;
@@ -274,6 +275,9 @@ static final int hash(Object key) {
 }
 ```
 
+问题：为什么采用hashcode的高16位和低16位异或能降低hash碰撞？hash函数能不能直接用key的hashcode？
+1. 上述解释的点，低位与高位混合，加大hash的随机性。
+2. key的hashcode可能被重写，重写的hash函数冲突的概率无法保证。因此hashMap需要在此基础使用自己的hash加大随机性。
 #### Java1.7并发下循环链表
 Java1.7 中HashMap扩容是使用类似**头插法**的方式把旧节点转移到新的数组上。假设节点出现哈希冲突以链表的方式连接，且头节点1和节点2 扩容的位置仍然不变。
 1. 当线程1与线程2新建完新数组，并且执行到上述链表节点的扩容，执行旧数组的头结点3。举个例子链表为 3->7
@@ -328,8 +332,7 @@ static class Entry<K,V> extends HashMap.Node<K,V> {
     }
 }
 ```
-accessOrder主要用于LRU的构建 
-- 一个基本的LRU队列需要两点：
+accessOrder主要用于LRU的构建 ，一个基本的LRU队列需要两点：
   - 添加元素添加在队头，
   ``` 
   void afterNodeInsertion(boolean evict) {}
@@ -338,7 +341,7 @@ accessOrder主要用于LRU的构建
   ```
   void afterNodeAccess(Node<K,V> e) {
   ```
-- 因此固定大小的LRU可以像这样构建：
+因此固定大小的LRU可以像这样构建：
 ```
 class LRUCache<K, V> extends LinkedHashMap<K, V> {
     private static final int MAX_ENTRIES = 3;
@@ -435,9 +438,10 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 
 
 ### WeakHashMap
-- WeakHashMap 的 Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。
-- WeakHashMap 主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。
-  - 应用：Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
+WeakHashMap 的 Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。
+
+WeakHashMap 主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。
+> 应用：Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
   
 ### TreeMap
 定义了一个Entry的节点，基于红黑树的实现
@@ -459,15 +463,16 @@ LinkedHashSet：LinkedHashSet 是 HashSet 的子类，并且其内部是通过 L
 TreeSet（有序，唯一）： 红黑树(自平衡的排序二叉树)
 
 ### HashSet
-- HashSet是基于HashMap实现的，HashSet中的元素都存放在HashMap的key上面，而value中的值都是统一的一个固定对象private static final Object PRESENT = new Object();
-- 为什么没有get方法？ 因为map的get方法是通过Key获取的，而HashSet的应用里面，key都用来存值了。
+HashSet是基于HashMap实现的，HashSet中的元素都存放在HashMap的key上面，而value中的值都是统一的一个固定对象`private static final Object PRESENT = new Object();`
+
+为什么没有get方法？ 因为Map的get方法是通过Key获取的，而HashSet的应用里面，key都用来存值了。
 ```
     public HashSet() {
         map = new HashMap<>();
     }
 ```
 ### LinkedHashSet实现
-- 底层使用LinkedHashMap
+底层使用LinkedHashMap
 ```
 public LinkedHashSet(int initialCapacity, float loadFactor) {
     super(initialCapacity, loadFactor, true);
@@ -479,10 +484,10 @@ HashSet(int initialCapacity, float loadFactor, boolean dummy) {
 ```
 
 ### TreeSet 实现
-- 基于TreeMap实现
+基于TreeMap实现
 
 ## 迭代器
-- 迭代器 Iterator 是什么？
+迭代器 Iterator 是什么？
 ```
 public interface Iterator<E> {
     //集合中是否还有元素
@@ -496,14 +501,14 @@ Iterator 对象称为迭代器（设计模式的一种），迭代器可以对�
 
 迭代器是将这样的方法抽取出接口，然后在每个类的内部，定义自己迭代方式，这样做就规定了整个集合体系的遍历方式都是 hasNext()和next()方法
 
-- 迭代器 Iterator 有啥用？
+**迭代器 Iterator 有啥用？**
 Iterator 主要是用来遍历集合用的，它的特点是更加安全，因为它可以确保，在当前遍历的集合元素被更改的时候，就会抛出 ConcurrentModificationException 异常。
 
 
 ## 其他面试问题
 ### 如何选用集合?
-- 主要根据集合的特点来选用，比如我们需要根据键值获取到元素值时就选用 Map 接口下的集合，需要排序时选择 TreeMap,不需要排序时就选择 HashMap,需要保证线程安全就选用 ConcurrentHashMap。
-- 当我们只需要存放元素值时，就选择实现Collection 接口的集合，需要保证元素唯一时选择实现 Set 接口的集合比如 TreeSet 或 HashSet，不需要就选择实现 List 接口的比如 ArrayList 或 LinkedList，然后再根据实现这些接口的集合的特点来选用。
+1. 主要根据集合的特点来选用，比如我们需要根据键值获取到元素值时就选用 Map 接口下的集合，需要排序时选择 TreeMap,不需要排序时就选择 HashMap,需要保证线程安全就选用 ConcurrentHashMap。
+2. 当我们只需要存放元素值时，就选择实现Collection 接口的集合，需要保证元素唯一时选择实现 Set 接口的集合比如 TreeSet 或 HashSet，不需要就选择实现 List 接口的比如 ArrayList 或 LinkedList，然后再根据实现这些接口的集合的特点来选用。
 
 ### ArrayList 带参数及不带参数
 ```
