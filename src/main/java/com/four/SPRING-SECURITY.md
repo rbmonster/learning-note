@@ -13,22 +13,60 @@ SecurityContextHolder：Spring Security存储安全身份验证者详细信息�
 
 SecurityContext：从SecurityContextHolder获得，并包含当前经过身份验证的用户的身份验证。
 
-Authentication：可以是AuthenticationManager的输入，以提供用户提供的用于身份验证的凭据或来自SecurityContext的当前用户。
+Authentication：是AuthenticationManager的输入，以提供用户提供的用于身份验证的凭据。
 
 GrantedAuthority：授予身份验证主体的权限（即角色，作用域等）
 
 AuthenticationManager：定义Spring Security的过滤器如何执行身份验证的API。
 
-ProviderManager：AuthenticationManager的最常见实现。
+ProviderManager：AuthenticationManager的最常见实现，委托给一个 AuthenticationProviders 列表，每个AuthenticationProviders都可以验证登陆成功或者失败，如果没有一个 AuthenticationProvider验证通过， 那么会抛出ProviderNotFoundException。
 
-AuthenticationProvider：由ProviderManager用于执行特定类型的身份验证。
+AuthenticationProvider：可以通过supportType指定不同类型的认证的，比如账号密码的认证、token的认证等等。
 
-带AuthenticationEntryPoint的请求凭据：用于从客户端请求凭据（即重定向到登录页面，发送WWW身份验证响应等）
+AuthenticationEntryPoint：用于返回从客户端请求的 HTTP 响应（比如未认证的请求自动跳转、或者自己实现重定向到登录页面，发送WWW身份验证响应等）
 
-AbstractAuthenticationProcessingFilter：用于验证的基本过滤器。这也为高级身份验证流程以及各个部分如何协同工作提供了一个好主意。
+AbstractAuthenticationProcessingFilter：用作验证用户凭据的基本过滤器。 在验证前，Spring Security 通常使用 AuthenticationEntryPoint 请求凭据。
 
 UserDetailsService: spring security 默认提供的用户密码登陆接口。
 
+### 整体流程
+![image](https://docs.spring.io/spring-security/site/docs/5.4.2/reference/html5/images/servlet/authentication/architecture/abstractauthenticationprocessingfilter.png)
+以下是流程解释的英文原文：
+1. When the user submits their credentials, the AbstractAuthenticationProcessingFilter creates an Authentication from the HttpServletRequest to be authenticated. The type of Authentication created depends on the subclass of AbstractAuthenticationProcessingFilter. For example, UsernamePasswordAuthenticationFilter creates a UsernamePasswordAuthenticationToken from a username and password that are submitted in the HttpServletRequest.
+2. Next, the Authentication is passed into the AuthenticationManager to be authenticated.
+3. If authentication fails, then Failure \
+The SecurityContextHolder is cleared out.
+RememberMeServices.loginFail is invoked. If remember me is not configured, this is a no-op.\
+AuthenticationFailureHandler is invoked.
+
+4. If authentication is successful, then Success.\
+SessionAuthenticationStrategy is notified of a new log in.\
+The Authentication is set on the SecurityContextHolder. Later the SecurityContextPersistenceFilter saves the SecurityContext to the HttpSession.\
+RememberMeServices.loginSuccess is invoked. If remember me is not configured, this is a no-op.\
+ApplicationEventPublisher publishes an InteractiveAuthenticationSuccessEvent.\
+AuthenticationSuccessHandler is invoked.
+
+大流程:
+1. AbstractAuthenticationProcessingFilter 过滤器从HttpServletRequest获取认证的标识，根据标识创建Authentication。具体创建何种类型的Authentication，自己通过继承AbstractAuthenticationProcessingFilter去实现
+   - > 比如UsernamePasswordAuthenticationFilter 创建的Authentication类型是UsernamePasswordAuthenticationToken
+2. Authentication传递到AuthenticationManager进行认证，ProviderManager会通过委托到支持具体该类型Authentication的AuthenticationProvider
+3. AuthenticationProvider进行认证，认证成功
+
+### 基于session认证
+默认的security认证是基于username的session认证
+
+第一次访问：
+1. 首先进入应用页面 SecurityContextPersistenceFilter会获取HttpSessionSecurityContextRepository#loadContext 获取cookies中的session，第一次进入jsessionId未空
+2. AbstractAuthenticationProcessingFilter.requiresAuthentication 判读是否需要验证,第一次进入页面为GET方法，而认证仅支持POST方式。
+3. DefaultLoginPageGeneratingFilter跳转登陆页面。我们cookies中增加了JsessionID
+
+第二次访问
+1. 登陆页面输入账号密码 SecurityContextPersistenceFilter会获取HttpSessionSecurityContextRepository#loadContext 获取cookies中的session，第一次进入jsessionId未空
+2. AbstractAuthenticationProcessingFilter.requiresAuthentication 判读是否需要验证,调用UsernamePasswordAuthenticationFilter的attemptAuthentication
+3. AbstractUserDetailsAuthenticationProvider 进行账户密码认证，将认证成功的加入到sessionContext中
+
+第三次访问
+1. SecurityContextPersistenceFilter根据JSESSIONID会获取HttpSessionSecurityContextRepository，发现该sessionId已认证pass
 
 
 
