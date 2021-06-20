@@ -628,3 +628,9 @@ The replica shards will automatically become primaries, and the cluster will wor
 ## 倒排索引结构
 
 Elasticsearch分别为每个字段都建立了一个倒排索引。比如，在“张三”、“北京市”、22 这些都是Term，而`[1，3]`就是Posting List。Posting list就是一个数组，存储了所有符合某个Term的文档ID。
+
+
+## spring 集成
+[spring data与elasticsearch版本对应](https://docs.spring.io/spring-data/elasticsearch/docs/4.1.9/reference/html/#preface.requirements)
+
+[spring data 官网文档](https://docs.spring.io/spring-data/elasticsearch/docs/4.1.9/reference/html/#elasticsearch.clients)
