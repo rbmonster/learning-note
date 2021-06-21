@@ -35,6 +35,7 @@
 - [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ZOOKEEPER.md)
 - [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGEQUEUE.md)
 - [MySQL](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYSQL.md) 
+- [Elasticsearch](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ES.md)
 
 ## 算法
 - [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/ALGORITHM.md)
@@ -42,7 +43,6 @@
 
 ## 其他
 - [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
-- [Elasticsearch 基本知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ES.md)
 - [Linux相关](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LINUX.md)
 - [FastDFS](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FASTDFS.md)
 - [Drools规则引擎](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/RULE_ENGINE.md)
