@@ -21,7 +21,7 @@ https://www.cnblogs.com/yufeng218/p/12128538.html
 [root@VM-0-16-centos ~]# docker pull kibana:7.13.1
 [root@VM-0-16-centos ~]# docker images
 
-# 创建自定义的网络(用于连接到连接到同一网络的其他服务(例如Kibana))
+// 创建自定义的网络(用于连接到连接到同一网络的其他服务(例如Kibana))
 [root@VM-0-16-centos ~]# docker network create elknetwork
 ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
@@ -29,7 +29,7 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 [root@VM-0-16-centos ~]# docker run -it --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" -d --net elknetwork elasticsearch:7.13.1
 604ee6bb8b84fc5b3f6bf590fd57f04505fcdda8539d17493b87d6d4e8272b63
 
-# 检查es是否启动
+// 检查es是否启动
 [root@VM-0-16-centos ~]# curl 127.0.0.1:9200
 {
   "name" : "604ee6bb8b84",
@@ -54,15 +54,17 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
 ```
 
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/ES.jpg)
+  
 参考资料： [Docker安装部署ELK教程](https://www.cnblogs.com/fbtop/p/11005469.html)
 ### ik分词器安装
 
 #### 在线安装
 ```
-# 进入容器
+// 进入容器
 docker exec -it elasticsearch /bin/bash
 
-# 在线下载并安装
+// 在线下载并安装
 ./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.5.4/elasticsearch-analysis-ik-7.13.1.zip
 ```
 
@@ -73,23 +75,23 @@ wget https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.13.
 
 docker exec -it elasticsearch /bin/bash
 
-# 创建目录
+// 创建目录
 mkdir /usr/share/elasticsearch/plugins/ik
 
-# 将文件压缩包移动到ik中
+// 将文件压缩包移动到ik中
 mv /usr/share/elasticsearch/plugins/elasticsearch-analysis-ik-7.13.1.zip /usr/share/elasticsearch/plugins/ik
 
-# 进入目录
+// 进入目录
 cd /usr/share/elasticsearch/plugins/ik
 
-# 解压
+// 解压
 unzip elasticsearch-analysis-ik-7.13.1.zip
 
-# 删除压缩包
+// 删除压缩包
 rm -rf elasticsearch-analysis-ik-7.13.1.zip
 
 exit
-# 重启进行
+// 重启进行
 docker restart elasticsearch
 ```
 

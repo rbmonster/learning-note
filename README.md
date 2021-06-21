@@ -42,7 +42,7 @@
 
 ## 其他
 - [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
-- [Elasticsearch 基本知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/design/ES.md)
+- [Elasticsearch 基本知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ES.md)
 - [Linux相关](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LINUX.md)
 - [FastDFS](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FASTDFS.md)
 - [Drools规则引擎](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/RULE_ENGINE.md)

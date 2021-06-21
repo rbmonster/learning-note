@@ -3,46 +3,37 @@
 <a href="#0">elasticsearch </a>  
 &emsp;<a href="#1">1. docker 安装</a>  
 &emsp;&emsp;<a href="#2">1.1. elasticsearch 安装</a>  
-<a href="#3">创建自定义的网络(用于连接到连接到同一网络的其他服务(例如Kibana))</a>  
-<a href="#4">检查es是否启动</a>  
-&emsp;&emsp;<a href="#5">0.2. ik分词器安装</a>  
-&emsp;&emsp;&emsp;<a href="#6">0.2.1. 在线安装</a>  
-<a href="#7">进入容器</a>  
-<a href="#8">在线下载并安装</a>  
-&emsp;&emsp;&emsp;<a href="#9">0.2.2. 离线安装</a>  
-<a href="#10">创建目录</a>  
-<a href="#11">将文件压缩包移动到ik中</a>  
-<a href="#12">进入目录</a>  
-<a href="#13">解压</a>  
-<a href="#14">删除压缩包</a>  
-<a href="#15">重启进行</a>  
-&emsp;&emsp;&emsp;<a href="#16">0.2.3. 分词器测试</a>  
-&emsp;<a href="#17">1. linux http基本操作命令</a>  
-&emsp;&emsp;<a href="#18">1.1. 基本操作</a>  
-&emsp;&emsp;<a href="#19">1.2. 索引创建与新增元素</a>  
-&emsp;&emsp;<a href="#20">1.3. 查询</a>  
-&emsp;<a href="#21">2. kibana 命令行操作</a>  
-&emsp;&emsp;<a href="#22">2.1. 创建索引</a>  
-&emsp;&emsp;<a href="#23">2.2. 中文分词</a>  
-&emsp;&emsp;&emsp;<a href="#24">2.2.1. ik_max_word</a>  
-&emsp;&emsp;&emsp;<a href="#25">2.2.2. ik_smart</a>  
-&emsp;&emsp;&emsp;<a href="#26">2.2.3. 最佳实践</a>  
-&emsp;&emsp;<a href="#27">2.3. 手动插入数据</a>  
-&emsp;&emsp;<a href="#28">2.4. 查询</a>  
-&emsp;&emsp;&emsp;<a href="#29">2.4.1. 字段类型</a>  
-&emsp;&emsp;&emsp;<a href="#30">2.4.2. filter and query</a>  
-&emsp;&emsp;<a href="#31">2.5. 索引新增字段</a>  
-&emsp;&emsp;<a href="#32">2.6. 更改字段类型为 multi_field</a>  
-&emsp;&emsp;<a href="#33">2.7. 其他</a>  
-&emsp;&emsp;<a href="#34">2.8. 重建索引、修改Mapping的方式</a>  
-&emsp;&emsp;&emsp;<a href="#35">2.8.1. 步骤1: 建立新索引</a>  
-&emsp;&emsp;&emsp;<a href="#36">2.8.2. 步骤2: 复制数据</a>  
-&emsp;&emsp;&emsp;<a href="#37">2.8.3. 步骤3: 修改别名关联</a>  
-&emsp;&emsp;&emsp;<a href="#38">2.8.4. 步骤4: 删除旧索引</a>  
-&emsp;<a href="#39">3. shard & replica</a>  
-&emsp;&emsp;<a href="#40">3.1. primary shard 主分片</a>  
-&emsp;&emsp;<a href="#41">3.2. replica shard 副本分片</a>  
-&emsp;<a href="#42">4. 倒排索引结构</a>  
+&emsp;&emsp;<a href="#3">1.2. ik分词器安装</a>  
+&emsp;&emsp;&emsp;<a href="#4">1.2.1. 在线安装</a>  
+&emsp;&emsp;&emsp;<a href="#5">1.2.2. 离线安装</a>  
+&emsp;&emsp;&emsp;<a href="#6">1.2.3. 分词器测试</a>  
+&emsp;<a href="#7">2. linux http基本操作命令</a>  
+&emsp;&emsp;<a href="#8">2.1. 基本操作</a>  
+&emsp;&emsp;<a href="#9">2.2. 索引创建与新增元素</a>  
+&emsp;&emsp;<a href="#10">2.3. 查询</a>  
+&emsp;<a href="#11">3. kibana 命令行操作</a>  
+&emsp;&emsp;<a href="#12">3.1. 创建索引</a>  
+&emsp;&emsp;<a href="#13">3.2. 中文分词</a>  
+&emsp;&emsp;&emsp;<a href="#14">3.2.1. ik_max_word</a>  
+&emsp;&emsp;&emsp;<a href="#15">3.2.2. ik_smart</a>  
+&emsp;&emsp;&emsp;<a href="#16">3.2.3. 最佳实践</a>  
+&emsp;&emsp;<a href="#17">3.3. 手动插入数据</a>  
+&emsp;&emsp;<a href="#18">3.4. 查询</a>  
+&emsp;&emsp;&emsp;<a href="#19">3.4.1. 字段类型</a>  
+&emsp;&emsp;&emsp;<a href="#20">3.4.2. filter and query</a>  
+&emsp;&emsp;<a href="#21">3.5. 索引新增字段</a>  
+&emsp;&emsp;<a href="#22">3.6. 更改字段类型为 multi_field</a>  
+&emsp;&emsp;<a href="#23">3.7. 其他</a>  
+&emsp;&emsp;<a href="#24">3.8. 重建索引、修改Mapping的方式</a>  
+&emsp;&emsp;&emsp;<a href="#25">3.8.1. 步骤1: 建立新索引</a>  
+&emsp;&emsp;&emsp;<a href="#26">3.8.2. 步骤2: 复制数据</a>  
+&emsp;&emsp;&emsp;<a href="#27">3.8.3. 步骤3: 修改别名关联</a>  
+&emsp;&emsp;&emsp;<a href="#28">3.8.4. 步骤4: 删除旧索引</a>  
+&emsp;<a href="#29">4. shard & replica</a>  
+&emsp;&emsp;<a href="#30">4.1. primary shard 主分片</a>  
+&emsp;&emsp;<a href="#31">4.2. replica shard 副本分片</a>  
+&emsp;<a href="#32">5. 倒排索引结构</a>  
+&emsp;<a href="#33">6. spring 集成</a>  
 # <a name="0">elasticsearch </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 elasticsearch，基于lucene，隐藏复杂性，提供简单易用的restful api接口、java api接口（还有其他语言的api接口）
 1. 分布式的文档存储引擎
@@ -66,7 +57,7 @@ https://www.cnblogs.com/yufeng218/p/12128538.html
 [root@VM-0-16-centos ~]# docker pull kibana:7.13.1
 [root@VM-0-16-centos ~]# docker images
 
-# <a name="3">创建自定义的网络(用于连接到连接到同一网络的其他服务(例如Kibana))</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 创建自定义的网络(用于连接到连接到同一网络的其他服务(例如Kibana))
 [root@VM-0-16-centos ~]# docker network create elknetwork
 ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
@@ -74,7 +65,7 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 [root@VM-0-16-centos ~]# docker run -it --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" -d --net elknetwork elasticsearch:7.13.1
 604ee6bb8b84fc5b3f6bf590fd57f04505fcdda8539d17493b87d6d4e8272b63
 
-# <a name="4">检查es是否启动</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 检查es是否启动
 [root@VM-0-16-centos ~]# curl 127.0.0.1:9200
 {
   "name" : "604ee6bb8b84",
@@ -99,46 +90,48 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
 ```
 
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/ES.jpg)
+  
 参考资料： [Docker安装部署ELK教程](https://www.cnblogs.com/fbtop/p/11005469.html)
-### <a name="5">ik分词器安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="3">ik分词器安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="6">在线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="4">在线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
-# <a name="7">进入容器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 进入容器
 docker exec -it elasticsearch /bin/bash
 
-# <a name="8">在线下载并安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 在线下载并安装
 ./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.5.4/elasticsearch-analysis-ik-7.13.1.zip
 ```
 
-#### <a name="9">离线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="5">离线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```
 wget https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.13.1/elasticsearch-analysis-ik-7.13.1.zip
 
 docker exec -it elasticsearch /bin/bash
 
-# <a name="10">创建目录</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 创建目录
 mkdir /usr/share/elasticsearch/plugins/ik
 
-# <a name="11">将文件压缩包移动到ik中</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 将文件压缩包移动到ik中
 mv /usr/share/elasticsearch/plugins/elasticsearch-analysis-ik-7.13.1.zip /usr/share/elasticsearch/plugins/ik
 
-# <a name="12">进入目录</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 进入目录
 cd /usr/share/elasticsearch/plugins/ik
 
-# <a name="13">解压</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 解压
 unzip elasticsearch-analysis-ik-7.13.1.zip
 
-# <a name="14">删除压缩包</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 删除压缩包
 rm -rf elasticsearch-analysis-ik-7.13.1.zip
 
 exit
-# <a name="15">重启进行</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// 重启进行
 docker restart elasticsearch
 ```
 
-#### <a name="16">分词器测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="6">分词器测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 POST _analyze 
 {
@@ -183,8 +176,8 @@ result:
 
 ```
 参考资料：[docker 安装ElasticSearch的中文分词器IK](https://blog.csdn.net/weixin_34015566/article/details/93554240)
-## <a name="17">linux http基本操作命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="18">基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="7">linux http基本操作命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="8">基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 [root@VM-0-10-centos ~]# curl -X GET 'http://localhost:9200/_cat/indices?v'
 
@@ -194,7 +187,7 @@ result:
 
 ```
 
-### <a name="19">索引创建与新增元素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="9">索引创建与新增元素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 [root@VM-0-10-centos ~]# curl -H 'content-Type:application/json'  -X PUT 'localhost:9200/test' -d '
 
@@ -239,7 +232,7 @@ result:
 ```
 
 
-### <a name="20">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 [root@VM-0-10-centos ~]# curl -X GET 'http://localhost:9200/test/_search'
 {"took":391,"timed_out":false,"_shards":{"total":3,"successful":3,"skipped":0,"failed":0},"hits":{"total":{"value":3,"relation":"eq"},"max_score":1.0,"hits":[{"_index":"test","_type":"_doc","_id":"UPmoeXYBI1Dq1Op9wJWu","_score":1.0,"_source":
@@ -289,9 +282,9 @@ result:
 
 - [官网查询说明](https://www.elastic.co/guide/cn/elasticsearch/guide/current/query-dsl-intro.html)
 
-## <a name="21">kibana 命令行操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="11">kibana 命令行操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="22">创建索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">创建索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 PUT sw_test.trade_contract_v1
 {
@@ -378,19 +371,19 @@ PUT sw_test.trade_contract_v1
 }
 ```
 
-### <a name="23">中文分词</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="13">中文分词</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 [参见](https://zhuanlan.zhihu.com/p/52543633)
 
 analysis-ik分两种模式：ik_max_word和ik_smart模式
 
-#### <a name="24">ik_max_word</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="14">ik_max_word</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 会将文本做最细粒度的拆分，比如会将“中华人民共和国人民大会堂”拆分为“中华人民共和国、中华人民、中华、华人、人民共和国、人民、共和国、大会堂、大会、会堂等词语。
 
-#### <a name="25">ik_smart</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="15">ik_smart</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 会做最粗粒度的拆分，比如会将“中华人民共和国人民大会堂”拆分为中华人民共和国、人民大会堂。
 
-#### <a name="26">最佳实践</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="16">最佳实践</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 两种分词器使用的最佳实践是：索引时用ik_max_word，在搜索时用ik_smart。
 即：索引时最大化的将文章内容分词，搜索时更精确的搜索到想要的结果。
@@ -411,7 +404,7 @@ analysis-ik分两种模式：ik_max_word和ik_smart模式
 }
 ```
 
-### <a name="27">手动插入数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="17">手动插入数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 POST sw_test.trade_contract/_doc
 {
@@ -435,7 +428,7 @@ POST sw_test.trade_contract/_doc
 }
 ```
 
-### <a name="28">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 POST sw_test.trade_contract/_search
 {
@@ -463,10 +456,10 @@ POST sw_test.trade_contract/_search
 
 
 
-#### <a name="29">字段类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">字段类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [Field datatypes](https://www.elastic.co/guide/en/elasticsearch/reference/7.13/mapping-types.html)
 
-#### <a name="30">filter and query</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">filter and query</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [Bool Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/query-dsl-bool-query.html)
 
 [Query and Filter context](https://www.elastic.co/guide/en/elasticsearch/reference/7.13/query-filter-context.html#query-filter-context)
@@ -498,7 +491,7 @@ Basically, filter = must but without scoring.
 
 
 
-### <a name="31">索引新增字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">索引新增字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```
 POST sw_test.trade_contract_v1/_mapping
@@ -510,7 +503,7 @@ POST sw_test.trade_contract_v1/_mapping
   }
 }
 ```
-### <a name="32">更改字段类型为 multi_field</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="22">更改字段类型为 multi_field</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 创建 mapping 时，可以为keyword指定ignore_above ，用来限定字符长度。\
 超过 ignore_above 的字符会被存储，但不会被全文索引。
 
@@ -530,24 +523,24 @@ PUT /sw_test.trade_contract_v1/_mapping/
   }
 }
 ```
-### <a name="33">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="23">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - object类型自动映射，无需手动新增
 - int、long、date等类型自动映射，可以不手动新增
 - string类型会自动映射成multi_field，并使用默认分词器，建议手动修改ES mapping
 
 
-### <a name="34">重建索引、修改Mapping的方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="24">重建索引、修改Mapping的方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 [Index Aliases](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/indices-aliases.html)
 [Elasticsearch如何修改Mapping结构并实现业务零停机](https://juejin.im/post/5e2d32c95188254d9032a7dd)
 
 
-#### <a name="35">步骤1: 建立新索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="25">步骤1: 建立新索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 PUT sw_test.trade_contract_v2
 ```
 
-#### <a name="36">步骤2: 复制数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="26">步骤2: 复制数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 POST _reindex
 {
@@ -559,7 +552,7 @@ POST _reindex
     }
 }
 ```
-#### <a name="37">步骤3: 修改别名关联</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">步骤3: 修改别名关联</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 POST /_aliases
 {
@@ -570,12 +563,12 @@ POST /_aliases
 }
 
 ```
-#### <a name="38">步骤4: 删除旧索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="28">步骤4: 删除旧索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 DELETE  sw_test.trade_contract_v1
 ```
 
-## <a name="39">shard & replica</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="29">shard & replica</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```
 PUT sw_test.trade_contract_v1
@@ -593,7 +586,7 @@ PUT sw_test.trade_contract_v1
 2. [es-glossary](https://www.elastic.co/guide/en/elasticsearch/reference/current/glossary.html)
 
 
-### <a name="40">primary shard 主分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">primary shard 主分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 When you create an index (an index is automatically created when you index the first document as well) you can define how many shards it will be composed of.\
 If you don't specify a number it will have the default number of shards: 5 primaries. What does it mean?
@@ -634,7 +627,7 @@ Every shard comes at a cost, though, therefore if you have a single node and no 
 just stick with a single primary shard.
 
 
-### <a name="41">replica shard 副本分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="31">replica shard 副本分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 Another type of shard is a replica. The default is 1, meaning that every `primary shard will be copied to another shard that will contain the same data`.\
 Replicas are used to increase search performance and for fail-over.\
@@ -670,6 +663,12 @@ The replica shards will automatically become primaries, and the cluster will wor
 |____|  |____|  |____|  |____|  |____|
 ```
 
-## <a name="42">倒排索引结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="32">倒排索引结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 Elasticsearch分别为每个字段都建立了一个倒排索引。比如，在“张三”、“北京市”、22 这些都是Term，而`[1，3]`就是Posting List。Posting list就是一个数组，存储了所有符合某个Term的文档ID。
+
+
+## <a name="33">spring 集成</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+[spring data与elasticsearch版本对应](https://docs.spring.io/spring-data/elasticsearch/docs/4.1.9/reference/html/#preface.requirements)
+
+[spring data 官网文档](https://docs.spring.io/spring-data/elasticsearch/docs/4.1.9/reference/html/#elasticsearch.clients)
