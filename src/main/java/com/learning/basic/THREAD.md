@@ -155,28 +155,28 @@ ReentrantLock调用锁的lockInterruptibly()方法，
 线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadPool.png)
 
-- RUNNING
+ RUNNING
   1. 状态说明：线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
   2. 状态切换：线程池的初始化状态是RUNNING。换句话说，线程池被一旦被创建，就处于RUNNING状态
 
-- SHUTDOWN
+ SHUTDOWN
   1. 状态说明：线程池处在SHUTDOWN状态时，不接收新任务，但能处理已添加的任务。 
   2. 状态切换：调用线程池的shutdown()接口时，线程池由RUNNING -> SHUTDOWN。
 
-- STOP
+ STOP
   1. 状态说明：线程池处在STOP状态时，不接收新任务，不处理已添加的任务，并且会中断正在处理的任务。 
   2. 状态切换：调用线程池的shutdownNow()接口时，线程池由(RUNNING or SHUTDOWN ) -> STOP。 
 
-- TIDYING
+ TIDYING
   1. 状态说明：当所有的任务已终止，ctl记录的”任务数量”为0，线程池会变为TIDYING状态。当线程池变为TIDYING状态时，会执行钩子函数terminated()。terminated()在ThreadPoolExecutor类中是空的，若用户想在线程池变为TIDYING时，进行相应的处理；可以通过重载terminated()函数来实现。 
   2. 状态切换：当线程池在SHUTDOWN状态下，阻塞队列为空并且线程池中执行的任务也为空时，就会由 SHUTDOWN -> TIDYING。 
 
-- TERMINATED
+ TERMINATED
   1. 状态说明：线程池彻底终止，就变成TERMINATED状态。 
   2. 状态切换：线程池处在TIDYING状态时，执行完terminated()之后，就会由 TIDYING -> TERMINATED当线程池在STOP状态下，线程池中执行的任务为空时，就会由STOP -> TIDYING。
   
 ### 线程池创建
-- 线程池的初始化：
+ 线程池的初始化：
 ```
 /**
  * 用给定的初始参数创建一个新的ThreadPoolExecutor。
@@ -193,53 +193,51 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 }
 ```
 corePoolSize：核心线程数量，当有新任务在execute()方法提交时，会执行以下判断：
-  - 如果运行的线程少于 corePoolSize，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；
-  - 如果线程池中的线程数量大于等于 corePoolSize 且小于 maximumPoolSize，则只有当workQueue满时才创建新的线程去处理任务；
-  - 如果设置的corePoolSize 和 maximumPoolSize相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；
-  - 如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务
-  - 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
+1. 如果运行的线程少于 corePoolSize，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；
+2. 如果线程池中的线程数量大于等于 corePoolSize 且小于 maximumPoolSize，则只有当workQueue满时才创建新的线程去处理任务；
+3. 如果设置的corePoolSize 和 maximumPoolSize相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；
+4. 如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务
+5. 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
 
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadPoolProcess.jpg)
 
 线程池拒绝策略
-  - ThreadPoolExecutor.AbortPolicy：抛出 RejectedExecutionException来拒绝新任务的处理。
-  - ThreadPoolExecutor.CallerRunsPolicy：调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
+1. ThreadPoolExecutor.AbortPolicy：抛出 RejectedExecutionException来拒绝新任务的处理。
+2. ThreadPoolExecutor.CallerRunsPolicy：调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
     - 简单的说就是用启动threadPool的线程执行新的请求。
-  - ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
-  - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
+3. ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
+4. ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
 
 - [线程池应用场景简介](https://www.cnblogs.com/waitmoon/p/13442193.html)
 
 
 ### 线程池的队列 五种
-- Executors.newFixedThreadPool()：new LinkedBlockingQueue<Runnable>()
-- Executors.newSingleThreadExecutor()：new LinkedBlockingQueue()
-  - 以上两种创建的方式不推荐，因为使用了linkedBlockingQueue的无界队列，会导致最大线程数以及多余核心的keepalive的参数失效。
-  - 而因为无界队列的关系，当任务过多会导致oom
-- Executors.newCachedThreadPool()：new SynchronousQueue<Runnable>()
-  - 不推荐用newCacheThreadPool的原因是因为最大线程数设置为Integer.MAX_VALUE,如果主线程提交任务的速度高于 maximumPool 中线程处理任务的速度时，会耗尽CUP及内存。
-- Executors.newScheduledThreadPool(): new DelayedWorkQueue() 中封装了一个 PriorityQueue
-  - 任务队列 DelayedWorkQueue 封装了一个 PriorityQueue，PriorityQueue 会对队列中的任务进行排序，执行所需时间短的放在前面先被执行(ScheduledFutureTask 的 time 变量小的先执行)，如果执行所需时间相同则先提交的任务将被先执行(ScheduledFutureTask 的 squenceNumber 变量小的先执行)。
-  - 队列原理与 DelayQueue 基本一致
-- Executors.newWorkStealingPool()：内部会构建ForkJoinPool，利用Work-Stealing算法，并行地处理任务，不保证处理顺序。
-  - 工作窃取算法：工作窃取(work-stealing)算法是指某个线程从其他队列里窃取任务来执行。一个大任务分割为若干个互不依赖的子任务，为了减少线程间的竞争，把这些子任务分别放到不同的队列里，并未每个队列创建一个单独的线程来执行队列里的任务，线程和队列一一对应。比如线程1负责处理1队列里的任务，2线程负责2队列的。但是有的线程会先把自己队列里的任务干完，而其他线程对应的队列里还有任务待处理。干完活的线程与其等着，不如帮其他线程干活，于是它就去其他线程的队列里窃取一个任务来执行。默认从其他队列的队尾开始窃取任务执行。
-  - 思想为：充分利用线程进行并行计算，减少线程间的竞争。在某些情况下还是会存在竞争，比如双端队列里只有一个任务时。并且该算法会消耗更多的系统资源， 比如创建多个线程和多个双端队列。
-  - ```
-    return new ForkJoinPool
-           (Runtime.getRuntime().availableProcessors(),  //默认使用的是硬件的cpu数目
-             ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-            null, true);
-    ```
+1. Executors.newFixedThreadPool()：new LinkedBlockingQueue<Runnable>()
+2. Executors.newSingleThreadExecutor()：new LinkedBlockingQueue()
+> 以上两种创建的方式不推荐，因为使用了linkedBlockingQueue的无界队列，会导致最大线程数以及多余核心的keepalive的参数失效。 而因为无初始值的`new LinkedBlockingQueue()`是无界队列的关系，当任务过多会导致OOM
+3. Executors.newCachedThreadPool()：new SynchronousQueue<Runnable>()
+> 不推荐用newCacheThreadPool的原因是因为最大线程数设置为Integer.MAX_VALUE,如果主线程提交任务的速度高于 maximumPool 中线程处理任务的速度时，会耗尽CUP及内存。
+4. Executors.newScheduledThreadPool(): new DelayedWorkQueue() 中封装了一个 PriorityQueue
+> 任务队列 DelayedWorkQueue 封装了一个 PriorityQueue，PriorityQueue 会对队列中的任务进行排序，执行所需时间短的放在前面先被执行(ScheduledFutureTask 的 time 变量小的先执行)，如果执行所需时间相同则先提交的任务将被先执行(ScheduledFutureTask 的 squenceNumber 变量小的先执行)。 \
+> 队列原理与 DelayQueue 基本一致
+5. Executors.newWorkStealingPool()：内部会构建ForkJoinPool，利用Work-Stealing算法，并行地处理任务，不保证处理顺序。
+> 工作窃取算法：工作窃取(work-stealing)算法是指某个线程从其他队列里窃取任务来执行。一个大任务分割为若干个互不依赖的子任务，为了减少线程间的竞争，把这些子任务分别放到不同的队列里，并未每个队列创建一个单独的线程来执行队列里的任务，线程和队列一一对应。比如线程1负责处理1队列里的任务，2线程负责2队列的。但是有的线程会先把自己队列里的任务干完，而其他线程对应的队列里还有任务待处理。干完活的线程与其等着，不如帮其他线程干活，于是它就去其他线程的队列里窃取一个任务来执行。默认从其他队列的队尾开始窃取任务执行。\
+> 思想为：充分利用线程进行并行计算，减少线程间的竞争。在某些情况下还是会存在竞争，比如双端队列里只有一个任务时。并且该算法会消耗更多的系统资源， 比如创建多个线程和多个双端队列。
+ ```
+return new ForkJoinPool
+       (Runtime.getRuntime().availableProcessors(),  //默认使用的是硬件的cpu数目
+         ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+        null, true);
+```
     
+队列说明：
 1. SynchronousQueue（CachedThreadPool） 类似交警只是指挥车辆，并不管理车辆
-  - SynchronousQueue没有容量，是无缓冲等待队列，是一个不存储元素的阻塞队列，会直接将任务交给消费者，必须等队列中的添加元素被消费后才能继续添加新的元素。超出直接corePoolSize个任务，直接创建新的线程来执行任务，直到(corePoolSize＋新建线程)> maximumPoolSize。不是核心线程就是新建线程。
-
+> SynchronousQueue没有容量，是无缓冲等待队列，是一个不存储元素的阻塞队列，会直接将任务交给消费者，必须等队列中的添加元素被消费后才能继续添加新的元素。超出直接corePoolSize个任务，直接创建新的线程来执行任务，直到(corePoolSize＋新建线程)> maximumPoolSize。不是核心线程就是新建线程。
 2. LinkedBlockingQueue（single，fixed）类似小仓库，暂时存储任务，待系统有空的时候再取出执行
-  - BlockingQueue是双缓冲队列。BlockingQueue内部使用两条队列，允许两个线程同时向队列一个存储，一个取出操作。在保证并发安全的同时，提高了队列的存取效率。LinkedBlockingQueue是一个无界缓存等待队列。当前执行的线程数量达到corePoolSize的数量时，剩余的元素会在阻塞队列里等待。（所以在使用此阻塞队列时maximumPoolSizes就相当于无效了），每个线程完全独立于其他线程。生产者和消费者使用独立的锁来控制数据的同步，即在高并发的情况下可以并行操作队列中的数据。
-
+> BlockingQueue是双缓冲队列。BlockingQueue内部使用两条队列，允许两个线程同时向队列一个存储，一个取出操作。在保证并发安全的同时，提高了队列的存取效率。LinkedBlockingQueue是一个无界缓存等待队列。当前执行的线程数量达到corePoolSize的数量时，剩余的元素会在阻塞队列里等待。（所以在使用此阻塞队列时maximumPoolSizes就相当于无效了），每个线程完全独立于其他线程。生产者和消费者使用独立的锁来控制数据的同步，即在高并发的情况下可以并行操作队列中的数据。
 3. ArrayBlockingQueue
-  - ArrayBlockingQueue是一个有界缓存等待队列，可以指定缓存队列的大小，当正在执行的线程数等于corePoolSize时，多余的元素缓存在ArrayBlockingQueue队列中等待有空闲的线程时继续执行，当ArrayBlockingQueue已满时，加入ArrayBlockingQueue失败，会开启新的线程去执行，当线程数已经达到最大的maximumPoolSizes时，再有新的元素尝试加入ArrayBlockingQueue时会报错
+> ArrayBlockingQueue是一个有界缓存等待队列，可以指定缓存队列的大小，当正在执行的线程数等于corePoolSize时，多余的元素缓存在ArrayBlockingQueue队列中等待有空闲的线程时继续执行，当ArrayBlockingQueue已满时，加入ArrayBlockingQueue失败，会开启新的线程去执行，当线程数已经达到最大的maximumPoolSizes时，再有新的元素尝试加入ArrayBlockingQueue时会报错
 
 ### 线程池相关方法
 execute() vs submit()
@@ -257,40 +255,44 @@ isTerminated() VS isShutdown()
 ### 线上线程池的配置
 #### 常规思路
 CPU密集: CPU密集的意思是该任务需要大量的运算，而没有阻塞，CPU一直全速运行。
-- CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
+> CPU密集任务只有在真正的多核CPU上才可能得到加速(通过多线程)，而在单核CPU上，无论你开几个模拟的多线程，该任务都不可能得到加速，因为CPU总的运算能力就那些。
   
 IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程上运行IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即时在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。
-- 网络读取，文件读取这类都是 IO 密集型
+> 网络读取，文件读取这类都是 IO 密集型
   
 对于不同性质的任务来说
-  - CPU密集型任务应配置尽可能小的线程，如配置CPU个数的线程数+1。比 CPU 核心数多出来的一个线程是为了防止线程偶发的缺页中断，或者其它原因导致的任务暂停而带来的影响。
+1. CPU密集型任务应配置尽可能小的线程，如配置CPU个数的线程数+1。比 CPU 核心数多出来的一个线程是为了防止线程偶发的缺页中断，或者其它原因导致的任务暂停而带来的影响。
     - 计算密（CPU）集型的线程恰好在某时因为发生一个页错误或者因其他原因而暂停，刚好有一个“额外”的线程，可以确保在这种情况下CPU周期不会中断工作。
-  - IO密集型任务应配置尽可能多的线程，因为IO操作不占用CPU，不要让CPU闲下来，应加大线程数量，如配置两倍CPU个数+1，
+2. IO密集型任务应配置尽可能多的线程，因为IO操作不占用CPU，不要让CPU闲下来，应加大线程数量，如配置两倍CPU个数+1，
     - 单核最佳线程数 = (1/CPU利用率) = 1 + (I/O耗时/CPU耗时)
     - 最佳线程数 = CPU核心数 * (1/CPU利用率) = CPU核心数 * 1 + (I/O耗时/CPU耗时)
     - CPU利用率： （CPU耗时）/ （I/O耗时/ CPU耗时）
-- 目前所有方案：
+
+目前所有方案：
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/threadpoolsetSolution.jpg)
 
 > 假设要求一个系统的 TPS（Transaction Per Second 或者 Task Per Second）至少为20，然后假设每个Transaction由一个线程完成，继续假设平均每个线程处理一个Transaction的时间为4s
 > 如何设计线程个数，使得可以在1s内处理完20个Transaction？
-- 答案：80。一般服务器的CPU核数为16或者32，如果有80个线程，那么肯定会带来太多不必要的线程上下文切换开销
+
+答案：80。一般服务器的CPU核数为16或者32，如果有80个线程，那么肯定会带来太多不必要的线程上下文切换开销
 
 > 计算操作需要5ms，DB操作需要 100ms，对于一台 8 核CPU的服务器，怎么设置线程数呢？
--  8*  （1/(5/100+5) = 168 个线程数
+
+ 8*  （1/(5/100+5) = 168 个线程数
 
 > 那如果DB的 QPS（Query Per Second）上限是1000，此时这个线程数又该设置为多大呢？
-- 一个线程的TPS（每秒） = 1000/105
-- 系统的QPS = 168 * 1000/105    >1600
-- 假设一个TPS 对应一次QPS
-- 答案：线程数 = 168* (1000/ 1600) > 105 
+```
+一个线程的TPS（每秒） = 1000/105
+系统的QPS = 168 * 1000/105    >1600
+假设一个TPS 对应一次QPS
+答案：线程数 = 168* (1000/ 1600) > 105 
+```
 
 > 增加服务器核心数，与线程间的关系
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/threadpool1.jpg)
 
-> 假设： 1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。
-
+> 假设： 1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。\
 > 临界区都是串行的，非临界区都是并行的，用单线程执行 临界区的时间/用单线程执行(临界区+非临界区)的时间 就是串行百分比
 
 
@@ -310,23 +312,22 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
 3. 判断工作线程是否是大于最大线程数，如果大于，则对空闲线程发起中断请求。
     
 注意点：
-  - 设置核心线程数的时候，同时设置最大线程数。否则若出现核心线程数大于最大线程数，在线程池getTask的任务处理中，会因为该问题导致设置不生效。
-  - 由于LinkedBlockingQueue的容量capacity为final类型的，需要动态修改队列的容量可以通过继承该queue声明一个可改变的capacity参数。
-  - **其他的tip**
+1. 设置核心线程数的时候，同时设置最大线程数。否则若出现核心线程数大于最大线程数，在线程池getTask的任务处理中，会因为该问题导致设置不生效。
+2. 由于LinkedBlockingQueue的容量capacity为final类型的，需要动态修改队列的容量可以通过继承该queue声明一个可改变的capacity参数。
+3. **其他的tip**
     - ```
         // 预启动线程池的核心线程，对线程池进行预热
         threadPoolExecutor.prestartAllCoreThreads();
         // 回收核心线程的一个方案允许核心线程过期
         threadPoolExecutor.allowCoreThreadTimeOut(true);
       ```
-    
-- 使用以下工具来了解I/O 耗时与 CUP耗时
+4. 使用以下工具来了解I/O 耗时与 CUP耗时
   - SkyWalking
   - CAT
   - zipkin
   
 #### 相关资料
-美团线程池：https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html
+[美团线程池](https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html)
 
 ### ThreadFactory 线程工厂
 ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
@@ -481,25 +482,26 @@ private Runnable getTask() {
 - [深入理解Java线程池：ThreadPoolExecutor](https://www.cnblogs.com/liuzhihu/p/8177371.html)
 
 ## ThreadLocal 
-Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
-  - key key视作ThreadLocal，value为代码中放入的值（实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference）.
-  - ThreadLocalMap的key 为每个新建的ThreadLocal private void set(ThreadLocal<?> key, Object value) { }
+Thread 类存储了ThreadLocal.ThreadLocalMap 对象 ：`ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;`
+  - key：key视作ThreadLocal，value为代码中放入的值（实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference）.
+  - ThreadLocalMap的key为每个新建的`ThreadLocal private void set(ThreadLocal<?> key, Object value) { }`
+
 ThreadMap的实现类似于HashMap，不过其数据结构仅使用数组，定义一个Entry的类，key为 WeakReference引用的ThreadLocal，value为存入的value。
   - key的hash计算：使用黄金分割数*AtomInteger计算，再根据容量确定索引位置。每次新增一个元素，AtomInteger都自动加一。
   - 因为map的key都是threadLocal，所以在不set或remove元素的时候，每次get都是同一个元素的值。
   
 set元素逻辑：
-  - 进过hash定位到数组索引位置，如果位置无元素直接设值。
-  - 如果存在元素对比当前Entry key的hash 是否一致，一致则直接替换元素。
-  - 若不一致，向后一次找一个空位。
+1. hash定位到数组索引位置，如果位置无元素直接设值。
+2. 如果存在元素对比当前Entry key的hash 是否一致，一致则直接替换元素。
+3. 若不一致，向后一次找一个空位。
   
 TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收的情况
 - 在set的时如果遇到Entry是被回收的值，则触发探测性清理。
     - 探测性清理：以当前Entry 向后迭代查找，遇到为null则结束清理，遇到entry为空的值，清空数组位置，size--。非空的entry计算重哈希的位置。
     - 启发性清理：向后递归查找一个过期的位置，找到过期的位置触发探测性清理。
-- 扩容： 扩容后的tab的大小为oldLen * 2，然后遍历老的散列表，重新计算hash位置，然后放到新的tab数组中，
 
-- 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
+扩容： 扩容后的tab的大小为oldLen * 2，然后遍历老的散列表，重新计算hash位置，然后放到新的tab数组中，
+> 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
 
 ### 父线程与子线程传递threadLocal的方案
 阿里巴巴提供TransmittableThreadLocal组件：父线程与子线程传递threadLocal的方案
@@ -537,14 +539,14 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
 
 
 ### 相关资料
-- https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ
+[Java面试必问：ThreadLocal终极篇 淦](https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ)
 
 待补充资料：netty的fastThreadLocal
 ## spring 中的线程池
 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
   - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
-没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
+> 没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
   - ```
     @Bean
       public Executor taskExecutor() {
@@ -560,7 +562,7 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
       }
     ```
 ### 异步编程的例子：
-  - ```
+```
      @Async
       public CompletableFuture<List<String>> completableFutureTask(String start) {
         // 打印日志
@@ -595,4 +597,4 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
         System.out.println("Elapsed time: " + (System.currentTimeMillis() - start));
         return results.toString();
       }
-    ```
+```
