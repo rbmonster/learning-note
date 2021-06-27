@@ -31,8 +31,7 @@
 &emsp;&emsp;&emsp;<a href="#28">3.1.4. SynchronousQueue</a>  
 &emsp;&emsp;<a href="#29">3.2. DelayQueue </a>  
 &emsp;&emsp;&emsp;<a href="#30">3.2.1. 实现</a>  
-&emsp;&emsp;&emsp;<a href="#31">3.2.2. 相关资料</a>  
-&emsp;<a href="#32">4. 相关文章</a>  
+&emsp;<a href="#31">4. 相关资料</a>  
 # <a name="0">Java并发相关工具类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">AQS 相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -44,17 +43,30 @@ AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高�
 3. CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）
 4. 通过自旋+CAS获取共享资源，如果获取失败则调用调用native方法 进入park 状态。
 
+```java
+/** waitStatus value to indicate thread has cancelled */
+static final int CANCELLED =  1;
+/** waitStatus value to indicate successor's thread needs unparking */
+static final int SIGNAL    = -1;
+/** waitStatus value to indicate thread is waiting on condition */
+static final int CONDITION = -2;
+/**
+ * waitStatus value to indicate the next acquireShared should
+ * unconditionally propagate
+ */
+static final int PROPAGATE = -3;
+```
 使用模板模式提供了 锁与同步的框架，将一些实现延迟到子类中实现。
-  - 需要具体子类实现的方法：
-  - ```
-    isHeldExclusively()//该线程是否正在独占资源。只有用到condition才需要去实现它。
-    tryAcquire(int)//独占方式。尝试获取资源，成功则返回true，失败则返回false。
-    tryRelease(int)//独占方式。尝试释放资源，成功则返回true，失败则返回false。
-    tryAcquireShared(int)//共享方式。尝试获取资源。负数表示失败；0表示成功，但没有剩余可用资源；正数表示成功，且有剩余资源。
-    tryReleaseShared(int)//共享方式。尝试释放资源，成功则返回true，失败则返回false。
-    ```
-  - 比如独占锁相关的方法调用框架
-  - ```
+需要具体子类实现的方法：
+```java
+isHeldExclusively()//该线程是否正在独占资源。只有用到condition才需要去实现它。
+tryAcquire(int)//独占方式。尝试获取资源，成功则返回true，失败则返回false。
+tryRelease(int)//独占方式。尝试释放资源，成功则返回true，失败则返回false。
+tryAcquireShared(int)//共享方式。尝试获取资源。负数表示失败；0表示成功，但没有剩余可用资源；正数表示成功，且有剩余资源。
+tryReleaseShared(int)//共享方式。尝试释放资源，成功则返回true，失败则返回false。
+```
+比如独占锁相关的方法调用框架
+```
      // 尝试获取锁
      public final void acquire(int arg) {
          // tryAcquire 需重写   acquireQueued、addWaiter为默认方法
@@ -74,8 +86,8 @@ AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高�
         }
         return false;
     }
-    ```
-  - 比如ReentrantLock 实现了独占方式的锁及用到了condition
+```
+比如ReentrantLock 实现了独占方式的锁及用到了condition
   
 
 #### <a name="3">AQS 相关方法处理说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -123,13 +135,13 @@ final boolean acquireQueued(final Node node, int arg) {
     }
 ```
 acquireQueued ：CLH节点休眠与被唤醒后的主要处理逻辑
-  - 进入一段自旋
-  - 节点正常添加到队尾后，如果当前节点的前驱为头节点，使用CAS尝试获取。获取成功后设置当前节点为头结点。之前的头节点让GC回收
-  - 获取失败，则进入shouldParkAfterFailedAcquire方法。
+1. 进入一段自旋
+2. 节点正常添加到队尾后，如果当前节点的前驱为头节点，使用CAS尝试获取。获取成功后设置当前节点为头结点。之前的头节点让GC回收
+3. 获取失败，则进入shouldParkAfterFailedAcquire方法。
   
 shouldParkAfterFailedAcquire方法：
-  - 正常的尾节点添加，需要使用CAS先把前驱节点的状态变成signal，通过acquireQueued的自旋，再进入到挂起的状态。
-  - 若前驱节点声明为取消CANCELLED状态，则需要找到非CANCELLED的前驱节点并连接上，取消的节点排除在双链表外。
+1. 正常的尾节点添加，需要使用CAS先把前驱节点的状态变成signal，通过acquireQueued的自旋，再进入到挂起的状态。
+2. 若前驱节点声明为取消CANCELLED状态，则需要找到非CANCELLED的前驱节点并连接上，取消的节点排除在双链表外。
   
 parkAndCheckInterrupt方法：正常尾结点添加完成之后，进入到挂起的逻辑。
 ##### <a name="5">释放锁的框架方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -149,31 +161,30 @@ public final boolean release(int arg) {
 tryRelease方法：需要自定义，正常这步已经把锁给释放了，即修改状态为0，资源当前线程为null
 
 unparkSuccessor：资源释放后的队列抢资源逻辑
-  - 定位到头结点，CAS修改状态为0
-  - 从尾到头寻找最早一个需要唤醒的线程节点，独占锁模式正常定位到头结点的下一个节点。
-  - 执行唤醒逻辑，线程重新进入到acquireQueued
+1. 定位到头结点，CAS修改状态为0
+2. 从尾到头寻找最早一个需要唤醒的线程节点，独占锁模式正常定位到头结点的下一个节点。
+3. 执行唤醒逻辑，线程重新进入到acquireQueued
   
   
 #### <a name="6">条件队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/conditionqueue.jpg)
-condition：条件队列的实现，常可以用在生产者-消费者的场景中。
-  - 在所对象中内置一个newCondition方法，用于创建一个条件队列。
-  - condition 的方法主要就两个await等待、signal唤醒
+condition：条件队列的实现，常可以用在生产者-消费者的场景中。在所对象中内置一个newCondition方法，用于创建一个条件队列。\
+condition 的方法主要就两个await等待、signal唤醒
 
 条件队列与阻塞队列
-  - 阻塞队列为Lock中获取共享资源的CLH阻塞双向链表队列，AQS中设置head和tail变量。
+  - **阻塞队列为Lock中获取共享资源的CLH阻塞双向链表队列**，AQS中设置head和tail变量。
   - 条件队列为**conditionObject中维护的一个单向链表**
-  - ```
-    public class ConditionObject implements Condition, java.io.Serializable {
-        private static final long serialVersionUID = 1173984872572414699L;
-        /** First node of condition queue. */
-        private transient Node firstWaiter;
-        /** Last node of condition queue. */
-        private transient Node lastWaiter;
-        ...
-    }
-    ```
-- AbstractQueueSynchronizer中的Node节点，分别代表上述两数据结构的节点
+```
+  public class ConditionObject implements Condition, java.io.Serializable {
+      private static final long serialVersionUID = 1173984872572414699L;
+      /** First node of condition queue. */
+      private transient Node firstWaiter;
+      /** Last node of condition queue. */
+      private transient Node lastWaiter;
+      ...
+  }
+```
+> AbstractQueueSynchronizer中的Node节点，分别代表上述两数据结构的节点
 
 
 条件队列流程简叙： 
@@ -182,9 +193,8 @@ condition：条件队列的实现，常可以用在生产者-消费者的场景�
 3. 释放当前持有的锁资源，进入循环判断节点是否进入到AQS阻塞队列中。没有则挂起等待唤醒。
 4. 若有另一个线程唤醒了生产者，唤醒signal的逻辑中会把唤醒的节点，从当前条件队列中移除并添加到阻塞队列中
 5. await的线程被唤醒后，进入阻塞队列的队列获取锁逻辑，如果前驱节点为头结点，尝试去获取锁资源，否则修改前驱节点为带唤醒状态。等待锁资源释放后的调用。
-- 注意点：在条件队列中，等待的线程节点，即使发生了中断，节点依然会转移到阻塞队列。主要通过是唤醒之后，执行检查中断状态为true的transferAfterCancelledWait实现。
-  - 这里描绘了一个场景，本来有个线程，它是排在条件队列的后面的，但是因为它被中断了，那么它会被唤醒，然后它发现自己不是被 signal 的那个，但是它会自己主动去进入到阻塞队列。
-  - 全部加入阻塞队列以及使用状态表示，主要用于区分节点是，是在发生中断sign前还是sign后。
+> 注意点：在条件队列中，等待的线程节点，即使发生了中断，节点依然会转移到阻塞队列。主要通过是唤醒之后，执行检查中断状态为true的transferAfterCancelledWait实现。\
+>  这里描绘了一个场景，本来有个线程，它是排在条件队列的后面的，但是因为它被中断了，那么它会被唤醒，然后它发现自己不是被 signal 的那个，但是它会自己主动去进入到阻塞队列。\
 ```
 static final class Node {
         static final Node SHARED = new Node();
@@ -294,19 +304,19 @@ public final void signal() {
 ```
 
 ### <a name="9">ReentrantLock</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-定义基于AQS实现独占锁及condition
-- Sync 抽象静态父类提供基础的一些实现。
+定义基于AQS实现独占锁及condition。ReentrantLock定义了抽象静态父类Sync提供基础的一些实现。
 - 公平锁 FairSync：尝试获取资源时候，均要查看是否有等待队列，若存在等待队列则不尝试获取锁，直接添加到队列里面。实现共享资源按顺序获取。
 - 非公平锁 NonfairSync：当线程要获取锁时，先通过两次 CAS 操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。
-  - 非公平锁会有更好的性能，因为它的吞吐量比较大。当然，非公平锁让获取锁的时间变得更加不确定，可能会导致在阻塞队列中的线程长期处于饥饿状态。
+  > 非公平锁会有更好的性能，因为它的吞吐量比较大。当然，非公平锁让获取锁的时间变得更加不确定，可能会导致在阻塞队列中的线程长期处于饥饿状态。
 
 AQS独占锁获取流程简述：
-  - 非公平锁:获取资源会先直接CAS去获取，没获取到进入acquire模板逻辑，若发现此时状态为0，会再进行一次CAS获取。
-  - 公平锁获取资源，会先检查是否有CLH队列存在，直接返回，不进行获取的逻辑。
-  - 以下共同逻辑，首先自旋+CAS操作添加当前线程节点到队尾。（包括初始化逻辑）。
-  - 接着判断前驱节点是否为头结点，如果为头结点就尝试一次获取。否则就修改前驱节点的状态为signal待唤醒状态，并挂起线程。
-  - 当有其他线程唤醒时，同样判断前驱是否为头结点，为头节点才获取。获取成功后，修改自身为头结点。脱离双向链表结构。
-  - unlock逻辑：状态减1，当状态为零时，释放共享资源。CAS替换头结点状态为0，从尾到头找第一个状态<0的节点，唤醒线程。
+1. 非公平锁:获取资源会先直接CAS去获取，没获取到进入acquire模板逻辑，若发现此时状态为0，会再进行一次CAS获取。
+2. 公平锁获取资源，会先检查是否有CLH队列存在，直接返回，不进行获取的逻辑。
+3. 以下共同逻辑
+  1. 首先自旋+CAS操作添加当前线程节点到队尾。（包括初始化逻辑）。
+  2. 接着判断前驱节点是否为头结点，如果为头结点就尝试一次获取。否则就修改前驱节点的状态为signal待唤醒状态，并挂起线程。
+  3. 当有其他线程唤醒时，同样判断前驱是否为头结点，为头节点才获取。获取成功后，修改自身为头结点。脱离双向链表结构。
+6. unlock逻辑：状态减1，当状态为零时，释放共享资源。CAS替换头结点状态为0，从尾到头找第一个状态<0的节点，唤醒线程。
   
 #### <a name="10">非公平锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
@@ -381,15 +391,14 @@ countdown方法：CAS+自旋扣减statue状态。当状态为0时，唤醒await�
   
 ### <a name="13">CyclicBarrier(可重复使用的栅栏)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 内部使用ReentrantLock 非公平锁，每次await时，加锁扣减数量，使用condition的await等待唤醒。CountDownLatch 基于 AQS 的共享模式的使用，而 CyclicBarrier 基于 Condition 来实现。
-  - 数量扣减为0时，如果有定义栅栏开始的方法则执行，并调用condition的signAll，条件单链表逐个唤醒。
-  - generation 代表栅栏重复使用的一代或者一个周期。
+> 数量扣减为0时，如果有定义栅栏开始的方法则执行，并调用condition的signAll，条件单链表逐个唤醒。 generation 代表栅栏重复使用的一代或者一个周期。
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/cyclicBarrier.jpg)
   
 什么时候栅栏会被打破，总结如下：
-  - 中断，如果某个等待的线程发生了中断，那么会打破栅栏，同时抛出 InterruptedException 异常；
-  - 超时，打破栅栏，同时抛出 TimeoutException 异常；
-  - 指定执行的操作抛出了异常。
+- 中断，如果某个等待的线程发生了中断，那么会打破栅栏，同时抛出 InterruptedException 异常；
+- 超时，打破栅栏，同时抛出 TimeoutException 异常；
+- 指定执行的操作抛出了异常。
  
 ```
  public int await() throws InterruptedException, BrokenBarrierException {
@@ -468,25 +477,24 @@ public Semaphore(int permits, boolean fair) {
 ### <a name="15">ReentrantReadWriteLock</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 内部分别定义了读锁与写锁。
 - 读锁共享锁实现。若当前头结点为状态0，则更新状态为propagate，保证共享锁的传播特性。
-  - ```
-     private void doAcquireShared() // 获取共享锁方法
-    
-       protected final int tryAcquireShared(int unused) {
-             
-            Thread current = Thread.currentThread();
-            int c = getState();
-            if (exclusiveCount(c) != 0 &&
-                getExclusiveOwnerThread() != current)
-                return -1;
-            int r = sharedCount(c);
-            if (!readerShouldBlock() &&
-                r < MAX_COUNT &&
-                // 设置最大共享线程数为  SHARED_UNIT    = (1 << 16)  65,536
-                compareAndSetState(c, c + SHARED_UNIT)) {
-           }
-        ...
-        }
-    ```
+```
+private void doAcquireShared() // 获取共享锁方法
+   protected final int tryAcquireShared(int unused) {
+         
+        Thread current = Thread.currentThread();
+        int c = getState();
+        if (exclusiveCount(c) != 0 &&
+            getExclusiveOwnerThread() != current)
+            return -1;
+        int r = sharedCount(c);
+        if (!readerShouldBlock() &&
+            r < MAX_COUNT &&
+            // 设置最大共享线程数为  SHARED_UNIT    = (1 << 16)  65,536
+            compareAndSetState(c, c + SHARED_UNIT)) {
+       }
+    ...
+  }
+```
 - 写锁独占锁实现。
 
 ### <a name="16">独占锁与共享锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -499,10 +507,10 @@ public Semaphore(int permits, boolean fair) {
 
 
 ### <a name="17">线程池中的Worker(独占锁实现)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-TODO
+详见Java线程章节
 
 ## <a name="18">Atomic 原子类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 原子类主要基于CAS操作实现，同时使用 volatile 保证可见性。
+原子类主要基于CAS操作实现，同时使用 volatile 保证可见性。
 
 ### <a name="19">原子类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用原子的方式更新基本类型
@@ -510,7 +518,7 @@ TODO
 - AtomicLong：长整型原子类
 - AtomicBoolean ：布尔型原子类
 
-- AtomicInteger 类常用方法
+AtomicInteger 类常用方法
 ```
 public final int get() //获取当前的值
 public final int getAndSet(int newValue)//获取当前的值，并设置新的值
@@ -527,7 +535,7 @@ public final void lazySet(int newValue)//最终设置为newValue,使用 lazySet 
 - AtomicLongArray：长整型数组原子类
 - AtomicReferenceArray ：引用类型数组原子类
 
-- AtomicIntegerArray 类常用方法
+AtomicIntegerArray 类常用方法
 ```
 public final int get(int i) //获取 index=i 位置元素的值
 public final int getAndSet(int i, int newValue)//返回 index=i 位置的当前的值，并将其设置为新值：newValue
@@ -612,47 +620,45 @@ DelayQueue 延迟队列实现使用数据结构使用PriorityQueue，**线程安
 - 队列中的元素必须是Delayed的实现类
 > 可应用于缓存失效及定时任务中。
 
-- take() 方法源码
+take() 方法源码
 ```
  public E take() throws InterruptedException {
-        final ReentrantLock lock = this.lock;
-        lock.lockInterruptibly();
-        try {
-            for (;;) {
-                E first = q.peek();
-                if (first == null)     // 一开始队列为空或者队列消费为空
+    final ReentrantLock lock = this.lock;
+    lock.lockInterruptibly();
+    try {
+        for (;;) {
+            E first = q.peek();
+            if (first == null)     // 一开始队列为空或者队列消费为空
+                available.await();
+            else {
+                // 获取队头的延迟元素的等待时间
+                long delay = first.getDelay(NANOSECONDS);
+                if (delay <= 0)
+                    return q.poll();   // 自旋方法的返回出口
+                first = null; // don't retain ref while waiting
+                if (leader != null)    // leader
                     available.await();
                 else {
-                    // 获取队头的延迟元素的等待时间
-                    long delay = first.getDelay(NANOSECONDS);
-                    if (delay <= 0)
-                        return q.poll();   // 自旋方法的返回出口
-                    first = null; // don't retain ref while waiting
-                    if (leader != null)    // leader
-                        available.await();
-                    else {
-                        Thread thisThread = Thread.currentThread();
-                        leader = thisThread;
-                        try {
-                            // 关键实现 结合一开始获取的等待时间，唤醒使用
-                            available.awaitNanos(delay);
-                        } finally {
-                            if (leader == thisThread)
-                                leader = null;
-                        }
+                    Thread thisThread = Thread.currentThread();
+                    leader = thisThread;
+                    try {
+                        // 关键实现 结合一开始获取的等待时间，唤醒使用
+                        available.awaitNanos(delay);
+                    } finally {
+                        if (leader == thisThread)
+                            leader = null;
                     }
                 }
             }
-        } finally {
-            // 当返回元素退出自旋的时候 唤醒条件队列下一个节点
-            if (leader == null && q.peek() != null)
-                available.signal();
-            lock.unlock();
         }
+    } finally {
+        // 当返回元素退出自旋的时候 唤醒条件队列下一个节点
+        if (leader == null && q.peek() != null)
+            available.signal();
+        lock.unlock();
     }
+}
 ```
-#### <a name="31">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- https://segmentfault.com/a/1190000016388106
-
-## <a name="32">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- https://www.javadoop.com/post/AbstractQueuedSynchronizer-3
+## <a name="31">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [Java多线程进阶（三六）—— J.U.C之collections框架：DelayQueue](https://segmentfault.com/a/1190000016388106)
+- [一行一行源码分析清楚 AbstractQueuedSynchronizer (三)](https://www.javadoop.com/post/AbstractQueuedSynchronizer-3)
