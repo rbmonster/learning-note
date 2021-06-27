@@ -2,24 +2,26 @@
 
 <a href="#0">Spring security</a>  
 &emsp;<a href="#1">1. 认证 Authentication</a>  
-&emsp;<a href="#2">2. 授权 Authorization</a>  
-&emsp;&emsp;<a href="#3">2.1. 基于注解</a>  
-&emsp;&emsp;<a href="#4">2.2. 使用配置添加权限</a>  
-&emsp;&emsp;<a href="#5">2.3. 总结</a>  
-&emsp;<a href="#6">3. 继承WebSecurityConfigurerAdapter的demo</a>  
-&emsp;<a href="#7">4. Session 与 Cookies 认证</a>  
-&emsp;&emsp;<a href="#8">4.1. 认证过程</a>  
-&emsp;&emsp;<a href="#9">4.2. Cookie 无法防止CSRF攻击</a>  
-&emsp;<a href="#10">5. 基于token认证 JWT</a>  
-&emsp;&emsp;<a href="#11">5.1. Session认证暴露的缺点</a>  
-&emsp;&emsp;<a href="#12">5.2. 基于token 认证流程</a>  
-&emsp;&emsp;<a href="#13">5.3. jwt 组成</a>  
-&emsp;&emsp;<a href="#14">5.4. 总结</a>  
-&emsp;<a href="#15">6. spring security + JWT</a>  
-&emsp;<a href="#16">7. JWT token 常见问题</a>  
-&emsp;&emsp;<a href="#17">7.1. 注销登录等场景下 token 处理</a>  
-&emsp;&emsp;<a href="#18">7.2. 过期token 的续签问题</a>  
-&emsp;<a href="#19">8. 相关资料</a>  
+&emsp;&emsp;<a href="#2">1.1. 整体流程</a>  
+&emsp;&emsp;<a href="#3">1.2. 基于session认证</a>  
+&emsp;<a href="#4">2. 授权 Authorization</a>  
+&emsp;&emsp;<a href="#5">2.1. 基于注解</a>  
+&emsp;&emsp;<a href="#6">2.2. 使用配置添加权限</a>  
+&emsp;&emsp;<a href="#7">2.3. 总结</a>  
+&emsp;<a href="#8">3. 继承WebSecurityConfigurerAdapter的demo</a>  
+&emsp;<a href="#9">4. Session 与 Cookies 认证</a>  
+&emsp;&emsp;<a href="#10">4.1. 认证过程</a>  
+&emsp;&emsp;<a href="#11">4.2. Cookie 无法防止CSRF攻击</a>  
+&emsp;<a href="#12">5. 基于token认证 JWT</a>  
+&emsp;&emsp;<a href="#13">5.1. Session认证暴露的缺点</a>  
+&emsp;&emsp;<a href="#14">5.2. 基于token 认证流程</a>  
+&emsp;&emsp;<a href="#15">5.3. jwt 组成</a>  
+&emsp;&emsp;<a href="#16">5.4. 总结</a>  
+&emsp;<a href="#17">6. spring security + JWT</a>  
+&emsp;<a href="#18">7. JWT token 常见问题</a>  
+&emsp;&emsp;<a href="#19">7.1. 注销登录等场景下 token 处理</a>  
+&emsp;&emsp;<a href="#20">7.2. 过期token 的续签问题</a>  
+&emsp;<a href="#21">8. 相关资料</a>  
 # <a name="0">Spring security</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 [Spring Security官网][https://docs.spring.io/spring-security/site/docs/5.4.2/reference/html5/#servlet-architecture]
@@ -35,28 +37,66 @@ SecurityContextHolder：Spring Security存储安全身份验证者详细信息�
 
 SecurityContext：从SecurityContextHolder获得，并包含当前经过身份验证的用户的身份验证。
 
-Authentication：可以是AuthenticationManager的输入，以提供用户提供的用于身份验证的凭据或来自SecurityContext的当前用户。
+Authentication：是AuthenticationManager的输入，以提供用户提供的用于身份验证的凭据。
 
 GrantedAuthority：授予身份验证主体的权限（即角色，作用域等）
 
 AuthenticationManager：定义Spring Security的过滤器如何执行身份验证的API。
 
-ProviderManager：AuthenticationManager的最常见实现。
+ProviderManager：AuthenticationManager的最常见实现，委托给一个 AuthenticationProviders 列表，每个AuthenticationProviders都可以验证登陆成功或者失败，如果没有一个 AuthenticationProvider验证通过， 那么会抛出ProviderNotFoundException。
 
-AuthenticationProvider：由ProviderManager用于执行特定类型的身份验证。
+AuthenticationProvider：可以通过supportType指定不同类型的认证的，比如账号密码的认证、token的认证等等。
 
-带AuthenticationEntryPoint的请求凭据：用于从客户端请求凭据（即重定向到登录页面，发送WWW身份验证响应等）
+AuthenticationEntryPoint：用于返回从客户端请求的 HTTP 响应（比如未认证的请求自动跳转、或者自己实现重定向到登录页面，发送WWW身份验证响应等）
 
-AbstractAuthenticationProcessingFilter：用于验证的基本过滤器。这也为高级身份验证流程以及各个部分如何协同工作提供了一个好主意。
+AbstractAuthenticationProcessingFilter：用作验证用户凭据的基本过滤器。 在验证前，Spring Security 通常使用 AuthenticationEntryPoint 请求凭据。
 
 UserDetailsService: spring security 默认提供的用户密码登陆接口。
 
+### <a name="2">整体流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![image](https://docs.spring.io/spring-security/site/docs/5.4.2/reference/html5/images/servlet/authentication/architecture/abstractauthenticationprocessingfilter.png)
+以下是流程解释的英文原文：
+1. When the user submits their credentials, the AbstractAuthenticationProcessingFilter creates an Authentication from the HttpServletRequest to be authenticated. The type of Authentication created depends on the subclass of AbstractAuthenticationProcessingFilter. For example, UsernamePasswordAuthenticationFilter creates a UsernamePasswordAuthenticationToken from a username and password that are submitted in the HttpServletRequest.
+2. Next, the Authentication is passed into the AuthenticationManager to be authenticated.
+3. If authentication fails, then Failure \
+The SecurityContextHolder is cleared out.
+RememberMeServices.loginFail is invoked. If remember me is not configured, this is a no-op.\
+AuthenticationFailureHandler is invoked.
+
+4. If authentication is successful, then Success.\
+SessionAuthenticationStrategy is notified of a new log in.\
+The Authentication is set on the SecurityContextHolder. Later the SecurityContextPersistenceFilter saves the SecurityContext to the HttpSession.\
+RememberMeServices.loginSuccess is invoked. If remember me is not configured, this is a no-op.\
+ApplicationEventPublisher publishes an InteractiveAuthenticationSuccessEvent.\
+AuthenticationSuccessHandler is invoked.
+
+大流程:
+1. AbstractAuthenticationProcessingFilter 过滤器从HttpServletRequest获取认证的标识，根据标识创建Authentication。具体创建何种类型的Authentication，自己通过继承AbstractAuthenticationProcessingFilter去实现
+   - > 比如UsernamePasswordAuthenticationFilter 创建的Authentication类型是UsernamePasswordAuthenticationToken
+2. Authentication传递到AuthenticationManager进行认证，ProviderManager会通过委托到支持具体该类型Authentication的AuthenticationProvider
+3. AuthenticationProvider进行认证，认证成功
+
+### <a name="3">基于session认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+默认的security认证是基于username的session认证
+
+第一次访问：
+1. 首先进入应用页面 SecurityContextPersistenceFilter会获取HttpSessionSecurityContextRepository#loadContext 获取cookies中的session，第一次进入jsessionId未空
+2. AbstractAuthenticationProcessingFilter.requiresAuthentication 判读是否需要验证,第一次进入页面为GET方法，而认证仅支持POST方式。
+3. DefaultLoginPageGeneratingFilter跳转登陆页面。我们cookies中增加了JsessionID
+
+第二次访问
+1. 登陆页面输入账号密码 SecurityContextPersistenceFilter会获取HttpSessionSecurityContextRepository#loadContext 获取cookies中的session，第一次进入jsessionId未空
+2. AbstractAuthenticationProcessingFilter.requiresAuthentication 判读是否需要验证,调用UsernamePasswordAuthenticationFilter的attemptAuthentication
+3. AbstractUserDetailsAuthenticationProvider 进行账户密码认证，将认证成功的加入到sessionContext中
+
+第三次访问
+1. SecurityContextPersistenceFilter根据JSESSIONID会获取HttpSessionSecurityContextRepository，发现该sessionId已认证pass
 
 
 
-## <a name="2">授权 Authorization</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="4">授权 Authorization</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="3">基于注解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="5">基于注解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用注解标注方法是否有权限
 ```
 @PreAuthorize("hasRole('USER')")
@@ -64,7 +104,7 @@ UserDetailsService: spring security 默认提供的用户密码登陆接口。
 public List<Contact> getAll();
 ```
 
-### <a name="4">使用配置添加权限</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="6">使用配置添加权限</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 另一种做法是在继承WebSecurityConfigurerAdapter时，将url及对应的权限全部load进 httpSecurity中
 ```
 ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry = http.authorizeRequests();
@@ -75,7 +115,7 @@ for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
 ```
 
 
-### <a name="5">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="7">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用配置添加权限，相当于需要一大部分的工作量配置角色对应的权限。
 - 好处：数据库显示前台表统一管理。
 - 坏处：配置工作量大，每个角色均需要配置。新增加接口需要新增加数据库记录。
@@ -86,7 +126,7 @@ for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
 
 
 
-## <a name="6">继承WebSecurityConfigurerAdapter的demo</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="8">继承WebSecurityConfigurerAdapter的demo</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 
 @EnableWebSecurity
@@ -115,8 +155,8 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 }
 ```
 
-## <a name="7">Session 与 Cookies 认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="8">认证过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="9">Session 与 Cookies 认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">认证过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 很多时候我们都是通过 SessionID 来实现特定的用户，SessionID 一般会选择存放在 Redis 中。举个例子：用户成功登陆系统，然后返回给客户端具有 SessionID 的 Cookie，当用户向后端发起请求的时候会把 SessionID 带上，这样后端就知道你的身份状态了。关于这种认证方式更详细的过程如下：
 
 1. 用户向服务器发送用户名和密码用于登陆系统。
@@ -128,7 +168,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 另外，Spring Session提供了一种跨多个应用程序或实例管理用户会话信息的机制。
 
-### <a name="9">Cookie 无法防止CSRF攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="11">Cookie 无法防止CSRF攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在登陆了网银后，点击误导的超链接，导致跨服务请求成功。
 ```
 <a src=http://www.mybank.com/Transfer?bankId=11&money=10000>科学理财，年盈利率过万</>
@@ -141,12 +181,12 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 可以使用token认证的方式避免误点攻击链接导致的跨服务请求问题。
 > 基于token 认证经常将认证凭证存储在local storage中，在请求的时候前端再动态添加凭证到请求中。因此误点的外部链接无法添加token到转发的请求中。
 
-## <a name="10">基于token认证 JWT</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="12">基于token认证 JWT</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（(RFC 7519).该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。
 
 
-### <a name="11">Session认证暴露的缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="13">Session认证暴露的缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 内存开销大： 每个用户经过我们的应用认证之后，我们的应用都要在服务端做一次记录，以方便用户下次请求的鉴别，通常而言session都是保存在内存中，而随着认证用户的增多，服务端的开销会明显增大。
 
 分布式场景限制：在分布式的应用上，相应的限制了负载均衡器的能力。这也意味着限制了应用的扩展能力。
@@ -156,7 +196,7 @@ CSRF跨服务请求问题: 因为是基于cookie来进行用户识别的, cookie
 
 
 
-### <a name="12">基于token 认证流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">基于token 认证流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 基于token的鉴权机制类似于http协议也是无状态的，它不需要在服务端去保留用户的认证信息或者会话信息。这就意味着基于token认证机制的应用不需要去考虑用户在哪一台服务器登录了，这就为应用的扩展提供了便利。
 
 流程上是这样的：
@@ -170,7 +210,7 @@ CSRF跨服务请求问题: 因为是基于cookie来进行用户识别的, cookie
 
 
 
-### <a name="13">jwt 组成</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="15">jwt 组成</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 JWT 由 3 部分构成:
 1. Header :描述 JWT 的元数据。定义了生成签名的算法以及 Token 的类型。
 2. Payload（负载）:用来存放实际需要传递的数据
@@ -195,7 +235,7 @@ JWT 由 3 部分构成:
  }
 ```
 
-### <a name="14">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 优点
 1. 因为json的通用性，所以JWT是可以进行跨语言支持的，像JAVA,JavaScript,NodeJS,PHP等很多语言都可以使用。
 2. 因为有了payload部分，所以JWT可以在自身存储一些其他业务逻辑所必要的非敏感信息。
@@ -207,7 +247,7 @@ JWT 由 3 部分构成:
 2. 保护好secret私钥，该私钥非常重要。
 3. 如果可以，请使用https协议
 
-## <a name="15">spring security + JWT</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="17">spring security + JWT</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 继承WebSecurityConfigurerAdapter类，重写config 方法，定制一些httpSecurity的规则。
 > 对于前后端分离的开发模式，需开放一个签发认证的url接口，而其他url接口根据业务要求，可以直接屏蔽返回未认证。
 ```
@@ -286,8 +326,8 @@ JWT 由 3 部分构成:
     }
 ```
 
-## <a name="16">JWT token 常见问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="17">注销登录等场景下 token 处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="18">JWT token 常见问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">注销登录等场景下 token 处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 需要处理token的场景：
 1. 退出登录;
 2. 修改密码;
@@ -303,7 +343,7 @@ JWT 由 3 部分构成:
 2. 设置较短的token过期时间，但是会导致用户频繁登陆，体验不好。
 
 
-### <a name="18">过期token 的续签问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">过期token 的续签问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. token有效期延长。适合安全度不高的系统。
 2. 用户登录返回两个 token。一个用于登陆一个用于续签。
     - 一个是 acessToken ，它的过期时间 token 本身的过期时间比如半个小时
@@ -315,6 +355,6 @@ JWT 由 3 部分构成:
 
 
 
-## <a name="19">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="21">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [认证基础知识](https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md)
 - [jwt认证](https://www.jianshu.com/p/576dbf44b2ae)
