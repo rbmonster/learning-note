@@ -274,6 +274,59 @@ ReentrantLock lock = new ReentrantLock(true);
     }
 ```
 
+## 使用String常量作为synchronized的锁 优化同步锁
+String是final的，每次对它的操作都会产生新的String，这很大程度上是安全性的考虑，但是产生大量的String也是会有一些问题的。
+1. 大量的String会对gc产生影响；
+2. 两次 new String（“aa”）操作，产生的String不一样，如果用这两个去做synchronized（String）操作就达不到想要的效果，因为synchronized必须是对同一个对象进行加锁才有效果。
+
+
+以下为demo：
+1. `synchronized (lock)` 输出为乱序
+2. `synchronized (lock.intern()) ` 输出为顺序
+3. `synchronized (pool.intern(lock)) ` 输出为顺序
+```java
+
+public class StringSynchronized {
+
+
+    public static void main(String[] args) throws InterruptedException {
+        Interner<String> pool = Interners.newWeakInterner();
+
+        for (int i = 1; i < 10; i++) {
+            TestString billno123 = new TestString("billNo:123123123", i, pool);
+            Thread thread = new Thread(billno123);
+            thread.start();
+        }
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("finish");
+    }
+}
+
+@Slf4j
+@AllArgsConstructor
+@Data
+class TestString implements Runnable{
+    private final String lock;
+    private int workingNo;
+    private Interner<String> pool;
+
+    @Override
+    public void run() {
+//        synchronized (lock) {
+//        synchronized (lock.intern()) {
+       synchronized (pool.intern(lock)) {
+            log.info(lock + " ==>" +workingNo);
+        }
+    }
+}
+
+```
+
+区别是：
+1. interns常量池有限，存储在hashtable中，数据多了之后，碰撞厉害，而且容易加重full gc负担 
+2. Interners内部基于ConcurrentHashMap实现，而且可以设置引用类型，不会加重full gc负担，但有一个问题就是如果gc回收了存储在Interners里面的String，那么pool.intern(lock)可能也会返回不同的引用，总之，还是建议使用Interners，效率和内存使用率更高
+
+
 
 ## 线程安全的类定义
 1. 无状态的类：没有任何成员变量的类，如无任何方法的枚举类型。
@@ -341,11 +394,11 @@ public final class T extends Enum
 > 创建一个enum类型是线程安全的。
 
 
-- 相关资料：https://www.cnblogs.com/z00377750/p/9177097.html
+- 相关资料：[深度分析Java的枚举类型—-枚举的线程安全性及序列化问题](https://www.cnblogs.com/z00377750/p/9177097.html)
 
 ## 单订单重复退款请求
 1. synchronize修饰退款方法。 
-2. 缩小synchronize锁范围，使用对象锁。对象锁，创建弱引用的一个订单ID对象，放到同一的锁对象资源池中。
+2. 缩小synchronize锁范围，使用对象锁。对象锁，创建弱引用的一个订单ID对象，放到统一的锁对象资源池中。
    - 清理锁对象可以使用守护线程的方法，基于Unsafe的包操作去清除。
 3. 分布式应用，使用分布式锁来处理。
 
@@ -407,3 +460,36 @@ public final class T extends Enum
 ### 相关类似资料
 [批量任务体现多线程的威力！](https://juejin.cn/post/6844903774234869774) \
 [JAVA实现多线程处理批量发送短信、APP推送](https://blog.csdn.net/weixin_30443747/article/details/95104128)
+
+## future编程
+```
+
+List<Future<String>> futureList = new ArrayList<>();
+for (ChannelModel channel : channels) {
+    Future<String> future = executorService
+            .submit(() -> load(channel.getChannel()));
+    futureList.add(future);
+}
+
+final long deadline = System.currentTimeMillis() + MAX_LOAD_SECONDS * 1000;
+for (int i = 0; i < futureList.size(); i++) {
+    Future<RateModel> future = futureList.get(i);
+    try {
+        long timeLeft = deadline - System.currentTimeMillis();
+        if (timeLeft > 0) {
+            // 设定时间取出任务
+            String model = future.get(timeLeft, TimeUnit.MILLISECONDS);
+            ... 
+        } else {
+            if (future.isDone()) {
+                RateModel rateModel = future.get();
+                ... 
+            } else {
+                future.cancel(true);
+            }
+        }
+    } catch (InterruptedException e) {
+      ...
+    }
+}
+```

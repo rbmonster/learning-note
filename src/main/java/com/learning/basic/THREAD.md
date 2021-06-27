@@ -151,6 +151,26 @@ ReentrantLock调用锁的lockInterruptibly()方法，
 4. 利用中断标识，可以调用 thread.interrupt()方法，在线程的 run 方法内部可以根据 thread.isInterrupted()的值来优雅的终止线程。
 
 ## 线程池
+
+```
+
+/**
+ * Lock held on access to workers set and related bookkeeping.
+ * While we could use a concurrent set of some sort, it turns out
+ * to be generally preferable to use a lock. Among the reasons is
+ * that this serializes interruptIdleWorkers, which avoids
+ * unnecessary interrupt storms, especially during shutdown.
+ * Otherwise exiting threads would concurrently interrupt those
+ * that have not yet interrupted. It also simplifies some of the
+ * associated statistics bookkeeping of largestPoolSize etc. We
+ * also hold mainLock on shutdown and shutdownNow, for the sake of
+ * ensuring workers set is stable while separately checking
+ * permission to interrupt and actually interrupting.
+ */
+private final ReentrantLock mainLock = new ReentrantLock();
+```
+线程池的主要状态锁，对线程池状态（比如线程池大小、runState等）的改变都要使用这个锁
+
 ### 线程池状态
 线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadPool.png)
@@ -364,12 +384,42 @@ public final class NamingThreadFactory implements ThreadFactory {
 ```
 
 ### Worker工作流程
+```java 
+
+    /**
+     * Set containing all worker threads in pool. Accessed only when
+     * holding mainLock.
+     */
+    private final HashSet<Worker> workers = new HashSet<Worker>();
+    
+    
+    /**
+     * Class Worker mainly maintains interrupt control state for
+     * threads running tasks, along with other minor bookkeeping.
+     * This class opportunistically extends AbstractQueuedSynchronizer
+     * to simplify acquiring and releasing a lock surrounding each
+     * task execution.  This protects against interrupts that are
+     * intended to wake up a worker thread waiting for a task from
+     * instead interrupting a task being run.  We implement a simple
+     * non-reentrant mutual exclusion lock rather than use
+     * ReentrantLock because we do not want worker tasks to be able to
+     * reacquire the lock when they invoke pool control methods like
+     * setCorePoolSize.  Additionally, to suppress interrupts until
+     * the thread actually starts running tasks, we initialize lock
+     * state to a negative value, and clear it upon start (in
+     * runWorker).
+     */
+    private final class Worker
+        extends AbstractQueuedSynchronizer
+        implements Runnable {
+        
+    }
+```
 Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实现了简单的不可重入的互斥锁。
 1. 使用AQS框架提供对线程的中断控制。
-2. 不可重入互斥，保证了在runWorker方法中执行的线程安全。
-    - 主要为了防止自我中断的现象发生。
-        1. 因为RunWorker方法中存在beforeExecute、afterExecute的空插槽方法，若方法重写后调用了`setCorePoolSize()`, 使用ReentrantLock会导致线程可重入，进而导致自我中断的现象发生。
-        2. 另外线程中的实际执行方法也可能调用`setCorePoolSize()`。
+2. 不可重入互斥，保证了在runWorker方法中执行的线程安全。 主要为了防止自我中断的现象发生。
+    1. 因为RunWorker方法中存在beforeExecute、afterExecute的空插槽方法，若方法重写后调用了`setCorePoolSize()`, 使用ReentrantLock会导致线程可重入，进而导致自我中断的现象发生。
+    2. 另外线程中的实际执行方法也可能调用 `setCorePoolSize()`。
 3. Worker使用HashSet进行保存，通过ReentrantLock方法保证线程安全，控制Worker集合的修改。
 
 ```
@@ -474,7 +524,7 @@ private Runnable getTask() {
 #### 超数量线程的销毁
 1. 超过核心线程数的线程在通过`getTask()`方法中通过使用`workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)`未获取到线程的
 2. 退出线程的while方法，进而进入到销毁流程。
-3. 销毁线程通过ReentrantLock获取WokersSet的操作权限，进而移除线程。
+3. 销毁线程通过ReentrantLock获取WorkerSet的操作权限，进而移除线程。
 
 #### 相关资料
 - [Worker继承AQS的原因](https://stackoverflow.com/questions/42189195/why-threadpoolexecutorworker-extends-abstractqueuedsynchronizer)
@@ -495,10 +545,9 @@ set元素逻辑：
 2. 如果存在元素对比当前Entry key的hash 是否一致，一致则直接替换元素。
 3. 若不一致，向后一次找一个空位。
   
-TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收的情况
-- 在set的时如果遇到Entry是被回收的值，则触发探测性清理。
-    - 探测性清理：以当前Entry 向后迭代查找，遇到为null则结束清理，遇到entry为空的值，清空数组位置，size--。非空的entry计算重哈希的位置。
-    - 启发性清理：向后递归查找一个过期的位置，找到过期的位置触发探测性清理。
+TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收的情况。使用在set的时如果遇到Entry是被回收的值，则触发探测性清理。
+- 探测性清理：以当前Entry 向后迭代查找，遇到为null则结束清理，遇到entry为空的值，清空数组位置，size--。非空的entry计算重哈希的位置。
+- 启发性清理：向后递归查找一个过期的位置，找到过期的位置触发探测性清理。
 
 扩容： 扩容后的tab的大小为oldLen * 2，然后遍历老的散列表，重新计算hash位置，然后放到新的tab数组中，
 > 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
@@ -512,6 +561,7 @@ InheritableThreadLocal： 父线程与子线程共享threadLocal的方案，new 
 Spring 事务应用
 - Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
 - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
+- spring security 使用ThreadLocal 存储是否请求是否已经认证。
   
 > 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文（Context），它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
 
@@ -547,7 +597,8 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
   - @EnableAsync：通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
   - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
 > 没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
-  - ```
+
+```
     @Bean
       public Executor taskExecutor() {
         // Spring 默认配置是核心线程数大小为1，最大线程容量大小不受限制，队列容量也不受限制。
@@ -560,7 +611,7 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
         executor.initialize();
         return executor;
       }
-    ```
+```
 ### 异步编程的例子：
 ```
      @Async
