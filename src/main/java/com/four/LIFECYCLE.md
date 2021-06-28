@@ -79,40 +79,40 @@ finishBeanFactoryInitialization(beanFactory);  -> InstantiationAwareBeanPostProc
 ```
 org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeAwareMethods
 
-    private void invokeAwareMethods(final String beanName, final Object bean) {
-		if (bean instanceof Aware) {
-			if (bean instanceof BeanNameAware) {
-				((BeanNameAware) bean).setBeanName(beanName);
-			}
-			if (bean instanceof BeanClassLoaderAware) {
-				ClassLoader bcl = getBeanClassLoader();
-				if (bcl != null) {
-					((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
-				}
-			}
-			if (bean instanceof BeanFactoryAware) {
-				((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
-			}
-		}
-	}
+private void invokeAwareMethods(final String beanName, final Object bean) {
+    if (bean instanceof Aware) {
+        if (bean instanceof BeanNameAware) {
+            ((BeanNameAware) bean).setBeanName(beanName);
+        }
+        if (bean instanceof BeanClassLoaderAware) {
+            ClassLoader bcl = getBeanClassLoader();
+            if (bcl != null) {
+                ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
+            }
+        }
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+        }
+    }
+}
 ```
 
 ### BeanProcessor 调用流程
 ```
 org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(java.lang.String, java.lang.Object, org.springframework.beans.factory.support.RootBeanDefinition)
 
-    @Override
-	public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
-			throws BeansException {
+@Override
+public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+        throws BeansException {
 
-		Object result = existingBean;
-		for (BeanPostProcessor processor : getBeanPostProcessors()) {
-			Object current = processor.postProcessBeforeInitialization(result, beanName);
-			if (current == null) {
-				return result;
-			}
-			result = current;
-		}
-		return result;
-	}
+    Object result = existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        Object current = processor.postProcessBeforeInitialization(result, beanName);
+        if (current == null) {
+            return result;
+        }
+        result = current;
+    }
+    return result;
+}
 ```

@@ -68,23 +68,23 @@ DataSourceInitializerInvoker 是spring 上下文的事件驱动模型的监听�
 - 继承InitializingBean接口，执行数据库初始化的操作  （ 目前主要通过这个触发）
 
 ```
-    @Override
-	public void afterPropertiesSet() {
-		DataSourceInitializer initializer = getDataSourceInitializer();
-		...
+@Override
+public void afterPropertiesSet() {
+    DataSourceInitializer initializer = getDataSourceInitializer();
+    ...
+}
+
+private DataSourceInitializer getDataSourceInitializer() {
+    if (this.dataSourceInitializer == null) {
+        // 这边初始化Bean
+        DataSource ds = this.dataSource.getIfUnique();
+        if (ds != null) {
+            this.dataSourceInitializer = new DataSourceInitializer(ds, this.properties, this.applicationContext);
+        }
     }
+    return this.dataSourceInitializer;
+}
     
-    private DataSourceInitializer getDataSourceInitializer() {
-    		if (this.dataSourceInitializer == null) {
-                // 这边初始化Bean
-    			DataSource ds = this.dataSource.getIfUnique();
-    			if (ds != null) {
-    				this.dataSourceInitializer = new DataSourceInitializer(ds, this.properties, this.applicationContext);
-    			}
-    		}
-    		return this.dataSourceInitializer;
-    	}
-		
 ```
 
 ### DruidDataSourceAutoConfigure 阿里数据库
@@ -110,8 +110,8 @@ AbstractRoutingDataSource 为DataSource接口的一个子类，提供了路由�
 
 提供如下抽象方法，让继承子类返回需要执行的datasource Key
 ```
-    @Nullable
-    protected abstract Object determineCurrentLookupKey();
+@Nullable
+protected abstract Object determineCurrentLookupKey();
 ```
 
 
@@ -124,19 +124,19 @@ AbstractRoutingDataSource 为DataSource接口的一个子类，提供了路由�
 
 - 这里使用阿里的Druid数据源，可以结合@ConfigurationProperties与DuridBuilder生成数据源配置
 ```
-    @Bean(name = "dbMaster")
-    @ConfigurationProperties(prefix = "spring.datasource.druid.master")
-    public DataSource dbMaster() {
-        log.info("generate master dataSource independently");
-        return DruidDataSourceBuilder.create().build();
-    }
+@Bean(name = "dbMaster")
+@ConfigurationProperties(prefix = "spring.datasource.druid.master")
+public DataSource dbMaster() {
+    log.info("generate master dataSource independently");
+    return DruidDataSourceBuilder.create().build();
+}
 
-    @Bean(name = "dbSlave")
-    @ConfigurationProperties(prefix = "spring.datasource.druid.slave")
-    public DataSource dbSlave() {
-        log.info("generate slave dataSource independently");
-        return DruidDataSourceBuilder.create().build();
-    }
+@Bean(name = "dbSlave")
+@ConfigurationProperties(prefix = "spring.datasource.druid.slave")
+public DataSource dbSlave() {
+    log.info("generate slave dataSource independently");
+    return DruidDataSourceBuilder.create().build();
+}
 ```
 
 
@@ -208,23 +208,22 @@ public class DynamicDataSourceRouter extends AbstractRoutingDataSource {
 
 初始化dynamicDataSourceRouter数据源：
 ```
-    @Primary
-    @Bean(name = "dataSource") // 对应Bean: DataSource
-    public DataSource dynamicDataSource(@Qualifier("dbMaster") DataSource master, @Qualifier("dbSlave") DataSource slave) {
-        DynamicDataSourceRouter dataSourceRouter = new DynamicDataSourceRouter();
-        log.info(" ---------------------- dynamic dataSource configure begin----------------------");
-        DruidDataSource druidDataSourceMaster = (DruidDataSource) master;
-        DruidDataSource druidDataSourceSlave = (DruidDataSource) slave;
-        //配置多数据源
-        Map<Object, Object> map = new HashMap<>(5);
-        map.put(DataSourceEnum.SLAVE.getName(), slave);
-        map.put(DataSourceEnum.MASTER.getName(), master);    // key需要跟ThreadLocal中的值对应
-        // master 作为默认数据源
-        dataSourceRouter.setDefaultTargetDataSource(master);
-        dataSourceRouter.setTargetDataSources(map);
-        return dataSourceRouter;
-    }
-
+@Primary
+@Bean(name = "dataSource") // 对应Bean: DataSource
+public DataSource dynamicDataSource(@Qualifier("dbMaster") DataSource master, @Qualifier("dbSlave") DataSource slave) {
+    DynamicDataSourceRouter dataSourceRouter = new DynamicDataSourceRouter();
+    log.info(" ---------------------- dynamic dataSource configure begin----------------------");
+    DruidDataSource druidDataSourceMaster = (DruidDataSource) master;
+    DruidDataSource druidDataSourceSlave = (DruidDataSource) slave;
+    //配置多数据源
+    Map<Object, Object> map = new HashMap<>(5);
+    map.put(DataSourceEnum.SLAVE.getName(), slave);
+    map.put(DataSourceEnum.MASTER.getName(), master);    // key需要跟ThreadLocal中的值对应
+    // master 作为默认数据源
+    dataSourceRouter.setDefaultTargetDataSource(master);
+    dataSourceRouter.setTargetDataSources(map);
+    return dataSourceRouter;
+}
 ```
 
 ### 具体使用
@@ -235,20 +234,20 @@ public class DynamicDataSourceRouter extends AbstractRoutingDataSource {
 #### Aop 实现
 - 声明切面，获取注解上的数据库key
 ```
-  @Pointcut("@annotation(DS)")
-    public void dbAspect(){
-        log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~this is logProcess!");
-    }
+@Pointcut("@annotation(DS)")
+public void dbAspect(){
+    log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~this is logProcess!");
+}
 
-    @Before("dbAspect()")
-    public void changeDB(JoinPoint joinPoint){
-        log.info("this is before");
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        DS annotation = AnnotationUtils.findAnnotation(signature.getMethod(), DS.class);
-        if (Objects.nonNull(annotation)) {
-            DataSourceContextHolder.putDataSource(annotation.name().getName());
-        }
+@Before("dbAspect()")
+public void changeDB(JoinPoint joinPoint){
+    log.info("this is before");
+    MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+    DS annotation = AnnotationUtils.findAnnotation(signature.getMethod(), DS.class);
+    if (Objects.nonNull(annotation)) {
+        DataSourceContextHolder.putDataSource(annotation.name().getName());
     }
+}
 ```
 
 #### 方法

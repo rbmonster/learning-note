@@ -5,18 +5,18 @@
 ## java 自带延迟队列
 
 ```
-    public static void main(String[] args) throws InterruptedException {
-        DelayQueue<DelayMealTask> queue = new DelayQueue<>();
-        DelayMealTask task = new DelayMealTask(System.nanoTime() + ThreadLocalRandom.current().nextLong(100000000L, 300000000L));
-        queue.add(task);
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        System.out.println("begin to take task");
-        DelayMealTask take = queue.take();
-        System.out.println("get task complete id :"+take.getTaskId());
-        stopWatch.stop();
-        System.out.println("cost time : " +stopWatch.getTotalTimeMillis());
-    }
+public static void main(String[] args) throws InterruptedException {
+    DelayQueue<DelayMealTask> queue = new DelayQueue<>();
+    DelayMealTask task = new DelayMealTask(System.nanoTime() + ThreadLocalRandom.current().nextLong(100000000L, 300000000L));
+    queue.add(task);
+    StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+    System.out.println("begin to take task");
+    DelayMealTask take = queue.take();
+    System.out.println("get task complete id :"+take.getTaskId());
+    stopWatch.stop();
+    System.out.println("cost time : " +stopWatch.getTotalTimeMillis());
+}
 
 // output ~
 
@@ -41,48 +41,48 @@ cost time : 110
 </dependency> 
 
 public void producer(){
-         RedissonClient redissonClient = Redisson.create(config);
-         // 阻塞队列用于后端服务器的消费
-         RBlockingQueue<CallCdr> blockingFairQueue = redissonClient.getBlockingQueue("delay_queue");
- 
-         RDelayedQueue<CallCdr> delayedQueue = redissonClient.getDelayedQueue(blockingFairQueue);
-         for (int i = 0; i <10 ; i++) {
-             try {
-                 Thread.sleep(1*1000);
-             } catch (InterruptedException e) {
-                 e.printStackTrace();
-             }
-             // 一分钟以后将消息发送到指定队列
-            //相当于1分钟后取消订单
-            // 延迟队列包含callCdr 1分钟，然后将其传输到blockingFairQueue中
-             //在1分钟后就可以在blockingFairQueue 中获取callCdr了 
-            // (CallCdr自定义的类)
-             CallCdr callCdr = new CallCdr(30000.00);
-             callCdr.setPutTime();
-             delayedQueue.offer(callCdr, 1, TimeUnit.MINUTES);
- 
-         }
-        // 在该对象不再需要的情况下，应该主动销毁。
-        // 仅在相关的Redisson对象也需要关闭的时候可以不用主动销毁。
-         delayedQueue.destroy();
+    RedissonClient redissonClient = Redisson.create(config);
+    // 阻塞队列用于后端服务器的消费
+    RBlockingQueue<CallCdr> blockingFairQueue = redissonClient.getBlockingQueue("delay_queue");
+    
+    RDelayedQueue<CallCdr> delayedQueue = redissonClient.getDelayedQueue(blockingFairQueue);
+    for (int i = 0; i <10 ; i++) {
+     try {
+         Thread.sleep(1*1000);
+     } catch (InterruptedException e) {
+         e.printStackTrace();
+     }
+     // 一分钟以后将消息发送到指定队列
+    //相当于1分钟后取消订单
+    // 延迟队列包含callCdr 1分钟，然后将其传输到blockingFairQueue中
+     //在1分钟后就可以在blockingFairQueue 中获取callCdr了 
+    // (CallCdr自定义的类)
+     CallCdr callCdr = new CallCdr(30000.00);
+     callCdr.setPutTime();
+     delayedQueue.offer(callCdr, 1, TimeUnit.MINUTES);
+    
+    }
+    // 在该对象不再需要的情况下，应该主动销毁。
+    // 仅在相关的Redisson对象也需要关闭的时候可以不用主动销毁。
+    delayedQueue.destroy();
 ...
 }
 
 
 public void comsumer() {
-     ...
-     RedissonClient redissonClient = Redisson.create(config);
-     RBlockingQueue<CallCdr> blockingFairQueue = redissonClient.getBlockingQueue("delay_queue");
-     RDelayedQueue<CallCdr> delayedQueue = redissonClient.getDelayedQueue(blockingFairQueue);
-     while (true){
-         CallCdr callCdr = null;
-         try {
-             callCdr = blockingFairQueue.take();
-         } catch (InterruptedException e) {
-             e.printStackTrace();
-         }
-         System.out.println("订单取消时间："+new SimpleDateFormat("hh:mm:ss").format(new Date())+"==订单生成时间"+callCdr.getPutTime());
+    ...
+    RedissonClient redissonClient = Redisson.create(config);
+    RBlockingQueue<CallCdr> blockingFairQueue = redissonClient.getBlockingQueue("delay_queue");
+    RDelayedQueue<CallCdr> delayedQueue = redissonClient.getDelayedQueue(blockingFairQueue);
+    while (true){
+     CallCdr callCdr = null;
+     try {
+         callCdr = blockingFairQueue.take();
+     } catch (InterruptedException e) {
+         e.printStackTrace();
      }
+        System.out.println("订单取消时间："+new SimpleDateFormat("hh:mm:ss").format(new Date())+"==订单生成时间"+callCdr.getPutTime());
+    }
     ...
 }
 ```
@@ -131,12 +131,10 @@ java 线程池中ScheduledThreadPoolExecutor时发现它主要依赖线程池和
 
 redis可以结合RedissonClient 实现定时任务，做为一个分布式的定时任务。
 
-- 相关文章：https://zhuanlan.zhihu.com/p/107624995
 ### 相关文章
-- https://blog.csdn.net/weixin_34392435/article/details/87993708
-
-
+- [超简单使用redisson延迟队列做定时任务](https://zhuanlan.zhihu.com/p/107624995)
+- [聊聊redisson的DelayedQueue](https://blog.csdn.net/weixin_34392435/article/details/87993708)
 
 ## 相关文章 
-- 延时队列的三种实现：https://blog.csdn.net/zsj777/article/details/82468212
-- 延时队列：https://zhuanlan.zhihu.com/p/87113913
+- [延时队列的三种实现](https://blog.csdn.net/zsj777/article/details/82468212)
+- [延时队列](https://zhuanlan.zhihu.com/p/87113913)

@@ -138,7 +138,7 @@ public Observable<R> toObservable() {
 
 
 
-- 断路器整体逻辑实现
+断路器整体逻辑实现
 ```
 private Observable<R> applyHystrixSemantics(final AbstractCommand<R> _cmd) {
     // mark that we're starting execution on the ExecutionHook

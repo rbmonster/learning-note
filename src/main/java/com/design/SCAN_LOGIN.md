@@ -1,7 +1,7 @@
 # 扫码登陆
 
 相关文章：
-- https://www.cnblogs.com/lidedong/p/9715200.html
+[扫码登录原理实现](https://www.cnblogs.com/lidedong/p/9715200.html)
 
 主要为三部分的交互网页、app、服务端
 

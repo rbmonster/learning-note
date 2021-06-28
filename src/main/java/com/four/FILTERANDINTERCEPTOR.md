@@ -34,50 +34,50 @@ spring mvc的拦截器是只拦截controller而不拦截jsp,html 页面文件的
 - 拦截器：关注方法调用；
 ```
 protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpServletRequest processedRequest = request;
-        HandlerExecutionChain mappedHandler = null;
-        boolean multipartRequestParsed = false;
-        WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+    HttpServletRequest processedRequest = request;
+    HandlerExecutionChain mappedHandler = null;
+    boolean multipartRequestParsed = false;
+    WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 
+    try {
         try {
-            try {
-             
-                    HandlerAdapter ha = this.getHandlerAdapter(mappedHandler.getHandler());
-                    String method = request.getMethod();
-                    // preHandler前置处理，如果返回false 直接不执行。
-                    if (!mappedHandler.applyPreHandle(processedRequest, response)) {
-                        return;
-                    }
-                    // 具体请求调用
-                    mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
-                    if (asyncManager.isConcurrentHandlingStarted()) {
-                        return;
-                    }
-
-                    this.applyDefaultViewName(processedRequest, mv);
-                    // postHandle 后置调用
-                    mappedHandler.applyPostHandle(processedRequest, response, mv);
-                } catch (Exception var20) {
-                    dispatchException = new NestedServletException("Handler dispatch failed", var21);
+         
+                HandlerAdapter ha = this.getHandlerAdapter(mappedHandler.getHandler());
+                String method = request.getMethod();
+                // preHandler前置处理，如果返回false 直接不执行。
+                if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+                    return;
+                }
+                // 具体请求调用
+                mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
+                if (asyncManager.isConcurrentHandlingStarted()) {
+                    return;
                 }
 
-                this.processDispatchResult(processedRequest, response, mappedHandler, mv, (Exception)dispatchException);
-            } catch (Exception var22) {
-                ......
+                this.applyDefaultViewName(processedRequest, mv);
+                // postHandle 后置调用
+                mappedHandler.applyPostHandle(processedRequest, response, mv);
+            } catch (Exception var20) {
+                dispatchException = new NestedServletException("Handler dispatch failed", var21);
             }
 
-        } finally {
-            if (asyncManager.isConcurrentHandlingStarted()) {
-                if (mappedHandler != null) {
-                    //  请求全部完成后调用
-                    mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
-                }
-            } else if (multipartRequestParsed) {
-                this.cleanupMultipart(processedRequest);
-            }
-
+            this.processDispatchResult(processedRequest, response, mappedHandler, mv, (Exception)dispatchException);
+        } catch (Exception var22) {
+            ......
         }
+
+    } finally {
+        if (asyncManager.isConcurrentHandlingStarted()) {
+            if (mappedHandler != null) {
+                //  请求全部完成后调用
+                mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
+            }
+        } else if (multipartRequestParsed) {
+            this.cleanupMultipart(processedRequest);
+        }
+
     }
+}
 
 ```
 

@@ -54,75 +54,74 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 
 ### TransactionAspectSupport
 transactionInfoHolder：定义一个ThreadLocal，Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
-- @Transaction方法调用链条：
+
+@Transaction方法调用链条：
 ```
 // 方法拦截器：TransactionInterceptor.invoke
-
- @Nullable
-    protected Object invokeWithinTransaction(Method method, @Nullable Class<?> targetClass, TransactionAspectSupport.InvocationCallback invocation) throws Throwable {
-            // 获取参数配置
-           TransactionAttributeSource tas = this.getTransactionAttributeSource();
-           TransactionAttribute txAttr = tas != null ? tas.getTransactionAttribute(method, targetClass) : null;
-            // 生成对应配置的事务管理器
-           TransactionManager tm = this.determineTransactionManager(txAttr);
-            // 判断事务的种类
-            .....
-            // 常规的DataSourceManager
-                // createTransactionIfNecessary内部，内部主要就是使用spring事务硬编码的方式开启事务，最终会返回一个TransactionInfo对象
-                TransactionAspectSupport.TransactionInfo txInfo = this.createTransactionIfNecessary(ptm, txAttr, joinpointIdentification);
+@Nullable
+protected Object invokeWithinTransaction(Method method, @Nullable Class<?> targetClass, TransactionAspectSupport.InvocationCallback invocation) throws Throwable {
+    // 获取参数配置
+    TransactionAttributeSource tas = this.getTransactionAttributeSource();
+    TransactionAttribute txAttr = tas != null ? tas.getTransactionAttribute(method, targetClass) : null;
+    // 生成对应配置的事务管理器
+    TransactionManager tm = this.determineTransactionManager(txAttr);
+    // 判断事务的种类
+    .....
+    // 常规的DataSourceManager
+        // createTransactionIfNecessary内部，内部主要就是使用spring事务硬编码的方式开启事务，最终会返回一个TransactionInfo对象
+        TransactionAspectSupport.TransactionInfo txInfo = this.createTransactionIfNecessary(ptm, txAttr, joinpointIdentification);
     
-                try {
-                    // 方法执行
-                    retVal = invocation.proceedWithInvocation();
-                } catch (Throwable var18) {
-                    //异常情况下，处理取决于事务的配置
-                    completeTransactionAfterThrowing(txInfo, ex);
-                    throw ex;
-                }
-                finally {
-                    //清理事务信息
-                    cleanupTransactionInfo(txInfo);
-                }
-                // retVal干啥的不确定 ----如果 retVal的类型是 Try 则在 Try onFailure 中执行回滚判定
-                if (vavrPresent && TransactionAspectSupport.VavrDelegate.isVavrTry(retVal)) {
-                    TransactionStatus status = txInfo.getTransactionStatus();
-                    if (status != null && txAttr != null) {
-                        retVal = TransactionAspectSupport.VavrDelegate.evaluateTryFailure(retVal, txAttr, status);
-                    }
-                }
+        try {
+            // 方法执行
+            retVal = invocation.proceedWithInvocation();
+        } catch (Throwable var18) {
+            //异常情况下，处理取决于事务的配置
+            completeTransactionAfterThrowing(txInfo, ex);
+            throw ex;
+        }
+        finally {
+            //清理事务信息
+            cleanupTransactionInfo(txInfo);
+        }
+        // retVal干啥的不确定 ----如果 retVal的类型是 Try 则在 Try onFailure 中执行回滚判定
+        if (vavrPresent && TransactionAspectSupport.VavrDelegate.isVavrTry(retVal)) {
+            TransactionStatus status = txInfo.getTransactionStatus();
+            if (status != null && txAttr != null) {
+                retVal = TransactionAspectSupport.VavrDelegate.evaluateTryFailure(retVal, txAttr, status);
+            }
+        }
     
-                 //业务方法返回之后，只需事务提交操作
-                commitTransactionAfterReturning(txInfo);
-                //返回执行结果
-                return retVal;
+         //业务方法返回之后，只需事务提交操作
+        commitTransactionAfterReturning(txInfo);
+        //返回执行结果
+        return retVal;
 }
 ```
 
 ```
- protected TransactionAspectSupport.TransactionInfo createTransactionIfNecessary(@Nullable PlatformTransactionManager tm, @Nullable TransactionAttribute txAttr, final String joinpointIdentification) {
-        if (txAttr != null && ((TransactionAttribute)txAttr).getName() == null) {
-            txAttr = new DelegatingTransactionAttribute((TransactionAttribute)txAttr) {
-                public String getName() {
-                    return joinpointIdentification;
-                }
-            };
-        }
-
-        TransactionStatus status = null;
-        if (txAttr != null) {
-            if (tm != null) {
-                // 创建事务的核心方法
-                status = tm.getTransaction((TransactionDefinition)txAttr);
-            } else if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Skipping transactional joinpoint [" + joinpointIdentification + "] because no transaction manager has been configured");
+protected TransactionAspectSupport.TransactionInfo createTransactionIfNecessary(@Nullable PlatformTransactionManager tm, @Nullable TransactionAttribute txAttr, final String joinpointIdentification) {
+    if (txAttr != null && ((TransactionAttribute)txAttr).getName() == null) {
+        txAttr = new DelegatingTransactionAttribute((TransactionAttribute)txAttr) {
+            public String getName() {
+                return joinpointIdentification;
             }
-        }
-
-        return this.prepareTransactionInfo(tm, (TransactionAttribute)txAttr, joinpointIdentification, status);
+        };
     }
-
-
+    
+    TransactionStatus status = null;
+    if (txAttr != null) {
+        if (tm != null) {
+            // 创建事务的核心方法
+            status = tm.getTransaction((TransactionDefinition)txAttr);
+        } else if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Skipping transactional joinpoint [" + joinpointIdentification + "] because no transaction manager has been configured");
+        }
+    }
+    
+    return this.prepareTransactionInfo(tm, (TransactionAttribute)txAttr, joinpointIdentification, status);
+}
 ---
+
 public final TransactionStatus getTransaction(@Nullable TransactionDefinition definition) throws TransactionException {
         TransactionDefinition def = definition != null ? definition : TransactionDefinition.withDefaults();
         Object transaction = this.doGetTransaction();
@@ -133,13 +132,13 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 
 ---------------------------
 // DataSourceTransactionManager 开启事务
- protected Object doGetTransaction() {
-        DataSourceTransactionManager.DataSourceTransactionObject txObject = new DataSourceTransactionManager.DataSourceTransactionObject();
-        txObject.setSavepointAllowed(this.isNestedTransactionAllowed());
-        ConnectionHolder conHolder = (ConnectionHolder)TransactionSynchronizationManager.getResource(this.obtainDataSource());
-        txObject.setConnectionHolder(conHolder, false);
-        return txObject;
-    }
+protected Object doGetTransaction() {
+    DataSourceTransactionManager.DataSourceTransactionObject txObject = new DataSourceTransactionManager.DataSourceTransactionObject();
+    txObject.setSavepointAllowed(this.isNestedTransactionAllowed());
+    ConnectionHolder conHolder = (ConnectionHolder)TransactionSynchronizationManager.getResource(this.obtainDataSource());
+    txObject.setConnectionHolder(conHolder, false);
+    return txObject;
+}
 
 ```
 
@@ -152,29 +151,29 @@ public final TransactionStatus getTransaction(@Nullable TransactionDefinition de
 spring 事务隔离主要通过`DataSourceTransactionManager` 在开启事务的时候，设置对应的隔离级别到数据库连接中。
 > 本质上事务的实现是通过设置数据库连接的隔离级别。即类似于 `mysql> set global transaction_isolation ='read-committed';` 因此数据库的实现依赖于数据库支持的隔离级别
 ```
-	@Override
-	protected void doBegin(Object transaction, TransactionDefinition definition) {
-		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
-		Connection con = null;
+@Override
+protected void doBegin(Object transaction, TransactionDefinition definition) {
+    DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
+    Connection con = null;
 
-		try {
-			if (!txObject.hasConnectionHolder() ||
-					txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
-				Connection newCon = obtainDataSource().getConnection();
-				if (logger.isDebugEnabled()) {
-					logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
-				}
-				txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
-			}
-
-			txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
-			con = txObject.getConnectionHolder().getConnection();
-
-			Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
-			txObject.setPreviousIsolationLevel(previousIsolationLevel);
-        ...
+    try {
+        if (!txObject.hasConnectionHolder() ||
+                txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
+            Connection newCon = obtainDataSource().getConnection();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
+            }
+            txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
         }
+
+        txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
+        con = txObject.getConnectionHolder().getConnection();
+
+        Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
+        txObject.setPreviousIsolationLevel(previousIsolationLevel);
+    ...
     }
+}
 ```
 
 ### @Transactional失效场景
@@ -183,18 +182,18 @@ spring 事务隔离主要通过`DataSourceTransactionManager` 在开启事务的
     2. @Transactional  注解属性 rollbackFor 设置错误，实际抛出的错误跟设置不一致
 2. 方法修饰符导致的事务失效
     1. @Transactional 应用在非 public 修饰的方法上，在事务方法拦截执行中，非public方法不执行。
-       -  ```
-            @Nullable
-            protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
-                // Don't allow no-public methods as required.
-                if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
-                    return null;
-                }
-                ...
+        ```
+        @Nullable
+        protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
+            // Don't allow no-public methods as required.
+            if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
+                return null;
             }
-            ```
+            ...
+        }
+        ```
     2. 在动态代理层面，若为也需要代理的方法为public才能正常代理。如JDK动态代理，通过接口代理，接口方法默认都是public。而Cglib基于类的代理中会默认判断是否为public方法。
-      - ```
+        ```
          public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
             ...
             TargetSource targetSource = this.advised.getTargetSource();
@@ -214,22 +213,22 @@ spring 事务隔离主要通过`DataSourceTransactionManager` 在开启事务的
 5. 数据库引擎不支持事务
 
 ### 相关文章
-- https://juejin.cn/post/6844903779188342798
+[Spring事务原理完全解析](https://juejin.cn/post/6844903779188342798)
 
 
 ## Spring AOP
 ### HandlerAdapter与InvocableHandlerMethod
-- 对于Controller的方法，请求发送的时候通过HandlerAdapter调用InvocableHandlerMethod.doInvoke方法。
-  - InvocableHandlerMethod.doInvoke 强制会把方法设为可见：
-  - ```
-    	protected Object doInvoke(Object... args) throws Exception {
-    		ReflectionUtils.makeAccessible(getBridgedMethod());
-    		try {
-    			return getBridgedMethod().invoke(getBean(), args);
-    		}
-            ...
+对于Controller的方法，请求发送的时候通过HandlerAdapter调用InvocableHandlerMethod.doInvoke方法。\
+InvocableHandlerMethod.doInvoke 强制会把方法设为可见：
+```
+    protected Object doInvoke(Object... args) throws Exception {
+        ReflectionUtils.makeAccessible(getBridgedMethod());
+        try {
+            return getBridgedMethod().invoke(getBean(), args);
         }
-    ```
+        ...
+    }
+```
 ### 整体的调用流程
 1. 对于web的调用，首先通过InvocationHandlerMethod，设置方法可见，强制调用方法。
 2. 调用方法后，判断方法是否使用代理，若没使用代理，直接调用方法。若使用了代理，进入代理方法的invoke方法。
@@ -238,118 +237,119 @@ spring 事务隔离主要通过`DataSourceTransactionManager` 在开启事务的
 ### 判断使用JDK代理还是Cglib代理
 - 对于实际的Method调用，如果是代理对象的调用会分别进入各自的代理的invoke方法中，主要分为Cglib（CglibAopProxy）和JDK代理（JdkDynamicAopProxy）
 - DefaultAopProxyFactory：如何判断使用JDK代理还是Cglib代理
-  - ```
-    @Override
-    	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
-    		if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
-    			Class<?> targetClass = config.getTargetClass();
-    			if (targetClass == null) {
-    				throw new AopConfigException("TargetSource cannot determine target class: " +
-    						"Either an interface or a target is required for proxy creation.");
-    			}
-               // 代理对象是接口，使用JDK代理
-    			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
-    				return new JdkDynamicAopProxy(config);
-    			}
-    			return new ObjenesisCglibAopProxy(config);
-    		}
-    		else {
-    			return new JdkDynamicAopProxy(config);
-    		}
-    	}
-    ```
-### CglibAopProxy的代理方法
-- CglibAopProxy 代理方法：
-  - ```
-    public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        Object oldProxy = null;
-        boolean setProxyContext = false;
-        Object target = null;
-        // 获取AopProxyAdvier 
-        TargetSource targetSource = this.advised.getTargetSource();
-        try {
-            if (this.advised.exposeProxy) {
-                oldProxy = AopContext.setCurrentProxy(proxy);
-                setProxyContext = true;
+```
+@Override
+    public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
+        if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
+            Class<?> targetClass = config.getTargetClass();
+            if (targetClass == null) {
+                throw new AopConfigException("TargetSource cannot determine target class: " +
+                        "Either an interface or a target is required for proxy creation.");
             }
-            target = targetSource.getTarget();
-            Class<?> targetClass = (target != null ? target.getClass() : null);
-            // 获取对应的拦截链
-            List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
-            Object retVal;
-            // 拦截链为空，且方法为public 直接调用
-            if (chain.isEmpty() && Modifier.isPublic(method.getModifiers())) {
-                Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
-                retVal = methodProxy.invoke(target, argsToUse);
+           // 代理对象是接口，使用JDK代理
+            if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+                return new JdkDynamicAopProxy(config);
             }
-            else {
-                 // 执行拦截链中的interceptor
-                retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
-            }
-            retVal = processReturnType(proxy, target, method, retVal);
-            return retVal;
+            return new ObjenesisCglibAopProxy(config);
         }
-        finally {
+        else {
+            return new JdkDynamicAopProxy(config);
         }
-    ```
-### JdkDynamicAopProxy的代理方法
-- JdkDynamicAopProxy:  基于JDK的代理可以看出，对于基本的方法hashcode以及equals方法都是没有进行拦截的。
-  - ```
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    		Object oldProxy = null;
-    		boolean setProxyContext = false;
-    
-    		TargetSource targetSource = this.advised.targetSource;
-    		Object target = null;
-    
-    		try {
-    			if (!this.equalsDefined && AopUtils.isEqualsMethod(method)) {
-    				return equals(args[0]);
-    			}
-    			else if (!this.hashCodeDefined && AopUtils.isHashCodeMethod(method)) {
-    				return hashCode();
-    			}
-    			else if (method.getDeclaringClass() == DecoratingProxy.class) {
-    				// There is only getDecoratedClass() declared -> dispatch to proxy config.
-    				return AopProxyUtils.ultimateTargetClass(this.advised);
-    			}
-    			else if (!this.advised.opaque && method.getDeclaringClass().isInterface() &&
-    					method.getDeclaringClass().isAssignableFrom(Advised.class)) {
-    				return AopUtils.invokeJoinpointUsingReflection(this.advised, method, args);
-    			}
-    
-    			Object retVal;
-    
-    			if (this.advised.exposeProxy) {
-    				oldProxy = AopContext.setCurrentProxy(proxy);
-    				setProxyContext = true;
-    			}
-    
-    			target = targetSource.getTarget();
-    			Class<?> targetClass = (target != null ? target.getClass() : null);
-    
-    			// Get the interception chain for this method.
-    			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
-    
-    			// Check whether we have any advice. If we don't, we can fallback on direct
-    			// reflective invocation of the target, and avoid creating a MethodInvocation.
-    			if (chain.isEmpty()) {
-    				// We can skip creating a MethodInvocation: just invoke the target directly
-    				// Note that the final invoker must be an InvokerInterceptor so we know it does
-    				// nothing but a reflective operation on the target, and no hot swapping or fancy proxying.
-    				Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
-    				retVal = AopUtils.invokeJoinpointUsingReflection(target, method, argsToUse);
-    			}
-    			else {
-    				// We need to create a method invocation...
-    				MethodInvocation invocation =
-    						new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
-    				// Proceed to the joinpoint through the interceptor chain.
-    				retVal = invocation.proceed();
-    			}
     }
-    ```
+```
+
+### CglibAopProxy的代理方法
+CglibAopProxy 代理方法：
+```
+public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+    Object oldProxy = null;
+    boolean setProxyContext = false;
+    Object target = null;
+    // 获取AopProxyAdvier 
+    TargetSource targetSource = this.advised.getTargetSource();
+    try {
+        if (this.advised.exposeProxy) {
+            oldProxy = AopContext.setCurrentProxy(proxy);
+            setProxyContext = true;
+        }
+        target = targetSource.getTarget();
+        Class<?> targetClass = (target != null ? target.getClass() : null);
+        // 获取对应的拦截链
+        List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+        Object retVal;
+        // 拦截链为空，且方法为public 直接调用
+        if (chain.isEmpty() && Modifier.isPublic(method.getModifiers())) {
+            Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
+            retVal = methodProxy.invoke(target, argsToUse);
+        }
+        else {
+             // 执行拦截链中的interceptor
+            retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
+        }
+        retVal = processReturnType(proxy, target, method, retVal);
+        return retVal;
+    }
+    finally {
+    }
+```
+### JdkDynamicAopProxy的代理方法
+JdkDynamicAopProxy:  基于JDK的代理可以看出，对于基本的方法hashcode以及equals方法都是没有进行拦截的。
+```
+public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    Object oldProxy = null;
+    boolean setProxyContext = false;
+
+    TargetSource targetSource = this.advised.targetSource;
+    Object target = null;
+
+    try {
+        if (!this.equalsDefined && AopUtils.isEqualsMethod(method)) {
+            return equals(args[0]);
+        }
+        else if (!this.hashCodeDefined && AopUtils.isHashCodeMethod(method)) {
+            return hashCode();
+        }
+        else if (method.getDeclaringClass() == DecoratingProxy.class) {
+            // There is only getDecoratedClass() declared -> dispatch to proxy config.
+            return AopProxyUtils.ultimateTargetClass(this.advised);
+        }
+        else if (!this.advised.opaque && method.getDeclaringClass().isInterface() &&
+                method.getDeclaringClass().isAssignableFrom(Advised.class)) {
+            return AopUtils.invokeJoinpointUsingReflection(this.advised, method, args);
+        }
+
+        Object retVal;
+
+        if (this.advised.exposeProxy) {
+            oldProxy = AopContext.setCurrentProxy(proxy);
+            setProxyContext = true;
+        }
+
+        target = targetSource.getTarget();
+        Class<?> targetClass = (target != null ? target.getClass() : null);
+
+        // Get the interception chain for this method.
+        List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+
+        // Check whether we have any advice. If we don't, we can fallback on direct
+        // reflective invocation of the target, and avoid creating a MethodInvocation.
+        if (chain.isEmpty()) {
+            // We can skip creating a MethodInvocation: just invoke the target directly
+            // Note that the final invoker must be an InvokerInterceptor so we know it does
+            // nothing but a reflective operation on the target, and no hot swapping or fancy proxying.
+            Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
+            retVal = AopUtils.invokeJoinpointUsingReflection(target, method, argsToUse);
+        }
+        else {
+            // We need to create a method invocation...
+            MethodInvocation invocation =
+                    new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
+            // Proceed to the joinpoint through the interceptor chain.
+            retVal = invocation.proceed();
+        }
+}
+```
 ### AspectJ的方法织入
-- AspectJ的Aop 在方法调用的时候添加了AOP对应的拦截方法，根据对应的拦截类型
+AspectJ的Aop 在方法调用的时候添加了AOP对应的拦截方法，根据对应的拦截类型
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/methodAop.jpg)
 
