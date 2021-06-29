@@ -38,7 +38,7 @@
 
 ### <a name="2">AbstractQueuedSynchronizer AQS 基础类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器。核心思想是
-1. 使用volatile修饰的statue变量表示共享资源的状态。如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。
+1. 使用volatile修饰的statue变量表示共享资源的状态。如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程(`Thread exclusiveOwnerThread`)，并且将共享资源设置为锁定状态。
 2. 如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
 3. CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）
 4. 通过自旋+CAS获取共享资源，如果获取失败则调用调用native方法 进入park 状态。
@@ -107,7 +107,7 @@ addWaiter ：用于添加节点到队尾
   - 如果队尾节点存在直接CAS添加
   - 如果队尾节点不存在，使用for自旋先**添加空的头节点**，再添加当前线程的队尾节点
   
-```
+```java
 final boolean acquireQueued(final Node node, int arg) {
     boolean failed = true;
     try {
@@ -145,7 +145,7 @@ shouldParkAfterFailedAcquire方法：
   
 parkAndCheckInterrupt方法：正常尾结点添加完成之后，进入到挂起的逻辑。
 ##### <a name="5">释放锁的框架方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
+```java
 // 释放锁
 public final boolean release(int arg) {
     // tryRelease 需重写

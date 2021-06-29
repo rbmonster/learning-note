@@ -160,7 +160,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
 - TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
 - PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心，约束了事务常用的方法。
 > 通过这个接口，Spring 为各个平台如 JDBC(DataSourceTransactionManager)、Hibernate(HibernateTransactionManager)、JPA(JpaTransactionManager)等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。
-```
+```java
 public interface PlatformTransactionManager {
     //获得事务
     TransactionStatus getTransaction(@Nullable TransactionDefinition var1) throws TransactionException;
@@ -172,7 +172,7 @@ public interface PlatformTransactionManager {
 ```
 
 - TransactionStatus： 事务运行状态。
- ```
+ ```java
 public interface TransactionStatus{
     boolean isNewTransaction(); // 是否是新的事务
     boolean hasSavepoint(); // 是否有恢复点
@@ -192,7 +192,7 @@ public interface TransactionStatus{
 ### <a name="15">编程式事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 使用 TransactionManager 进行编程式事务管理
 2. 使用TransactionTemplate 进行编程式事务管理
-```
+```java
     private PlatformTransactionManager transactionManager;
 
     private TransactionTemplate transactionTemplate;
@@ -237,7 +237,7 @@ public interface TransactionStatus{
     }
 ```
 ### <a name="16">@Transactional 声明式事务管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
+```java
 @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = RuntimeException.class, readOnly = false, timeout = -1)
 @GetMapping("/update")
 public String update() {
@@ -359,7 +359,7 @@ spring boot启动过程
 
 ## <a name="26">@RestController vs @Controller</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 @RestController
-```
+```java
 @Controller
 @ResponseBody
 public @interface RestController { ... }
@@ -385,13 +385,13 @@ TODO
    > @Import({ 类名.class , 类名.class... })
 2. ImportSelector方式
     > 实现ImportSelector接口，返回一个String数组，将全类名返回。
-     ```
-        public class Myclass implements ImportSelector {
-            @Override
-            public String[] selectImports(AnnotationMetadata annotationMetadata) {
-                return new String[]{"com.yc.Test.TestDemo3"};
-            }
+     ```java
+    public class Myclass implements ImportSelector {
+        @Override
+        public String[] selectImports(AnnotationMetadata annotationMetadata) {
+            return new String[]{"com.yc.Test.TestDemo3"};
         }
+    }
     ```
 3. ImportBeanDefinitionRegistrar方式 (手动注册bean到容器)
 
@@ -413,7 +413,7 @@ TODO
   - @PreDestroy : 当 bean 被 Web 容器的时候被调用，一般用来释放 bean 所持有的资源。。@PreDestroy 注解的方法会在Servlet 的destroy()方法之前执行。
   - 实现Spring 提供的 InitializingBean和 DisposableBean接口的效果和使用@PostConstruct和@PreDestroy 注解的效果一样
     > 建议您不要使用 InitializingBean回调接口，因为它不必要地将代码耦合到 Spring
-```
+```java
 @Configuration
 public class MyConfiguration {
     public MyConfiguration() {
@@ -433,17 +433,17 @@ public class MyConfiguration {
 ```
 ### <a name="33">Spring 的异常处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用 @ControllerAdvice 和 @ExceptionHandler处理全局异常
-```
+```java
 @RestControllerAdvice(basePackages = {"com.design.apidesign.controller"}) 
 public class ExceptionControllerAdvice { 
 
       @ExceptionHandler(MethodArgumentNotValidException.class)
-      public String MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
-}
+      public String MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) { }
+} 
 ```
 
 @ResponseStatusException：通过 ResponseStatus注解简单处理异常的方法（将异常映射为状态码）。
-```
+```java
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
 public class ResourseNotFoundException2 extends RuntimeException {
 

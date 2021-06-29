@@ -139,7 +139,7 @@ public Observable<R> toObservable() {
 
 
 断路器整体逻辑实现
-```
+```java
 private Observable<R> applyHystrixSemantics(final AbstractCommand<R> _cmd) {
     // mark that we're starting execution on the ExecutionHook
     // if this hook throws an exception, then a fast-fail occurs with no fallback.  No state is left inconsistent
@@ -276,7 +276,6 @@ zookeeper在选举leader时，会停止服务，直到选举成功之后才会�
 
 ### <a name="20">数据同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Peer to Peer 平等复制
-
 [数据同步流程](https://cloud.tencent.com/developer/article/1526983)
 
 ### <a name="21">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

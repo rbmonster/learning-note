@@ -1,12 +1,115 @@
 # 接口设计
-- Representational State Transfer（REST）。REST的概念是将API结构分离为操作和资源，使用HTTP方法GET、DELETE、POST和PUT操作资源。
+REST / Representational State Transfer/ 表征 状态 转移 
 
+## 理论概念
+- 资源（Resource）：譬如你现在正在阅读一篇名为《REST 设计风格》的文章，这篇文章的内容本身（你可以将其理解为其蕴含的信息、数据）我们称之为“资源”。
+- 表征（Representation）：指信息与用户交互时的表示形式，如服务端向浏览器返回的页面 HTML 就被称之为“表征”，也可能是PDF、Markdown、RSS 等。
+- 状态（State）：客户端记住当前页面的状态，请求服务端下一个动作。服务端无需记住状态（无状态）。
+- 转移（Transfer）：只有服务端拥有资源及其表征形式，服务器通过某种方式，接受当前表征的状态返回对应下个资源的表征，这就被称为“表征状态转移”。
 
-## 一些概念
-- 资源：资源是某种东西的对象或表示，它具有一些与之相关的数据，并且可以有一组方法对其进行操作。 例如, 动物，学校和员工是资源; 删除，添加，更新是对这些资源执行的相关操作
-- 集合：集合是资源集合，例如，公司是公司资源的集合
-- URL：URL（统一资源定位符）是可以通过其定位资源的路径，并且可以对其执行某些操作
- 
+## REST系统六大设计原则
+服务端与客户端分离为前提，无状态、统一接口为核心
+- **无状态（Stateless）**：REST 希望服务器不要去负责维护状态，每一次从客户端发送的请求中，应包括所有的必要的上下文信息，会话信息也由客户端负责保存维护，服务端依据客户端传递的状态来执行业务处理逻辑，驱动整个应用的状态变迁。
+- **统一接口（Uniform Interface）**：REST 希望开发者**面向资源编程**，希望软件系统设计的重点放在抽象系统该有哪些资源上，而不是抽象系统该有哪些行为（服务）上。
+- **服务端与客户端分离（Client-Server）**
+- **可缓存（Cacheability）**：REST 希望软件系统能够如同万维网一样，允许客户端和中间的通讯传递者（譬如代理）将部分服务端的应答缓存起来。解决无状态服务对比有状态的设计，需要多次请求造成的冗余。
+- 分层系统（Layered System）：客户端一般不需要知道是否直接连接到了最终的服务器，抑或连接到路径上的中间服务器。该原则的典型的应用是内容分发网络CDN
+- 按需代码（Code-On-Demand）：按需代码被 Fielding 列为一条可选原则。它是指任何按照客户端（譬如浏览器）的请求，将可执行的软件程序从服务器发送到客户端的技术，按需代码赋予了客户端无需事先知道所有来自服务端的信息应该如何处理、如何运行的宽容度。
+
+## 衡量是否为REST
+### 第0级面向过程编程
+```
+// 查询时间段医生的空闲时间
+POST /appointmentService?action=query HTTP/1.1
+{date: "2020-03-04", doctor: "mjones"}
+
+// 进行预约确认
+POST /appointmentService?action=comfirm HTTP/1.1
+{
+	appointment: {date: "2020-03-04", start:"14:00", doctor: "mjones"},
+	patient: {name: icyfenix, age: 30, ……}
+}
+```
+
+### 第1级引入资源的概念
+服务的 Endpoint 应该是一个名词而不是动词。每次请求中都应包含资源的 ID，所有操作均通过资源 ID 来进行
+```
+// 查询
+POST /doctors/mjones HTTP/1.1
+{date: "2020-03-04"}
+
+HTTP/1.1 200 OK
+
+[
+	{id: 1234, start:"14:00", end: "14:50", doctor: "mjones"},
+	{id: 5678, start:"16:00", end: "16:50", doctor: "mjones"}
+]
+
+// 预约
+POST /schedules/1234 HTTP/1.1
+{name: icyfenix, age: 30, ……}
+```
+存在问题：
+1. 一是只处理了查询和预约，如想删除预约，这都需要提供新的服务接口。
+2. 二是处理结果响应时，只能靠着结果中的code、message这些字段做分支判断，每一套服务都要设计可能发生错误的 code
+3. 三是并没有考虑认证授权等安全方面的内容
+### 第2级引入统一接口及标准动作
+三个问题的解决方案：
+1. REST 的做法是把不同业务需求抽象为对资源的增加、修改、删除等操作
+2. 使用 HTTP 协议的 Status Code，可以涵盖大多数资源操作可能出现的异常，而且 Status Code 也是可以自定义扩展
+3. HTTP Header 中携带的额外认证、授权信息解决认证问题
+
+```
+// 查询
+GET /doctors/mjones/schedule?date=2020-03-04&status=open HTTP/1.1
+
+HTTP/1.1 200 OK
+[
+	{id: 1234, start:"14:00", end: "14:50", doctor: "mjones"},
+	{id: 5678, start:"16:00", end: "16:50", doctor: "mjones"}
+]
+
+// 预约
+POST /schedules/1234 HTTP/1.1
+{name: icyfenix, age: 30, ……}
+
+// 预约成功
+HTTP/1.1 201 Created
+Successful confirmation of appointment
+
+// 预约失败
+HTTP/1.1 409 Conflict
+doctor not available
+```
+
+### 第3级 HATEOAS 
+问题： 如何知道一个请求之后，如何获取向下一个请求的地址？\
+解决方案：除了第一个请求是有你在浏览器地址栏输入所驱动之外，其他的请求都应该能够自己描述清楚后续可能发生的状态转移，由超文本自身来驱动。
+```
+GET /doctors/mjones/schedule?date=2020-03-04&status=open HTTP/1.1
+
+HTTP/1.1 200 OK
+
+{
+	schedules：[
+		{
+			id: 1234, start:"14:00", end: "14:50", doctor: "mjones",
+			links: [
+				{rel: "comfirm schedule", href: "/schedules/1234"}
+			]
+		},
+		{
+			id: 5678, start:"16:00", end: "16:50", doctor: "mjones",
+			links: [
+				{rel: "comfirm schedule", href: "/schedules/5678"}
+			]
+		}
+	],
+	links: [
+		{rel: "doctor info", href: "/doctors/mjones/info"}
+	]
+```
+
 ## URL 设计
 ### 错误的设计
 >  /getAllUsers
@@ -143,7 +246,7 @@ Content-Type: application/json
 ### 2. @RestControllerAdvice +   @ExceptionHandler(MethodArgumentNotValidException.class)
   - 封装异常的返回类型
   
-### 3. 使用统一的数据返回结构JsonResponse 包括异常类型
+### 3. 使用统一的数据返回结构 JsonResponse 包括异常类型
  - 继承接口ResponseBodyAdvice+ @RestControllerAdvice 指定包范围
  - 根据HttpMethodType 和 统一返回对象的code 生成对应的HttpStatus
  - RestControllerAdvice顾名思义，就是声明了范围内的RestController的建议处理控制
@@ -183,5 +286,6 @@ Content-Type: application/json
 
 
 ### 相关资料
-- 接口安全设计：https://mp.weixin.qq.com/s/Az17l4SJXvcbXNu4A1j1Xg
-- 接口可能遇到的攻击：https://mp.weixin.qq.com/s/j0wjQLwkcXnRx7YTU6Lssg
+- [接口安全设计](https://mp.weixin.qq.com/s/Az17l4SJXvcbXNu4A1j1Xg)
+- [接口可能遇到的攻击](https://mp.weixin.qq.com/s/j0wjQLwkcXnRx7YTU6Lssg)
+- [凤凰架构-REST 设计风格](https://icyfenix.cn/architect-perspective/general-architecture/api-style/rest.html)

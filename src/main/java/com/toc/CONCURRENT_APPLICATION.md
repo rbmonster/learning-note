@@ -25,8 +25,6 @@
 # <a name="0">Java并发应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">生产者与消费者模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
-
 ### <a name="2">synchronize </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 #### <a name="3">基于synchronize 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

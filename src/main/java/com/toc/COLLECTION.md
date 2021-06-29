@@ -63,7 +63,7 @@
 > - 数据复制使用Arrays.copyOf(elementData, newCapacity);
 
 因为是一步操作，所以用于快速失败的modCount+1
-```
+```java
 // size为当前的list长度
 public boolean add(E e) {
     // 当前list容量size + 1

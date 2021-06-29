@@ -44,7 +44,7 @@ yield 方法，线程让步。
 join方法，当前线程转为阻塞状态，等到另一个线程结束，当前线程再由阻塞状态变为就绪状态，等待 cpu 的宠幸。
 > join方法可用于多线程的协作，如主子线程的协作，主线程等待子线程完成任务。
 > - join 方法的状态转换与wait方法相同，带时间的进入TIME-WAITING状态，不带时间的进入WAITING状态。
-```
+```java
 System.out.println(Thread.currentThread().getName() + "线程运行开始!");
 Thread6 thread1 = new Thread6();
 thread1.setName("线程 B");
