@@ -127,6 +127,18 @@ for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
 可以使用token认证的方式避免误点攻击链接导致的跨服务请求问题。
 > 基于token 认证经常将认证凭证存储在local storage中，在请求的时候前端再动态添加凭证到请求中。因此误点的外部链接无法添加token到转发的请求中。
 
+## Spring Security 对于Csrf攻击的解决方案
+spring Security对于CSRF攻击的解决方案就是CsrfFilter。
+
+
+1. 开启spring security的防csrf功能之后，对于访问后端的请求，若发现cookies中无`XSRF-TOKEN`的cookie，便会使用UUID生成一个token`set cookie`。\
+2. 在`WebSecurityConfigurerAdapter`的配置中，可设置Matcher对URL或只对HTTP-METHOD中POST、PATCH、DELETE等请求，进行CSRF拦截\
+3. 假设对POST请求进行拦截，CsrfFilter会对校验cookies中的`XSRF-TOKEN`。校验的方式为与请求头`X-XSRF-TOKEN`或参数中`_csrf`的值进行验证，如果不一致，则为CSRF攻击。
+因此前端对于后端的请求均要把cookie中的`XSRF-TOKEN`设置到请求头或者参数中，才能通过后端的校验。\
+以上就防止的cooies认证中，对于超链接跳转的CSRF攻击。
+
+
+
 ## 基于token认证 JWT
 
 Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（(RFC 7519).该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。
@@ -193,7 +205,9 @@ public String generateToken(String subject) {
 继承WebSecurityConfigurerAdapter类，重写config 方法，定制一些httpSecurity的规则。
 > 对于前后端分离的开发模式，需开放一个签发认证的url接口，而其他url接口根据业务要求，可以直接屏蔽返回未认证。
 
-
+对应JWT的集成目前主要有两种方式：
+1. 继承`AbstractAuthenticationProcessingFilter`，使用认证章节中的流程。通过filter返回具体的`Authentication`对象，由有`Provider`进行认证逻辑处理
+2. 继承`OncePerRequestFilter`，进行认证逻辑完成后，手工设置`SpringSecurityHolder`中的认证为成功
 
 ### 继承WebSecurityConfigurerAdapter的demo
 ```java
@@ -223,33 +237,337 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 }
 ```
 
-```
-@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http.cors(withDefaults())
-            // 禁用 CSRF
-            .csrf().disable()
-            .authorizeRequests()
-            // swagger
-            .antMatchers(SecurityConstants.SWAGGER_WHITELIST).permitAll()
-            // 登录接口
-            .antMatchers(HttpMethod.POST, SecurityConstants.LOGIN_WHITELIST).permitAll()
-            // 指定路径下的资源需要验证了的用户才能访问
-            .antMatchers(SecurityConstants.FILTER_ALL).authenticated()
-            .antMatchers(HttpMethod.DELETE, SecurityConstants.FILTER_ALL).hasRole("ADMIN")
-            // 其他都放行了
-            .anyRequest().permitAll()
-            .and()
-            //添加自定义Filter
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), stringRedisTemplate))
-            // 不需要session（不创建会话）
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            // 授权异常处理
-            .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-            .accessDeniedHandler(new JwtAccessDeniedHandler());
-    // 防止H2 web 页面的Frame 被拦截
-    http.headers().frameOptions().disable();
+### 基于AbstractAuthenticationProcessingFilter
+
+#### WebSecurityConfigurerAdapter的配置demo
+```java
+
+@Slf4j
+@Configuration
+@EnableWebSecurity
+public class UserWebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final static String RESOURCE = "RESOURCE";
+
+    private final static String ACTION = "ACTION";
+
+    @Autowired
+    private JwtAuthenticationProvider jwtAuthenticationProvider;
+
+    @Autowired
+    private JwtRefreshAuthenticationProvider jwtRefreshAuthenticationProvider;
+
+    @Autowired
+    private PermissionProperty PermissionProperty;
+
+    @Autowired
+    private IJwtTokenService jwtTokenService;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+       // 设置从不创建session，正常基于jwt认证才会如此设置
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
+        // 设置读取配置的permitAll 以及允许所有接口使用OPTIONS
+        http.authorizeRequests().antMatchers(resolvePermitAll()).permitAll()
+                .and().authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+                // 添加自定义的Authentication过滤器
+                .and().addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+              // 设置异常处理返回
+              .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint );
+        
+
+       // 开启同源认证CORS过滤器
+        String contentSecurityPolicyStyleSrc = "style-src 'self' " + String.join(" ", securityProperty.getCsp().getStyleSrc());
+        String contentSecurityPolicyScriptSrc = "script-src 'self' "+ String.join(" ", securityProperty.getCsp().getScriptSrc());
+        http.cors().configurationSource(corsConfigurationSource())
+                .and().headers()
+                .frameOptions().deny()
+                .contentTypeOptions()
+                .and().xssProtection()
+                .and().cacheControl()
+                .and().httpStrictTransportSecurity()
+                .and().addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy", contentSecurityPolicyStyleSrc, contentSecurityPolicyScriptSrc));
+
+        http.csrf().csrfTokenRepository(cookieCsrfTokenRepository)
+                .requireCsrfProtectionMatcher(createRequireCsrfProtectionMatcher());
+    }
+
+   /**
+    * 基于认证的provider
+    * @param auth
+    */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(jwtAuthenticationProvider);
+        auth.authenticationProvider(jwtRefreshAuthenticationProvider);
+    }
+
+   /**
+    * 设置自己自定义的JwtAuthenticationFilter
+    * 注意要再matcher中指定拦截的范围
+    * @return
+    * @throws Exception
+    */
+    private JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        List<RequestMatcher> matchers = Lists.newArrayList();
+        for (String pattern : resolvePermitAll()) {
+            matchers.add(new AntPathRequestMatcher(pattern, null));
+        }
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
+                request -> matchers.stream().noneMatch(matcher -> matcher.matches(request))
+        );
+        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager());
+//        jwtAuthenticationFilter.setAuthenticationFailureHandler(createAuthenticationFailureHandler());
+//        jwtAuthenticationFilter.setAuthenticationSuccessHandler(createAuthenticationSuccessHandler());
+        return jwtAuthenticationFilter;
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedHeaders(Lists.newArrayList("Origin", "Content-Type", "Accept", "X-Flow-Id"));
+        config.setExposedHeaders(Lists.newArrayList("Content-Type", "X-TenantID", "X-Track-Id"));
+        config.setAllowedOrigins(Lists.newArrayList(securityProperty.getCors().getAllowOrigins()));
+        config.setAllowedMethods(Lists.newArrayList(HttpMethod.OPTIONS.name(), HttpMethod.GET.name(), HttpMethod.POST.name()));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+   /**
+    * 从配置中读取
+    * @return
+    */
+    private String[] resolvePermitAll() {
+         return securityJwtProperty.getPermitAll();
+    }
+
+   /**
+    * 设置csrftoken的过滤
+    * @return
+    */
+    private RequestMatcher createRequireCsrfProtectionMatcher() {
+        return new RequestMatcher() {
+            private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+
+            private final HashSet<String> allowedMethods = new HashSet<>(
+                    Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS"));
+
+            public boolean matches(HttpServletRequest request) {
+                if (this.allowedMethods.contains(request.getMethod())) {
+                    log.debug("CSRF disabled of methods {} match", request.getRequestURI());
+                    return false;
+                }
+                if (!StringUtils.isEmpty(request.getHeader("Authorization"))) {
+                    log.debug("CSRF disabled matched header Authorization, requestURI: {}", request.getRequestURI());
+                    return false;
+                }
+                return Stream.concat(Stream.of(securityJwtProperty.getPermitAll()), Stream.of(securityJwtProperty.getSwaggerPermitAll()))
+                        .noneMatch(pattern -> this.antPathMatcher.match(pattern, request.getRequestURI()));
+            }
+        };
+    }
 }
+
+```
+#### JWTAuthenticationFilter
+```java
+@Slf4j
+public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+    private IJwtTokenService jwtTokenService;
+
+   /**
+    *  拦截对应的的JWTHeader 递交给对应的Providr
+    * @param request
+    * @param response
+    * @return
+    */
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        String authorization = request.getHeader(AuthorizationHeader);
+        if (!Strings.isNullOrEmpty(authorization) && authorization.startsWith("bearer ")) {
+            return attemptHeaderAuthentication(request, authorization);
+        }
+        if (request.getCookies() == null) {
+            throw new JwtAuthenticationException(String.format("Jwt cookies are absent, request api is [%s]", request.getServletPath()));
+        }
+       String jwt = authorization.substring(7);
+       String[] jwtSplits = jwt.split("\\.");
+       if (jwtSplits.length != 3) {
+          log.error("Jwt is in wrong format, request api is {}", request.getServletPath());
+          throw new JwtAuthenticationException(String.format("Jwt is in wrong format, request api is [%s]", request.getServletPath()));
+       }
+       JwtAuthenticationToken jwtToken = jwtTokenService.digestJwtToken(jwt);
+       jwtToken.setAgentContext(agentContext);
+       return this.getAuthenticationManager().authenticate(jwtToken);
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        super.successfulAuthentication(request, response, chain, authResult);
+        chain.doFilter(request, response);
+    }
+}
+
+```
+
+#### 
+
+```java
+@Slf4j
+@Component
+public class JwtAuthenticationProvider implements AuthenticationProvider {
+    @Autowired
+    private BlacklistService blacklistService;
+
+    @Autowired
+    private UserPermissionClient userPermissionClient;
+
+   /**
+    * 执行认证逻辑
+    * @param authentication
+    * @return
+    * @throws AuthenticationException
+    */
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+        // ....
+        jwtToken.setAuthenticated(true);
+        return jwtToken;
+    }
+
+   /**
+    * 设置支持认证何种类型的Authentication
+    * @param authentication
+    * @return
+    */
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.isAssignableFrom(JwtAuthenticationToken.class);
+    }
+}
+
+```
+### 基于OncePerRequestFilter
+
+#### WebSecurityConfigurer
+```java
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @Autowired
+    private TokenAuthenticationFilter tokenAuthenticationFilter;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
+            .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
+            .authorizeRequests()
+            .antMatchers("/api/v1/admin/login/**").permitAll()
+            .antMatchers("/upload/**").permitAll();
+
+
+        // API权限控制
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry = http.authorizeRequests();
+        Map<String, String> resourcePermissions = new HashMap<>();
+        for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
+            urlRegistry = urlRegistry.antMatchers(entry.getKey()).hasAnyAuthority(entry.getValue());
+        }
+
+        http.authorizeRequests()
+            .anyRequest().authenticated().and()
+                // 在默认的BasicAuthenticationFilter前添加自定义的过滤器
+            .addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
+
+        http.csrf().disable();
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers(
+                HttpMethod.POST,
+                "/api/v1/admin/login/toLogin"
+        ).antMatchers(
+                HttpMethod.POST,
+                "/api/v1/front/wxAuthor/**"
+        ).antMatchers(
+                HttpMethod.POST,
+                "/api/v1/admin/wxAuthor/**"
+        ).antMatchers(
+                HttpMethod.POST,
+                "/api/v1/front/wxMessage/**"
+        ).antMatchers(
+                HttpMethod.GET,
+                "/static/**"
+        ).antMatchers(
+                HttpMethod.GET,
+                "/upload/**"
+        );
+    }
+
+}
+```
+
+#### JwtTokenAuthenticationFilter
+**注意在**`SecurityContextHolder.getContext().setAuthentication(authentication);` 设置认证成功的authentication，Spring security就会认为已经认证成功
+```java
+
+@Component
+public class TokenAuthenticationFilter extends OncePerRequestFilter {
+
+
+    @Autowired
+    private TokenHelper tokenHelper;
+
+    @Override
+    public void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws IOException, ServletException {
+
+        String userInfo;
+        String authToken = tokenHelper.getToken(request);
+
+        if (authToken != null) {
+            // get username from token
+            userInfo = tokenHelper.getUserInfoFromToken(authToken);
+            System.out.println(userInfo);
+            if (userInfo != null) {
+                if (tokenHelper.validateToken(authToken)) {
+                    String[] userInfos = userInfo.split("~");
+
+                    String userName = userInfos[0];
+                    List<GrantedAuthority> authorities = buildAuthorities(userName);
+                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(new AccountCredentials(userName, authorities));
+                    authentication.setToken(authToken);
+                    authentication.setAuthenticated(true);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+        }
+        chain.doFilter(request, response);
+    }
+
+    private List<GrantedAuthority> buildAuthorities(String userName) {
+        List<String> permissionNames = new ArrayList<>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String permissionName : permissionNames) {
+            GrantedAuthority authority = new PermissionGrantedAuthority(permissionName);
+            authorities.add(authority);
+        }
+
+        return authorities;
+    }
+
+}
+
 ```
 
 ### 登陆接口：验证用户名密码签发token
@@ -263,39 +581,6 @@ private String toLogin(HttpServletRequest request, String username, String passw
         return token;
     }
     return "认证失败";
-}
-```
-
-- 添加过滤器，用于验证token及设置通过spring security认证。
-```
-@Override
-public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain chain) throws IOException, ServletException {
-    String userInfo;
-    // 获取请求头的认证token
-    String authToken = tokenHelper.getToken(request);
-
-    if (authToken != null) {
-        // get username from token
-        userInfo = tokenHelper.getUserInfoFromToken(authToken);
-        System.out.println(userInfo);
-        if (userInfo != null) {
-            if (tokenHelper.validateToken(authToken)) {
-                String[] userInfos = userInfo.split("~");
-
-                String refreshToken = tokenHelper.refreshToken(authToken);
-                response.addHeader("refreshtoken", refreshToken);
-                // create authentication
-                String userName = userInfos[0];
-                List<GrantedAuthority> authorities = buildAuthorities(userName);
-                // spring security 设置存在相关的token信息认证通过
-                TokenBasedAuthentication authentication = new TokenBasedAuthentication(new AccountCredentials(userName, authorities));
-                authentication.setToken(authToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-        ...
-    }
-
-    chain.doFilter(request, response);
 }
 ```
 
@@ -319,7 +604,7 @@ public void doFilterInternal(HttpServletRequest request, HttpServletResponse res
 ### 过期token 的续签问题
 1. token有效期延长。适合安全度不高的系统。
 2. 用户登录返回两个 token。一个用于登陆一个用于续签。
-    - 一个是 acessToken ，它的过期时间 token 本身的过期时间比如半个小时
+    - 一个是 accessToken ，它的过期时间 token 本身的过期时间比如半个小时
     - 一个是 refreshToken 它的过期时间更长一点比如为1天。
 > 该方案的不足是：
 > 1. 需要客户端来配合； 
