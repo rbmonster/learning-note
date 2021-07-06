@@ -271,6 +271,57 @@ Https采用混合的加密机制。
 1. 单连接多资源的方式,减少服务端的链接压力,内存占用更少,连接吞吐量更大 
 2. 由于 TCP 连接的减少而使网络拥塞状况得以改善,同时慢启动时间的减少,使拥塞和丢包恢复速度更快
 
+## 跨源资源共享（CORS）
+跨源资源共享 (CORS) （或通俗地译为跨域资源共享）是一种基于HTTP 头的机制，该机制通过允许服务器标示除了它自己以外的其它origin（域，协议和端口），这样浏览器可以访问加载这些资源，**主要解决了跨域加载数据的问题**。
+> 运行在 http://domain-a.com 的JavaScript代码使用XMLHttpRequest来发起一个到 https://domain-b.com/data.json 的请求。出于安全性，浏览器限制脚本内发起的跨源HTTP请求，浏览器控制台输出跨域请求的问题。
+
+跨源域资源共享（ CORS ）机制允许 Web 应用服务器进行跨源访问控制，从而使跨源数据传输得以安全进行。
+
+### 简单请求与非简单请求
+浏览器将CORS请求分成两类：简单请求（simple request）和非简单请求（not-so-simple request）。
+
+简单请求的要求如下：
+```
+(1)请求方法是以下三种方法之一：
+HEAD
+GET
+POST
+
+(2)HTTP的头信息不超出以下几种字段：
+Accept
+Accept-Language
+Content-Language
+Last-Event-ID
+
+(3)Content-Type：只限于三个值
+application/x-www-form-urlencoded
+multipart/form-data
+text/plain
+```
+
+不满足简单请求的就是非简单请求，非简单请求发起的时候，浏览器会发起一个预检请求。
+
+### 预检请求
+预检请求 首先使用 OPTIONS方法发起一个预检请求到服务器，以获知服务器是否允许该实际请求。
+> "预检请求“的使用，可以避免跨域请求对服务器的用户数据产生未预期的影响。
+![avatar](https://media.prod.mdn.mozit.cloud/attachments/2019/06/19/16753/b32f78ac26d18e3e155205e4f0057b73/preflight_correct.png)
+
+
+### response头字段
+`Access-Control-Allow-Origin: <origin> | *`
+> origin 参数的值指定了允许访问该资源的外域 URI。对于不需要携带身份凭证的请求，服务器可以指定该字段的值为通配符，表示允许来自所有域的请求。
+
+`Access-Control-Allow-Headers`
+> 其指明了实际请求中允许携带的首部字段。
+
+`Access-Control-Expose-Headers`
+> 服务器把允许浏览器访问的头
+
+`Access-Control-Allow-Credentials`
+> 当浏览器的credentials设置为true时是否允许浏览器读取response的内容。当用在对preflight预检测请求的响应中时，它指定了实际的请求是否可以使用credentials。
+
+### 参考资料
+[跨源资源共享（CORS）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS)
 
 ## 前端相关存储空间的使用
 
