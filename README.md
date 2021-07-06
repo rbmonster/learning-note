@@ -63,6 +63,7 @@
 - [购物活动金额结算设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SHOPPING_SETTLEMENT.md)
 - [JWT、MFA及相关应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JWT_APPLICATION.md)
 - [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
+- [OAUTH2、CAS、SSO](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/OAUTH2_CAS_SSO.md)
 
 ## 分布式与微服务
 - [Spring Cloud相关知识](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPRING-CLOUD.md)

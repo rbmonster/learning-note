@@ -36,7 +36,7 @@
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 哈希表的关键思想是使用哈希函数将键映射到存储桶。
 - HashMap常见操作
-```
+```java
 Map<Integer, Integer> hashmap = new HashMap<>();
 // 2. insert a new (key, value) pair 
 //putIfAbsent()保存数据的时候，如果该链表中保存的有相同key的值，那么就不会对我们当前的value进行保存
@@ -65,7 +65,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 ```
 
 - 求余数常见操作
-```
+```java
  private int getNext(int n) {
     int totalSum = 0;
     while (n > 0) {
@@ -130,7 +130,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 
   
 反转链表递归写法:
-```
+```java
 public ListNode reverseList(ListNode head) {
     if(head ==null || head.next == null ) {
         return head;
@@ -154,7 +154,7 @@ public ListNode reverseList(ListNode head) {
 - [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 
 代码模板：
-```
+```java
 int BFS2(Node root, Node target) {
     Queue<Node> queue = new LinkedList<>();  // store all nodes which are waiting to be processed
     Set<Node> used = new HashSet<>();     // store all the used nodes
@@ -198,7 +198,7 @@ TODO 待补充代码模板
 - [中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 
 > 前中后序遍历递归与迭代写法
-```
+```java
 //前序遍历 迭代写法
 public List<Integer> preorderTraversal1(TreeNode root) {
     LinkedList<TreeNode> stack = new LinkedList<>();
@@ -275,7 +275,7 @@ public List<Integer> postorderTraversal(TreeNode root) {
 
 下面以二叉树深度为例：
 [二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
-```
+```java
 // 自顶而下 通过全局变量传递值
 private int answer;		
 private void maximum_depth(TreeNode root, int depth) {
@@ -305,7 +305,7 @@ private int maximum_depth(TreeNode root) {
 - [从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
 - [从中序与后序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
 - 层序遍历构建二叉树思路： 根节点区分两个区间，获取中序左区间内的Set。遍历层序数组，第一个节点即为根节点。
-    - ```
+    - ```java
         ori:
           in[]    = {4, 8, 10, 12, 14, 20, 22};
           level[] = {20, 8, 22, 4, 12, 10, 14};
@@ -338,7 +338,7 @@ private int maximum_depth(TreeNode root) {
   - 如果目标节只有一个子节点，我们可以用其子节点作为替换。
   - 如果目标节点有两个子节点，我们需要用其中序后继节点或者前驱节点来替换，再删除该目标节点。
   - [例题](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
-  - ```
+  - ```java
         public TreeNode deleteNode(TreeNode root, int key) {
             if (root ==null) {
                 return null;
@@ -471,7 +471,7 @@ private int maximum_depth(TreeNode root) {
 - [全排列 II【review】](https://leetcode-cn.com/problems/permutations-ii/)
 - [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
     - 重点看区别重复元素的条件
-    - ```   public List<List<Integer>> permute(int[] nums) {
+    - ```java   public List<List<Integer>> permute(int[] nums) {
               List<List<Integer>> res = new ArrayList<>();
               boolean[] used = new boolean[nums.length];
               Arrays.sort(nums);
@@ -514,11 +514,11 @@ private int maximum_depth(TreeNode root) {
 - [二叉树路径](https://leetcode-cn.com/problems/binary-tree-paths/)
   
   ```
-  回溯中常常使用的避免重复解的条件：
+   //回溯中常常使用的避免重复解的条件：
    if (i>start  && nums[i] == nums[i - 1]) {
       continue;
    }
-  ```
+  ```java
 
 ### <a name="24">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
@@ -526,7 +526,7 @@ private int maximum_depth(TreeNode root) {
 
 
 ### <a name="25">并查集</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
+```java
 class UnionFindSet {
         int[] rank;
         int[] parent;
@@ -568,7 +568,7 @@ class UnionFindSet {
      
 - [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
 - [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
-```
+```java
 public int[] dailyTemperatures(int[] T) {
     Deque<Integer> stack = new LinkedList<>();
     int len = T.length;
@@ -589,7 +589,7 @@ public int[] dailyTemperatures(int[] T) {
 ### <a name="27">单调队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - [剑指 Offer 59 - I. 滑动窗口的最大值]( https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
-```
+```java
 public int[] maxSlidingWindow(int[] nums, int k) {
      if(nums.length == 0 || k == 0) return new int[0];
     Deque<Integer> deque = new LinkedList<>();

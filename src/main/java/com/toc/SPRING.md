@@ -40,13 +40,12 @@
 
 ## <a name="1">Spring IOC & AOP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="2">Spring IOC</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- IOC 理解
-  1. 控制反转：原来在程序中手动创建对象，现在需要什么对象由IOC提供，一个好处就是对象统一管理。
-  2. 依赖注入：将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。简化开发及对象的创建。
+IOC 理解
+1. 控制反转：原来在程序中手动创建对象，现在需要什么对象由IOC提供，一个好处就是对象统一管理。
+2. 依赖注入：将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。简化开发及对象的创建。
   
 ### <a name="3">AOP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-AOP(Aspect-Oriented Programming:面向切面编程)
-  - 能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
+AOP(Aspect-Oriented Programming,面向切面编程)：能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
 
 Spring AOP就是基于动态代理的，如果要代理的对象，实现了某个接口，那么Spring AOP会使用JDK Proxy，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候Spring AOP会使用Cglib 。
 #### <a name="4">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -64,14 +63,14 @@ Spring AOP就是基于动态代理的，如果要代理的对象，实现了某�
 12. Transactions 事务
 
 #### <a name="5">aop 相关概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-1. 切面（aspect） ： 类是对物体特征的抽象，切面就是对横切关注点的抽象
+1. 切面（aspect）:类是对物体特征的抽象，切面就是对横切关注点的抽象
 2. 横切关注点： 对哪些方法进行拦截，拦截后怎么处理，这些关注点称之为横切关注点。
-3. 连接点（joinpoint） ： 被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。
-4. 切入点（pointcut） ： 对连接点进行拦截的定义
-5. 通知（advice） ： 所谓通知指的就是指拦截到连接点之后要执行的代码， 通知分为前置、后置、异常、最终、环绕通知五类。
+3. 连接点（joinPoint）:被拦截到的点，因为 Spring 只支持方法类型的连接点，所以在 Spring中连接点指的就是被拦截到的方法，实际上连接点还可以是字段或者构造器。
+4. 切入点（pointcut）:对连接点进行拦截的定义
+5. 通知（advice）:所谓通知指的就是指拦截到连接点之后要执行的代码， 通知分为前置、后置、异常、最终、环绕通知五类。
 6. 目标对象： 代理的目标对象
-7. 织入（weave） ： 将切面应用到目标对象并导致代理对象创建的过程
-8. 引入（introduction） ： 在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法或字段
+7. 织入（weave）:将切面应用到目标对象并导致代理对象创建的过程
+8. 引入（introduction）:在不修改代码的前提下，引入可以在运行期为类动态地添加一些方法或字段
 
 #### <a name="6">aop切面的相关方法   </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -97,7 +96,7 @@ public class TransactionDemo {
     }
 }
 ```
-https://www.cnblogs.com/zhangxufeng/p/9160869.html
+[Spring AOP切点表达式用法总结](https://www.cnblogs.com/zhangxufeng/p/9160869.html)
 
 
 ### <a name="7">Spring AOP 和 AspectJ AOP 有什么区别？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -109,8 +108,8 @@ Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 
 ## <a name="8">Spring 中的 bean 的作用域有哪些?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。
 - prototype : 每次请求都会创建一个新的 bean 实例。如跟请**求状态有关**的对象，就不能使用单例，需要使用多例保证线程安全。
-  - > 之所以用多例，是为了防止**并发问题**；即一个请求改变了对象的状态，此时对象又处理另一个请求，而之前请求对**对象状态**的改变导致了对象对另一个请求做了错误的处理；
-  - > 使用@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE,proxyMode = ScopedProxyMode.TARGET_CLASS)。ScopedProxyMode.TARGET_CLASS是字节码级别多例,设置多例的代理模式使用一次就会产生一个运行时字节新对象
+  > 之所以用多例，是为了防止**并发问题**；即一个请求改变了对象的状态，此时对象又处理另一个请求，而之前请求对**对象状态**的改变导致了对象对另一个请求做了错误的处理；\
+  > 使用@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE,proxyMode = ScopedProxyMode.TARGET_CLASS)。ScopedProxyMode.TARGET_CLASS是字节码级别多例,设置多例的代理模式使用一次就会产生一个运行时字节新对象
 - request : 每一次HTTP请求都会产生一个新的bean，该bean仅在当前HTTP request内有效。
 - session : 每一次HTTP请求都会产生一个新的 bean，该bean仅在当前 HTTP session 内有效。
 > global-session： 全局session作用域，仅仅在基于portlet的web应用中才有意义，Spring5已经没有了。Portlet是能够生成语义代码(例如：HTML)片段的小型Java Web插件。它们基于portlet容器，可以像servlet一样处理HTTP请求。但是，与 servlet 不同，每个 portlet 都有不同的会话
@@ -130,69 +129,70 @@ getSingleton(beanName, true)这个方法实际上就是到缓存中尝试去获�
 循环依赖装载流程：
   - 条件1.出现循环依赖的Bean必须要是单例
   - 条件2.依赖注入的方式不能全是构造器注入的方式
-  1. 实例化A对象，添加提前暴露的对象的方法到singletonFactory
-  2. 填充对象，无循环引用，直接调用postProcessAfterInitialization方法。有循环引用，doGetBean循环引用的对象。
-  3. 循环引用对象B实例化，在填充对象的时候，发现循环依赖A，从三级缓存中获取，并添加A到二级缓存。
-  4. 若A为AOP代理，此时二级缓存中的对象为代理对象A。
-  5. B初始化完成后，继续A的对象填充及初始化，填充完成后。从二级缓存中获取对象，若存在对象，说明发生了循环引用，返回二级缓存的对象。
+1. 实例化A对象，添加提前暴露的对象的方法到singletonFactory
+2. 填充对象，无循环引用，直接调用postProcessAfterInitialization方法。有循环引用，doGetBean循环引用的对象。
+3. 循环引用对象B实例化，在填充对象的时候，发现循环依赖A，从三级缓存中获取，并添加A到二级缓存。
+4. 若A为AOP代理，此时二级缓存中的对象为代理对象A。
+5. B初始化完成后，继续A的对象填充及初始化，填充完成后。从二级缓存中获取对象，若存在对象，说明发生了循环引用，返回二级缓存的对象。
 
 ### <a name="11">相关问题(加深理解)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-如果单单使用二级缓存，为解决循环引用问题，那么二级缓存存储的就是为进行属性注入的对象。这与Spring生命周期的设计相悖。
-- Spring结合AOP跟Bean的生命周期本身就是通过AnnotationAwareAspectJAutoProxyCreator这个后置处理器来完成的，在这个后置处理的postProcessAfterInitialization方法中对初始化后的Bean完成AOP代理。
-  - 如果出现了循环依赖，那没有办法，只有给Bean先创建代理。
-  - 但是如果没有出现循环依赖的情况下，设计之初就是让Bean在生命周期的最后一步完成代理而不是在实例化后就立马完成代理。
+可以使用两层缓存吗？
+> 1. 如果单单使用二级缓存，为解决循环引用问题，那么二级缓存存储的就是为进行属性注入的对象。这与Spring生命周期的设计相悖。\
+> 2. Spring结合AOP跟Bean的生命周期本身就是通过AnnotationAwareAspectJAutoProxyCreator这个后置处理器来完成的，在这个后置处理的postProcessAfterInitialization方法中对初始化后的Bean完成AOP代理。
+如果出现了循环依赖，那没有办法，只有给Bean先创建代理。但是如果没有出现循环依赖的情况下，设计之初就是让Bean在生命周期的最后一步完成代理而不是在实例化后就立马完成代理。
 
 三级缓存为什么要使用工厂而不是直接使用引用？换而言之，为什么需要这个三级缓存，直接通过二级缓存暴露一个引用不行吗？
-- 这个工厂的目的在于**延迟对实例化阶段生成对象的代理**，只有真正发生循环依赖的时候，才去提前生成代理对象，否则只会创建一个工厂并将其放入到三级缓存中，但是不会去通过这个工厂去真正创建对象。
+> 这个工厂的目的在于**延迟对实例化阶段生成对象的代理**，只有真正发生循环依赖的时候，才去提前生成代理对象，否则只会创建一个工厂并将其放入到三级缓存中，但是不会去通过这个工厂去真正创建对象。
   
-- 三级缓存引入对于对象延迟实例化的体现。
+三级缓存引入对于对象延迟实例化的体现。
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/iocAutowire.jpg)
 
-- 不同注入方式对于循环引用的影响
+不同注入方式对于循环引用的影响
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/iocAutowire3.jpg)
 
 ### <a name="12">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ
+[讲一讲Spring中的循环依赖](https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ)
 
 ## <a name="13">Spring Transaction</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ### <a name="14">基础知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Spring 框架中，事务管理相关最重要的 3 个接口如下：
-- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心，约束了事务常用的方法。
-  - > 通过这个接口，Spring 为各个平台如 JDBC(DataSourceTransactionManager)、Hibernate(HibernateTransactionManager)、JPA(JpaTransactionManager)等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。
-  - ```
-    public interface PlatformTransactionManager {
-        //获得事务
-        TransactionStatus getTransaction(@Nullable TransactionDefinition var1) throws TransactionException;
-        //提交事务
-        void commit(TransactionStatus var1) throws TransactionException;
-        //回滚事务
-        void rollback(TransactionStatus var1) throws TransactionException;
-    }
-    ```
 - TransactionDefinition： 事务定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。
+- PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心，约束了事务常用的方法。
+> 通过这个接口，Spring 为各个平台如 JDBC(DataSourceTransactionManager)、Hibernate(HibernateTransactionManager)、JPA(JpaTransactionManager)等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。
+```java
+public interface PlatformTransactionManager {
+    //获得事务
+    TransactionStatus getTransaction(@Nullable TransactionDefinition var1) throws TransactionException;
+    //提交事务
+    void commit(TransactionStatus var1) throws TransactionException;
+    //回滚事务
+    void rollback(TransactionStatus var1) throws TransactionException;
+}
+```
+
 - TransactionStatus： 事务运行状态。
-  - ```
-    public interface TransactionStatus{
-        boolean isNewTransaction(); // 是否是新的事务
-        boolean hasSavepoint(); // 是否有恢复点
-        void setRollbackOnly();  // 设置为只回滚
-        boolean isRollbackOnly(); // 是否为只回滚
-        boolean isCompleted; // 是否已完成
-    }
-    ```
+ ```java
+public interface TransactionStatus{
+    boolean isNewTransaction(); // 是否是新的事务
+    boolean hasSavepoint(); // 是否有恢复点
+    void setRollbackOnly();  // 设置为只回滚
+    boolean isRollbackOnly(); // 是否为只回滚
+    boolean isCompleted; // 是否已完成
+}
+```
 
 1. 注解@EnableTransactionManagement 实现事务相关的Bean加载（现在自动配置使用AutoConfiguration实现）
 2. TransactionInterceptor 主要的实现类，继承TransactionAspectSupport（定义了事务实现的方式）
 3. 实现原理为使用AOP+ThreadLocal实现。
 
-- **事务能否生效数据库引擎是否支持事务是关键。比如常用的 MySQL 数据库默认使用支持事务的innodb引擎。但是，如果把数据库引擎变为 myisam，那么程序也就不再支持事务了！**
+**事务能否生效数据库引擎是否支持事务是关键。比如常用的 MySQL 数据库默认使用支持事务的innodb引擎。但是，如果把数据库引擎变为 myisam，那么程序也就不再支持事务了！**
 > 详细可见spring 源码部分
 
 ### <a name="15">编程式事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 使用 TransactionManager 进行编程式事务管理
 2. 使用TransactionTemplate 进行编程式事务管理
-```
+```java
     private PlatformTransactionManager transactionManager;
 
     private TransactionTemplate transactionTemplate;
@@ -237,7 +237,7 @@ Spring 框架中，事务管理相关最重要的 3 个接口如下：
     }
 ```
 ### <a name="16">@Transactional 声明式事务管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
+```java
 @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = RuntimeException.class, readOnly = false, timeout = -1)
 @GetMapping("/update")
 public String update() {
@@ -290,13 +290,13 @@ public String update() {
 5. 数据库引擎不支持事务
 
 #### <a name="21"> 同一个方法调用无事务的解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 当这个方法被同一个类调用的时候，spring无法将这个方法加到事务管理中。只有在代理对象之间进行调用时，可以触发切面逻辑。
+当这个方法被同一个类调用的时候，spring无法将这个方法加到事务管理中。只有在代理对象之间进行调用时，可以触发切面逻辑。
 1. 使用 ApplicationContext 上下文对象获取该对象;
 2. 使用 AopContext.currentProxy() 获取代理对象,但是需要配置exposeProxy=true
 
 
 ## <a name="22">Spring boot 自动配置的加载流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-> 在上下文初始化中invoke**PostProcessor是有执行等级之分的。
+> 在上下文初始化中invoke**PostProcessor是有执行等级之分的。\
 > 自动配置加载主要在上下文初始化的invokeBeanFactoryPostProcessors(beanFactory);
 1. Spring boot的配置自动加载主要通过@SpringBootApplication 中的 @EnableAutoConfiguration注解实现
 2. 注解中@Import(AutoConfigurationImportSelector.class) 的类。借助@Import的支持，收集和注册特定场景相关的bean定义。
@@ -359,17 +359,18 @@ spring boot启动过程
 
 ## <a name="26">@RestController vs @Controller</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 @RestController
-  - ```
-    @Controller
-    @ResponseBody
-    public @interface RestController { ... }
-    ```
+```java
+@Controller
+@ResponseBody
+public @interface RestController { ... }
+```
 > 单独使用 @Controller 不加 @ResponseBody的话返回一个视图，这种情况属于比较传统的Spring MVC 的应用
+
 ### <a name="27">@ResponseBody</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 @ResponseBody 注解的作用是将 Controller 的方法返回的对象通过适当的**转换器**转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中，通常用来返回 JSON 或者 XML 数据，返回 JSON 数据的情况比较多。
 
 - 自定义MessageConvert？
-
+TODO
 ## <a name="28">spring中的设计模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 工厂设计模式 : Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
 - 代理设计模式 : Spring AOP 功能的实现。
@@ -381,22 +382,22 @@ spring boot启动过程
 
 ## <a name="29">@Import 注解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 直接填class数组方式
-    - > @Import({ 类名.class , 类名.class... })
+   > @Import({ 类名.class , 类名.class... })
 2. ImportSelector方式
-    - 实现ImportSelector接口，返回一个String数组，将全类名返回。
-    - ```
-        public class Myclass implements ImportSelector {
-            @Override
-            public String[] selectImports(AnnotationMetadata annotationMetadata) {
-                return new String[]{"com.yc.Test.TestDemo3"};
-            }
+    > 实现ImportSelector接口，返回一个String数组，将全类名返回。
+     ```java
+    public class Myclass implements ImportSelector {
+        @Override
+        public String[] selectImports(AnnotationMetadata annotationMetadata) {
+            return new String[]{"com.yc.Test.TestDemo3"};
         }
-        ```
+    }
+    ```
 3. ImportBeanDefinitionRegistrar方式 (手动注册bean到容器)
 
 
 
-https://www.cnblogs.com/yichunguo/p/12122598.html
+[spring注解之@Import注解的三种使用方式](https://www.cnblogs.com/yichunguo/p/12122598.html)
 
 ## <a name="30">零散的一些面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="31">@Autowired和@Resource的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -411,67 +412,67 @@ https://www.cnblogs.com/yichunguo/p/12122598.html
   - @PostConstruct : 用来修饰方法，标记在项目启动的时候执行这个方法,一般用来执行某些初始化操作比如全局配置。PostConstruct 注解的方法会在构造函数之后执行,Servlet 的init()方法之前执行。
   - @PreDestroy : 当 bean 被 Web 容器的时候被调用，一般用来释放 bean 所持有的资源。。@PreDestroy 注解的方法会在Servlet 的destroy()方法之前执行。
   - 实现Spring 提供的 InitializingBean和 DisposableBean接口的效果和使用@PostConstruct和@PreDestroy 注解的效果一样
-    - 建议您不要使用 InitializingBean回调接口，因为它不必要地将代码耦合到 Spring
-- ```
-  @Configuratio n
-  public class MyConfiguration {
-      public MyConfiguration() {
-          System.out.println("构造方法被调用");
-      }
-  
-      @PostConstruct
-      private void init() {
-          System.out.println("PostConstruct注解方法被调用");
-      }
-  
-      @PreDestroy
-      private void shutdown() {
-          System.out.println("PreDestroy注解方法被调用");
-      }
-  }
-  ```
+    > 建议您不要使用 InitializingBean回调接口，因为它不必要地将代码耦合到 Spring
+```java
+@Configuration
+public class MyConfiguration {
+    public MyConfiguration() {
+      System.out.println("构造方法被调用");
+    }
+    
+    @PostConstruct
+    private void init() {
+      System.out.println("PostConstruct注解方法被调用");
+    }
+    
+    @PreDestroy
+    private void shutdown() {
+      System.out.println("PreDestroy注解方法被调用");
+    }
+}
+```
 ### <a name="33">Spring 的异常处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-使用 @ControllerAdvice和@ExceptionHandler处理全局异常
-  - ```
-    @RestControllerAdvice(basePackages = {"com.design.apidesign.controller"}) 
-    public class ExceptionControllerAdvice { 
-         
-          @ExceptionHandler(MethodArgumentNotValidException.class)
-          public String MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
-    
-    }
-    
-    ```
+使用 @ControllerAdvice 和 @ExceptionHandler处理全局异常
+```java
+@RestControllerAdvice(basePackages = {"com.design.apidesign.controller"}) 
+public class ExceptionControllerAdvice { 
+
+      @ExceptionHandler(MethodArgumentNotValidException.class)
+      public String MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) { }
+} 
+```
+
 @ResponseStatusException：通过 ResponseStatus注解简单处理异常的方法（将异常映射为状态码）。
-  - ```
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public class ResourseNotFoundException2 extends RuntimeException {
-    
-       public ResourseNotFoundException2() {
-       }
-    
-       // status ： http status 
-       // reason ：response 的消息内容
-       // cause ： 抛出的异常
-       public ResponseStatusException(HttpStatus status, @Nullable String reason, @Nullable Throwable cause) {
-    		super(null, cause);
-    		Assert.notNull(status, "HttpStatus is required");
-    		this.status = status;
-    		this.reason = reason;
-       }
-    
-       public ResourseNotFoundException2(String message) {
-           super(message);
-       }
-    }
-    ```
+```java
+@ResponseStatus(code = HttpStatus.NOT_FOUND)
+public class ResourseNotFoundException2 extends RuntimeException {
+
+   public ResourseNotFoundException2() {
+   }
+
+   // status ： http status 
+   // reason ：response 的消息内容
+   // cause ： 抛出的异常
+   public ResponseStatusException(HttpStatus status, @Nullable String reason, @Nullable Throwable cause) {
+        super(null, cause);
+        Assert.notNull(status, "HttpStatus is required");
+        this.status = status;
+        this.reason = reason;
+   }
+
+   public ResourseNotFoundException2(String message) {
+       super(message);
+   }
+}
+```
 
 ### <a name="34"> json 数据处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - @JsonIgnoreProperties 作用在类上用于过滤掉特定字段不返回或者不解析
 - @JsonIgnore一般用于类的属性上，作用和上面的@JsonIgnoreProperties 一样。
 - @JsonFormat一般用来格式化 json 数据。
 - @JsonUnwrapped扁平化对象
-  ```
+
+```
   //before
   {
       "location": {
@@ -504,7 +505,7 @@ https://www.cnblogs.com/yichunguo/p/12122598.html
     "userName": "coder1234",
     "fullName": "shaungkou"
   }
-  ```
+```
   
 ### <a name="35"> @Component 和 @Bean 的区别是什么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 作用对象不同: @Component 注解作用于类，而@Bean注解作用于方法。

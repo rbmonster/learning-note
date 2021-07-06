@@ -966,16 +966,14 @@ JVM 的堆外内存泄漏，主要有两种的原因：
 > 太抽象了
 
 #### <a name="77">不恰当的数据结构导致内存过大</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- -Xms4g -Xmx8g -Xmn1g 使用ParNew + CMS组合。
-- 业务上需要10min加载80MB的数据到内存，会产生100W HashMap entry
-- Minor GC超过500ms，因为新生代使用了标记复制算法
-- 不从修改程序，仅从GC调优，可以直接去掉SurvivorRatio，让新生代存活的对象一次Minor GC就进入到老年代
-    - -XX:SurvivorRatio=65536 -XX:MaxTenuringThreshold=0（或者-XX:+AlwaysTenure)
+场景：-Xms4g -Xmx8g -Xmn1g 使用ParNew + CMS组合。业务上需要10min加载80MB的数据到内存，会产生100W HashMap entry， Minor GC超过500ms，因为新生代使用了标记复制算法\
+
+方案：不从修改程序，仅从GC调优，可以直接去掉SurvivorRatio，让新生代存活的对象一次Minor GC就进入到老年代` -XX:SurvivorRatio=65536 -XX:MaxTenuringThreshold=0`（或者-XX:+AlwaysTenure)
 #### <a name="78">堆外内存导致溢出错误</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- NIO使用直接内存复制，而虚拟机中最大最小内存直接设值成系统内存大小了
+NIO使用直接内存复制，而虚拟机中最大最小内存直接设值成系统内存大小了
 
 #### <a name="79">异步系统Socket连接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- Socket 使用BIO连接异步处理，导致了系统连接数过多，进而虚拟机崩溃
+Socket 使用BIO连接异步处理，导致了系统连接数过多，进而虚拟机崩溃
 
 #### <a name="80">Evosuite 自动生成单元测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 表现：maven build时候单元测试需要一个多小时。
@@ -1004,8 +1002,8 @@ YGC出现大量复制工作，很耗费时间。每次分配的空间过大，�
 - [美团：Java中9种常见的CMS GC问题分析与解决](https://mp.weixin.qq.com/s/RFwXYdzeRkTG5uaebVoLQw)
 
 #### <a name="82">其他建议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 禁用偏向锁：偏向锁在只有一个线程使用到该锁的时候效率很高，但是在竞争激烈情况会升级成轻量级锁，此时就需要先消除偏向锁，这个过程是 STW 的。
-    - > 在已知并发激烈的前提下，一般会禁用偏向锁 -XX:-UseBiasedLocking 来提高性能。
-- 主动式 GC： 观测 Old 区的使用情况，即将到达阈值时将应用服务摘掉流量，手动触发一次 Major GC。必要时引入，会影响系统健壮性。
-- 虚拟内存：启动初期有些操作系统（例如 Linux）并没有真正分配物理内存给 JVM ，而是在虚拟内存中分配，使用的时候才会在物理内存中分配内存页，这样也会导致 GC 时间较长。
-    - > 这种情况可以添加 -XX:+AlwaysPreTouch 参数，让 VM 在 commit 内存时跑个循环来强制保证申请的内存真的 commit，避免运行时触发缺页异常。
+1. 禁用偏向锁：偏向锁在只有一个线程使用到该锁的时候效率很高，但是在竞争激烈情况会升级成轻量级锁，此时就需要先消除偏向锁，这个过程是 STW 的。
+    > 在已知并发激烈的前提下，一般会禁用偏向锁 -XX:-UseBiasedLocking 来提高性能。
+2. 主动式 GC： 观测 Old 区的使用情况，即将到达阈值时将应用服务摘掉流量，手动触发一次 Major GC。必要时引入，会影响系统健壮性。
+3. 虚拟内存：启动初期有些操作系统（例如 Linux）并没有真正分配物理内存给 JVM ，而是在虚拟内存中分配，使用的时候才会在物理内存中分配内存页，这样也会导致 GC 时间较长。
+    > 这种情况可以添加 -XX:+AlwaysPreTouch 参数，让 VM 在 commit 内存时跑个循环来强制保证申请的内存真的 commit，避免运行时触发缺页异常。
