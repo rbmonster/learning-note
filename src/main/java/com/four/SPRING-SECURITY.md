@@ -102,34 +102,6 @@ for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
 
 
 
-## 继承WebSecurityConfigurerAdapter的demo
-```
-
-@EnableWebSecurity
-@Slf4j
-public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-        // 设置从不创建session，正常基于jwt认证才会如此设置
-        .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
-        // 设置异常处理返回
-        .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
-        // 设置不拦截的url请求
-        .authorizeRequests()
-        .antMatchers("/api/v1/admin/login/**").permitAll()
-        
-        http.authorizeRequests()
-            .anyRequest().authenticated().and()
-            // 添加拦截器
-            .addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
-        // 禁止跨服务请求
-        http.csrf().disable();
-    }
-}
-```
-
 ## Session 与 Cookies 认证
 ### 认证过程
 很多时候我们都是通过 SessionID 来实现特定的用户，SessionID 一般会选择存放在 Redis 中。举个例子：用户成功登陆系统，然后返回给客户端具有 SessionID 的 Cookie，当用户向后端发起请求的时候会把 SessionID 带上，这样后端就知道你的身份状态了。关于这种认证方式更详细的过程如下：
@@ -139,7 +111,6 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 3. 服务器向用户返回一个 SessionID，写入用户的 Cookie。
 4. 当用户保持登录状态时，Cookie 将与每个后续请求一起被发送出去。
 5. 服务器可以将存储在 Cookie 上的 Session ID 与存储在内存中或者数据库中的 Session 信息进行比较，以验证用户的身份，返回给用户客户端响应信息的时候会附带用户当前的状态。
-
 
 另外，Spring Session提供了一种跨多个应用程序或实例管理用户会话信息的机制。
 
@@ -219,8 +190,39 @@ public String generateToken(String subject) {
 3. 如果可以，请使用https协议
 
 ## spring security + JWT
-- 继承WebSecurityConfigurerAdapter类，重写config 方法，定制一些httpSecurity的规则。
+继承WebSecurityConfigurerAdapter类，重写config 方法，定制一些httpSecurity的规则。
 > 对于前后端分离的开发模式，需开放一个签发认证的url接口，而其他url接口根据业务要求，可以直接屏蔽返回未认证。
+
+
+
+### 继承WebSecurityConfigurerAdapter的demo
+```java
+
+@EnableWebSecurity
+@Slf4j
+public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+        // 设置从不创建session，正常基于jwt认证才会如此设置
+        .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
+        // 设置异常处理返回
+        .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
+        // 设置不拦截的url请求
+        .authorizeRequests()
+        .antMatchers("/api/v1/admin/login/**").permitAll();
+        
+        http.authorizeRequests()
+            .anyRequest().authenticated().and()
+            // 添加拦截器
+            .addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
+        // 禁止跨服务请求
+        http.csrf().disable();
+    }
+}
+```
+
 ```
 @Override
 protected void configure(HttpSecurity http) throws Exception {
@@ -250,7 +252,7 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-登陆接口：验证用户名密码签发token
+### 登陆接口：验证用户名密码签发token
 ```
 @GetMapping
 private String toLogin(HttpServletRequest request, String username, String password) {
