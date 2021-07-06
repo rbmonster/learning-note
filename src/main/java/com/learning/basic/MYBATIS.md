@@ -120,8 +120,8 @@
 1. mapper.xml中的配置⽂件⾥的每条sql语句，每一个`<select>、<insert>、<update>、<delete>`标签，都会被解析为带有Id信息的一个个MappedStatement对象，再通过⼀个HashMap集合保存起来。
 2. Mapper接口是没有实现类的，当调用接口方法时，接口全限名+方法名拼接字符串作为 key 值，可唯一定位一个MappedStatement。
 3. 执⾏getMapper()⽅法，判断是否注册过mapper接⼝，注册了就会使⽤mapperProxyFactory去⽣成代理类MapperProxy执⾏⽬标⽅法时，会调⽤MapperProxy代理类的invoke()⽅法
-4. 此时会使用boundSql和对应的mapperStatement构造cacheKey,先进行缓存查询，命中直接返回。
-5. 缓存无命中则，创建connect连接，通过statement对象执行execute方法。
+4. 此时会使用boundSql和对应的mapperStatement构造cacheKey,先进行缓存查询，命中直接返回。缓存`Map<Method, MapperMethodInvoker> methodCache =  `
+5. 缓存无命中,则创建connect连接，通过statement对象执行execute方法。
 6. 执⾏execute()⽅法返回结果使用resultSetHandler进行结果集的封装，添加到缓存中，最后返回结果。
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mybatisProcess.jpg)
@@ -129,7 +129,7 @@
 
 下面的执行流程简要描述，只是为了辅助理解，相关初始化方法：
 1. Configuration中保存了，解析完xml的MapperStatement的HashMap
-   - Mybatis将Mapper接口注册到Spring的时候，将Mapper接口生成的BeanDefiniton的beanClass设置为MapperFactoryBean
+   - Mybatis将Mapper接口注册到Spring的时候，将Mapper接口生成的BeanDefinition的beanClass设置为MapperFactoryBean
 2. Mapper接口初始化的时候通过MapperFactoryBean，进而调用MapperProxyFactory方法初始化及调用。
 3. MapperProxy代理调用时，通过匹配权限名+ID 获取MapperStatement对象
 4. MapperProxy进而MapperMethod的execute方法。

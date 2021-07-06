@@ -1,6 +1,7 @@
 package com.learning.mybatis.dao;
 
 import com.learning.mybatis.entity.Demo;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  * @Author: sanwu
  * @Date: 2021/1/23 17:17
  */
+@Mapper
 public interface DemoMapper {
 
     Demo selectByPrimaryKey(Long demoId);
