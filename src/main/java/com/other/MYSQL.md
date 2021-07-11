@@ -361,6 +361,12 @@ MVCC用来解决**读—写冲突**的无锁并发控制，就是为事务分配
 
 MVCC的实现原理：主要是版本链，undo日志 ，Read View 来实现的
 
+实现机制：InnoDB在每行数据都增加三个隐藏字段，一个唯一行号，一个记录创建的版本号，一个记录删除的版本号。
+- 创建版本号：insert操作时事务的id
+- 删除版本号：insert时为null，删除时为当前事务的id
+  当读操作时，读取的是删除版本号为null，或者创建版本号最大的数据，保证我们读取的是最新的数据
+  ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mvcc-line.png)
+
 ##### 版本链
 我们数据库中的每行数据，除了我们肉眼看见的数据，还有几个隐藏字段，分别是db_trx_id、db_roll_pointer、db_row_id。
 - db_trx_id ：最近修改(修改/插入)事务ID：记录创建这条记录/最后一次修改该记录的事务ID。6byte
@@ -376,10 +382,11 @@ MVCC的实现原理：主要是版本链，undo日志 ，Read View 来实现的
 每次对数据库记录进行改动，都会记录一条undo日志，每条undo日志也都有一个roll_pointer属性（INSERT操作对应的undo日志没有该属性，因为该记录并没有更早的版本）
 > 对该记录每次更新后，都会将旧值放到一条undo日志中，就算是该记录的一个旧版本，随着更新次数的增多，所有的版本都会被roll_pointer属性连接成一个链表，我们把这个链表称之为版本链，版本链的头节点就是当前记录最新的值。
 
-#### undo log
+
+##### undo log
 见undolog 章节
 
-#### Read View(读视图)
+##### Read View(读视图)
 事务进行快照读操作的时候生产的读视图(Read View)，在该事务执行的快照读的那一刻，会生成数据库系统当前的一个快照。\
 记录并维护系统当前活跃事务的ID(没有commit，当每个事务开启时，都会被分配一个ID, 这个ID是递增的，所以越新的事务，ID值越大)，是系统中当前不应该被本事务看到的其他事务id列表。
 
