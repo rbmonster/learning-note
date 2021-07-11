@@ -365,7 +365,7 @@ MVCC的实现原理：主要是版本链，undo日志 ，Read View 来实现的
 - 创建版本号：insert操作时事务的id
 - 删除版本号：insert时为null，删除时为当前事务的id
   当读操作时，读取的是删除版本号为null，或者创建版本号最大的数据，保证我们读取的是最新的数据
-  ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mvcc-line.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mvcc-line.png)
 
 ##### 版本链
 我们数据库中的每行数据，除了我们肉眼看见的数据，还有几个隐藏字段，分别是db_trx_id、db_roll_pointer、db_row_id。
