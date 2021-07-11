@@ -127,7 +127,7 @@ for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
 可以使用token认证的方式避免误点攻击链接导致的跨服务请求问题。
 > 基于token 认证经常将认证凭证存储在local storage中，在请求的时候前端再动态添加凭证到请求中。因此误点的外部链接无法添加token到转发的请求中。
 
-## Spring Security 对于Csrf攻击的解决方案
+## Spring Security 对于CSRF攻击的解决方案
 spring Security对于CSRF攻击的解决方案就是CsrfFilter。
 
 
@@ -137,7 +137,10 @@ spring Security对于CSRF攻击的解决方案就是CsrfFilter。
 因此前端对于后端的请求均要把cookie中的`XSRF-TOKEN`设置到请求头或者参数中，才能通过后端的校验。\
 以上就防止的cooies认证中，对于超链接跳转的CSRF攻击。
 
+以下spring 官方提到了，使用了CORS同源策略的时候，CsrfFilter的重要性。
+> It is important to keep the CsrfToken a secret from other domains. This means if you are using Cross Origin Sharing (CORS), you should NOT expose the CsrfToken to any external domains.
 
+** 核心逻辑可以见CsrfFilter **
 
 ## 基于token认证 JWT
 
@@ -209,6 +212,9 @@ public String generateToken(String subject) {
 1. 继承`AbstractAuthenticationProcessingFilter`，使用认证章节中的流程。通过filter返回具体的`Authentication`对象，由有`Provider`进行认证逻辑处理
 2. 继承`OncePerRequestFilter`，进行认证逻辑完成后，手工设置`SpringSecurityHolder`中的认证为成功
 
+参考资料：
+- [Spring Security with JWT for REST API](https://www.toptal.com/spring/spring-security-tutorial)
+- [Using JSON Web Tokens(JWT) with Spring Boot Security](https://www.linkedin.com/pulse/using-json-web-tokensjwt-spring-boot-security-turkmen-mustafa-demirci)
 ### 继承WebSecurityConfigurerAdapter的demo
 ```java
 
@@ -612,6 +618,34 @@ private String toLogin(HttpServletRequest request, String username, String passw
 > 3. 重新请求获取 token 的过程中会有短暂 token 不可用的情况（可以通过在客户端设置定时器，当accessToken 快过期的时候，提前去通过 refreshToken 获取新的accessToken）。
 
 
+## 跨源资源共享（CORS）
+跨源资源共享 (CORS) （或通俗地译为跨域资源共享）是一种基于HTTP 头的机制，该机制通过允许服务器标示除了它自己以外的其它origin（域，协议和端口），这样浏览器可以访问加载这些资源。
+> 跨源域资源共享（ CORS ）机制允许 Web 应用服务器进行跨源访问控制，从而使跨源数据传输得以安全进行。作用与JSONP类似
+
+具体Spring security中的配置可以见下文
+```java
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            // by default uses a Bean by the name of corsConfigurationSource
+            .cors(withDefaults())
+            ...
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("https://example.com"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+}
+```
 
 ## 相关资料
 - [认证基础知识](https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md)

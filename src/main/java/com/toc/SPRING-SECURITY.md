@@ -8,20 +8,30 @@
 &emsp;&emsp;<a href="#5">2.1. 基于注解</a>  
 &emsp;&emsp;<a href="#6">2.2. 使用配置添加权限</a>  
 &emsp;&emsp;<a href="#7">2.3. 总结</a>  
-&emsp;<a href="#8">3. 继承WebSecurityConfigurerAdapter的demo</a>  
-&emsp;<a href="#9">4. Session 与 Cookies 认证</a>  
-&emsp;&emsp;<a href="#10">4.1. 认证过程</a>  
-&emsp;&emsp;<a href="#11">4.2. Cookie 无法防止CSRF攻击</a>  
+&emsp;<a href="#8">3. Session 与 Cookies 认证</a>  
+&emsp;&emsp;<a href="#9">3.1. 认证过程</a>  
+&emsp;&emsp;<a href="#10">3.2. Cookie 无法防止CSRF攻击</a>  
+&emsp;<a href="#11">4. Spring Security 对于CSRF攻击的解决方案</a>  
 &emsp;<a href="#12">5. 基于token认证 JWT</a>  
 &emsp;&emsp;<a href="#13">5.1. Session认证暴露的缺点</a>  
 &emsp;&emsp;<a href="#14">5.2. 基于token 认证流程</a>  
 &emsp;&emsp;<a href="#15">5.3. jwt 组成</a>  
 &emsp;&emsp;<a href="#16">5.4. 总结</a>  
 &emsp;<a href="#17">6. spring security + JWT</a>  
-&emsp;<a href="#18">7. JWT token 常见问题</a>  
-&emsp;&emsp;<a href="#19">7.1. 注销登录等场景下 token 处理</a>  
-&emsp;&emsp;<a href="#20">7.2. 过期token 的续签问题</a>  
-&emsp;<a href="#21">8. 相关资料</a>  
+&emsp;&emsp;<a href="#18">6.1. 继承WebSecurityConfigurerAdapter的demo</a>  
+&emsp;&emsp;<a href="#19">6.2. 基于AbstractAuthenticationProcessingFilter</a>  
+&emsp;&emsp;&emsp;<a href="#20">6.2.1. WebSecurityConfigurerAdapter的配置demo</a>  
+&emsp;&emsp;&emsp;<a href="#21">6.2.2. JWTAuthenticationFilter</a>  
+&emsp;&emsp;&emsp;<a href="#22">6.2.3. </a>  
+&emsp;&emsp;<a href="#23">6.3. 基于OncePerRequestFilter</a>  
+&emsp;&emsp;&emsp;<a href="#24">6.3.1. WebSecurityConfigurer</a>  
+&emsp;&emsp;&emsp;<a href="#25">6.3.2. JwtTokenAuthenticationFilter</a>  
+&emsp;&emsp;<a href="#26">6.4. 登陆接口：验证用户名密码签发token</a>  
+&emsp;<a href="#27">7. JWT token 常见问题</a>  
+&emsp;&emsp;<a href="#28">7.1. 注销登录等场景下 token 处理</a>  
+&emsp;&emsp;<a href="#29">7.2. 过期token 的续签问题</a>  
+&emsp;<a href="#30">8. 跨源资源共享（CORS）</a>  
+&emsp;<a href="#31">9. 相关资料</a>  
 # <a name="0">Spring security</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 [Spring Security官网][https://docs.spring.io/spring-security/site/docs/5.4.2/reference/html5/#servlet-architecture]
@@ -126,36 +136,8 @@ for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
 
 
 
-## <a name="8">继承WebSecurityConfigurerAdapter的demo</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
-
-@EnableWebSecurity
-@Slf4j
-public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-        // 设置从不创建session，正常基于jwt认证才会如此设置
-        .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
-        // 设置异常处理返回
-        .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
-        // 设置不拦截的url请求
-        .authorizeRequests()
-        .antMatchers("/api/v1/admin/login/**").permitAll()
-        
-        http.authorizeRequests()
-            .anyRequest().authenticated().and()
-            // 添加拦截器
-            .addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
-        // 禁止跨服务请求
-        http.csrf().disable();
-    }
-}
-```
-
-## <a name="9">Session 与 Cookies 认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="10">认证过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="8">Session 与 Cookies 认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="9">认证过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 很多时候我们都是通过 SessionID 来实现特定的用户，SessionID 一般会选择存放在 Redis 中。举个例子：用户成功登陆系统，然后返回给客户端具有 SessionID 的 Cookie，当用户向后端发起请求的时候会把 SessionID 带上，这样后端就知道你的身份状态了。关于这种认证方式更详细的过程如下：
 
 1. 用户向服务器发送用户名和密码用于登陆系统。
@@ -164,10 +146,9 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 4. 当用户保持登录状态时，Cookie 将与每个后续请求一起被发送出去。
 5. 服务器可以将存储在 Cookie 上的 Session ID 与存储在内存中或者数据库中的 Session 信息进行比较，以验证用户的身份，返回给用户客户端响应信息的时候会附带用户当前的状态。
 
-
 另外，Spring Session提供了一种跨多个应用程序或实例管理用户会话信息的机制。
 
-### <a name="11">Cookie 无法防止CSRF攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">Cookie 无法防止CSRF攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在登陆了网银后，点击误导的超链接，导致跨服务请求成功。
 ```
 <a src=http://www.mybank.com/Transfer?bankId=11&money=10000>科学理财，年盈利率过万</>
@@ -179,6 +160,21 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 可以使用token认证的方式避免误点攻击链接导致的跨服务请求问题。
 > 基于token 认证经常将认证凭证存储在local storage中，在请求的时候前端再动态添加凭证到请求中。因此误点的外部链接无法添加token到转发的请求中。
+
+## <a name="11">Spring Security 对于CSRF攻击的解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+spring Security对于CSRF攻击的解决方案就是CsrfFilter。
+
+
+1. 开启spring security的防csrf功能之后，对于访问后端的请求，若发现cookies中无`XSRF-TOKEN`的cookie，便会使用UUID生成一个token`set cookie`。\
+2. 在`WebSecurityConfigurerAdapter`的配置中，可设置Matcher对URL或只对HTTP-METHOD中POST、PATCH、DELETE等请求，进行CSRF拦截\
+3. 假设对POST请求进行拦截，CsrfFilter会对校验cookies中的`XSRF-TOKEN`。校验的方式为与请求头`X-XSRF-TOKEN`或参数中`_csrf`的值进行验证，如果不一致，则为CSRF攻击。
+因此前端对于后端的请求均要把cookie中的`XSRF-TOKEN`设置到请求头或者参数中，才能通过后端的校验。\
+以上就防止的cooies认证中，对于超链接跳转的CSRF攻击。
+
+以下spring 官方提到了，使用了CORS同源策略的时候，CsrfFilter的重要性。
+> It is important to keep the CsrfToken a secret from other domains. This means if you are using Cross Origin Sharing (CORS), you should NOT expose the CsrfToken to any external domains.
+
+** 核心逻辑可以见CsrfFilter **
 
 ## <a name="12">基于token认证 JWT</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -243,38 +239,378 @@ public String generateToken(String subject) {
 3. 如果可以，请使用https协议
 
 ## <a name="17">spring security + JWT</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 继承WebSecurityConfigurerAdapter类，重写config 方法，定制一些httpSecurity的规则。
+继承WebSecurityConfigurerAdapter类，重写config 方法，定制一些httpSecurity的规则。
 > 对于前后端分离的开发模式，需开放一个签发认证的url接口，而其他url接口根据业务要求，可以直接屏蔽返回未认证。
-```
-@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http.cors(withDefaults())
-            // 禁用 CSRF
-            .csrf().disable()
-            .authorizeRequests()
-            // swagger
-            .antMatchers(SecurityConstants.SWAGGER_WHITELIST).permitAll()
-            // 登录接口
-            .antMatchers(HttpMethod.POST, SecurityConstants.LOGIN_WHITELIST).permitAll()
-            // 指定路径下的资源需要验证了的用户才能访问
-            .antMatchers(SecurityConstants.FILTER_ALL).authenticated()
-            .antMatchers(HttpMethod.DELETE, SecurityConstants.FILTER_ALL).hasRole("ADMIN")
-            // 其他都放行了
-            .anyRequest().permitAll()
-            .and()
-            //添加自定义Filter
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), stringRedisTemplate))
-            // 不需要session（不创建会话）
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            // 授权异常处理
-            .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-            .accessDeniedHandler(new JwtAccessDeniedHandler());
-    // 防止H2 web 页面的Frame 被拦截
-    http.headers().frameOptions().disable();
+
+对应JWT的集成目前主要有两种方式：
+1. 继承`AbstractAuthenticationProcessingFilter`，使用认证章节中的流程。通过filter返回具体的`Authentication`对象，由有`Provider`进行认证逻辑处理
+2. 继承`OncePerRequestFilter`，进行认证逻辑完成后，手工设置`SpringSecurityHolder`中的认证为成功
+
+参考资料：
+- [Spring Security with JWT for REST API](https://www.toptal.com/spring/spring-security-tutorial)
+- [Using JSON Web Tokens(JWT) with Spring Boot Security](https://www.linkedin.com/pulse/using-json-web-tokensjwt-spring-boot-security-turkmen-mustafa-demirci)
+### <a name="18">继承WebSecurityConfigurerAdapter的demo</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```java
+
+@EnableWebSecurity
+@Slf4j
+public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+        // 设置从不创建session，正常基于jwt认证才会如此设置
+        .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
+        // 设置异常处理返回
+        .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
+        // 设置不拦截的url请求
+        .authorizeRequests()
+        .antMatchers("/api/v1/admin/login/**").permitAll();
+        
+        http.authorizeRequests()
+            .anyRequest().authenticated().and()
+            // 添加拦截器
+            .addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
+        // 禁止跨服务请求
+        http.csrf().disable();
+    }
 }
 ```
 
-登陆接口：验证用户名密码签发token
+### <a name="19">基于AbstractAuthenticationProcessingFilter</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+#### <a name="20">WebSecurityConfigurerAdapter的配置demo</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```java
+
+@Slf4j
+@Configuration
+@EnableWebSecurity
+public class UserWebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final static String RESOURCE = "RESOURCE";
+
+    private final static String ACTION = "ACTION";
+
+    @Autowired
+    private JwtAuthenticationProvider jwtAuthenticationProvider;
+
+    @Autowired
+    private JwtRefreshAuthenticationProvider jwtRefreshAuthenticationProvider;
+
+    @Autowired
+    private PermissionProperty PermissionProperty;
+
+    @Autowired
+    private IJwtTokenService jwtTokenService;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+       // 设置从不创建session，正常基于jwt认证才会如此设置
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
+        // 设置读取配置的permitAll 以及允许所有接口使用OPTIONS
+        http.authorizeRequests().antMatchers(resolvePermitAll()).permitAll()
+                .and().authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
+                // 添加自定义的Authentication过滤器
+                .and().addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+              // 设置异常处理返回
+              .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint );
+        
+
+       // 开启同源认证CORS过滤器
+        String contentSecurityPolicyStyleSrc = "style-src 'self' " + String.join(" ", securityProperty.getCsp().getStyleSrc());
+        String contentSecurityPolicyScriptSrc = "script-src 'self' "+ String.join(" ", securityProperty.getCsp().getScriptSrc());
+        http.cors().configurationSource(corsConfigurationSource())
+                .and().headers()
+                .frameOptions().deny()
+                .contentTypeOptions()
+                .and().xssProtection()
+                .and().cacheControl()
+                .and().httpStrictTransportSecurity()
+                .and().addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy", contentSecurityPolicyStyleSrc, contentSecurityPolicyScriptSrc));
+
+        http.csrf().csrfTokenRepository(cookieCsrfTokenRepository)
+                .requireCsrfProtectionMatcher(createRequireCsrfProtectionMatcher());
+    }
+
+   /**
+    * 基于认证的provider
+    * @param auth
+    */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(jwtAuthenticationProvider);
+        auth.authenticationProvider(jwtRefreshAuthenticationProvider);
+    }
+
+   /**
+    * 设置自己自定义的JwtAuthenticationFilter
+    * 注意要再matcher中指定拦截的范围
+    * @return
+    * @throws Exception
+    */
+    private JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        List<RequestMatcher> matchers = Lists.newArrayList();
+        for (String pattern : resolvePermitAll()) {
+            matchers.add(new AntPathRequestMatcher(pattern, null));
+        }
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
+                request -> matchers.stream().noneMatch(matcher -> matcher.matches(request))
+        );
+        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager());
+//        jwtAuthenticationFilter.setAuthenticationFailureHandler(createAuthenticationFailureHandler());
+//        jwtAuthenticationFilter.setAuthenticationSuccessHandler(createAuthenticationSuccessHandler());
+        return jwtAuthenticationFilter;
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedHeaders(Lists.newArrayList("Origin", "Content-Type", "Accept", "X-Flow-Id"));
+        config.setExposedHeaders(Lists.newArrayList("Content-Type", "X-TenantID", "X-Track-Id"));
+        config.setAllowedOrigins(Lists.newArrayList(securityProperty.getCors().getAllowOrigins()));
+        config.setAllowedMethods(Lists.newArrayList(HttpMethod.OPTIONS.name(), HttpMethod.GET.name(), HttpMethod.POST.name()));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+   /**
+    * 从配置中读取
+    * @return
+    */
+    private String[] resolvePermitAll() {
+         return securityJwtProperty.getPermitAll();
+    }
+
+   /**
+    * 设置csrftoken的过滤
+    * @return
+    */
+    private RequestMatcher createRequireCsrfProtectionMatcher() {
+        return new RequestMatcher() {
+            private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+
+            private final HashSet<String> allowedMethods = new HashSet<>(
+                    Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS"));
+
+            public boolean matches(HttpServletRequest request) {
+                if (this.allowedMethods.contains(request.getMethod())) {
+                    log.debug("CSRF disabled of methods {} match", request.getRequestURI());
+                    return false;
+                }
+                if (!StringUtils.isEmpty(request.getHeader("Authorization"))) {
+                    log.debug("CSRF disabled matched header Authorization, requestURI: {}", request.getRequestURI());
+                    return false;
+                }
+                return Stream.concat(Stream.of(securityJwtProperty.getPermitAll()), Stream.of(securityJwtProperty.getSwaggerPermitAll()))
+                        .noneMatch(pattern -> this.antPathMatcher.match(pattern, request.getRequestURI()));
+            }
+        };
+    }
+}
+
+```
+#### <a name="21">JWTAuthenticationFilter</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```java
+@Slf4j
+public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+    private IJwtTokenService jwtTokenService;
+
+   /**
+    *  拦截对应的的JWTHeader 递交给对应的Providr
+    * @param request
+    * @param response
+    * @return
+    */
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        String authorization = request.getHeader(AuthorizationHeader);
+        if (!Strings.isNullOrEmpty(authorization) && authorization.startsWith("bearer ")) {
+            return attemptHeaderAuthentication(request, authorization);
+        }
+        if (request.getCookies() == null) {
+            throw new JwtAuthenticationException(String.format("Jwt cookies are absent, request api is [%s]", request.getServletPath()));
+        }
+       String jwt = authorization.substring(7);
+       String[] jwtSplits = jwt.split("\\.");
+       if (jwtSplits.length != 3) {
+          log.error("Jwt is in wrong format, request api is {}", request.getServletPath());
+          throw new JwtAuthenticationException(String.format("Jwt is in wrong format, request api is [%s]", request.getServletPath()));
+       }
+       JwtAuthenticationToken jwtToken = jwtTokenService.digestJwtToken(jwt);
+       jwtToken.setAgentContext(agentContext);
+       return this.getAuthenticationManager().authenticate(jwtToken);
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        super.successfulAuthentication(request, response, chain, authResult);
+        chain.doFilter(request, response);
+    }
+}
+
+```
+
+#### <a name="22"></a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+```java
+@Slf4j
+@Component
+public class JwtAuthenticationProvider implements AuthenticationProvider {
+    @Autowired
+    private BlacklistService blacklistService;
+
+    @Autowired
+    private UserPermissionClient userPermissionClient;
+
+   /**
+    * 执行认证逻辑
+    * @param authentication
+    * @return
+    * @throws AuthenticationException
+    */
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+        // ....
+        jwtToken.setAuthenticated(true);
+        return jwtToken;
+    }
+
+   /**
+    * 设置支持认证何种类型的Authentication
+    * @param authentication
+    * @return
+    */
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.isAssignableFrom(JwtAuthenticationToken.class);
+    }
+}
+
+```
+### <a name="23">基于OncePerRequestFilter</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+#### <a name="24">WebSecurityConfigurer</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```java
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @Autowired
+    private TokenAuthenticationFilter tokenAuthenticationFilter;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
+            .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
+            .authorizeRequests()
+            .antMatchers("/api/v1/admin/login/**").permitAll()
+            .antMatchers("/upload/**").permitAll();
+
+
+        // API权限控制
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry = http.authorizeRequests();
+        Map<String, String> resourcePermissions = new HashMap<>();
+        for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
+            urlRegistry = urlRegistry.antMatchers(entry.getKey()).hasAnyAuthority(entry.getValue());
+        }
+
+        http.authorizeRequests()
+            .anyRequest().authenticated().and()
+                // 在默认的BasicAuthenticationFilter前添加自定义的过滤器
+            .addFilterBefore(tokenAuthenticationFilter, BasicAuthenticationFilter.class);
+
+        http.csrf().disable();
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers(
+                HttpMethod.POST,
+                "/api/v1/admin/login/toLogin"
+        ).antMatchers(
+                HttpMethod.POST,
+                "/api/v1/front/wxAuthor/**"
+        ).antMatchers(
+                HttpMethod.POST,
+                "/api/v1/admin/wxAuthor/**"
+        ).antMatchers(
+                HttpMethod.POST,
+                "/api/v1/front/wxMessage/**"
+        ).antMatchers(
+                HttpMethod.GET,
+                "/static/**"
+        ).antMatchers(
+                HttpMethod.GET,
+                "/upload/**"
+        );
+    }
+
+}
+```
+
+#### <a name="25">JwtTokenAuthenticationFilter</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+**注意在**`SecurityContextHolder.getContext().setAuthentication(authentication);` 设置认证成功的authentication，Spring security就会认为已经认证成功
+```java
+
+@Component
+public class TokenAuthenticationFilter extends OncePerRequestFilter {
+
+
+    @Autowired
+    private TokenHelper tokenHelper;
+
+    @Override
+    public void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws IOException, ServletException {
+
+        String userInfo;
+        String authToken = tokenHelper.getToken(request);
+
+        if (authToken != null) {
+            // get username from token
+            userInfo = tokenHelper.getUserInfoFromToken(authToken);
+            System.out.println(userInfo);
+            if (userInfo != null) {
+                if (tokenHelper.validateToken(authToken)) {
+                    String[] userInfos = userInfo.split("~");
+
+                    String userName = userInfos[0];
+                    List<GrantedAuthority> authorities = buildAuthorities(userName);
+                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(new AccountCredentials(userName, authorities));
+                    authentication.setToken(authToken);
+                    authentication.setAuthenticated(true);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+        }
+        chain.doFilter(request, response);
+    }
+
+    private List<GrantedAuthority> buildAuthorities(String userName) {
+        List<String> permissionNames = new ArrayList<>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String permissionName : permissionNames) {
+            GrantedAuthority authority = new PermissionGrantedAuthority(permissionName);
+            authorities.add(authority);
+        }
+
+        return authorities;
+    }
+
+}
+
+```
+
+### <a name="26">登陆接口：验证用户名密码签发token</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 @GetMapping
 private String toLogin(HttpServletRequest request, String username, String password) {
@@ -288,41 +624,8 @@ private String toLogin(HttpServletRequest request, String username, String passw
 }
 ```
 
-- 添加过滤器，用于验证token及设置通过spring security认证。
-```
-@Override
-public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain chain) throws IOException, ServletException {
-    String userInfo;
-    // 获取请求头的认证token
-    String authToken = tokenHelper.getToken(request);
-
-    if (authToken != null) {
-        // get username from token
-        userInfo = tokenHelper.getUserInfoFromToken(authToken);
-        System.out.println(userInfo);
-        if (userInfo != null) {
-            if (tokenHelper.validateToken(authToken)) {
-                String[] userInfos = userInfo.split("~");
-
-                String refreshToken = tokenHelper.refreshToken(authToken);
-                response.addHeader("refreshtoken", refreshToken);
-                // create authentication
-                String userName = userInfos[0];
-                List<GrantedAuthority> authorities = buildAuthorities(userName);
-                // spring security 设置存在相关的token信息认证通过
-                TokenBasedAuthentication authentication = new TokenBasedAuthentication(new AccountCredentials(userName, authorities));
-                authentication.setToken(authToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-        ...
-    }
-
-    chain.doFilter(request, response);
-}
-```
-
-## <a name="18">JWT token 常见问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="19">注销登录等场景下 token 处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="27">JWT token 常见问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="28">注销登录等场景下 token 处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 需要处理token的场景：
 1. 退出登录;
 2. 修改密码;
@@ -338,10 +641,10 @@ public void doFilterInternal(HttpServletRequest request, HttpServletResponse res
 2. 设置较短的token过期时间，但是会导致用户频繁登陆，体验不好。
 
 
-### <a name="20">过期token 的续签问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">过期token 的续签问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. token有效期延长。适合安全度不高的系统。
 2. 用户登录返回两个 token。一个用于登陆一个用于续签。
-    - 一个是 acessToken ，它的过期时间 token 本身的过期时间比如半个小时
+    - 一个是 accessToken ，它的过期时间 token 本身的过期时间比如半个小时
     - 一个是 refreshToken 它的过期时间更长一点比如为1天。
 > 该方案的不足是：
 > 1. 需要客户端来配合； 
@@ -349,7 +652,35 @@ public void doFilterInternal(HttpServletRequest request, HttpServletResponse res
 > 3. 重新请求获取 token 的过程中会有短暂 token 不可用的情况（可以通过在客户端设置定时器，当accessToken 快过期的时候，提前去通过 refreshToken 获取新的accessToken）。
 
 
+## <a name="30">跨源资源共享（CORS）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+跨源资源共享 (CORS) （或通俗地译为跨域资源共享）是一种基于HTTP 头的机制，该机制通过允许服务器标示除了它自己以外的其它origin（域，协议和端口），这样浏览器可以访问加载这些资源。
+> 跨源域资源共享（ CORS ）机制允许 Web 应用服务器进行跨源访问控制，从而使跨源数据传输得以安全进行。作用与JSONP类似
 
-## <a name="21">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+具体Spring security中的配置可以见下文
+```java
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            // by default uses a Bean by the name of corsConfigurationSource
+            .cors(withDefaults())
+            ...
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("https://example.com"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+}
+```
+
+## <a name="31">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [认证基础知识](https://github.com/Snailclimb/JavaGuide/blob/master/docs/system-design/authority-certification/basis-of-authority-certification.md)
 - [jwt认证](https://www.jianshu.com/p/576dbf44b2ae)

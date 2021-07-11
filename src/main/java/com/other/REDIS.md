@@ -1,15 +1,20 @@
 # Redis 基础
 缓存基本思想：CPU Cache 缓存的是内存数据用于解决 CPU 处理速度和内存不匹配的问题，内存缓存的是硬盘数据用于解决硬盘访问速度过慢的问题。为了避免用户在请求数据的时候获取速度过于缓慢，所以我们在数据库之上增加了缓存这一层来弥补。
+
+推荐一下一篇很顶的文章：[Redis 面霸篇：从高频问题透视核心原理](https://mp.weixin.qq.com/s/wrrXz4GoILd5hsbrYACTmA)
+> 本文也参考了很多改文章资料
 ## 基本数据结构
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/data-structure.jpg)
 
 ### String 字符串
 使用场景：如博客的文章数量，粉丝数量。
 #### 底层结构
 底层结构为简单动态字符串SDS（simple dynamic String）。\
-针对缓存频繁修改的情况：SDS分配内存不仅会分配需要的空间，还会分配额外的空间。
-- 小于1MB的SDS每次分配与len属性同样大小的空间
-- 大于1MB的每次分配1MB
-- 使用惰性释放策略：不立即使用内存重分配来回收缩短后多出来的字节，而是使用free属性，记录字节数量
+1. SDS 中 len 保存这字符串的长度，O(1) 时间复杂度查询字符串长度信息。
+2. 针对缓存频繁修改的情况：SDS分配内存不仅会分配需要的空间，还会分配额外的空间。
+    - 小于1MB的SDS每次分配与len属性同样大小的空间
+    - 大于1MB的每次分配1MB
+3. **使用惰性释放策略**：不立即使用内存重分配来回收缩短后多出来的字节，而是使用free属性，记录字节数量
 
 编码方式：
 - embstr编码：保存的是一个字符串值，且长度<=39，则字符串对象使用的是embstr编码方式保存
@@ -44,18 +49,23 @@
  127.0.0.1:6379> object encoding sim
  embstr
  ```
-### list 列表
+### List 列表
 使用场景：比如twitter的关注列表，粉丝列表等都可以用Redis的list结构来实现。
 #### 底层结构
 Redis中的列表list，在版本3.2之前，列表底层的编码是ziplist和linkedlist实现的，但是在版本3.2之后，重新引入 quicklist，列表的底层都由quicklist实现。
 
-quickList是一个ziplist组成的linkedlist双向链表。每个节点使用ziplist来保存数据。
+quickList是一个ziplist组成的linkedlist双向链表。每个节点使用ziplist来保存数据，它将 linkedlist 按段切分，每一段使用 ziplist 来紧凑存储，多个 ziplist 之间使用双向指针串接起来。
 - ziplist 是一个特殊的双向链表,特殊之处在于没有维护双向指针:prev next；而是存储上一个 entry的长度和 当前entry的长度，通过长度推算下一个元素在什么地方。
 - ziplist使用连续的内存块。
 - linkedList 便于在表的两端进行push和pop操作，在插入节点上复杂度很低，但是它的内存开销比较大。
   - 它在每个节点上除了要保存数据之外，还要额外保存两个指针；
   - 其次，双向链表的各个节点是单独的内存块，地址不连续，节点多了容易产生内存碎片。
-  
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/ziplist.jpg)
+
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/quicklist.png)
+
 
 > 旧的数据规则\
 > 当满足下面两条件时，使用ziplist。一条不满足即使用linkedlist
@@ -102,17 +112,42 @@ world
 asdf
 ```
     
-### hash 哈希 k-v
+### Hash 哈希 k-v
 
 #### 底层结构
 哈希对象的编码可以是 ziplist（压缩列表） 或hashtable
 - ziplist会先保存键再保存值，因此键与值总是靠在一起，其中键的方向为压缩列表的表头方向。
-- 通过 "数组 + 链表" 的链地址法来解决部分 哈希冲突
+- 通过 "数组 + 链表" 的链地址法来解决部分 **哈希冲突**
 
 编码转换：同时以下条件的哈希对象使用ziplist编码，否则使用hashtable
 1. 哈希对象保存的所有字符串元素的长度都小于64字节。
 2. 哈希对象保存的元素数量小于512个。
 
+
+#### hash冲突
+Redis 的哈希表使用链地址法解决hash冲突，即冲突的位置上使用单链表的接口连接，解决冲突的问题。
+
+#### rehash与渐进式rehash
+
+哈希表的负载因子：
+> 负载因子 = 哈希表已保存的节点/哈希表大小\
+
+哈希表的负载因子用来判断是否需要对哈希表进行扩容或者收缩，扩容及收缩操作可以通过rehash实现
+
+**扩容**:
+1. 服务器没有执行BGSAVE或BGREWRITEAOF命令，且哈希表负载因子大于等于1
+2. 服务器执行BGSAVE或BGREWRITEAOF命令，且哈希表负载因子大于等于5
+> 扩容根据执行BGSAVE或BGREWRITEAOF命令是否执行，是因为上述两命令都是开启子线程进行操作，而操作系统正常都使用COW（Copy-On-Write）技术优化子线程效率。避免子线程运行时进行扩容，可以避免不必要的写操作，进而节省内存。
+
+**收缩**：当哈希表负载因子小于0.1时，对哈希表进行收缩操作。
+
+扩容过程：redis的hash使用了两个全局哈希表。开始默认使用「hashtable 0」保存键值对数据，「hashtable 1」 此刻没有分配空间。触发扩容时
+1. 系统给「hashtable 1」分配 「hashtable 0」.used*2的大小，取大于等于2的n次方幂的值
+2. 将「hashtable 0 」的数据重新映射拷贝到 「hashtable 1」中；
+3. 释放「hashtable 0」的空间。                                                                                                                                           
+将`hashtable 0 ` 的数据重新映射到 `hashtable 1 `的过程中并不是一次性的，这样会造成 Redis 阻塞，无法提供服务。而是采用了渐进式 rehash，每次处理客户端请求hashtable执行增删改查操作时，顺带将节点rehash到`hashtable 1` 中。
+
+> rehash进行期间，字典会同时操作`hashtable 0`与`hashtable 1`，如查找就要在两个表中查找，而新增只操作到新表
 #### 相关指令
 相关指令：
 - hset 'hashName' 'key' 'value' // 添加元素
@@ -194,6 +229,9 @@ hashtable
 - 有序集合保存的元素数量小于128个。
 - 有序集合保存的所有元素成员的长度都小于64个字节。
 
+skipList 跳跃表是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的。
+跳表在链表的基础上，增加了多层级索引，通过索引位置的几个跳转，实现数据的快速定位。
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/skiplist.png)
 
 #### 相关指令
 相关指令
@@ -570,8 +608,22 @@ redis-sentinel /path/to/your/sentinel.conf
 or
 redis-server /path/to/your/sentinel.conf
 ```
+### Redis 哨兵通信
+哨兵与 master 建立通信，利用 master 提供发布/订阅机制发布自己的信息，比如身高体重、是否单身、IP、端口……
 
-Sentinel故障转移操作
+master 有一个 `__sentinel__:hello` 的专用通道，用于哨兵之间发布和订阅消息。这就好比是` __sentinel__:hello` 通信群，哨兵利用 master 建立的群组发布自己的消息，同时关注其他哨兵发布的消息。
+
+### 与Slave建立通信
+Sentinel默认每十秒一次的频率，通过命令连接向被监视的主服务器发送INFO命令，通过分析INFO命令的响应，可以获得两方面的信息：
+1. 主服务器master本身的新信息
+2. 关于主服务器属下所有从服务器的信息。哨兵根据 master 响应的 slave 名单信息与每一个 salve 建立连接，并且根据这个连接持续监控哨兵。
+
+### Redis 哨兵具备的能力
+1. 监控：持续监控 master 、slave 是否处于预期工作状态。
+2. 自动切换主库：当 Master 运行故障，哨兵启动自动故障恢复流程：从 slave 中选择一台作为新 master。
+3. 通知：让 slave 执行 replicaof ，与新的 master 同步；并且通知客户端与新 master 建立连接。
+
+### Sentinel故障转移操作
 1. 当一个主服务下线时，各个Sentinel会选举一个领头Sentinel执行故障转移。
   - 主要根据Raft领头选举算法实现
 2. Sentinel系统选择一个server1属下的从服务器，并将这个从服务器升级成新主服务器。从服务器的选择如下：
@@ -583,9 +635,8 @@ Sentinel故障转移操作
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sentinel.jpg)
 
 
-## 集群
-Redis集群是Redis提供的分布式数据库方案，集群通过分片实现数据共享，并提供复制和故障转移功能。
-> 建立一个集群 至少需要三主三从六台服务器。
+## Cluster 集群
+Redis集群是Redis提供的分布式数据库方案，集群通过分片实现数据共享，并提供复制和故障转移功能。主要解决了大数据量存储导致的各种慢问题，同时也便于横向拓展。
 
 在 Redis cluster 架构下，每个 Redis 要放开两个端口号，比如一个是 6379，另外一个就是 加 1w 的端口号，比如 16379
 > 16379 端口号是用来进行节点间通信的，也就是 cluster bus 的东西，cluster bus 的通信，用来进行故障检测、配置更新、故障转移授权。
@@ -601,7 +652,9 @@ Redis集群是Redis提供的分布式数据库方案，集群通过分片实现�
 ```
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/cluster.jpg)
 
-### 集群下与客户端交互过程
+### 集群下与客户端交互
+#### MOVED错误
+
 键命令执行步骤主要分两步：
 1. 计算槽。Redis首先需要计算键所对应的槽。根据键的有效部分使用CRC16函数计算出散列值，再取对16383的余数，使每个键都可以映射到0~16383槽范围内。如指令`127.0.0.1:6379> cluster keyslot key:test:111`
 2. 槽节点查找。Redis计算得到键对应的槽后，需要查找槽所对应的节点。集群内通过消息交换每个节点都会知道所有节点的槽信息，内部保存在clusterState结构中。
@@ -622,6 +675,7 @@ cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 c
 // 由于键对应槽是9252，不属于6379节点，则回复MOVED {slot} {ip} {port}格式重定向信息：
 127.0.0.1:6379> set key:test:2 value-2
 (error) MOVED 9252 127.0.0.1:6380
+// 计算槽应该落在哪个区域
 127.0.0.1:6379> cluster keyslot key:test:2
 (integer) 9252
 ```
@@ -637,9 +691,13 @@ cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 c
 OK
 ```
 
-ASK重定向：在线迁移槽（slot）的过程中，客户端向slot发送请求，若键对象不存在，则可能存在于目标节点，这时源节点会回复 ASK重定向异常。格式如下：(error) ASK {slot} {targetIP}:{targetPort}
+#### ASK 错误
+ASK重定向：在线迁移槽（slot）的过程中，客户端向slot发送请求，若键对象不存在，则可能存在于目标节点，这时源节点会回复 ASK重定向异常。\
+格式如下：(error) ASK {slot} {targetIP}:{targetPort}
 > 客户端从ASK重定向异常提取出目标节点信息，发送asking命令到目标节点打开客户端连接标识，再执行键命令。如果存在则执行，不存在则返 回不存在信息
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redis-ask.png)
 
+#### mget批量调用
 hash_tag: 提供不同的键可以具备相同slot的功能，常用于Redis IO优化
 > 例如在集群模式下使用mget等命令优化批量调用时，键列表必须具有相同的slot，否则会报错。这时可以利用hash_tag让不同的键具有相同的slot达到优化的目的。命令如下：
 ```
@@ -681,8 +739,8 @@ hash_tag: 提供不同的键可以具备相同slot的功能，常用于Redis IO�
 OK
 ```
 
-- 节点数据库和单机数据库在数据库方面的一个区别是，**节点只能使用0号数据库**，而单机Redis服务器则没有这个限制。 
-- 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
+1. 节点数据库和单机数据库在数据库方面的一个区别是，**节点只能使用0号数据库**，而单机Redis服务器则没有这个限制。 
+2. 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
   - 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/askError.jpg)
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/slotReadd.jpg)
@@ -697,7 +755,7 @@ Redis 集群并没有直接使用一致性哈希，而是使用了哈希槽 （s
 > CLUSTER REPLICATE 127.0.0.1:7001
 ```
 集群中每个节点都会定期的向集群中的其他节点发送PING消息，以检测对方是否在线。\
-若出现疑似下线的情况，集群中的各个节点会互相交换信息，已确定节点的状态。
+若出现疑似下线的情况，集群中的各个节点会采用 Gossip 协议来广播自己的状态以及自己对整个集群认知的改变，互相交换信息，以确定节点的状态。
 
 故障转移
 1. 从主节点的从节点选择一个从节点，使用Raft领头选举方式实现。
@@ -1011,3 +1069,89 @@ watch dog自动延期机制 :只要客户端1一旦加锁成功，就会启动�
 #### 相关文章
 - [基于Redis的分布式锁实现](https://juejin.cn/post/6844903830442737671#heading-10)
 - [Redisson实现Redis分布式锁的原理](https://www.cnblogs.com/AnXinliang/p/10019389.html)
+
+## 面试题
+### Redis 为什么这么快？
+1. 基于内存实现。Redis 是基于内存的数据库，不论读写操作都是在内存上完成的，跟磁盘数据库相比，读写的速度快非常多
+2. 高效的数据结构。不同的数据类型底层使用了一种或者多种数据结构来支撑，目的就是为了追求更快的速度。
+    > String->SDS、List->linkedList,zipList、Hash->zipList,hashtable、Set->hashtable,intSet、SortedSet->zipList,skipList。
+3. 单线程模型。单线程指的是 Redis 键值对读写指令的执行是单线程。 Redis 是基于内存的操作，CPU 不是 Redis 的瓶颈，Redis 的瓶颈最有可能是机器内存的大小或者网络带宽。
+    1. 好处: 不会因为线程创建导致的性能消耗；
+    2. 好处: 避免上下文切换引起的 CPU 消耗，没有多线程切换的开销；
+    3. 好处: 避免了线程之间的竞争问题，比如添加锁、释放锁、死锁等，不需要考虑各种锁问题。
+    > Redis 的单线程指的是 Redis 的网络 IO （6.x 版本后网络 IO 使用多线程）以及键值对指令读写是由一个线程来执行的。
+4. I/O 多路复用模型。Redis 采用 I/O 多路复用技术，并发处理连接。采用了 epoll + 自己实现的简单的事件框架。epoll 中的读、写、关闭、连接都转化成了事件，然后利用 epoll 的多路复用特性，不在 IO 上浪费时间。                                                                                                                                                                                                                         
+    > Redis 线程不会阻塞在某一个特定的监听或已连接套接字上，也就是说，不会阻塞在某一个特定的客户端请求处理上。正因为此，Redis 可以同时和多个客户端连接并处理请求，从而提升并发性。
+5. Redis 全局 hash 字典，Redis 整体就是一个 哈希表来保存所有的键值对。当我们在 Redis 中创建一个键值对时，至少创建两个对象，一个对象是用做键值对的键对象，另一个是键值对的值对象。而哈希表的时间复杂度是 O(1)，只需要计算每个键的哈希值，便知道对应的Value。
+    > Hash 冲突: Redis 通过链式哈希解决冲突：也就是同一个hashtable的index里面的元素使用链表保存。                                                                                                                                                                                                                                                                                                                                    
+     渐进式 rehash: Redis 为了追求快，使用了两个全局哈希表。开始默认使用 「hash 表 1 」保存键值对数据，「hash 表 2」 此刻没有分配空间。
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/readwrite.png)
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/globalHash.jpg)
+                                                                                                                                     
+### Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        
+RDB是对 Redis 中的数据执行周期性的持久化，非常适合做冷备。有两个严重性能开销：
+    1. 频繁生成 RDB 文件写入磁盘，磁盘压力过大。会出现上一个 RDB 还未执行完，下一个又开始生成，陷入死循环。
+    2. fork 出 bgsave 子进程会阻塞主线程，主线程的内存越大，阻塞时间越长。
+AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF文件中，通过fsync异步将命令写到日志。恢复时对一个空的 Redis 实例顺序执行所有的指令，也就是「重放」，来恢复 Redis 当前实例的内存数据结构的状态。因此使用AOF恢复也比较耗时，因为要对一个个指令进行重新执行。
+> Redis 提供的 AOF 配置项appendfsync写回策略直接决定 AOF 持久化功能的效率和安全性。always：同步写回、everysec：每秒写回、no： 操作系统控制
+> AOF 重写机制主要用于对AOF的指令日志进行优化瘦身，将重复的操作进行归集优化，减少AOF的指令日志。
+
+
+Redis 4.0 为了解决这个问题，带来了一个新的持久化选项——混合持久化。将 rdb 文件的内容和增量的 AOF 日志文件存在一起。这里的 AOF 日志不再是全量的日志，而是自持久化开始到持久化结束的这段时间发生的增量 AOF 日志
+
+#### 在生成 RDB 期间，Redis 可以同时处理写请求么？
+Redis 使用操作系统的多进程写时复制技术 **COW(Copy On Write)** 来实现快照持久化，保证数据一致性.\
+Redis 在持久化时会调用 glibc 的函数fork产生一个子进程，快照持久化完全交给子进程来处理，父进程继续处理客户端请求。\
+当主线程执行写指令修改数据的时候，这个数据就会复制一份副本， bgsave 子进程读取这个副本数据写到 RDB 文件。
+
+### Redis 主从架构数据同步
+Redis 提供了主从模式，通过主从复制，将数据冗余一份复制到其他 Redis 服务器。
+
+#### 主从复制如何实现的?
+同步分为三种情况：
+1. 第一次主从库全量复制；
+2. 主从正常运行期间的同步；
+3. 主从库间网络断开重连同步。
+
+#### 第一次同步怎么实现？
+1. 建立连接：从库会和主库建立连接，从库执行 replicaof 并发送 psync 命令并告诉主库即将进行同步，主库确认回复后，主从库间就开始同步了。
+2. 主库同步数据给从库：master 执行 bgsave命令生成 RDB 文件，并将文件发送给从库，**同时主库为每一个 slave 开辟一块 replication buffer 缓冲区记录从生成 RDB 文件开始收到的所有写命令**。从库保存 RDB 并清空数据库再加载 RDB 数据到内存中。
+3. 发送 RDB 之后接收到的新写命令到从库：在生成 RDB 文件之后的写操作并没有记录到刚刚的 RDB 文件中，为了保证主从库数据的一致性，所以主库会在内存中使用一个叫 replication buffer 记录 RDB 文件生成后的所有写操作。并将里面的数据发送到 slave。
+
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve.png)
+
+### 主从正常运行期间的同步
+replication_buffer：对于客户端或从库与redis通信，redis都会分配一个内存buffer进行数据交互，redis先把数据先入这个buffer中，然后再把buffer中的数据发送出去，所以主从在增量同步时，保证主从数据一致。
+> 如果replication buffer写满了怎么办呢？replication buffer是为每个客户端分配的，如果写满了，无论客户端是普通客户端还是从库，只能断开跟这个客户端的连接了。这样从库全量同步失败，只能再次尝试全量同步。
+
+当主从库完成了全量复制，它们之间就会一直维护一个网络连接，主库会通过这个连接将后续陆续收到的命令操作再同步给从库，这个过程也称为基于长连接的命令传播，使用长连接的目的就是避免频繁建立连接导致的开销。                                                                                                            
+###  主从库间网络断开重连同步                                                                                                
+从 Redis 2.8 开始，网络断了之后，主从库会采用增量复制的方式继续同步，只将中断期间主节点执行的写命令发送给从节点，与全量复制相比更加高效。
+
+**repl_backlog_buffer**: 为了解决从库断连后找不到主从差异数据而设立的环形缓冲区，从而避免全量同步带来的性能开销。在redis.conf配置文件中可以设置大小，如果从库断开时间过长，repl_backlog_buffer环形缓冲区会被主库的写命令覆盖，那么从库重连后只能全量同步，所以repl_backlog_size配置尽量大一点可以降低从库连接后全量同步的频率。
+
+master 使用 `master_repl_offset`记录自己写到的位置偏移量，slave 则使用 `slave_repl_offset`记录已经读取到的偏移量
+
+当主从断开重连后，slave 会先发送 psync 命令给 master，同时将自己的 runID，`slave_repl_offset`发送给 master。
+
+master 只需要把 master_repl_offset与 slave_repl_offset之间的命令同步给从库即可。
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve-offline.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve-offline-copy.png)
+     
+### Redis热点Key
+热点Key：某一件商品被数万次点击、购买时，会形成一个较大的需求量，这种情况下就会产生一个单一的Key，这样就会引起一个热点；同理，当被大量刊发、浏览的热点新闻，热点评论等也会产生热点；另外，在服务端读数据进行访问时，往往会对数据进行分片切分，此类过程中会在某一主机Server上对相应的Key进行访问，当访问超过主机Server极限时，就会导致热点Key问题的产生。
+
+#### 如何解决热点Key访问过多，超过某一个主机Server的情况？
+1. 服务端缓存：即将热点数据缓存至服务端的内存中。利用Redis自带的消息通知机制，保证Redis和服务端热点Key的数据一致性
+2. 备份热点Key：即将热点Key+随机数，随机分配至Redis其他节点中。这样访问热点key的时候就不会全部命中到一台机器上了。
+> 使用公式CRC16(key) % 16384来计算Key属于哪个槽
+
+#### 定位热点Key
+1. 凭借经验，进行预估：例如提前知道了某个活动的开启，那么就将此Key作为热点Key
+2. 客户端收集：在操作Redis之前对数据进行统计
+3. 抓包进行评估：Redis使用TCP协议与客户端进行通信，通信协议采用的是RESP，所以能进行拦截包进行解析
+4. 在proxy层，对每一个 redis 请求进行收集上报
+5. Redis自带命令查询：Redis4.0.4版本提供了redis-cli –hotkeys就能找出热点Key
+
+参考资料：[关于Redis热点key的一些思考](http://modouxiansheng.top/2019/07/10/%E4%B8%8D%E5%AD%A6%E6%97%A0%E6%95%B0-%E5%85%B3%E4%BA%8ERedis%E7%83%AD%E7%82%B9key%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83-2019/)
