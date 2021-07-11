@@ -31,7 +31,6 @@
 
 ## 中间件
 - [Redis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/REDIS.md)
-- [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
 - [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ZOOKEEPER.md)
 - [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGEQUEUE.md)
 - [MySQL](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYSQL.md) 
@@ -48,6 +47,8 @@
 - [Drools规则引擎](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/RULE_ENGINE.md)
 
 ## 系统设计
+- [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
+- [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
 - [Java接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/INTERFACE_DESIGN.md)
 - [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SECONDS_KILL_DESIGN.md)
 - [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TINYURL.md)
@@ -62,7 +63,6 @@
 - [会议系统设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MEETING_DESIGN.md)
 - [购物活动金额结算设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SHOPPING_SETTLEMENT.md)
 - [JWT、MFA及相关应用](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/JWT_APPLICATION.md)
-- [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
 - [OAUTH2、CAS、SSO](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/OAUTH2_CAS_SSO.md)
 
 ## 分布式与微服务
@@ -74,13 +74,12 @@
 - [Spark](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SPARK.md)
 
 ## 其他
-### 记录平常学习java 的一些知识点
+### 参考书籍及资料记录
 - [【设计模式 head first】](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
 - [【深入理解Java虚拟机(周志明)】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
 - [【基于Redis的设计与实现】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
 - [【MySql 45讲-丁奇】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
-- [【Java编程思想-集合类】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/COLLECTION_BOOK.md)
-- [【Java编程思想-并发】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/CONCURRENT_BOOK.md)
+- [【凤凰架构】](https://icyfenix.cn/summary/)
 
 ## 参考资料
 | 地址 | 简介 |
