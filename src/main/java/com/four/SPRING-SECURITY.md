@@ -142,18 +142,17 @@ spring Security对于CSRF攻击的解决方案就是CsrfFilter。
 
 ** 核心逻辑可以见CsrfFilter **
 
-## 基于token认证 JWT
+## 基于token认证 JWT (Bearer Authentication)
 
 Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（(RFC 7519).该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。
 
-
+参考资料：[Bearer Authentication](https://swagger.io/docs/specification/authentication/bearer-authentication/)
 ### Session认证暴露的缺点
 内存开销大： 每个用户经过我们的应用认证之后，我们的应用都要在服务端做一次记录，以方便用户下次请求的鉴别，通常而言session都是保存在内存中，而随着认证用户的增多，服务端的开销会明显增大。
 
 分布式场景限制：在分布式的应用上，相应的限制了负载均衡器的能力。这也意味着限制了应用的扩展能力。
 
 CSRF跨服务请求问题: 因为是基于cookie来进行用户识别的, cookie如果被截获，用户就会很容易受到跨站请求伪造的攻击。
-
 
 ### 基于token 认证流程
 基于token的鉴权机制类似于http协议也是无状态的，它不需要在服务端去保留用户的认证信息或者会话信息。这就意味着基于token认证机制的应用不需要去考虑用户在哪一台服务器登录了，这就为应用的扩展提供了便利。
@@ -215,7 +214,7 @@ public String generateToken(String subject) {
 参考资料：
 - [Spring Security with JWT for REST API](https://www.toptal.com/spring/spring-security-tutorial)
 - [Using JSON Web Tokens(JWT) with Spring Boot Security](https://www.linkedin.com/pulse/using-json-web-tokensjwt-spring-boot-security-turkmen-mustafa-demirci)
-### 继承WebSecurityConfigurerAdapter的demo
+### 继承WebSecurityConfigurerAdapter
 ```java
 
 @EnableWebSecurity
@@ -252,9 +251,6 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 @Configuration
 @EnableWebSecurity
 public class UserWebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final static String RESOURCE = "RESOURCE";
-
-    private final static String ACTION = "ACTION";
 
     @Autowired
     private JwtAuthenticationProvider jwtAuthenticationProvider;
@@ -277,7 +273,7 @@ public class UserWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll()
                 // 添加自定义的Authentication过滤器
                 .and().addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-              // 设置异常处理返回
+              // 设置异常处理返回，主要用于处理AccessDeny的异常
               .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint );
         
 
@@ -322,11 +318,16 @@ public class UserWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 request -> matchers.stream().noneMatch(matcher -> matcher.matches(request))
         );
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager());
-//        jwtAuthenticationFilter.setAuthenticationFailureHandler(createAuthenticationFailureHandler());
-//        jwtAuthenticationFilter.setAuthenticationSuccessHandler(createAuthenticationSuccessHandler());
+        // 认证失败及成功处理器
+        jwtAuthenticationFilter.setAuthenticationFailureHandler(createAuthenticationFailureHandler());
+        jwtAuthenticationFilter.setAuthenticationSuccessHandler(createAuthenticationSuccessHandler());
         return jwtAuthenticationFilter;
     }
-
+    
+    /**
+     * 同源处理器，自定义设置允许传输的请求头字段
+     * 允许跨域的地址等等
+    */
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
@@ -590,6 +591,94 @@ private String toLogin(HttpServletRequest request, String username, String passw
 }
 ```
 
+### 权限问题
+spring的权限体系结构：
+![image](https://docs.spring.io/spring-security/site/docs/current/reference/html5/images/servlet/authorization/filtersecurityinterceptor.png)
+
+一、使用默认的spring security 需要继承GrantedAuthority，返回用于认证的getAuthority()
+
+```java
+public class PermissionGrantedAuthority implements GrantedAuthority {
+
+    private final String permission;
+
+    public PermissionGrantedAuthority(String permission) {
+        Assert.hasText(permission, "A granted authority textual representation is required");
+        this.permission = permission;
+    }
+
+    @Override
+    public String getAuthority() {
+        return permission;
+    }
+}
+```
+二、 在用户成功认证完成之后，需要将用户对应的权限赋予用户
+```java
+@Component
+public class TokenAuthenticationProvider implements AuthenticationProvider {
+
+    @Autowired
+    private ITokenAuthenticationService tokenAuthenticationService;
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        BaseTokenAuthentication baseTokenAuthentication = (BaseTokenAuthentication)authentication;
+        String token = baseTokenAuthentication.getToken();
+        String userInfoFromToken = jwtTokenHelper.getUserInfoFromToken(token);
+        log.info("authenticate success userInfo:{}", userInfoFromToken);
+        BaseTokenAuthentication authentication = new BaseTokenAuthentication(token, createRole());
+        authentication.setAuthenticated(true);
+        return authentication;
+    }
+    
+    // 此处只是简单的模拟该用户有 ADMIN权限
+    private List<? extends GrantedAuthority> createRole() {
+        return Arrays.asList(new PermissionGrantedAuthority("ROLE_ADMIN"));
+    }
+
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.isAssignableFrom(BaseTokenAuthentication.class);
+    }
+}
+```
+三、 配置url对应的权限
+
+```java
+
+@Configuration
+@EnableWebSecurity
+public class BaseWebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private PermissionProperty permissionProperty;
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        super.configure(web);
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        // ...
+    
+        // application中配置 url跟role的键值对，设置到authorize中
+        http.authorizeRequests(authorize -> {
+            permissionProperty.getPermissionList().forEach(model -> {
+                authorize.mvcMatchers(model.getUrl()).hasAnyRole(model.getRole());
+            });
+            authorize.anyRequest().denyAll();
+        });
+
+    }
+
+}
+```
+
+
 ## JWT token 常见问题
 ### 注销登录等场景下 token 处理
 需要处理token的场景：
@@ -631,8 +720,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             // by default uses a Bean by the name of corsConfigurationSource
-            .cors(withDefaults())
-            ...
+            .cors(withDefaults());
+            // ...
     }
 
     @Bean
