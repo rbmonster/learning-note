@@ -776,7 +776,7 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 
 进阶：MAT、JProfiler
 
-命令行推荐 arthas ，可视化界面推荐 JProfiler，此外还有一些在线的平台 gceasy、heaphero、fastthread ，美团内部的 Scalpel（一款自研的 JVM 问题诊断工具，暂时未开源）也比较好用。
+命令行推荐 Arthas ，可视化界面推荐 JProfiler，此外还有一些在线的平台 gceasy、heaphero、fastthread ，美团内部的 Scalpel（一款自研的 JVM 问题诊断工具，暂时未开源）也比较好用。
 
 
 ### <a name="62">GC 调优目的</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -788,6 +788,7 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 **策略 2**：大对象进入老年代，虽然大部分情况下，将对象分配在新生代是合理的。但是对于大对象这种做法却值得商榷，大对象如果首次在新生代分配可能会出现空间不足导致很多年龄不够的小对象被分配的老年代，破坏新生代的对象结构，可能会出现频繁的 full gc。因此，对于大对象，可以设置直接进入老年代（当然短命的大对象对于垃圾回收来说简直就是噩梦）。-XX:PretenureSizeThreshold 可以设置直接进入老年代的对象大小。
 
 **策略 3**：合理设置进入老年代对象的年龄，-XX:MaxTenuringThreshold 设置对象进入老年代的年龄大小，减少老年代的内存占用，降低 full gc 发生的频率。
+> 为什么从Young GC的对象最多经历15次Young GC还存活就会进入Old区（年龄是可以调的，默认是15）hotspots的markword的图中，用了4个bit去表示分代年龄，那么能表示的最大范围就是0-15。
 
 **策略 4**：设置稳定的堆大小，堆大小设置有两个参数：-Xms 初始化堆大小，-Xmx 最大堆大小。
 
