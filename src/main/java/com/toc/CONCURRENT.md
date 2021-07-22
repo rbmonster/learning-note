@@ -9,30 +9,39 @@
 &emsp;&emsp;<a href="#6">2.1. 可见性</a>  
 &emsp;&emsp;<a href="#7">2.2. 原子性</a>  
 &emsp;&emsp;<a href="#8">2.3. 有序性</a>  
-&emsp;<a href="#9">3.  volatile变量特殊规则</a>  
-&emsp;&emsp;<a href="#10">3.1. 保证变量可见性</a>  
-&emsp;&emsp;<a href="#11">3.2. 禁止指令重排序优化</a>  
-&emsp;<a href="#12">4. synchronized</a>  
-&emsp;&emsp;<a href="#13">4.1. 基本概念</a>  
-&emsp;&emsp;&emsp;<a href="#14">4.1.1. synchronized关键字用法及锁范围</a>  
-&emsp;&emsp;&emsp;<a href="#15">4.1.2. 使用有误例子</a>  
-&emsp;&emsp;&emsp;<a href="#16">4.1.3. 其他</a>  
-&emsp;&emsp;<a href="#17">4.2. synchronized关键字JVM底层原理解析</a>  
-&emsp;&emsp;&emsp;<a href="#18">4.2.1. synchronized 同步语句块的情况</a>  
-&emsp;&emsp;&emsp;<a href="#19">4.2.2. synchronized 修饰方法的的情况</a>  
-&emsp;&emsp;<a href="#20">4.3. synchronize 的锁优化</a>  
-&emsp;&emsp;&emsp;<a href="#21">4.3.1. 自旋锁</a>  
-&emsp;&emsp;&emsp;<a href="#22">4.3.2. 自适应锁</a>  
-&emsp;&emsp;&emsp;<a href="#23">4.3.3. 锁消除</a>  
-&emsp;&emsp;&emsp;<a href="#24">4.3.4. 锁粗化</a>  
-&emsp;&emsp;<a href="#25">4.4. synchronize锁升级(锁膨胀)</a>  
-&emsp;&emsp;&emsp;<a href="#26">4.4.1. 偏向锁</a>  
-&emsp;&emsp;&emsp;<a href="#27">4.4.2. 轻量级锁</a>  
-&emsp;&emsp;&emsp;<a href="#28">4.4.3. 重量级锁</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#29">4.4.3.1. 工作原理</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#30">4.4.3.2. 与ReentrantLock区别</a>  
-&emsp;&emsp;&emsp;<a href="#31">4.4.4. 调试synchronize加锁过程</a>  
-&emsp;&emsp;&emsp;<a href="#32">4.4.5. 相关资料</a>  
+&emsp;<a href="#9">3. 用户态与内核态</a>  
+&emsp;&emsp;<a href="#10">3.1. 为什么要有用户态和内核态</a>  
+&emsp;&emsp;<a href="#11">3.2. 用户态与内核态的性能开销</a>  
+&emsp;&emsp;<a href="#12">3.3. 避免频繁切换</a>  
+&emsp;<a href="#13">4.  volatile</a>  
+&emsp;&emsp;<a href="#14">4.1. 保证变量可见性</a>  
+&emsp;&emsp;<a href="#15">4.2. 禁止指令重排序优化</a>  
+&emsp;<a href="#16">5. synchronized</a>  
+&emsp;&emsp;<a href="#17">5.1. 基本概念</a>  
+&emsp;&emsp;&emsp;<a href="#18">5.1.1. synchronized关键字用法及锁范围</a>  
+&emsp;&emsp;&emsp;<a href="#19">5.1.2. 使用有误例子</a>  
+&emsp;&emsp;&emsp;<a href="#20">5.1.3. 其他</a>  
+&emsp;&emsp;<a href="#21">5.2. synchronized关键字JVM底层原理解析</a>  
+&emsp;&emsp;&emsp;<a href="#22">5.2.1. synchronized 同步语句块的情况</a>  
+&emsp;&emsp;&emsp;<a href="#23">5.2.2. synchronized 修饰方法的的情况</a>  
+&emsp;&emsp;<a href="#24">5.3. 对象创建与加锁</a>  
+&emsp;&emsp;<a href="#25">5.4. synchronize 的锁优化</a>  
+&emsp;&emsp;&emsp;<a href="#26">5.4.1. 自旋锁</a>  
+&emsp;&emsp;&emsp;<a href="#27">5.4.2. 自适应锁</a>  
+&emsp;&emsp;&emsp;<a href="#28">5.4.3. 锁消除</a>  
+&emsp;&emsp;&emsp;<a href="#29">5.4.4. 锁粗化</a>  
+&emsp;&emsp;<a href="#30">5.5. synchronize锁升级(锁膨胀)</a>  
+&emsp;&emsp;&emsp;<a href="#31">5.5.1. 偏向锁</a>  
+&emsp;&emsp;&emsp;<a href="#32">5.5.2. 轻量级锁</a>  
+&emsp;&emsp;&emsp;<a href="#33">5.5.3. 重量级锁</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#34">5.5.3.1. 工作原理</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#35">5.5.3.2. 与ReentrantLock区别</a>  
+&emsp;&emsp;&emsp;<a href="#36">5.5.4. 调试synchronize加锁过程</a>  
+&emsp;<a href="#37">6. 其他</a>  
+&emsp;&emsp;<a href="#38">6.1. 为什么jdk8要在4s后开启偏向锁？</a>  
+&emsp;&emsp;<a href="#39">6.2. System.out.println() 的实现使用synchronized</a>  
+&emsp;&emsp;<a href="#40">6.3. 面试问题</a>  
+&emsp;<a href="#41">7. 参考资料</a>  
 # <a name="0">java并发</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 并发编程可以抽象成三个核心问题: 分工、同步/协作、互斥
@@ -90,18 +99,47 @@ count++ 分解为四步，解释一下字节码的指令，
 3. 在内存 M 上初始化 Singleton 对象
 ```
 
-## <a name="9"> volatile变量特殊规则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="9">用户态与内核态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+操作系统对程序的执行权限进行分级,分别为用户态和内核态。
+- 内核态: cpu可以访问计算机所有的软硬件资源
+- 用户态: cpu权限受限,只能访问到自己内存中的数据,无法访问其他资源
+
+
+### <a name="10">为什么要有用户态和内核态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+系统需要限制不同的程序之间的访问能力,防止程序获取不相同程序的内存数据,或者外围设备的数据,并发送到网络,所有cpu划分出两个权限等级用户态和内核态
+
+内核态：用户态如果要做一些比较危险的操作直接访问硬件，很容易把硬件搞死（格式化，访问网卡，访问内存干掉、）\
+
+
+### <a name="11">用户态与内核态的性能开销</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+当发生用户态到内核态的切换时，会发生如下过程:
+1. 设置处理器至内核态。
+2. 保存当前寄存器（栈指针、程序计数器、通用寄存器）。
+3. 将栈指针设置指向内核栈地址。
+4. 将程序计数器设置为一个事先约定的地址上，该地址上存放的是系统调用处理程序的起始地址。
+5. 而之后从内核态返回用户态时，又会进行类似的工作。
+
+用户态和内核态之间的切换有一定的开销，如果频繁发生切换势必会带来很大的开销，所以要想尽一切办法来减少切换
+
+### <a name="12">避免频繁切换</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+因为线程的切换会导致用户态和内核态之间的切换，所以减少线程切换也会减少用户态和内核态之间的切换。那么如何减少线程切换呢？
+- 无锁并发编程。多线程竞争锁时，加锁、释放锁会导致比较多的上下文切换
+- CAS算法。使用CAS避免加锁，避免阻塞线程
+- 使用最少的线程。避免创建不需要的线程协程。在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换
+
+## <a name="13"> volatile</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 性能：volatile变量的读操作性能与普通变量几乎没有差别，但是写操作可能会慢些，因为需要插入内存屏障指令来保证处理器不乱序执行。
 > 当读一个 volatile 变量时, JMM 会把该线程对应的本地内存置为无效。线程接下来将从主内存中读取共享变量。\
 > 线程在【读取】共享变量时，会先清空本地内存变量值，再从主内存获取最新值\
 > 线程在【写入】共享变量时，不会把值缓存在寄存器或其他地方（就是刚刚说的所谓的「工作内存」），而是会把值刷新回主内存
 
-### <a name="10">保证变量可见性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">保证变量可见性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：当一条线程修改了这个变量的值，新值对于其他线程是立即可见的。 正常的变量修改的过程中，工作内存与主内存同步是存在延迟的，也就出现了可见性的问题。
 > volatile并发下是安全的？\
 > 不，只能保证取值的时候是线程安全，当获取值之后做操作如果不是原子操作，很可能变量已经被其他线程改变。如多线程对volatile变量符号运算。
 
-### <a name="11">禁止指令重排序优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="15">禁止指令重排序优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：普通的变量只能保证代码执行完成获取的结果一致，而不能保证执行顺序与代码顺序一致。
 
 例子：如下双重加锁的例子，volatile保证了变量初始化完立即刷新到主内存中，能让其他线程可以获取到。
@@ -135,13 +173,13 @@ public class Singleton{
 2. 加锁进入临界区
 3. 解锁走出临界区
 
-## <a name="12">synchronized</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="13">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="16">synchronized</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="17">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：synchronized 关键字解决的是多个线程之间访问资源的同步性，synchronized关键字可以保证被它修饰的方法或者代码块在任意时刻只能有一个线程执行。
 1. 【进入】synchronized 块的内存语义是把在 synchronized 块内使用的变量从线程的工作内存中清除，从主内存中读取
 2. 【退出】synchronized 块的内存语义事把在 synchronized 块内对共享变量的修改刷新到主内存中
 
-#### <a name="14">synchronized关键字用法及锁范围</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="18">synchronized关键字用法及锁范围</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 对于普通实例方法，锁的是当前实例对象，通常指 this
 2. 对于静态同步方法，锁的是当前类的 Class 对象，如 ThreeSync.class
 3. 对于同步代码块，锁的是 synchronized 括号内的对象
@@ -167,7 +205,7 @@ public class Singleton{
 		}
 	}
 ```
-#### <a name="15">使用有误例子</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">使用有误例子</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 银行转账的方法，典型的忽略锁和资源的指向关系，这里的Account target并没有保护作用
 ```
@@ -183,16 +221,16 @@ class Account {
 }
 ```
 
-#### <a name="16">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 一个线程可以从挂起状态变为可运行状态（也就是被唤醒），即使线程没有被其他线程调用notify()/notifyAll() 方法进行通知，或被中断，或者等待超时，这就是所谓的【虚假唤醒】。虽然虚假唤醒很少发生，但要防患于未然，做法就是不停的去测试该线程被唤醒条件是否满足
 
 volatile 与 synchronize比较
 1. volatile 非阻塞 ，synchronize阻塞
 2. 读取驻内存值时volatile与synchronized作用跟等价
 
-### <a name="17">synchronized关键字JVM底层原理解析</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">synchronized关键字JVM底层原理解析</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="18">synchronized 同步语句块的情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="22">synchronized 同步语句块的情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 publicclass SynchronizedDemo {
 	public void method() {
@@ -208,7 +246,7 @@ javap -c -s -v -l SynchronizedDemo.class 反编译
 synchronized 同步语句块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。\
 当计数器为0则可以成功获取，获取后将锁计数器设为1也就是加1。相应的在执行 monitorexit 指令后，将锁计数器设为0，表明锁被释放。
 
-#### <a name="19">synchronized 修饰方法的的情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">synchronized 修饰方法的的情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 public class SynchronizedDemo2 {
 	public synchronized void method() {
@@ -219,24 +257,38 @@ public class SynchronizedDemo2 {
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeMethod.jpg)
 方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
 
+### <a name="24">对象创建与加锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/objectCreate.png)
 
-### <a name="20">synchronize 的锁优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="21">自旋锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+一个对象在new出来之后在内存中主要分为4个部分：
+1. MarkWord这部分其实就是加锁的核心，同时还包含的对象的一些生命信息，例如是否GC、经过了几次Young GC还存活。
+2. klass pointer记录了指向对象的class文件指针。
+3. instance data记录了对象里面的变量数据。
+4. padding作为对齐使用，对象在64位服务器版本中，规定对象内存必须要能被8字节整除，如果不能整除，那么就靠对齐来补。举个例子：new出了一个对象，内存只占用18字节，但是规定要能被8整除，所以padding=6。
+
+
+
+### <a name="25">synchronize 的锁优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+为什么需要进行锁优化？
+> 操作系统为了系统安全分成两层，用户态和内核态 。申请锁资源的时候用户态要向操作系统老大内核态申请。Jdk1.2的时候用户需要跟内核态申请锁，然后内核态还会给用户态。这个过程是非常消耗时间的，导致早期效率特别低。有些jvm就可以处理的为什么还交给操作系统做去呢？能不能把jvm就可以完成的锁操作拉取出来提升效率，所以也就有了锁优化。
+
+#### <a name="26">自旋锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 自旋锁：对于锁状态很短的线程，挂起和恢复线程是开销很大的，因此让线程执行一个忙等待（自旋），这就是自旋锁的技术
 
-#### <a name="22">自适应锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">自适应锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 自适应锁：自适应意味着自旋的时间不固定，由前一次在同一个锁上的自旋时间及锁的状态拥有者来决定。（如果之前自旋获得过锁，进而允许本次自旋更长时间。若很少成果获得锁，那么可能直接忽略跳过等待）
   
-#### <a name="23">锁消除</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="28">锁消除</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 执行的方法体所有数据都不会逃逸出去被其他线程访问到，认为是线程私有的，便可以消除锁。
 
-#### <a name="24">锁粗化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="29">锁粗化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 同步块过于细化，导致多次获取锁，导致不必要的性能损耗，扩大锁的范围便可以解决这个问题。
 
-### <a name="25">synchronize锁升级(锁膨胀)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">synchronize锁升级(锁膨胀)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 锁膨胀的方向：**无锁->偏向锁->轻量级锁->重量级锁**，并且膨胀方向不可逆。
 
-#### <a name="26">偏向锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="31">偏向锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
  
 定义：在大多数情况下，锁不存在多线程竞争，总是由同一线程多次获得，那么此时引入偏向锁。
 - 作用：减少同一线程获取锁的代价。
@@ -266,7 +318,7 @@ public class SynchronizedDemo2 {
 [Java6及以上版本对synchronized的优化](https://www.cnblogs.com/wuqinglong/p/9945618.html#%E6%97%A0%E9%94%81%E7%8A%B6%E6%80%81)
 
 
-#### <a name="27">轻量级锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="32">轻量级锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 情况：当竞争锁对象的线程不多，并且线程持有锁的时间也不长时，那么此时引入轻量级锁。
 > 轻量级锁是由偏向锁升级而来，当存在第二个线程申请同一个锁对象时(持有锁的线程依然存活)，偏向锁就会立即升级为轻量级锁。注意这里的第二个线程只是申请锁，不存在两个线程同时竞争锁，可以是一前一后地交替执行同步块。
 
@@ -277,15 +329,15 @@ public class SynchronizedDemo2 {
 2. 如果在线程1复制对象头的同时（在线程1CAS之前），线程2也准备获取锁，复制了对象头到线程2的锁记录空间中，但是在线程2 **CAS的时候**发现线程1已经把对象头换了，线程2的CAS失败，那么线程2就尝试使用自旋锁来等在线程1释放锁。
 
 升级为重量级锁条件，达到以下两条件都会升级为重量级锁。
-1. 长时间自旋会导致CPU消耗，达到一定自旋次数还没有释放锁。
-2. 线程1还在执行线程2还在自旋，这时候又有线程3来竞争这个对象争锁。
+1. 长时间自旋会导致CPU消耗，CAS如果自旋10次依然没有获取到锁
+2. 竞争的线程数超过cpu核数的一半，自动升级为重量级锁。
 
-#### <a name="28">重量级锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="33">重量级锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 情况：当多个线程同时在竞争锁对象时，那么此时引入重量级锁。
 
 重量级锁：阻塞所有等待竞争的线程，防止CPU空转，阻塞等待线程1释放锁后进入无锁状态重新竞争。
 
-##### <a name="29">工作原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="34">工作原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeHeavyLock.jpg)
 
 ```
@@ -309,7 +361,7 @@ Owner：获得锁的线程
 > Synchronized 是非公平锁。 Synchronized 在线程进入 ContentionList 时， 等待的线程会先尝试自旋获取锁，如果获取不到就进入 ContentionList，这明显对于已经进入队列的线程是不公平的，还有一个不公平的事情就是自旋获取锁的线程还可能直接抢占 OnDeck 线程的锁资源\
 > 可重入锁：在Monitor中其实还有一个计数器，主要是用来记录重入次数的，当计数器为0时，表示没有任何线程持有锁，当某线程获取锁时，计算器则加1，若当前线程再次获取锁时，计数器则会再次递增，
 
-##### <a name="30">与ReentrantLock区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="35">与ReentrantLock区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. synchronized是JVM层面的锁；ReentrantLock是JDK层面的锁，由java代码实现
 2. synchronized锁无法在代码中判断是否有所；ReentrantLock则可以通过【isLock()】判断是否获取到锁
 3. synchronized是一种非公平锁；ReentrantLock既可以实现公平锁，也可以实现非公平锁
@@ -318,7 +370,7 @@ Owner：获得锁的线程
 6. ReentrantLock在加锁时会更灵活，可以使用【tryLock】尝试获取锁，从而避免线程阻塞
 
 
-#### <a name="31">调试synchronize加锁过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="36">调试synchronize加锁过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 <dependency>
     <groupId>org.openjdk.jol</groupId>
@@ -337,10 +389,45 @@ public static void main(String[] args) {
 }
 ```
 
-#### <a name="32">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="37">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">为什么jdk8要在4s后开启偏向锁？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+在刚开始执行代码时，一定有好多线程来抢锁，如果开了偏向锁效率反而降低。
+> 通过配置参数-XX:-UseBiasedLocking = false来禁用偏向锁。jdk15之后默认已经禁用了偏向锁。
+
+> 偏向锁开启的过程中是STW（Stop The World）也就是需要暂停所有线程，详细见JVM章节末尾s
+
+
+### <a name="39">System.out.println() 的实现使用synchronized</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+我们常使用的System.out.println、StringBuffer，虽然底层加了syn锁，但是基本没有多线程竞争的情况。
+
+```
+public void println(String x) {
+    synchronized (this) {
+        print(x);
+        newLine();
+    }
+}
+```
+
+
+### <a name="40">面试问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+- 对象在内存中的内存布局是什么样的？
+- 描述synchronized和ReentrantLock的底层实现和重入的底层原理。
+- 谈谈AQS，为什么AQS底层是CAS+volatile？
+- 描述下锁的四种状态和锁升级过程？
+- Object  o = new Object() 在内存中占用多少字节？
+- 自旋锁是不是一定比重量级锁效率高？
+- 打开偏向锁是否效率一定会提升？
+- 重量级锁到底重在哪里？
+- 重量级锁什么时候比轻量级锁效率高，同样反之呢？
+
+
+## <a name="41">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
 [JavaJDK1.6 之后对锁优化引入锁膨胀、锁消除、锁粗化、自旋锁、偏向锁、轻量级锁、重量级锁详解](https://mp.weixin.qq.com/s/WwOl8-4IAdcItWg63HI3tw)
 
 重量级锁：
 - [【大厂面试07期】说一说你对synchronized锁的理解？](https://www.xiaoheidiannao.com/13829.html)
 - [【Java】唠唠synchronized中的重量级锁](https://www.cnblogs.com/boluopabo/archive/2004/01/13/13086172.html)
-
+- [谈谈JVM内部锁升级过程](https://mp.weixin.qq.com/s/2yxexZUr5MWdMZ02GCSwdA)

@@ -1,5 +1,9 @@
 # Mongodb
 
+https://www.cnblogs.com/out-of-memory/p/6810411.html
+
+https://www.cnblogs.com/yunquan/p/11174265.html
+
 ## 基本概念
 MongoDB是面向文档的数据库，不是关系型数据库/。
 > 基本的思路就是将原来"行"的概念换成更加灵活的"文档"模型。
