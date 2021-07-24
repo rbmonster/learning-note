@@ -1,5 +1,9 @@
 # Mongodb
 
+https://www.cnblogs.com/out-of-memory/p/6810411.html
+
+https://www.cnblogs.com/yunquan/p/11174265.html
+
 ## 基本概念
 MongoDB是面向文档的数据库，不是关系型数据库。MongoDB的设计采用横向扩展的设计，能自动处理跨集群的数据和负载，自动中心分配文档，以及将用户的请求路由到正确的机器上。
 > 基本的思路就是将原来"行"的概念换成更加灵活的"文档"模型。
