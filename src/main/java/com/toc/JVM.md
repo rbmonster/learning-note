@@ -135,8 +135,8 @@
   
 ### <a name="3">对象的访问</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：java程序会通过栈上的reference数据来操作堆上的具体对象。具体的对象访问方式由虚拟机决定，主要有两种使用句柄和直接指针两种。
-- 使用句柄访问的话，java堆会划分一块内存作为句柄池。而句柄中分为两块指针，一个是指向对象实例的指针，一个是指向对象类型数据的指针(指向方法区)。好处为整理内存是只需要整理实例的指针。
-- 直接指针访问，对实例中包含数据的类型数据的指针(指向方法区)，好处为减少了指向实例的时间定为开销。
+- 使用句柄访问的话，java堆会划分一块内存作为句柄池。引用会指向句柄，而句柄中分为两块指针，一个是指向对象实例的指针，一个是指向对象类型数据的指针(指向方法区)。好处为整理内存是只需要整理实例的指针。
+- 直接指针访问，引用直接指向堆中的对象实例，而对象实例中包含数据的类型数据的指针(指向方法区)，好处为减少了指向实例的时间定为开销。
 
 ### <a name="4">HotSpot 的后台线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/hotspotThread.jpg)
