@@ -52,4 +52,29 @@ ObjectId的组成：
 **自动生成的_id**：通常在客户端由驱动程序完成，减轻了数据库的负担
 
 
-### 索引介绍
+## 基本操作
+
+
+## 索引介绍
+插入10000条测试数据
+```
+for(i=0;i<10000;i++) {
+    db.helloworld.insert(
+        {
+            "i":i,
+            "username":"username"+i,
+            "age":Math.floor(Math.random()*100),
+            "created":new Date()
+        });
+}
+```
+
+### 复合索引
+
+#### 覆盖索引
+
+#### 隐式索引
+
+#### 操作符与索引
+
+
