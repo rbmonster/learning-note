@@ -80,18 +80,19 @@
 &emsp;&emsp;<a href="#77">16.2. Redisson 分布式方案</a>  
 &emsp;&emsp;&emsp;<a href="#78">16.2.1. 自动延时的看门狗机制</a>  
 &emsp;&emsp;&emsp;<a href="#79">16.2.2. 相关文章</a>  
-&emsp;<a href="#80">17. 面试题</a>  
-&emsp;&emsp;<a href="#81">17.1. Redis 为什么这么快？</a>  
-&emsp;&emsp;<a href="#82">17.2. Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        </a>  
-&emsp;&emsp;&emsp;<a href="#83">17.2.1. 在生成 RDB 期间，Redis 可以同时处理写请求么？</a>  
-&emsp;&emsp;<a href="#84">17.3. Redis 主从架构数据同步</a>  
-&emsp;&emsp;&emsp;<a href="#85">17.3.1. 主从复制如何实现的?</a>  
-&emsp;&emsp;&emsp;<a href="#86">17.3.2. 第一次同步怎么实现？</a>  
-&emsp;&emsp;<a href="#87">17.4. 主从正常运行期间的同步</a>  
-&emsp;&emsp;<a href="#88">17.5.  主从库间网络断开重连同步                                                                                                </a>  
-&emsp;&emsp;<a href="#89">17.6. Redis热点Key</a>  
-&emsp;&emsp;&emsp;<a href="#90">17.6.1. 如何解决热点Key访问过多，超过某一个主机Server的情况？</a>  
-&emsp;&emsp;&emsp;<a href="#91">17.6.2. 定位热点Key</a>  
+&emsp;&emsp;<a href="#80">16.3. RedissonRedLock</a>  
+&emsp;<a href="#81">17. 面试题</a>  
+&emsp;&emsp;<a href="#82">17.1. Redis 为什么这么快？</a>  
+&emsp;&emsp;<a href="#83">17.2. Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        </a>  
+&emsp;&emsp;&emsp;<a href="#84">17.2.1. 在生成 RDB 期间，Redis 可以同时处理写请求么？</a>  
+&emsp;&emsp;<a href="#85">17.3. Redis 主从架构数据同步</a>  
+&emsp;&emsp;&emsp;<a href="#86">17.3.1. 主从复制如何实现的?</a>  
+&emsp;&emsp;&emsp;<a href="#87">17.3.2. 第一次同步怎么实现？</a>  
+&emsp;&emsp;<a href="#88">17.4. 主从正常运行期间的同步</a>  
+&emsp;&emsp;<a href="#89">17.5.  主从库间网络断开重连同步                                                                                                </a>  
+&emsp;&emsp;<a href="#90">17.6. Redis热点Key</a>  
+&emsp;&emsp;&emsp;<a href="#91">17.6.1. 如何解决热点Key访问过多，超过某一个主机Server的情况？</a>  
+&emsp;&emsp;&emsp;<a href="#92">17.6.2. 定位热点Key</a>  
 # <a name="0">Redis 基础</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 缓存基本思想：CPU Cache 缓存的是内存数据用于解决 CPU 处理速度和内存不匹配的问题，内存缓存的是硬盘数据用于解决硬盘访问速度过慢的问题。为了避免用户在请求数据的时候获取速度过于缓慢，所以我们在数据库之上增加了缓存这一层来弥补。
 
@@ -1127,6 +1128,7 @@ public boolean releaseLock_with_lua(String key,String value) {
 
 ### <a name="77">Redisson 分布式方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 redisson是在redis基础上实现的一套开源解决方案，提供了分布式的相关实现及RedLock的分布式锁实现。
+- 该方案的缺点为假设master加锁完成后，未与slave同步便宕机了，那么就会出现加锁失效的情况
 
 原理：生成唯一的Value，即UUID+threadId。获取锁时向一个redis集群实例发送的LUA脚本命令，解锁同理。
 > 如果该客户端面对的是一个redis cluster集群，他首先会根据hash节点选择一台机器\
@@ -1160,12 +1162,55 @@ redisson是在redis基础上实现的一套开源解决方案，提供了分布�
 
 watch dog自动延期机制 :只要客户端1一旦加锁成功，就会启动一个watch dog看门狗，他是一个后台线程，会每隔10秒检查一下，如果客户端1还持有锁key，那么就会不断的延长锁key的生存时间。
 
+```
+    private <T> RFuture<Long> tryAcquireAsync(long waitTime, long leaseTime, TimeUnit unit, long threadId) {
+        if (leaseTime != -1) {
+            return tryLockInnerAsync(waitTime, leaseTime, unit, threadId, RedisCommands.EVAL_LONG);
+        }
+        RFuture<Long> ttlRemainingFuture = tryLockInnerAsync(waitTime,
+                                                commandExecutor.getConnectionManager().getCfg().getLockWatchdogTimeout(),
+                                                TimeUnit.MILLISECONDS, threadId, RedisCommands.EVAL_LONG);
+        ttlRemainingFuture.onComplete((ttlRemaining, e) -> {
+            if (e != null) {
+                return;
+            }
+
+            // lock acquired
+            if (ttlRemaining == null) {
+                scheduleExpirationRenewal(threadId);
+            }
+        });
+        return ttlRemainingFuture;
+    }
+
+```
 #### <a name="79">相关文章</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [基于Redis的分布式锁实现](https://juejin.cn/post/6844903830442737671#heading-10)
 - [Redisson实现Redis分布式锁的原理](https://www.cnblogs.com/AnXinliang/p/10019389.html)
 
-## <a name="80">面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="81">Redis 为什么这么快？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="80">RedissonRedLock</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Redisson的锁会出现故障未同步而加锁失效问题，为了解决该问题Redis作者提出了一个RedLock算法的解决方案
+
+首先假设Redis的架构有N个Master Redis节\
+加锁步骤：
+1. 获取当前时间的毫秒数
+2. 按顺序尝试在N个Redis节点上获取锁，使用相同的key 作为键，随机数作为值。在尝试在每个Redis节点上获取锁时，设置一个超时时间，这个超时时间需要比总的锁的自动超时时间小。例如，自动释放时间为10秒，那么连接超时的时间可以设置为5-50毫秒。这样可以防止客户端长时间与处于故障状态的Redis节点通信时保持阻塞状态：如果一个Redis节点处于故障状态，我们需要尽快与下一个节点进行通信。
+3. 客户端用当前时间减去开始加锁获取的时间为获取锁花费的总时间。如果在(N/2+1)个节点上加锁成功，且加锁花费的时间少于锁的有效时间，那么这个锁被认为是获取成功。
+4. 如果锁获取成功，那么有效期为初始有效时间-加锁花费总时间
+5. 如果加锁失败，那么客户端会对所有的示例节点执行解锁逻辑。
+
+要实现分布式锁，Redis官网介绍了三个必须要保证的特性：
+- 安全特性：互斥。任意时刻都只能有一个客户端能够持有锁。
+- 活跃性A：无死锁。即使在持有锁的客户端崩溃，或者出现网络分区的情况下，依然能够获取锁。
+- 活跃性B：容错。只要多数Redis节点是存活状态，客户端就能申请锁或释放锁。
+
+参考文章：
+- [Distributed locks with Redis(官网英文版解释)](https://redis.io/topics/distlock)
+- [Redisson 实现RedLock详解](https://juejin.cn/post/6927204732704391175)
+
+## <a name="81">面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="82">Redis 为什么这么快？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 基于内存实现。Redis 是基于内存的数据库，不论读写操作都是在内存上完成的，跟磁盘数据库相比，读写的速度快非常多
 2. 高效的数据结构。不同的数据类型底层使用了一种或者多种数据结构来支撑，目的就是为了追求更快的速度。
     > String->SDS、List->linkedList,zipList、Hash->zipList,hashtable、Set->hashtable,intSet、SortedSet->zipList,skipList。
@@ -1183,7 +1228,7 @@ watch dog自动延期机制 :只要客户端1一旦加锁成功，就会启动�
 
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/globalHash.jpg)
                                                                                                                                      
-### <a name="82">Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="83">Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 RDB是对 Redis 中的数据执行周期性的持久化，非常适合做冷备。有两个严重性能开销：
     1. 频繁生成 RDB 文件写入磁盘，磁盘压力过大。会出现上一个 RDB 还未执行完，下一个又开始生成，陷入死循环。
     2. fork 出 bgsave 子进程会阻塞主线程，主线程的内存越大，阻塞时间越长。
@@ -1194,33 +1239,33 @@ AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF�
 
 Redis 4.0 为了解决这个问题，带来了一个新的持久化选项——混合持久化。将 rdb 文件的内容和增量的 AOF 日志文件存在一起。这里的 AOF 日志不再是全量的日志，而是自持久化开始到持久化结束的这段时间发生的增量 AOF 日志
 
-#### <a name="83">在生成 RDB 期间，Redis 可以同时处理写请求么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="84">在生成 RDB 期间，Redis 可以同时处理写请求么？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Redis 使用操作系统的多进程写时复制技术 **COW(Copy On Write)** 来实现快照持久化，保证数据一致性.\
 Redis 在持久化时会调用 glibc 的函数fork产生一个子进程，快照持久化完全交给子进程来处理，父进程继续处理客户端请求。\
 当主线程执行写指令修改数据的时候，这个数据就会复制一份副本， bgsave 子进程读取这个副本数据写到 RDB 文件。
 
-### <a name="84">Redis 主从架构数据同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="85">Redis 主从架构数据同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Redis 提供了主从模式，通过主从复制，将数据冗余一份复制到其他 Redis 服务器。
 
-#### <a name="85">主从复制如何实现的?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="86">主从复制如何实现的?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 同步分为三种情况：
 1. 第一次主从库全量复制；
 2. 主从正常运行期间的同步；
 3. 主从库间网络断开重连同步。
 
-#### <a name="86">第一次同步怎么实现？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="87">第一次同步怎么实现？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 建立连接：从库会和主库建立连接，从库执行 replicaof 并发送 psync 命令并告诉主库即将进行同步，主库确认回复后，主从库间就开始同步了。
 2. 主库同步数据给从库：master 执行 bgsave命令生成 RDB 文件，并将文件发送给从库，**同时主库为每一个 slave 开辟一块 replication buffer 缓冲区记录从生成 RDB 文件开始收到的所有写命令**。从库保存 RDB 并清空数据库再加载 RDB 数据到内存中。
 3. 发送 RDB 之后接收到的新写命令到从库：在生成 RDB 文件之后的写操作并没有记录到刚刚的 RDB 文件中，为了保证主从库数据的一致性，所以主库会在内存中使用一个叫 replication buffer 记录 RDB 文件生成后的所有写操作。并将里面的数据发送到 slave。
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve.png)
 
-### <a name="87">主从正常运行期间的同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="88">主从正常运行期间的同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 replication_buffer：对于客户端或从库与redis通信，redis都会分配一个内存buffer进行数据交互，redis先把数据先入这个buffer中，然后再把buffer中的数据发送出去，所以主从在增量同步时，保证主从数据一致。
 > 如果replication buffer写满了怎么办呢？replication buffer是为每个客户端分配的，如果写满了，无论客户端是普通客户端还是从库，只能断开跟这个客户端的连接了。这样从库全量同步失败，只能再次尝试全量同步。
 
 当主从库完成了全量复制，它们之间就会一直维护一个网络连接，主库会通过这个连接将后续陆续收到的命令操作再同步给从库，这个过程也称为基于长连接的命令传播，使用长连接的目的就是避免频繁建立连接导致的开销。                                                                                                            
-### <a name="88"> 主从库间网络断开重连同步                                                                                                </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="89"> 主从库间网络断开重连同步                                                                                                </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 从 Redis 2.8 开始，网络断了之后，主从库会采用增量复制的方式继续同步，只将中断期间主节点执行的写命令发送给从节点，与全量复制相比更加高效。
 
 **repl_backlog_buffer**: 为了解决从库断连后找不到主从差异数据而设立的环形缓冲区，从而避免全量同步带来的性能开销。在redis.conf配置文件中可以设置大小，如果从库断开时间过长，repl_backlog_buffer环形缓冲区会被主库的写命令覆盖，那么从库重连后只能全量同步，所以repl_backlog_size配置尽量大一点可以降低从库连接后全量同步的频率。
@@ -1233,15 +1278,15 @@ master 只需要把 master_repl_offset与 slave_repl_offset之间的命令同步
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve-offline.png)
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve-offline-copy.png)
      
-### <a name="89">Redis热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="90">Redis热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 热点Key：某一件商品被数万次点击、购买时，会形成一个较大的需求量，这种情况下就会产生一个单一的Key，这样就会引起一个热点；同理，当被大量刊发、浏览的热点新闻，热点评论等也会产生热点；另外，在服务端读数据进行访问时，往往会对数据进行分片切分，此类过程中会在某一主机Server上对相应的Key进行访问，当访问超过主机Server极限时，就会导致热点Key问题的产生。
 
-#### <a name="90">如何解决热点Key访问过多，超过某一个主机Server的情况？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="91">如何解决热点Key访问过多，超过某一个主机Server的情况？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 服务端缓存：即将热点数据缓存至服务端的内存中。利用Redis自带的消息通知机制，保证Redis和服务端热点Key的数据一致性
 2. 备份热点Key：即将热点Key+随机数，随机分配至Redis其他节点中。这样访问热点key的时候就不会全部命中到一台机器上了。
 > 使用公式CRC16(key) % 16384来计算Key属于哪个槽
 
-#### <a name="91">定位热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="92">定位热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 凭借经验，进行预估：例如提前知道了某个活动的开启，那么就将此Key作为热点Key
 2. 客户端收集：在操作Redis之前对数据进行统计
 3. 抓包进行评估：Redis使用TCP协议与客户端进行通信，通信协议采用的是RESP，所以能进行拦截包进行解析

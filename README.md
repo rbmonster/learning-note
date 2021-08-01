@@ -80,7 +80,7 @@
 - [【深入理解Java虚拟机(周志明)】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
 - [【基于Redis的设计与实现】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
 - [【MySql 45讲-丁奇】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
-- [【凤凰架构】](https://icyfenix.cn/summary/)
+- [【凤凰架构(周志明)】](https://icyfenix.cn/summary/)
 
 ## 参考资料
 | 地址 | 简介 |

@@ -1033,6 +1033,7 @@ public boolean releaseLock_with_lua(String key,String value) {
 
 ### Redisson 分布式方案
 redisson是在redis基础上实现的一套开源解决方案，提供了分布式的相关实现及RedLock的分布式锁实现。
+- 该方案的缺点为假设master加锁完成后，未与slave同步便宕机了，那么就会出现加锁失效的情况
 
 原理：生成唯一的Value，即UUID+threadId。获取锁时向一个redis集群实例发送的LUA脚本命令，解锁同理。
 > 如果该客户端面对的是一个redis cluster集群，他首先会根据hash节点选择一台机器\
@@ -1066,9 +1067,52 @@ redisson是在redis基础上实现的一套开源解决方案，提供了分布�
 
 watch dog自动延期机制 :只要客户端1一旦加锁成功，就会启动一个watch dog看门狗，他是一个后台线程，会每隔10秒检查一下，如果客户端1还持有锁key，那么就会不断的延长锁key的生存时间。
 
+```
+    private <T> RFuture<Long> tryAcquireAsync(long waitTime, long leaseTime, TimeUnit unit, long threadId) {
+        if (leaseTime != -1) {
+            return tryLockInnerAsync(waitTime, leaseTime, unit, threadId, RedisCommands.EVAL_LONG);
+        }
+        RFuture<Long> ttlRemainingFuture = tryLockInnerAsync(waitTime,
+                                                commandExecutor.getConnectionManager().getCfg().getLockWatchdogTimeout(),
+                                                TimeUnit.MILLISECONDS, threadId, RedisCommands.EVAL_LONG);
+        ttlRemainingFuture.onComplete((ttlRemaining, e) -> {
+            if (e != null) {
+                return;
+            }
+
+            // lock acquired
+            if (ttlRemaining == null) {
+                scheduleExpirationRenewal(threadId);
+            }
+        });
+        return ttlRemainingFuture;
+    }
+
+```
 #### 相关文章
 - [基于Redis的分布式锁实现](https://juejin.cn/post/6844903830442737671#heading-10)
 - [Redisson实现Redis分布式锁的原理](https://www.cnblogs.com/AnXinliang/p/10019389.html)
+
+
+### RedissonRedLock
+Redisson的锁会出现故障未同步而加锁失效问题，为了解决该问题Redis作者提出了一个RedLock算法的解决方案
+
+首先假设Redis的架构有N个Master Redis节\
+加锁步骤：
+1. 获取当前时间的毫秒数
+2. 按顺序尝试在N个Redis节点上获取锁，使用相同的key 作为键，随机数作为值。在尝试在每个Redis节点上获取锁时，设置一个超时时间，这个超时时间需要比总的锁的自动超时时间小。例如，自动释放时间为10秒，那么连接超时的时间可以设置为5-50毫秒。这样可以防止客户端长时间与处于故障状态的Redis节点通信时保持阻塞状态：如果一个Redis节点处于故障状态，我们需要尽快与下一个节点进行通信。
+3. 客户端用当前时间减去开始加锁获取的时间为获取锁花费的总时间。如果在(N/2+1)个节点上加锁成功，且加锁花费的时间少于锁的有效时间，那么这个锁被认为是获取成功。
+4. 如果锁获取成功，那么有效期为初始有效时间-加锁花费总时间
+5. 如果加锁失败，那么客户端会对所有的示例节点执行解锁逻辑。
+
+要实现分布式锁，Redis官网介绍了三个必须要保证的特性：
+- 安全特性：互斥。任意时刻都只能有一个客户端能够持有锁。
+- 活跃性A：无死锁。即使在持有锁的客户端崩溃，或者出现网络分区的情况下，依然能够获取锁。
+- 活跃性B：容错。只要多数Redis节点是存活状态，客户端就能申请锁或释放锁。
+
+参考文章：
+- [Distributed locks with Redis(官网英文版解释)](https://redis.io/topics/distlock)
+- [Redisson 实现RedLock详解](https://juejin.cn/post/6927204732704391175)
 
 ## 面试题
 ### Redis 为什么这么快？
