@@ -14,11 +14,13 @@
 &emsp;&emsp;<a href="#11">4.3. 压测结果</a>  
 &emsp;&emsp;<a href="#12">4.4. 常见架构</a>  
 &emsp;<a href="#13">5. 其他</a>  
+&emsp;&emsp;<a href="#14">5.1. oplog</a>  
 # <a name="0">Mongodb</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-https://www.cnblogs.com/out-of-memory/p/6810411.html
+[使用Docker安装MongoDB](https://www.cnblogs.com/yunquan/p/11174265.html)
 
-https://www.cnblogs.com/yunquan/p/11174265.html
+[MongoDB用户角色配置](https://www.cnblogs.com/out-of-memory/p/6810411.html)
+
 
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 MongoDB是面向文档的数据库，不是关系型数据库。MongoDB的设计采用横向扩展的设计，能自动处理跨集群的数据和负载，自动中心分配文档，以及将用户的请求路由到正确的机器上。
@@ -178,6 +180,11 @@ db.helloworld.dropIndex("username_1")
 
 ## <a name="13">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
+发布订阅：MongoDB提供API接口用于订阅整个数据库中的修改操作
+> 如Java中MongoDBClient提供了Watch()方法用来接收修改的事件
+
+Geo地理位置的数据类型
+
 GridFS：为Mongodb的一种存储机制，可以用来存储大型的二进制文件
 > 1. 性能比较低，与文件服务器相比
 > 2. 修改GridFS的文档只能先删除再新增。
@@ -185,3 +192,22 @@ GridFS：为Mongodb的一种存储机制，可以用来存储大型的二进制�
 聚合框架：可以对集合中的文档进行变换和组合
 
 MapReduce：同样用于数据的聚合、映射、归约
+
+
+### <a name="14">oplog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+在MongoDB中，有一个系统库“”Local”，库里有一个集合“oplog.rs”，这个集合类似于binlog文件，里面记录了MongoDB的所有操作。从节点通过读取oplog.rs里的数据做到数据同步。
+> oplog是local库下的一个固定集合，Secondary就是通过查看Primary 的oplog这个集合来进行复制的。每个节点都有oplog，记录这从主节点复制过来的信息，这样每个成员都可以作为同步源给其他节点。 Oplog 可以说是Mongodb Replication的纽带了。
+
+
+oplog的相关字段：
+- ts: 8字节的时间戳，由4字节unix timestamp + 4字节自增计数表示。这个值很重要，在选举(如master宕机时)新primary时，会选择ts最大的那个secondary作为新primary
+- op：1字节的操作类型
+> "i"： insert\
+"u"： update\
+"d"： delete\
+"c"： db cmd
+- "db"：声明当前数据库 (其中ns 被设置成为=>数据库名称+ '.')
+- "n": no op,即空操作，其会定期执行以确保时效性
+- ns：操作所在的namespace
+- o：操作所对应的document，即当前操作的内容（比如更新操作时要更新的的字段和值）
+- o2: 在执行更新操作时的where条件，仅限于update时才有该属性
