@@ -63,6 +63,16 @@
 
 7层结构明细
 
+```
+第一层：物理层
+第二层：数据链路层 802.2、802.3ATM、HDLC、FRAME RELAY 
+第三层：网络层 IP、IPX、ARP、APPLETALK、ICMP 
+第四层：传输层 TCP、UDP、SPX 
+第五层：会话层 RPC、SQL、NFS 、X WINDOWS、ASP
+第六层：表示层 ASCLL、PICT、TIFF、JPEG、 MIDI、MPEG 
+第七层：应用层 HTTP,FTP,SNMP等
+```
+
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/network2.png)
 
 一个请求在网络模型中的传输过程
