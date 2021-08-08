@@ -204,10 +204,12 @@
 2. 无法处理“浮动垃圾”，有可能出现并发模式失败进而导致一次Full GC。浮动垃圾为出现在标记过程结束之后产生的对象。因为CMS要支持手机过程中与用户线程并存，因此不能在老年代几乎被填满时再运行，需要预留一部分空间供并发收集的程序运行。
     - JDK5中设置CMS在老年代使用了68%便会激活，JDK6默认的设置提高到92%。当运行预留的内存无法满足程序分配新对象的需要，就会出现一次“并发失败”。后备预案为冻结用户线程，启用Serial Old进行老年代的垃圾收集。
     - `-XX:CMSInitiatingOccupancyFraction `可以设置触发CMS收集的百分比。
+> 并发收集失败：收集过程中，老年代被填满；收集完成后，收集的空间仍然无法满足被使用；浮动垃圾
 - 参数-XX:CMSFullGCsBeforeCompaction：作用是要求CMS收集器在执行过若干次不整理的Full GC之后，下一次先进行碎片整理(默认值为0，表示每次FullGC都进行碎片整理) 
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/cms-1.jpg)
 
+[CMS官网说明](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/cms.html#concurrent_mode_failure)
 #### Garbage First 收集器
 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中还有一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
 
@@ -220,28 +222,33 @@
 3. 最终标记：短暂暂停用户线程，处理并发阶段结束后，少量的SATB记录。
 4. 筛选回收：更新Region的统计数据，进行回收价值和成本的排序，根据用户期望的停顿时间来构建回收集合。回收集合的存活对象复制到空的Region，再清理旧的Region。涉及到对象移动，需要暂停用户线程，使用多线程并行完成移动。
 
-G1整体是基于标记-整理算法实现的收集器，但从局部优势基于标记-复制算法实现。
+G1整体是基于标记-整理算法实现的收集器，但从局部优势基于标记-复制算法实现。在执行标记整理的时候，还进行了压缩的工作，这是之前的垃圾收集器都没有的。
 
 特点:
 1. 避免在整个Java堆进行全区域的垃圾回收，而是让G1跟踪每个Region的垃圾回收的价值及回收所需的时间，在后台维护一个优先级表。根据用户设定的允许收集停顿时间，优先回收价值收益最大的Region。(使用参数-XX:MaxGCPauseMills指定)
 2. G1收集器每个Region都需要自己的记忆集，记录跨区域引用，因此比其他收集器要耗费内存，大约为java堆内存容量10%~20%。
 3. 通过在Region中划分空间(使用两TAMS指针，标记一块区域)用于并发回收的新对象分配，解决并发标记阶段与用户线程互不干扰。同样若内存分配速度大于内存回收速度，也许冻结用户线程Full GC。
 4. CMS使用增量更新算法，而G1使用原始快照(SATB)算法来解决，用户线程改变对象的引用关系，不打破原有的对象图结构，防止标记错误。
-5. 可靠停顿预测模型的建立：根据每个Region的回收成本，分析出收集的平均值、标准偏差、置信度等统计信息。
+5. 通过可靠停顿预测模型的建立：根据每个Region的回收成本，分析出收集的平均值、标准偏差、置信度等统计信息。
 - 缺点：内存占用过高，在小内存应用上CMS的表现大于G1。
   
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1.jpg)
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-memory.jpg)
 
+[G1官网说明](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/g1_gc.html)
 #### CMS 与 G1 对比
-CMS 以获取最短回收停顿时间为目标的收集器，基于分代收集理念设计。
-G1 GC 这是一种兼顾吞吐量和停顿时间的 GC 实现，基于分区收集理念设计，部分结合分代收集理念。
+G1计划作为并发标记扫描收集器（CMS）的长期替代品。
+1. 垃圾回收理念不同：CMS基于分代收集理念设计。G1基于分区收集理念设计。
+2. 整理：G1在GC的时候都会做垃圾的碎片整理，而CMS收集器只在Full GC STW时才会做内存压缩整理。
+3. 可停顿时间：G1是一种兼顾吞吐量和停顿时间的 GC 实现，其可靠停顿预测模型可以设定目标收集停顿时间，可以实现更短的GC停顿。
+4. 对象记录算法：对于对象记录CMS使用增量更新算法，而G1使用原始快照(SATB,snapshot-at-the-beginning)记录存活对象。
+5. 收集方式：G1使用混合收集的方式。G1可以扫描年轻代和一小部分老年代，但这意味着比简单地只扫描老年代、完全的快得多。
+6. String重复数据删除。G1可以配置针对String的重复数据进行删除，而重复的数据将指向同一个char[] array。`-XX:+UseStringDeduplication`
 
-1. 对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此弱核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
-2. 无法处理“浮动垃圾”，有可能出现并发模式失败进而导致一次Full GC。浮动垃圾为出现在标记过程结束之后产生的对象。因为CMS要支持手机过程中与用户线程并存，因此不能在老年代几乎被填满时再运行，需要预留一部分空间供并发收集的程序运行。
+- CMS对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此弱核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
+- G1针对具有大内存的多处理器机器，因为其`Remembered Sets`的记忆集的设计，需要占用更多内存。
 
-TODO
-
+[what’s new in Java 8](https://www.overops.com/blog/garbage-collectors-serial-vs-parallel-vs-cms-vs-the-g1-and-whats-new-in-java-8/)
 #### 其他的垃圾收集器
 - Shenandoah 收集器：仅存在OpenJdk，区别G1的特点为支持并发整理，使用转发指针和读屏障实现。
 - ZGC 收集器：Region具有动态性，并分为大中小三个Region，使用染色指针技术实现并发整理算法。
@@ -461,25 +468,66 @@ public class MyClassLoader extends ClassLoader {
 }
 ```
 
+#### 破坏双亲委派模型
+破坏双亲委派模型，就是要实现自己的ClassLoader重写loadClass，在方法中重写自己加载的逻辑。这样类加载过程中就不会通过委派父类加载的方式进行加载数据。
+
+##### JDBC破坏双亲委派模型
+不破坏双亲委派模型的情况（不使用JNDI服务）
+```
+// 1.加载数据访问驱动
+Class.forName("com.mysql.cj.jdbc.Driver");
+//2.连接到数据"库"上去
+Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=GBK", "root", "");
+```
+
+JDBC需要破坏双亲委派模式
+>  原生的JDBC中的类是放在**rt.jar包**(对应BootStrapClassLoader)的，是由启动类加载器进行类加载的，在JDBC中的Driver类中需要动态去加载不同数据库类型的Driver类，而mysql-connector-.jar中的Driver类是用户自己写的代码，那启动类加载器肯定是不能进行加载的。这就是双亲委派模型的局限性了，父级加载器无法加载子级类加载器路径中的类。
+
+> 在JDBC4.0以后，开始支持使用SPI(Service Provider Interface)的方式来注册这个Driver，具体做法就是在mysql的jar包中的META-INF/services/java.sql.Driver 文件中指明当前使用的Driver是哪个，然后使用如下：\
+> `Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=GBK", "root", "");`
+
+如何解决父加载器无法加载子级类加载器路径中的类？
+> 引入线程上下文件类加载器(Thread Context ClassLoader).在mysql jdbc连接中获取当前的类加载器，这就破坏的双亲委派的类加载过程。
+```
+private static Connection getConnection(
+        String url, java.util.Properties info, Class<?> caller) throws SQLException {
+        /*
+         * When callerCl is null, we should check the application's
+         * (which is invoking this class indirectly)
+         * classloader, so that the JDBC driver class outside rt.jar
+         * can be loaded from here.
+         */
+        //callerCL为空的时候，其实说明这个ClassLoader是启动类加载器，但是这个启动类加载并不能识别rt.jar之外的类，这个时候就把callerCL赋值为Thread.currentThread().getContextClassLoader();也就是应用程序启动类
+        ClassLoader callerCL = caller != null ? caller.getClassLoader() : null;
+        synchronized(DriverManager.class) {
+            // synchronize loading of the correct classloader.
+            if (callerCL == null) {
+                callerCL = Thread.currentThread().getContextClassLoader();
+            }
+        }
+    }
+```
+
 ### 类初始化的时机
-- Java 虚拟机规范没有强制约束类加载过程的第一阶段（即：加载）什么时候开始，但对于“初始化”阶段，有着严格的规定。有且仅有 5 种情况必须立即对类进行“初始化”：
-  - 在遇到 new、putstatic、getstatic、invokestatic 字节码指令时，如果类尚未初始化，则需要先触发其初始化。
-  - 对类进行反射调用时，如果类还没有初始化，则需要先触发其初始化。
-  - 初始化一个类时，如果其父类还没有初始化，则需要先初始化父类。
-  - 虚拟机启动时，用于需要指定一个包含 main() 方法的主类，虚拟机会先初始化这个主类。
-  - 当使用 JDK 1.7 的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic、REF_putStatic、REF_invokeStatic 的方法句柄，并且这个方法句柄所对应的类还没初始化，则需要先触发其初始化。
-- 这 5 种场景中的行为称为对一个类进行主动引用，除此之外，其它所有引用类的方式都不会触发初始化，称为被动引用。
+Java 虚拟机规范没有强制约束类加载过程的第一阶段（即：加载）什么时候开始，但对于“初始化”阶段，有着严格的规定。有且仅有 5 种情况必须立即对类进行“初始化”：
+- 在遇到 new、putstatic、getstatic、invokestatic 字节码指令时，如果类尚未初始化，则需要先触发其初始化。
+- 对类进行反射调用时，如果类还没有初始化，则需要先触发其初始化。
+- 初始化一个类时，如果其父类还没有初始化，则需要先初始化父类。
+- 虚拟机启动时，用于需要指定一个包含 main() 方法的主类，虚拟机会先初始化这个主类。
+- 当使用 JDK 1.7 的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic、REF_putStatic、REF_invokeStatic 的方法句柄，并且这个方法句柄所对应的类还没初始化，则需要先触发其初始化。
+
+这 5 种场景中的行为称为对一个类进行主动引用，除此之外，其它所有引用类的方式都不会触发初始化，称为被动引用。
 
 ### 类的生命周期
-- 类的生命周期： 加载、连接[验证、准备、解析]、初始化、使用、卸载。
+类的生命周期： 加载、连接[验证、准备、解析]、初始化、使用、卸载。
 #### 加载
-- 类加载过程的第一步，主要完成下面3件事情：
-  - 通过全类名获取定义此类的二进制字节流
-  - 将字节流所代表的静态存储结构转换为方法区的运行时数据结构
-  - 在内存中生成一个代表该类的 Class 对象,作为方法区这些数据的访问入口
+类加载过程的第一步，主要完成下面3件事情：
+- 通过全类名获取定义此类的二进制字节流
+- 将字节流所代表的静态存储结构转换为方法区的运行时数据结构
+- 在内存中生成一个代表该类的 Class 对象,作为方法区这些数据的访问入口
 
 #### 验证
-- 验证的范围：文件格式、元数据、字节码、符号引用验证
+验证的范围：文件格式、元数据、字节码、符号引用验证
 
 #### 准备
 准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些内存都将在方法区中分配。对于该阶段有以下几点需要注意：
@@ -500,7 +548,7 @@ public static final int v = 8080;
 
 #### 初始化
 
-- 虚拟机严格规范了有且只有5种情况下，必须对类进行初始化(只有主动去使用类才会初始化类)：
+虚拟机严格规范了有且只有5种情况下，必须对类进行初始化(只有主动去使用类才会初始化类)：
 1. 当遇到 new 、 getstatic、putstatic或invokestatic 这4条直接码指令时，比如 new 一个类，读取一个静态字段(未被 final 修饰)、或调用一个类的静态方法时。
   - 当jvm执行new指令时会初始化类。即当程序创建一个类的实例对象。
   - 当jvm执行getstatic指令时会初始化类。即程序访问类的静态变量(不是静态常量，常量会被加载到运行时常量池)。
@@ -514,12 +562,12 @@ public static final int v = 8080;
 
 
 #### 卸载
-- 卸载类即该类的Class对象被GC。
+卸载类即该类的Class对象被GC。
 
-- 卸载类需要满足3个要求:
-  - 该类的所有的实例对象都已被GC，也就是说堆不存在该类的实例对象。
-  - 该类没有在其他任何地方被引用
-  - 该类的类加载器的实例已被GC
+卸载类需要满足3个要求:
+- 该类的所有的实例对象都已被GC，也就是说堆不存在该类的实例对象。
+- 该类没有在其他任何地方被引用
+- 该类的类加载器的实例已被GC
 
 ### 虚拟机中对象的创建
  ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/objcreate.jpg)
@@ -559,18 +607,17 @@ public static final int v = 8080;
 1. 新生代的内存大小设置建议：Sun官方推荐配置为整个堆的3/8。
 2. 服务器的内存需要预留一部分给永久代、线程栈及NIO
 
-- 内存分配问题
-省略比较小的区域，可以总结JVM占用的内存：
-- JVM内存 ≈ Java永久代 ＋ Java堆(新生代和老年代) ＋ 线程栈＋ Java NIO
+内存分配问题: 省略比较小的区域，可以总结JVM占用的内存：
+> JVM内存 ≈ Java永久代 ＋ Java堆(新生代和老年代) ＋ 线程栈＋ Java NIO
 
-假设原来的内存分配是：6g(java堆) ＋ 600m(监控) ＋ 800m(系统)，剩余大约600m内存未分配。
+假设原来的内存分配是：6G(java堆) ＋ 600M(监控) ＋ 800M(系统)，剩余大约600m内存未分配。
 
-现在分析这600m内存的分配情况：
-1. Linux保留大约200m，这部分是Linux正常运行的需要，
-2. Java服务的线程数量是160个，JVM默认的线程栈大小是1m，因此使用160m内存，
+现在分析这600M内存的分配情况：
+1. Linux保留大约200M，这部分是Linux正常运行的需要，
+2. Java服务的线程数量是160个，JVM默认的线程栈大小是1M，因此使用160M内存，
 3. Java NIO buffer，通过JMX查到最多占用了200m，
 4. Java服务使用NIO大量读写文件，需要使用PageCache，正如前面分析，这个暂时不好定量估算大小。
-前三项加起来已经560m，因此可以断定Linux物理内存不够使用。
+前三项加起来已经560M，因此可以断定Linux物理内存不够使用。
 
 
 以下是sun公司的性能优化白皮书中提到的几个例子： 
@@ -602,7 +649,7 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
 -XX:TargetSurvivorRatio=90 允许90%的空间被占用，超过默认的50%，提高对于survivor的使用率。
 ```
 
-- 相关文章： https://zhuanlan.zhihu.com/p/61049063?utm_source=wechat_session
+- 相关文章：[看完你还敢说你懂JVM吗？](https://zhuanlan.zhihu.com/p/61049063?utm_source=wechat_session)
 
 ## CMS + ParNew收集器的流程梳理
 

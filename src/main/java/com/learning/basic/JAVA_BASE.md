@@ -77,6 +77,7 @@ String 被声明为 final，因此它不可被继承
 4. 线程安全
   
 new String("abc") :创建两String对象，（前提是 String Pool 中还没有 "abc" 字符串对象）。
+> 使用new关键字创建的字符串对象存储在堆的普通内存部分。[字符串常量池String Constant Pool](https://www.cnblogs.com/LinQingYang/p/12524949.html#importantPointsToRememberLabel)
 
 java 8 字符串常量池放置于方法区中
 
