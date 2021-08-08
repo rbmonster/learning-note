@@ -12,16 +12,17 @@
 &emsp;&emsp;<a href="#9">2.1. 基于Synchronize锁对象</a>  
 &emsp;&emsp;<a href="#10">2.2. 基于Reentrant Lock </a>  
 &emsp;<a href="#11">3. 使用String常量作为synchronized的锁 优化同步锁</a>  
-&emsp;<a href="#12">4. 线程安全的类定义</a>  
-&emsp;&emsp;<a href="#13">4.1. 枚举类为什么是线程安全？</a>  
-&emsp;<a href="#14">5. 单订单重复退款请求</a>  
-&emsp;&emsp;<a href="#15">5.1. 分布式锁的处理方案</a>  
-&emsp;<a href="#16">6. 消息批量发送设计</a>  
-&emsp;&emsp;<a href="#17">6.1. 问题场景</a>  
-&emsp;&emsp;<a href="#18">6.2. 解决方法</a>  
-&emsp;&emsp;<a href="#19">6.3. 进阶问题处理</a>  
-&emsp;&emsp;<a href="#20">6.4. 相关类似资料</a>  
-&emsp;<a href="#21">7. future编程</a>  
+&emsp;<a href="#12">4. 类加载中synchronized的应用</a>  
+&emsp;<a href="#13">5. 线程安全的类定义</a>  
+&emsp;&emsp;<a href="#14">5.1. 枚举类为什么是线程安全？</a>  
+&emsp;<a href="#15">6. 单订单重复退款请求</a>  
+&emsp;&emsp;<a href="#16">6.1. 分布式锁的处理方案</a>  
+&emsp;<a href="#17">7. 消息批量发送设计</a>  
+&emsp;&emsp;<a href="#18">7.1. 问题场景</a>  
+&emsp;&emsp;<a href="#19">7.2. 解决方法</a>  
+&emsp;&emsp;<a href="#20">7.3. 进阶问题处理</a>  
+&emsp;&emsp;<a href="#21">7.4. 相关类似资料</a>  
+&emsp;<a href="#22">8. future编程</a>  
 # <a name="0">Java并发应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">生产者与消费者模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -349,8 +350,71 @@ class TestString implements Runnable{
 2. Interners内部基于ConcurrentHashMap实现，而且可以设置引用类型，不会加重full gc负担，但有一个问题就是如果gc回收了存储在Interners里面的String，那么pool.intern(lock)可能也会返回不同的引用，总之，还是建议使用Interners，效率和内存使用率更高
 
 
+## <a name="12">类加载中synchronized的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-## <a name="12">线程安全的类定义</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+类加载过程中为了控制并发的情况，使用synchronized控制。而synchronized控制并发主要使用锁对象的方式
+1. 使用ConcurrentHashMap存储加锁的对象。
+2. 获取锁对象的时候，先去ConcurrentHashMap获取对象，由于ConcurrentHashMap添加操作是并发安全的，最后保证不同线程加锁的时候获取到同一个对象。
+3. synchronized加锁后，进入到类加载流程。
+
+```java
+public class ClassLoader {
+    // ...
+
+   private final ConcurrentHashMap<String, Object> parallelLockMap;
+
+   protected Class<?> loadClass(String name, boolean resolve)
+           throws ClassNotFoundException {
+      synchronized (getClassLoadingLock(name)) {
+         // First, check if the class has already been loaded
+         Class<?> c = findLoadedClass(name);
+         if (c == null) {
+            long t0 = System.nanoTime();
+            try {
+               if (parent != null) {
+                  c = parent.loadClass(name, false);
+               } else {
+                  c = findBootstrapClassOrNull(name);
+               }
+            } catch (ClassNotFoundException e) {
+               // ClassNotFoundException thrown if class not found
+               // from the non-null parent class loader
+            }
+
+            if (c == null) {
+               // If still not found, then invoke findClass in order
+               // to find the class.
+               long t1 = System.nanoTime();
+               c = findClass(name);
+
+               // this is the defining class loader; record the stats
+               sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+               sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+               sun.misc.PerfCounter.getFindClasses().increment();
+            }
+         }
+         if (resolve) {
+            resolveClass(c);
+         }
+         return c;
+      }
+   }
+
+   protected Object getClassLoadingLock(String className) {
+      Object lock = this;
+      if (parallelLockMap != null) {
+         Object newLock = new Object();
+         lock = parallelLockMap.putIfAbsent(className, newLock);
+         if (lock == null) {
+            lock = newLock;
+         }
+      }
+      return lock;
+   }
+}
+```
+
+## <a name="13">线程安全的类定义</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 无状态的类：没有任何成员变量的类，如无任何方法的枚举类型。
 2. 让类不可变	
    1. 加final关键字
@@ -362,7 +426,7 @@ class TestString implements Runnable{
    3. 使用Atomic包的基本类型，如AtomicInteger、AtomicReference、AtmoicStampReference修饰变量。
    
 
-### <a name="13">枚举类为什么是线程安全？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">枚举类为什么是线程安全？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 普通的一个枚举类
 ```
@@ -418,23 +482,21 @@ public final class T extends Enum
 
 - 相关资料：[深度分析Java的枚举类型—-枚举的线程安全性及序列化问题](https://www.cnblogs.com/z00377750/p/9177097.html)
 
-## <a name="14">单订单重复退款请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="15">单订单重复退款请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. synchronize修饰退款方法。 
 2. 缩小synchronize锁范围，使用对象锁。对象锁，创建弱引用的一个订单ID对象，放到统一的锁对象资源池中。
    - 清理锁对象可以使用守护线程的方法，基于Unsafe的包操作去清除。
 3. 分布式应用，使用分布式锁来处理。
 
 
-### <a name="15">分布式锁的处理方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">分布式锁的处理方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 1. 数据库锁，数据库乐观锁，数据库悲观锁。
-
 2. redis 锁 或者 ZooKeeper锁
-
 3. 使用消息队列顺序消费，保证不重复退款
 
-## <a name="16">消息批量发送设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="17">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="17">消息批量发送设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 某个活动需要对平台的客户进行短信的推销发送，假设对平台的10w用户推送某个活动。推送的用户数据由数据仓库已经推送到表t_user_promotion总共10w条数据。
 
 而在调用短信批量发送服务的时候，经常有限制批量发送的手机号数目的，比如限制100个手机号。
@@ -447,7 +509,7 @@ public final class T extends Enum
 1. 表结构设计
 2. 查询效率问题
 
-### <a name="18">解决方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">解决方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 方法1：
 设计一张中间表作为批次表，每100个用户打一个批次。用户表中增加批次id。
 
@@ -475,15 +537,15 @@ public final class T extends Enum
    2. 查询出所需要处理的记录，使用id排序，每个线程根据pageIndex+pageNo，进行数据的处理。`limit pageIndex pageNo`
       - > sql可能会因为pageIndex+pageNo 导致慢查询，需要使用延迟关联的方式进行sql优化
 2. 加锁不推荐，悲观锁（使用mysql的行锁），乐观锁（使用mysql的version乐观锁）
-### <a name="19">进阶问题处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">进阶问题处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 如何解决重复发送问题，短信批量发送的请求更新为中间状态发送中。
 2. 消息模版不一致问题，使用数据分组，相同消息模版的数据统一处理。
 
-### <a name="20">相关类似资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">相关类似资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [批量任务体现多线程的威力！](https://juejin.cn/post/6844903774234869774) \
 [JAVA实现多线程处理批量发送短信、APP推送](https://blog.csdn.net/weixin_30443747/article/details/95104128)
 
-## <a name="21">future编程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="22">future编程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 
 List<Future<String>> futureList = new ArrayList<>();
