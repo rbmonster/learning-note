@@ -485,6 +485,172 @@ public class Solution {
 - [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 
 
+
+## 回溯
+回溯法⼀般是在集合中递归搜索，集合的⼤⼩构成了树的宽度，递归的深度构成的树的深度。
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/backTracking.png)
+
+### 伪代码模版
+```
+void backtracking(参数) {
+    if (终⽌条件) {
+        存放结果;
+        return;
+    }
+    for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的⼤⼩）) {
+        处理节点;
+        backtracking(路径，选择列表); // 递归
+        回溯，撤销处理结果
+    }
+}
+```
+
+#### 回溯三部曲
+1. 回溯函数模板返回值以及参数。回溯算法中函数返回值⼀般为void。
+```
+void backtracking(参数)
+```
+2. 回溯函数终⽌条件。
+```
+if (终⽌条件) {
+    存放结果;
+    return;
+}
+```
+3. 回溯搜索的遍历过程。
+```
+for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的⼤⼩）) {
+    处理节点;
+    backtracking(路径，选择列表); // 递归
+    回溯，撤销处理结果
+}
+```
+
+#### startIndex使用
+需要startIndex来控制for循环的起始位置，对于组合问题，什么时候需要startIndex呢？
+1. 如果是⼀个集合来求组合的话，就需要startIndex
+2. 如果是多个集合取组合，各个集合之间相互不影响，那么就不⽤startIndex，例如：回溯算法：电话号 码的字⺟组合
+
+对于排列问题：
+1. 每层都是从0开始搜索⽽不是startIndex
+2. 需要used数组记录path⾥都放了哪些元素了
+
+### 问题场景
+回溯算法能解决如下问题：
+- 组合问题：N个数⾥⾯按⼀定规则找出k个数的集合
+- 排列问题：N个数按⼀定规则全排列，有⼏种排列⽅式
+- 切割问题：⼀个字符串按⼀定规则有⼏种切割⽅式
+- ⼦集问题：⼀个N个数的集合⾥有多少符合条件的⼦集
+- 棋盘问题：N皇后，解数独等等
+
+### 重复问题
+“树枝去重”和“树层去重”
+
+组合问题可以抽象为树形结构，那么“使⽤过”在这个树形结构上是有两个维度的，⼀个维度是同⼀树枝上“使⽤过”，⼀个维度是同⼀树层上“使⽤过”。\
+常规使用树层去重，树枝去重会导致过多无谓的查找，而树层去重对于无用的查找可以及时的中断break
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/backTrackingDuplicate.png)
+
+
+树层去重
+1. 数据无序
+```
+public void backTracking() {
+    
+    HashSet<Integer> set = new HashSet<>();
+    for(int i = startIndex ;i< end;i ++){
+        if(set.contains(i)){
+            continue;
+        }
+        // 回溯逻辑
+        set.add(i);
+        backTracking();
+        set.remove(i);
+    }
+}
+
+```
+2. 数据有序
+```
+public void backTracking() {
+    
+    for(int i = startIndex ;i< end;i ++){
+        //回溯中常常使用的避免重复解的条件
+        if(i>startIndex && nums[i-1]=nums[i]) {
+            continue;
+        }
+        // 回溯逻辑
+        backTracking();
+    }
+}
+
+```
+
+### 组合问题
+- [组合](https://leetcode-cn.com/problems/combinations/submissions/)
+- [组合总和](https://leetcode-cn.com/problems/combination-sum/)
+- [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
+- [组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
+- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
+
+- [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)
+
+### 切割问题
+- [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+- [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+- [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+- [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
+
+
+### 排列问题
+- [全排列](https://leetcode-cn.com/problems/permutations/)
+- [全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
+
+
+### 子集问题
+- [子集（review）](https://leetcode-cn.com/problems/subsets/)
+- [子集 II（review）](https://leetcode-cn.com/problems/subsets-ii/)
+
+
+- [括号生成（review）](https://leetcode-cn.com/problems/generate-parentheses/)
+    - > 动态规划 + dfs + 回溯 或者 dfs + 回溯
+- [解数独](https://leetcode-cn.com/problems/sudoku-solver/)
+- [单词搜索](https://leetcode-cn.com/problems/word-search/)
+- [二叉树路径](https://leetcode-cn.com/problems/binary-tree-paths/)
+- [重新安排行程](https://leetcode-cn.com/problems/reconstruct-itinerary/)
+
+```java   
+public class Soluction {
+    public List<List<Integer>> permute(int[] nums) {
+      List<List<Integer>> res = new ArrayList<>();
+      boolean[] used = new boolean[nums.length];
+      Arrays.sort(nums);
+      dfs(nums, new ArrayList<>(), used, res);
+      return res;
+    }
+  
+  
+    public void dfs(int[]nums, List<Integer>path,boolean[] used, List<List<Integer>> res ){
+      if(path.size() == nums.length) {
+          res.add(new ArrayList<>(path));
+          return;
+      }
+
+      for (int i = 0; i < nums.length; i++) {
+          if (used[i]|| i>0&& nums[i] == nums[i-1] && !used[i-1]) continue;
+          path.add(nums[i]);
+          used[i] = true;
+          dfs(nums,path,used,res);
+          path.remove(path.size()-1);
+          used[i] = false;
+      }
+    }
+}
+```
+
+
+
 ## 算法归类
 
 ### 二分法
@@ -515,60 +681,6 @@ public class Solution {
 #### 拓扑排序
 - [课程表](https://leetcode-cn.com/problems/course-schedule/)
 - [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
-
-#### dfs+回溯
-- [全排列【review】](https://leetcode-cn.com/problems/permutations/)
-- [全排列 II【review】](https://leetcode-cn.com/problems/permutations-ii/)
-- [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
-    - 重点看区别重复元素的条件
-    - ```java   public List<List<Integer>> permute(int[] nums) {
-              List<List<Integer>> res = new ArrayList<>();
-              boolean[] used = new boolean[nums.length];
-              Arrays.sort(nums);
-              dfs(nums, new ArrayList<>(), used, res);
-              return res;
-          }
-          
-          
-          public void dfs(int[]nums, List<Integer>path,boolean[] used, List<List<Integer>> res ){
-              if(path.size() == nums.length) {
-                  res.add(new ArrayList<>(path));
-                  return;
-              }
-      
-              for (int i = 0; i < nums.length; i++) {
-                  if (used[i]|| i>0&& nums[i] == nums[i-1] && !used[i-1]) continue;
-                  path.add(nums[i]);
-                  used[i] = true;
-                  dfs(nums,path,used,res);
-                  path.remove(path.size()-1);
-                  used[i] = false;
-              }
-          }
-      ```
-- [组合](https://leetcode-cn.com/problems/combinations/submissions/)
-- [组合总和（review）](https://leetcode-cn.com/problems/combination-sum/)
-- [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
-    - > 通过传递每次迭代的索引，避免重复记录
-- [组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
-- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
-- [括号生成（review）](https://leetcode-cn.com/problems/generate-parentheses/)
-- [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
-- [分割回文串（review）](https://leetcode-cn.com/problems/palindrome-partitioning/)
-    - > 动态规划 + dfs + 回溯 或者 dfs + 回溯 
-- [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
-- [子集（review）](https://leetcode-cn.com/problems/subsets/)
-- [子集 II（review）](https://leetcode-cn.com/problems/subsets-ii/)
-- [解数独](https://leetcode-cn.com/problems/sudoku-solver/)
-- [单词搜索](https://leetcode-cn.com/problems/word-search/)
-- [二叉树路径](https://leetcode-cn.com/problems/binary-tree-paths/)
-  
-  ```
-   //回溯中常常使用的避免重复解的条件：
-   if (i>start  && nums[i] == nums[i - 1]) {
-      continue;
-   }
-  ```java
 
 ### 动态规划
 - [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
