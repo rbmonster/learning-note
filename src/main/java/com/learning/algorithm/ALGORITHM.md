@@ -649,7 +649,267 @@ public class Soluction {
 }
 ```
 
+## 贪心
+贪⼼的本质是选择每⼀阶段的局部最优，从⽽达到全局最优。
+> 例如，有⼀堆钞票，你可以拿⾛⼗张，如果想达到最⼤的⾦额，你要怎么拿？\
+指定每次拿最⼤的，最终结果就是拿⾛最⼤数额的钱。
 
+如何验证可不可以⽤贪⼼算法呢？
+> 最好⽤的策略就是举反例，如果想不到反例，那么就试⼀试贪⼼吧。
+
+贪⼼算法⼀般分为如下四步：
+- 将问题分解为若⼲个⼦问题
+- 找出适合的贪⼼策略
+- 求解每⼀个⼦问题的最优解
+- 将局部最优解堆叠成全局最优解
+
+### 指针与区间局部最优
+- [跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
+- [跳跃游戏II](https://leetcode-cn.com/problems/jump-game-II/)
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+- [加油站](https://leetcode-cn.com/problems/gas-station/)
+- [划分字⺟区间](https://leetcode-cn.com/problems/partition-labels/)
+- [摆动序列](https://leetcode-cn.com/problems/wiggle-subsequence/)
+
+### 区间问题
+- [⽤最少数量的箭引爆⽓球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+- [合并区间](https://leetcode-cn.com/problems/merge-intervals/)
+- [无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+
+- [根据身⾼重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
+
+### 其他
+- [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
+- [单调递增的数字](https://leetcode-cn.com/problems/monotone-increasing-digits/)
+- [分发糖果](https://leetcode-cn.com/problems/candy/)
+
+
+- [监控⼆叉树](https://leetcode-cn.com/problems/binary-tree-cameras/)
+- [K次取反后最⼤化的数组和](https://leetcode-cn.com/problems/maximize-sum-of-array-after-k-negations/)
+- [修改一个数成为非递减数组](https://leetcode-cn.com/problems/non-decreasing-array/)
+- [柠檬⽔找零](https://leetcode-cn.com/problems/lemonade-change/)
+
+
+- [买卖股票的最佳时机含⼿续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+- [买卖股票的最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+
+## 动态规划
+
+### 基本思想
+动态规划的⼀般流程优化三步：
+1. 暴⼒的递归解法 -> 
+2. 带备忘录的 递归解法 -> 
+3. 迭代的动态规划解法。
+
+动态规划思想流程：
+1. 【状态】和【选择】，明确问题存在哪几种状态；问题场景如何做状态选择，进而转换状态。
+2. 确定dp数组以及下标的含义
+3. 根据【选择】的过程，确定递推公式
+4. dp数组如何初始化
+5. 确定遍历顺序
+6. 举例推导dp数组，进行问题模拟
+7. 出错的情况，将dp数组打印出来，保证程序处理流程如设想运行。
+
+
+
+
+如果能写出暴力的递归方法，就回发现在递归过程中，进行了太多重复计算，此时可以使用备忘录的方法进行优化。
+
+斐波那契数列备忘录优化：
+```java
+class Solution {
+    Map<Integer, Integer> map = new HashMap<>();
+    public int fib(int n) {
+        if(n <2 ) {
+            return n;
+        }
+        if(map.containsKey(n)) {
+            return map.get(n);
+        }
+        int result = fib(n-1) + fib(n-2);
+        map.put(n, result);
+        return result;
+    }
+}
+```
+
+动态规划思想优化：
+```java
+class Solution {
+    public int fib(int n) {
+        if(n <2 ) {
+            return n;
+        }
+        int prv = 1;
+        int pprv = 0;
+        int result = 0;
+        for(int i =2;i<=n;i++) {
+            result = prv+pprv;
+            pprv = prv;
+            prv = result;
+        }
+        return result;
+    }
+}
+```
+
+
+### 算法题目
+
+- [斐波那契数](https://leetcode-cn.com/problems/fibonacci-number/)
+- [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+- [使用最小花费爬楼梯](https://leetcode-cn.com/problems/min-cost-climbing-stairs/)
+- [不同路径](https://leetcode-cn.com/problems/unique-paths/)
+- [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
+- *[整数拆分](https://leetcode-cn.com/problems/integer-break/)
+- [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+
+
+
+- [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+- [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+
+
+
+### 背包问题
+
+01背包问题
+```java
+public class ZeroOnePackage {
+
+  public static void main(String[] args) {
+    ZeroOnePackage zeroOnePackage = new ZeroOnePackage();
+    int[] v = {1, 2, 3, 4};
+    int[] val = {2, 4, 4, 5};
+    System.out.println(zeroOnePackage.getMaxValueOfPackage2(4, 5, v, val));
+  }
+
+  /**
+   * 二维矩阵 01 背包
+   * n个物品  m的体积的背包
+   * 先遍历物品再遍历背包，测试每个物品放进背包与不放进背包的最大价值
+   *
+   * f[n][m] = max( f[n-1][m], f[n-1][m-v[i]] + val[i] )
+   *
+   * @param m
+   * @param n
+   * @param v
+   * @param val
+   * @return
+   */
+  public int getMaxValueOfPackage(int n, int m, int[] v, int[] val) {
+    // 这边定义为n+1 与 m+1 个二维矩阵，表示i个物品的j体积的最大价值。下面注意 数组-1问题
+    int[][] dp = new int[n + 1][m + 1];
+    for (int i = 1; i <= n; i++) {
+      for (int j = 0; j <= m; j++) {
+        // 默认第i个物品不放进背包
+        dp[i][j] = dp[i - 1][j];
+        // 第i个物品放进背包， 前提条件体积j大于物品i的体积，取最大价值
+        if (j >= v[i - 1]) {
+          dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - v[i - 1]] + val[i - 1]);
+        }
+      }
+    }
+    return dp[n][m];
+  }
+
+  /**
+   * 01 背包一维数组的解法
+   * 注意需要逆序处理，因为原先的二维压缩成一维，在开始第i个物品的遍历时，dp存储的为i-1个物品的最大价值。
+   * 若使用顺序遍历，则i-1个物品的最大价值会被覆盖，每次放进物品取 dp[j-v[i-1]] 的数据是往前取，因此需要逆序遍历
+   * f[j] = max(f[j], f[j-v[i]])
+   * @param n
+   * @param m
+   * @param v
+   * @param val
+   * @return
+   */
+  public int getMaxValueOfPackage2(int n, int m, int[] v, int[] val) {
+    int[] dp = new int[m + 1];
+    for (int i = 1; i <= n; i++) {
+      //优化使用j>=v[i-1], 仅需要查看 v[i-1] ~ m 这个体积区间的最大价值是否需要更新
+      for (int j = m; j >=v[i-1]; j--) {
+        dp[j] = Math.max(dp[j], dp[j-v[i-1]] + val[i-1]);
+      }
+    }
+    return dp[m];
+  }
+}
+
+```
+
+完全背包问题
+```java
+public class FullPackage {
+
+    public static void main(String[] args) {
+        FullPackage fullPackage = new FullPackage();
+        int[] v = {1, 2, 3, 4};
+        int[] val = {2, 4, 4, 5};
+        System.out.println(fullPackage.getMaxPackageValue2(4, 5, v, val));
+
+    }
+
+    /**
+     * 二维数组完全背包
+     * 按硬币和体积的顺序二维遍历，每次物品只有放与不放两种情况，第i个物品不放则总价值与i-1个物品一致
+     * 第i个物品放进背包，则价值为 f[i][j-v[i]+ val[i] 注意这边同样为第i行，因为物品可以放多次。
+     * f[i][j] = max( f[i-1][j] + f[i][j-v[i]+ val[i])
+     * @param n
+     * @param m
+     * @param v
+     * @param val
+     * @return
+     */
+    public int getMaxPackageValue(int n,int m ,int[]v, int [] val) {
+        int [][]dp = new int[n+1][m+1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                // 默认第i个物品不放进背包
+                dp[i][j] = dp[i-1][j];
+                // 第i个物品放进背包，前提条件体积j大于物品i的体积，取最大价值
+                if (j>=v[i-1]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i][j-v[i-1]] +val[i-1]);
+                }
+            }
+        }
+        return dp[n][m];
+    }
+
+    /**
+     * 一维压缩 完全背包
+     * 此处不需要从大到小遍历，因为物品可以多次放入背包，因此取得状态为第i个物品遍历体积的前序状态。
+     * @param n
+     * @param m
+     * @param v
+     * @param val
+     * @return
+     */
+    public int getMaxPackageValue2(int n,int m ,int[]v, int [] val) {
+        int[] dp = new int[m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = v[i-1]; j <= m; j++) {
+                dp[j] = Math.max(dp[j], dp[j-v[i-1]] + val [i-1]);
+            }
+        }
+        return dp[m];
+    }
+}
+```
+
+#### 典型背包问题
+- [01背包问题](https://www.acwing.com/problem/content/2/)
+- [完全背包问题](https://www.acwing.com/problem/content/3/)
+- [多重背包问题 I](https://www.acwing.com/problem/content/4/)
+- [多重背包问题 II](https://www.acwing.com/problem/content/5/) :对多重背包的数量进行压缩
+- [混合背包问题](https://www.acwing.com/problem/content/7/)
+- [二维费用的背包问题](https://www.acwing.com/problem/content/8/)
+
+
+#### 背包场景问题
+- [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+- [最后一块石头的重量 II](https://leetcode-cn.com/problems/last-stone-weight-ii/)
 
 ## 算法归类
 
@@ -681,11 +941,6 @@ public class Soluction {
 #### 拓扑排序
 - [课程表](https://leetcode-cn.com/problems/course-schedule/)
 - [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
-
-### 动态规划
-- [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
-
-- [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 
 ### 并查集
@@ -788,16 +1043,6 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
-### 贪心算法
-[CS-Note](http://www.cyc2018.xyz/%E7%AE%97%E6%B3%95/Leetcode%20%E9%A2%98%E8%A7%A3/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E8%B4%AA%E5%BF%83%E6%80%9D%E6%83%B3.html#_1-%E5%88%86%E9%85%8D%E9%A5%BC%E5%B9%B2)
-
-1. [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
-    - 每次分配给满足孩子的最小的饼干
-2. [不重叠的区间个数](https://leetcode-cn.com/problems/non-overlapping-intervals/)
-    - 每次取结尾最小的区间，留给后面选择的区间更大，移除的区间越小。按区间结尾排序。
-3. [投飞镖刺破气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
-    - 与上述类似，每次取结尾最小的区间，
-    
 
 ### TODO List
 计算1的个数
