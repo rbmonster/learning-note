@@ -768,9 +768,94 @@ class Solution {
 
 
 - [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+
+- [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+- [打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
 - [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 
+
+
+- [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+- [最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
+- *[最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
+- [剑指 Offer II 095. 最长公共子序列](https://leetcode-cn.com/problems/qJnOS7/)
+- [不相交的线](https://leetcode-cn.com/problems/uncrossed-lines/)
+
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+- [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
+
+
+
+### 股票问题
+```java
+public class StockTrading {
+
+    public static void main(String[] args) {
+//        int[] prices = new int[]{3,3,5,0,0,3,1,4};
+        int[] prices = new int[]{1,2,3,4,5};
+        StockTrading st = new StockTrading();
+        System.out.println(st.maxProfit(2, prices));
+    }
+
+
+    /**
+     * 1. 定义dp及下标
+     * dp[i][j][k]含义为第i天所能获取的最大利润
+     * 下标i：天数
+     * 下标j：第j次交易
+     * 下标k：0买入、1卖出
+     * 
+     * 2. 初始化，由于dp代表的是第i天所能获取的最大利润，第0天卖出均要初始化成-price[0]
+     * 
+     * 3. 状态转移：
+     *   dp[i][j][0] = Math.max(dp[i-1][j][0], dp[i-1][j][1] + prices[i]);
+     *   dp[i][j][1] = Math.max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i]);
+     * @param prices
+     * @return
+     */
+    public int maxProfit(int k, int[] prices) {
+        int len = prices.length;
+        int[][][] dp = new int[prices.length][k+1][2];
+
+        // 若交易数超过天数一半，转化为不限交易次数问题
+        if(k> len/2)  return maxProfitNoLimit(prices);
+        for(int i =1;i<=k; i++ ){
+            dp[0][i][1] = -prices[0];
+        }
+        for(int i = 1;i<prices.length;i++) {
+            for(int j = 1; j<=k; j++) {
+                dp[i][j][0] = Math.max(dp[i-1][j][0], dp[i-1][j][1] + prices[i]);
+                dp[i][j][1] = Math.max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i]);
+            }
+        }
+
+        return dp[len-1][k][0];
+    }
+
+    public int maxProfitNoLimit(int[] prices) {
+        int n = prices.length;
+        int buy = -prices[0];
+        int empty = 0;
+        for(int i =1;i<n;i++) {
+            int curEmpty = Math.max(empty, buy+prices[i]);
+            int curBuy = Math.max(buy, empty-prices[i]);
+            empty = curEmpty;
+            buy = curBuy;
+        }
+        return empty;
+    }
+}
+
+```
+
+
+- [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+- [买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+- [买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+- [买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/)
+- [最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+- [买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 
 ### 背包问题
 
@@ -908,8 +993,25 @@ public class FullPackage {
 
 
 #### 背包场景问题
+01背包：
 - [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
 - [最后一块石头的重量 II](https://leetcode-cn.com/problems/last-stone-weight-ii/)
+- [目标和](https://leetcode-cn.com/problems/target-sum/)
+- [一和零](https://leetcode-cn.com/problems/ones-and-zeroes/)
+
+完全背包：
+- [零钱兑换 II](https://leetcode-cn.com/problems/coin-change-2/)
+- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
+> 求排列问题，**理解先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**！！！
+- [零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+- [完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+
+
+
+- *[单词拆分](https://leetcode-cn.com/problems/word-break/)
+
+
+
 
 ## 算法归类
 
