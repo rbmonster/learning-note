@@ -784,7 +784,9 @@ class Solution {
 
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 - [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
-
+- *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
+- [两个字符串的删除操作](https://leetcode-cn.com/problems/delete-operation-for-two-strings/)
+- *[回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
 
 
 ### 股票问题
