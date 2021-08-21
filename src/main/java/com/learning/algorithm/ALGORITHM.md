@@ -755,38 +755,94 @@ class Solution {
 ```
 
 
-### 算法题目
+### 相关问题
 
 - [斐波那契数](https://leetcode-cn.com/problems/fibonacci-number/)
 - [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 - [使用最小花费爬楼梯](https://leetcode-cn.com/problems/min-cost-climbing-stairs/)
-- [不同路径](https://leetcode-cn.com/problems/unique-paths/)
-- [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
-- *[整数拆分](https://leetcode-cn.com/problems/integer-break/)
-- [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
-
-
-
-- [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
 
 - [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 - [打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
 - [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
 
 
+- [不同路径](https://leetcode-cn.com/problems/unique-paths/)
+- [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
+- *[整数拆分](https://leetcode-cn.com/problems/integer-break/)
+- [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+- [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+
+
+
+### 字符串问题
+第⼀种思路模板是⼀个⼀维的 dp 数组
+
+第二个思路模版是建立一个二维的dp数组
+1. 定义dp：两字符串的动态规划问题，经常的就是以字符串1与字符串2的长度组成二维数组。
+2. 定义下标及含义：dp的含义经常就是求解的结果，下标为从0～i、j的两字符串的子问题
+3. 状态转移公式：主要考虑以下三个的状态转移
+  - `dp[i-1][j-1]`: 匹配条件的，结果顺推
+  - `dp[i-1][j]`
+  - `dp[i][j-1]`
+4. 初始化
+
+#### 字符操作
+- [两个字符串的删除操作](https://leetcode-cn.com/problems/delete-operation-for-two-strings/)
+- [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
+
+#### 子序列问题
 
 
 - [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 - [最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
-- *[最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
 - [剑指 Offer II 095. 最长公共子序列](https://leetcode-cn.com/problems/qJnOS7/)
 - [不相交的线](https://leetcode-cn.com/problems/uncrossed-lines/)
-
-- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 - [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
+
 - *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
-- [两个字符串的删除操作](https://leetcode-cn.com/problems/delete-operation-for-two-strings/)
+
+#### 子数组问题
+
+- *[最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+#### 回文问题
+回文问题demo：
+```java
+class Solution {
+    public int countSubstrings(String s) {
+        int len = s.length();
+        boolean[][]dp = new boolean[len][len];
+        int result = 0;
+        // 初始化0值
+        for(int i =0;i<len;i++) {
+            dp[i][i] = true;
+            result++;
+        }
+        // 自底而上，自左而右，遍历右上部分三角区域
+        for(int i = len-2;i>=0;i--) {
+            for(int j = i+1;j<len;j++) {
+                // 状态转移
+                if(s.charAt(i) == s.charAt(j)) {
+                    // i与j相邻情形
+                    if(j-i ==1) {
+                        dp[i][j] = true;
+                        result++;
+                        // 判断子内容是否为回文
+                    } else if(dp[i+1][j-1]) {
+                        dp[i][j] = true;
+                        result++;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+}
+```
+
 - *[回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+- [最长回文子序列](https://leetcode-cn.com/problems/longest-palindromic-subsequence/)
 
 
 ### 股票问题
@@ -851,6 +907,12 @@ public class StockTrading {
 
 ```
 
+股票问题中，需要区分的一个点是，代表卖出买入的 `dp[i][0]` 与 `dp[i][1]`的状态转移问题
+1. 若买入`dp[i][1]`从 卖出`dp[i-1][0]` 转移而来说明，可以多次交易
+2. 若买入`dp[i][1]`仅从 `dp[i-1][1]` 转移而来，说明仅能进行一次交易
+
+> 对于含冷冻期的股票，也可以表示为一个状态\
+> 对于限制次数的股票交易，在k数值较小的情况，可以将交易次数k打平，如用数字4表示第二次的卖出
 
 - [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 - [买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
@@ -860,6 +922,7 @@ public class StockTrading {
 - [买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 
 ### 背包问题
+#### 常见求解方式及疑难点
 
 01背包问题
 ```java
@@ -985,6 +1048,33 @@ public class FullPackage {
 }
 ```
 
+
+除了上述背包问题的常见解法，还需**区分先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**。
+- 如果求组合数就是外层for循环遍历物品，内层for遍历背包。组合不强调顺序，如(1,5)和(5,1)是同⼀个组合。
+- 如果求排列数就是外层for遍历背包，内层for循环遍历物品。排列强调顺序，如(1,5)和(5,1)是两个不同的排列。
+
+> 如果把遍历nums（物品）放在外循环，遍历target的作为内循环的话，举⼀个例⼦：计算`dp[4]`的时
+候，结果集只有 {1,3} 这样的集合，不会有{3,1}这样的集合，因为nums遍历放在外层，3只能出现在1后⾯！
+```
+
+for(int i =1; i< 物品.length;i++) {
+  for(int j = 1;j< 背包.length;j++) {
+  
+  
+  }
+}
+
+
+for(int i =1; i< 背包.length;i++) {
+  for(int j = 1;j< 物品.length;j++) {
+  
+  
+  }
+}
+
+```
+
+
 #### 典型背包问题
 - [01背包问题](https://www.acwing.com/problem/content/2/)
 - [完全背包问题](https://www.acwing.com/problem/content/3/)
@@ -1009,12 +1099,58 @@ public class FullPackage {
 - [完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
 
-
 - *[单词拆分](https://leetcode-cn.com/problems/word-break/)
 
 
+### 扔鸡蛋问题
+[鸡蛋掉落](https://leetcode-cn.com/problems/super-egg-drop/)
 
+该问题理解的关键为：因为我们要求的是**最坏情况下扔鸡蛋的次数**，所以鸡蛋在第 i 层楼碎没碎，最后搜索的取决于那种情况的结果更⼤。
+```java
+class Solution {
+    Map<Integer, Integer> memo = new HashMap<Integer, Integer>();
 
+    public int superEggDrop(int k, int n) {
+        return dp(k, n);
+    }
+
+    public int dp(int k, int n) {
+        if (!memo.containsKey(n * 100 + k)) {
+            int ans = Integer.MAX_VALUE;
+            // 层数为0，不需要尝试
+            if (n == 0) {
+                ans = 0;
+            // 只剩一个鸡蛋，最坏得试n次
+            } else if (k == 1) {
+                ans = n;
+            } else {
+                int lo = 1, hi = n;
+                while (lo  <=  hi) {
+                    int x = (hi -lo) / 2 + lo;
+                    // 鸡蛋丢坏的区域搜索
+                    int t1 = dp(k - 1, x - 1);
+                    // 鸡蛋未对坏的区域搜索
+                    int t2 = dp(k, n - x);
+                    
+                    // 鸡蛋丢坏的次数与鸡蛋未丢坏的次数对比，搜索次数多的区域，表示搜索最坏情况要丢多少次
+                    if (t1 <=  t2) {
+                        lo = x+1;
+                        ans = Math.min(ans, t2+1);
+                    } else {
+                        hi = x-1;
+                        ans = Math.min(ans, t1+1);
+                    }
+                }
+            }
+            // 备忘录
+            memo.put(n * 100 + k, ans);
+        }
+
+        return memo.get(n * 100 + k);
+    }
+}
+
+```
 ## 算法归类
 
 ### 二分法
