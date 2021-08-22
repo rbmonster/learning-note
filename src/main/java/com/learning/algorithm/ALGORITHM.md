@@ -52,7 +52,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 
 另一个常见的场景是按键聚合所有信息，我们也可以使用哈希映射来实现这一目标。
 - [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
-- [字符串中的第一个唯一字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+- [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 - [寻找重复的子树（hash表与树的结合）](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
     
 ## 数组与字符串
@@ -109,20 +109,56 @@ public ListNode reverseList(ListNode head) {
 }
 ```
 
-## 队列与栈
-### 广度优先搜索
-注意点： 
-1. 初始入队列。 
+
+
+- [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+
+
+
+## 队列
+
+队列是典型的 FIFO 数据结构。
+- 插入（insert）操作也称作入队（enqueue），新元素始终被添加在队列的末尾。 
+- 删除（delete）操作也被称为出队（dequeue)。 你只能移除第一个元素。
+
+- [用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/)
+- [剑指 Offer 09. 用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
+
+
+### 广度优先搜索(BFS)
+广度优先搜索（BFS）的一个常见应用是找出从根结点到目标结点的最短路径。
+注意点：
+1. 初始入队列。
 2. 是否需要层级访问。
 3. 记录已访问节点的信息防止重复访问。
 
-相关例题：
-- [打开转盘锁](https://leetcode-cn.com/problems/open-the-lock/)
-- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 
-代码模板：
+树的遍历代码模版：
 ```java
-int BFS2(Node root, Node target) {
+
+class Solution {
+  public List<List<Integer>> levelOrder(TreeNode root) {
+    Queue<TreeNode> queue =new LinkedList<>();
+    queue.add(root);
+    while(!queue.isEmpty()) {
+      int size = queue.size();
+      for(int i = 0;i<size;i++) {
+        TreeNode node = queue.poll();
+        if(node.left!= null) {
+          queue.add(node.left);
+        }
+      }
+    }
+  }
+}
+```
+
+
+图遍历代码模板：
+```java
+public class Solution {
+  int BFS2(Node root, Node target) {
     Queue<Node> queue = new LinkedList<>();  // store all nodes which are waiting to be processed
     Set<Node> used = new HashSet<>();     // store all the used nodes
     int step = 0;       // number of steps neeeded from root to current node
@@ -131,33 +167,247 @@ int BFS2(Node root, Node target) {
     used.add(root);
     // BFS
     while (!queue.isEmpty()) {
-        step = step + 1;
-        // iterate the nodes which are already in the queue
-        int size = queue.size();
-        for (int i = 0; i < size; ++i) {
-            Node cur = queue.poll();
-            if(cur == target) {
-                return step;
-            }
-            for (Node next : cur.neighbors) {
-                if (!used.contains(next)) {
-                    queue.add(root);
-                    used.add(root);
-                }
-            }
+      step = step + 1;
+      // iterate the nodes which are already in the queue
+      int size = queue.size();
+      for (int i = 0; i < size; ++i) {
+        Node cur = queue.poll();
+        if (cur == target) {
+          return step;
         }
+        for (Node next : cur.neighbors) {
+          if (!used.contains(next)) {
+            queue.add(root);
+            used.add(root);
+          }
+        }
+      }
     }
     return -1;          // there is no path from root to target
+  }
 }
 ```
 
-### 栈
-TODO 待补充代码模板
 
+### 单调队列
+
+单调队列，即单调递减或单调递增的队列。
+需要使用 双向队列 ，假设队列已经有若干元素：
+- 当执行入队 push_back() 时： 若入队一个比队列某些元素更大的数字 xx ，则为了保持此列表递减，需要将双向队列 尾部所有小于 xx 的元素 弹出。
+- 当执行出队 pop_front() 时： 若出队的元素是最大元素，则 双向队列 需要同时 将首元素出队 ，以保持队列和双向队列的元素一致性。
+
+
+```java
+class MaxQueue {
+    Queue<Integer> queue;
+    Deque<Integer> deque;
+    public MaxQueue() {
+        queue = new LinkedList<>();
+        deque = new LinkedList<>();
+    }
+    public int max_value() {
+        return deque.isEmpty() ? -1 : deque.peekFirst();
+    }
+    public void push_back(int value) {
+        queue.offer(value);
+        // 元素入队逻辑，队尾小元素处队。新的大元素入队尾
+        while(!deque.isEmpty() && deque.peekLast() < value) {
+            deque.pollLast();
+        }
+        deque.offerLast(value);
+    }
+    public int pop_front() {
+        if(queue.isEmpty()) return -1;
+        // 元素出队逻辑，出队元素为队头则需要出队。
+        if(queue.peek().equals(deque.peekFirst())){
+            deque.pollFirst();
+        }
+        return queue.poll();
+    }
+}
+
+```
+- [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
+- **[剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+
+## 栈
 - 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
 
+- [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 - [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/ )
-- [每日温度（单调栈）](https://leetcode-cn.com/problems/daily-temperatures/)
+- *[最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
+- *[字符串解码](https://leetcode-cn.com/problems/decode-string/)
+- [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+- [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+
+
+### 深度优先搜索(DFS)
+深度优先搜索（DFS）是用于 在树/图中遍历/搜索 的另一种重要算法。也可以在更抽象的场景中使用。\
+正如树的遍历中所提到的，我们可以用 DFS 进行 前序遍历，中序遍历 和 后序遍历。在这三个遍历顺序中有一个共同的特性：除非我们到达最深的结点，否则我们永远不会回溯 。\
+这也是 DFS 和 BFS 之间最大的区别，BFS永远不会深入探索，除非它已经在当前层级访问了所有结点。\
+通常，我们使用递归实现 DFS。栈在递归中起着重要的作用。
+
+
+递归遍历：
+当我们递归地实现 DFS 时，似乎不需要使用任何栈。但实际上，我们使用的是由系统提供的**隐式栈**，也称为调用栈（Call Stack）。
+```java
+
+public class Solution {
+  /*
+   * Return true if there is a path from cur to target.
+   */
+  boolean DFS(Node cur, Node target, Set<Node> visited) {
+    if(cur == target) {
+      return true;
+    }
+    for (Node each : cur.neighbor){
+      if (!visited.contains(each)){
+        visted.add(each);
+        boolean result = DFS(next, target, visited);
+        if(result) {
+            return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+```
+
+
+
+对于图论，若使用DFS递归搜索时，在遇到数据量过大的情况。则要注意堆栈溢出的情况。因为递归使用的是系统的**隐式栈**.\
+此时就可以使用栈来模拟系统**隐式栈**的调用过程，避免出现堆栈溢出。
+```java
+
+public class Solution {
+
+
+  /*
+   * Return true if there is a path from cur to target.
+   */
+  boolean DFS(Node root, int target) {
+    Set<Node> visited;
+    Stack<Node> s;
+    s.push(root);
+    while (!s.isEmpty()) {
+      Node cur = s.pop();
+      if(cur == target) {  
+          return true;
+      }
+      for (Node next : cur.neighbors) {
+        if (!visited.contains(next)) {
+            s.add(next);
+            visited.add(next);
+        }
+      }
+    }
+    return false;
+  }
+    
+}
+```
+
+
+### 单调栈
+单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
+```java
+class Solution {
+  public int[] dailyTemperatures(int[] T) {
+    Deque<Integer> stack = new LinkedList<>();
+    int len = T.length;
+    int[] res = new int[len];
+    // 从尾到头遍历
+    for (int i = len - 1; i >= 0; i--) {
+      while (!stack.isEmpty() && T[stack.peek()] <= T[i]) {
+        stack.pop();
+      }
+      // 判断位置差值
+      res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
+      stack.push(i);
+    }
+    return res;
+  }
+}
+```
+
+- [最小栈](https://leetcode-cn.com/problems/min-stack/)
+- [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
+- [最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+> 单调栈类似思想
+
+
+- *[接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+> 单调栈解法，递减栈，每次计算增量
+
+- *[柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+- [最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)
+> 最大矩形计算，获取索引i的左右小于`height[i]`的最高点索引
+
+
+
+## BFS 与 DFS
+BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
+
+- [岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/)
+- [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
+- [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
+- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+- [省份数量](https://leetcode-cn.com/problems/number-of-provinces/)
+- [岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
+- [打开转盘锁（经典问题）](https://leetcode-cn.com/problems/open-the-lock/)
+- [太平洋大西洋水流问题](https://leetcode-cn.com/problems/pacific-atlantic-water-flow/)
+- [二进制矩阵中的最短路径](https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/)
+- [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+- [钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
+
+- *[判断二分图](https://leetcode-cn.com/problems/is-graph-bipartite/)
+> 判断方法很特别，通过节点染色
+
+
+### 拓扑排序
+- [课程表](https://leetcode-cn.com/problems/course-schedule/)
+- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
+
+
+### 并查集
+```java
+class UnionFindSet {
+        int[] rank;
+        int[] parent;
+
+        public UnionFindSet(int n) {
+            rank = new int[n];
+            parent = new int[n];
+        }
+
+       public int find(int x) {
+           if (parent[x] == 0) return x;
+           return parent[x] = find(parent[x]); // Path compression by halving.
+       }
+
+        public boolean union(int x, int y) {
+           int rootX = find(x);
+           int rootY = find(y);
+           if(rootX == rootY) return true;
+           if(rank[rootX]>rank[rootY]) {
+               parent[rootY] = rootX;
+           } else if(rank[rootX]<rank[rootY]) {
+               parent[rootX] = rootY;
+           } else {
+               parent[rootX] = rootY;
+               rank[rootY]++;
+           }
+           return false;
+       }
+    }
+```
+
+[冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
+
+
+
 
 ## 递归
 ### 递归三要素
@@ -1151,9 +1401,10 @@ class Solution {
 }
 
 ```
-## 算法归类
 
-### 二分法
+
+
+## 二分法
 - [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
@@ -1164,119 +1415,10 @@ class Solution {
 - [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
 
-### DFS & BFS
-
-#### BFS & DFS：
-- [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
-- [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
-- [判断二分图（review）](https://leetcode-cn.com/problems/is-graph-bipartite/)
-    - > 判断方法很特别，通过节点染色
-- [岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
-- [打开转盘锁（经典问题）](https://leetcode-cn.com/problems/open-the-lock/)
-- [太平洋大西洋水流问题](https://leetcode-cn.com/problems/pacific-atlantic-water-flow/)
-- [二进制矩阵中的最短路径](https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/)
-- [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
-  
-  
-#### 拓扑排序
-- [课程表](https://leetcode-cn.com/problems/course-schedule/)
-- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
-
-
-### 并查集
-```java
-class UnionFindSet {
-        int[] rank;
-        int[] parent;
-
-        public UnionFindSet(int n) {
-            rank = new int[n];
-            parent = new int[n];
-        }
-
-       public int find(int x) {
-           if (parent[x] == 0) return x;
-           return parent[x] = find(parent[x]); // Path compression by halving.
-       }
-
-        public boolean union(int x, int y) {
-           int rootX = find(x);
-           int rootY = find(y);
-           if(rootX == rootY) return true;
-           if(rank[rootX]>rank[rootY]) {
-               parent[rootY] = rootX;
-           } else if(rank[rootX]<rank[rootY]) {
-               parent[rootX] = rootY;
-           } else {
-               parent[rootX] = rootY;
-               rank[rootY]++;
-           }
-           return false;
-       }
-    }
-```
-
-[冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
 
 
 
-### 单调栈
-单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
-
-     
-- [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
-- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
-```java
-public int[] dailyTemperatures(int[] T) {
-    Deque<Integer> stack = new LinkedList<>();
-    int len = T.length;
-    int[] res = new int[len];
-    // 从尾到头遍历
-    for(int i = len-1; i>=0 ;i--) {
-        while(!stack.isEmpty() && T[stack.peek()] <= T[i]) {
-            stack.pop();
-        }
-        // 判断位置差值
-        res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
-        stack.push(i);
-    }
-    return res;
-}
-```
-
-### 单调队列
-
-- [剑指 Offer 59 - I. 滑动窗口的最大值]( https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
-```java
-public int[] maxSlidingWindow(int[] nums, int k) {
-     if(nums.length == 0 || k == 0) return new int[0];
-    Deque<Integer> deque = new LinkedList<>();
-    int len = nums.length;
-    int[] res=  new int[len -k +1];
-    for(int i =0;i<k ;i++) {
-        // 新元素入队，比较队尾元素，小的元素全部移除，保证队列的单调性
-        while(!deque.isEmpty()&& deque.peekLast() <nums[i]) {
-            deque.removeLast();
-        }
-        deque.addLast(nums[i]);
-    }
-    res[0] = deque.peekFirst();
-    for(int i =k;i<len;i++) {
-        // 滑动窗口的比较
-        if(nums[i-k] == deque.peekFirst()) {
-            deque.removeFirst();
-        }
-        while(!deque.isEmpty()&& deque.peekLast() <nums[i]) {
-            deque.removeLast();
-        }
-        deque.addLast(nums[i]);
-        res[i-k+1] = deque.peekFirst();
-    }
-    return res;
-}
-```
-
-### 前缀树
+## 前缀树
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
 
 典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计
@@ -1284,5 +1426,5 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 
 
 
-### TODO List
+## TODO 二进制应用
 计算1的个数
