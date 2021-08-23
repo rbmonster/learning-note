@@ -6,49 +6,64 @@
 &emsp;&emsp;<a href="#3">2.1. 数组</a>  
 &emsp;&emsp;<a href="#4">2.2. 字符串</a>  
 &emsp;<a href="#5">3. 链表</a>  
-&emsp;<a href="#6">4. 队列与栈</a>  
-&emsp;&emsp;<a href="#7">4.1. 广度优先搜索</a>  
-&emsp;&emsp;<a href="#8">4.2. 栈</a>  
-&emsp;<a href="#9">5. 递归</a>  
-&emsp;&emsp;<a href="#10">5.1. 递归三要素</a>  
-&emsp;&emsp;<a href="#11">5.2. 递归的思想</a>  
-&emsp;<a href="#12">6. 树</a>  
-&emsp;&emsp;<a href="#13">6.1. 二叉树</a>  
-&emsp;&emsp;&emsp;<a href="#14">6.1.1. 树的遍历</a>  
-&emsp;&emsp;&emsp;<a href="#15">6.1.2. 递归思想</a>  
-&emsp;&emsp;&emsp;<a href="#16">6.1.3. 构造及修改二叉树问题</a>  
-&emsp;&emsp;&emsp;<a href="#17">6.1.4. 公共祖先问题</a>  
-&emsp;&emsp;<a href="#18">6.2. 二叉搜索树</a>  
-&emsp;&emsp;<a href="#19">6.3. 算法</a>  
-&emsp;&emsp;&emsp;<a href="#20">6.3.1. 树的遍历</a>  
-&emsp;&emsp;&emsp;<a href="#21">6.3.2. 树的属性</a>  
-&emsp;&emsp;&emsp;<a href="#22">6.3.3. 子树问题</a>  
-&emsp;&emsp;&emsp;<a href="#23">6.3.4. 树的高度</a>  
-&emsp;&emsp;&emsp;<a href="#24">6.3.5. 树的构建与修改</a>  
-&emsp;&emsp;&emsp;<a href="#25">6.3.6. 树的基本操作</a>  
-&emsp;&emsp;&emsp;<a href="#26">6.3.7. 公共祖先问题</a>  
-&emsp;<a href="#27">7. 回溯</a>  
-&emsp;&emsp;<a href="#28">7.1. 伪代码模版</a>  
-&emsp;&emsp;&emsp;<a href="#29">7.1.1. 回溯三部曲</a>  
-&emsp;&emsp;&emsp;<a href="#30">7.1.2. startIndex使用</a>  
-&emsp;&emsp;<a href="#31">7.2. 问题场景</a>  
-&emsp;&emsp;<a href="#32">7.3. 重复问题</a>  
-&emsp;&emsp;<a href="#33">7.4. 组合问题</a>  
-&emsp;&emsp;<a href="#34">7.5. 切割问题</a>  
-&emsp;&emsp;<a href="#35">7.6. 排列问题</a>  
-&emsp;&emsp;<a href="#36">7.7. 子集问题</a>  
-&emsp;<a href="#37">8. 算法归类</a>  
-&emsp;&emsp;<a href="#38">8.1. 二分法</a>  
-&emsp;&emsp;<a href="#39">8.2. DFS & BFS</a>  
-&emsp;&emsp;&emsp;<a href="#40">8.2.1. BFS & DFS：</a>  
-&emsp;&emsp;&emsp;<a href="#41">8.2.2. 拓扑排序</a>  
-&emsp;&emsp;<a href="#42">8.3. 动态规划</a>  
-&emsp;&emsp;<a href="#43">8.4. 并查集</a>  
-&emsp;&emsp;<a href="#44">8.5. 单调栈</a>  
-&emsp;&emsp;<a href="#45">8.6. 单调队列</a>  
-&emsp;&emsp;<a href="#46">8.7. 前缀树</a>  
-&emsp;&emsp;<a href="#47">8.8. 贪心算法</a>  
-&emsp;&emsp;<a href="#48">8.9. TODO List</a>  
+&emsp;<a href="#6">4. 队列</a>  
+&emsp;&emsp;<a href="#7">4.1. 广度优先搜索(BFS)</a>  
+&emsp;&emsp;<a href="#8">4.2. 单调队列</a>  
+&emsp;<a href="#9">5. 栈</a>  
+&emsp;&emsp;<a href="#10">5.1. 深度优先搜索(DFS)</a>  
+&emsp;&emsp;<a href="#11">5.2. 单调栈</a>  
+&emsp;<a href="#12">6. BFS 与 DFS</a>  
+&emsp;&emsp;<a href="#13">6.1. 拓扑排序</a>  
+&emsp;&emsp;<a href="#14">6.2. 并查集</a>  
+&emsp;<a href="#15">7. 递归</a>  
+&emsp;&emsp;<a href="#16">7.1. 递归三要素</a>  
+&emsp;&emsp;<a href="#17">7.2. 递归的思想</a>  
+&emsp;<a href="#18">8. 树</a>  
+&emsp;&emsp;<a href="#19">8.1. 二叉树</a>  
+&emsp;&emsp;&emsp;<a href="#20">8.1.1. 树的遍历</a>  
+&emsp;&emsp;&emsp;<a href="#21">8.1.2. 递归思想</a>  
+&emsp;&emsp;&emsp;<a href="#22">8.1.3. 构造及修改二叉树问题</a>  
+&emsp;&emsp;&emsp;<a href="#23">8.1.4. 公共祖先问题</a>  
+&emsp;&emsp;<a href="#24">8.2. 二叉搜索树</a>  
+&emsp;&emsp;<a href="#25">8.3. 算法</a>  
+&emsp;&emsp;&emsp;<a href="#26">8.3.1. 树的遍历</a>  
+&emsp;&emsp;&emsp;<a href="#27">8.3.2. 树的属性</a>  
+&emsp;&emsp;&emsp;<a href="#28">8.3.3. 子树问题</a>  
+&emsp;&emsp;&emsp;<a href="#29">8.3.4. 树的高度</a>  
+&emsp;&emsp;&emsp;<a href="#30">8.3.5. 树的构建与修改</a>  
+&emsp;&emsp;&emsp;<a href="#31">8.3.6. 树的基本操作</a>  
+&emsp;&emsp;&emsp;<a href="#32">8.3.7. 公共祖先问题</a>  
+&emsp;<a href="#33">9. 回溯</a>  
+&emsp;&emsp;<a href="#34">9.1. 伪代码模版</a>  
+&emsp;&emsp;&emsp;<a href="#35">9.1.1. 回溯三部曲</a>  
+&emsp;&emsp;&emsp;<a href="#36">9.1.2. startIndex使用</a>  
+&emsp;&emsp;<a href="#37">9.2. 问题场景</a>  
+&emsp;&emsp;<a href="#38">9.3. 重复问题</a>  
+&emsp;&emsp;<a href="#39">9.4. 组合问题</a>  
+&emsp;&emsp;<a href="#40">9.5. 切割问题</a>  
+&emsp;&emsp;<a href="#41">9.6. 排列问题</a>  
+&emsp;&emsp;<a href="#42">9.7. 子集问题</a>  
+&emsp;<a href="#43">10. 贪心</a>  
+&emsp;&emsp;<a href="#44">10.1. 指针与区间局部最优</a>  
+&emsp;&emsp;<a href="#45">10.2. 区间问题</a>  
+&emsp;&emsp;<a href="#46">10.3. 其他</a>  
+&emsp;<a href="#47">11. 动态规划</a>  
+&emsp;&emsp;<a href="#48">11.1. 基本思想</a>  
+&emsp;&emsp;<a href="#49">11.2. 相关问题</a>  
+&emsp;&emsp;<a href="#50">11.3. 字符串问题</a>  
+&emsp;&emsp;&emsp;<a href="#51">11.3.1. 字符操作</a>  
+&emsp;&emsp;&emsp;<a href="#52">11.3.2. 子序列问题</a>  
+&emsp;&emsp;&emsp;<a href="#53">11.3.3. 子数组问题</a>  
+&emsp;&emsp;&emsp;<a href="#54">11.3.4. 回文问题</a>  
+&emsp;&emsp;<a href="#55">11.4. 股票问题</a>  
+&emsp;&emsp;<a href="#56">11.5. 背包问题</a>  
+&emsp;&emsp;&emsp;<a href="#57">11.5.1. 常见求解方式及疑难点</a>  
+&emsp;&emsp;&emsp;<a href="#58">11.5.2. 典型背包问题</a>  
+&emsp;&emsp;&emsp;<a href="#59">11.5.3. 背包场景问题</a>  
+&emsp;&emsp;<a href="#60">11.6. 扔鸡蛋问题</a>  
+&emsp;<a href="#61">12. 二分法</a>  
+&emsp;<a href="#62">13. 前缀树</a>  
+&emsp;<a href="#63">14. TODO 二进制应用</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -103,7 +118,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 
 另一个常见的场景是按键聚合所有信息，我们也可以使用哈希映射来实现这一目标。
 - [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
-- [字符串中的第一个唯一字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+- [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 - [寻找重复的子树（hash表与树的结合）](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
     
 ## <a name="2">数组与字符串</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -160,20 +175,56 @@ public ListNode reverseList(ListNode head) {
 }
 ```
 
-## <a name="6">队列与栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="7">广度优先搜索</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-注意点： 
-1. 初始入队列。 
+
+
+- [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+
+
+
+## <a name="6">队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+队列是典型的 FIFO 数据结构。
+- 插入（insert）操作也称作入队（enqueue），新元素始终被添加在队列的末尾。 
+- 删除（delete）操作也被称为出队（dequeue)。 你只能移除第一个元素。
+
+- [用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/)
+- [剑指 Offer 09. 用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
+
+
+### <a name="7">广度优先搜索(BFS)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+广度优先搜索（BFS）的一个常见应用是找出从根结点到目标结点的最短路径。
+注意点：
+1. 初始入队列。
 2. 是否需要层级访问。
 3. 记录已访问节点的信息防止重复访问。
 
-相关例题：
-- [打开转盘锁](https://leetcode-cn.com/problems/open-the-lock/)
-- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 
-代码模板：
+树的遍历代码模版：
 ```java
-int BFS2(Node root, Node target) {
+
+class Solution {
+  public List<List<Integer>> levelOrder(TreeNode root) {
+    Queue<TreeNode> queue =new LinkedList<>();
+    queue.add(root);
+    while(!queue.isEmpty()) {
+      int size = queue.size();
+      for(int i = 0;i<size;i++) {
+        TreeNode node = queue.poll();
+        if(node.left!= null) {
+          queue.add(node.left);
+        }
+      }
+    }
+  }
+}
+```
+
+
+图遍历代码模板：
+```java
+public class Solution {
+  int BFS2(Node root, Node target) {
     Queue<Node> queue = new LinkedList<>();  // store all nodes which are waiting to be processed
     Set<Node> used = new HashSet<>();     // store all the used nodes
     int step = 0;       // number of steps neeeded from root to current node
@@ -182,36 +233,250 @@ int BFS2(Node root, Node target) {
     used.add(root);
     // BFS
     while (!queue.isEmpty()) {
-        step = step + 1;
-        // iterate the nodes which are already in the queue
-        int size = queue.size();
-        for (int i = 0; i < size; ++i) {
-            Node cur = queue.poll();
-            if(cur == target) {
-                return step;
-            }
-            for (Node next : cur.neighbors) {
-                if (!used.contains(next)) {
-                    queue.add(root);
-                    used.add(root);
-                }
-            }
+      step = step + 1;
+      // iterate the nodes which are already in the queue
+      int size = queue.size();
+      for (int i = 0; i < size; ++i) {
+        Node cur = queue.poll();
+        if (cur == target) {
+          return step;
         }
+        for (Node next : cur.neighbors) {
+          if (!used.contains(next)) {
+            queue.add(root);
+            used.add(root);
+          }
+        }
+      }
     }
     return -1;          // there is no path from root to target
+  }
 }
 ```
 
-### <a name="8">栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-TODO 待补充代码模板
 
+### <a name="8">单调队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+单调队列，即单调递减或单调递增的队列。
+需要使用 双向队列 ，假设队列已经有若干元素：
+- 当执行入队 push_back() 时： 若入队一个比队列某些元素更大的数字 xx ，则为了保持此列表递减，需要将双向队列 尾部所有小于 xx 的元素 弹出。
+- 当执行出队 pop_front() 时： 若出队的元素是最大元素，则 双向队列 需要同时 将首元素出队 ，以保持队列和双向队列的元素一致性。
+
+
+```java
+class MaxQueue {
+    Queue<Integer> queue;
+    Deque<Integer> deque;
+    public MaxQueue() {
+        queue = new LinkedList<>();
+        deque = new LinkedList<>();
+    }
+    public int max_value() {
+        return deque.isEmpty() ? -1 : deque.peekFirst();
+    }
+    public void push_back(int value) {
+        queue.offer(value);
+        // 元素入队逻辑，队尾小元素处队。新的大元素入队尾
+        while(!deque.isEmpty() && deque.peekLast() < value) {
+            deque.pollLast();
+        }
+        deque.offerLast(value);
+    }
+    public int pop_front() {
+        if(queue.isEmpty()) return -1;
+        // 元素出队逻辑，出队元素为队头则需要出队。
+        if(queue.peek().equals(deque.peekFirst())){
+            deque.pollFirst();
+        }
+        return queue.poll();
+    }
+}
+
+```
+- [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
+- **[剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+
+## <a name="9">栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
 
+- [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 - [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/ )
-- [每日温度（单调栈）](https://leetcode-cn.com/problems/daily-temperatures/)
+- *[最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
+- *[字符串解码](https://leetcode-cn.com/problems/decode-string/)
+- [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+- [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 
-## <a name="9">递归</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="10">递归三要素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="10">深度优先搜索(DFS)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+深度优先搜索（DFS）是用于 在树/图中遍历/搜索 的另一种重要算法。也可以在更抽象的场景中使用。\
+正如树的遍历中所提到的，我们可以用 DFS 进行 前序遍历，中序遍历 和 后序遍历。在这三个遍历顺序中有一个共同的特性：除非我们到达最深的结点，否则我们永远不会回溯 。\
+这也是 DFS 和 BFS 之间最大的区别，BFS永远不会深入探索，除非它已经在当前层级访问了所有结点。\
+通常，我们使用递归实现 DFS。栈在递归中起着重要的作用。
+
+
+递归遍历：
+当我们递归地实现 DFS 时，似乎不需要使用任何栈。但实际上，我们使用的是由系统提供的**隐式栈**，也称为调用栈（Call Stack）。
+```java
+
+public class Solution {
+  /*
+   * Return true if there is a path from cur to target.
+   */
+  boolean DFS(Node cur, Node target, Set<Node> visited) {
+    if(cur == target) {
+      return true;
+    }
+    for (Node each : cur.neighbor){
+      if (!visited.contains(each)){
+        visted.add(each);
+        boolean result = DFS(next, target, visited);
+        if(result) {
+            return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+```
+
+
+
+对于图论，若使用DFS递归搜索时，在遇到数据量过大的情况。则要注意堆栈溢出的情况。因为递归使用的是系统的**隐式栈**.\
+此时就可以使用栈来模拟系统**隐式栈**的调用过程，避免出现堆栈溢出。
+```java
+
+public class Solution {
+
+
+  /*
+   * Return true if there is a path from cur to target.
+   */
+  boolean DFS(Node root, int target) {
+    Set<Node> visited;
+    Stack<Node> s;
+    s.push(root);
+    while (!s.isEmpty()) {
+      Node cur = s.pop();
+      if(cur == target) {  
+          return true;
+      }
+      for (Node next : cur.neighbors) {
+        if (!visited.contains(next)) {
+            s.add(next);
+            visited.add(next);
+        }
+      }
+    }
+    return false;
+  }
+    
+}
+```
+
+
+### <a name="11">单调栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
+```java
+class Solution {
+  public int[] dailyTemperatures(int[] T) {
+    Deque<Integer> stack = new LinkedList<>();
+    int len = T.length;
+    int[] res = new int[len];
+    // 从尾到头遍历
+    for (int i = len - 1; i >= 0; i--) {
+      while (!stack.isEmpty() && T[stack.peek()] <= T[i]) {
+        stack.pop();
+      }
+      // 判断位置差值
+      res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
+      stack.push(i);
+    }
+    return res;
+  }
+}
+```
+
+- [最小栈](https://leetcode-cn.com/problems/min-stack/)
+- [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
+- [最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+> 单调栈类似思想
+
+
+- *[接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+> 单调栈解法，递减栈，每次计算增量
+
+- *[柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+- [最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)
+> 最大矩形计算，获取索引i的左右小于`height[i]`的最高点索引
+
+
+
+## <a name="12">BFS 与 DFS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
+
+- [岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/)
+- [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
+- [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
+- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+- [省份数量](https://leetcode-cn.com/problems/number-of-provinces/)
+- [岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
+- [打开转盘锁（经典问题）](https://leetcode-cn.com/problems/open-the-lock/)
+- [太平洋大西洋水流问题](https://leetcode-cn.com/problems/pacific-atlantic-water-flow/)
+- [二进制矩阵中的最短路径](https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/)
+- [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+- [钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
+
+- *[判断二分图](https://leetcode-cn.com/problems/is-graph-bipartite/)
+> 判断方法很特别，通过节点染色
+
+
+### <a name="13">拓扑排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [课程表](https://leetcode-cn.com/problems/course-schedule/)
+- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
+
+
+### <a name="14">并查集</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```java
+class UnionFindSet {
+        int[] rank;
+        int[] parent;
+
+        public UnionFindSet(int n) {
+            rank = new int[n];
+            parent = new int[n];
+        }
+
+       public int find(int x) {
+           if (parent[x] == 0) return x;
+           return parent[x] = find(parent[x]); // Path compression by halving.
+       }
+
+        public boolean union(int x, int y) {
+           int rootX = find(x);
+           int rootY = find(y);
+           if(rootX == rootY) return true;
+           if(rank[rootX]>rank[rootY]) {
+               parent[rootY] = rootX;
+           } else if(rank[rootX]<rank[rootY]) {
+               parent[rootX] = rootY;
+           } else {
+               parent[rootX] = rootY;
+               rank[rootY]++;
+           }
+           return false;
+       }
+    }
+```
+
+[冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
+
+
+
+
+## <a name="15">递归</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">递归三要素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 每次写递归，都按照这三要素思考：
 1. 确定递归函数的参数和返回值\
 确定哪些参数是递归的过程中需要处理的，那么就在递归函数里加上这个参数， 并且还要明确每次递归的返回值是什么进而确定递归函数的返回类型。
@@ -220,15 +485,15 @@ TODO 待补充代码模板
 3. 确定单层递归的逻辑：\
 确定每一层递归需要处理的信息。在这里也就会重复调用自己来实现递归的过程。
 
-### <a name="11">递归的思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="17">递归的思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 自顶而下：通过全局变量传递递归值
 - 自底而上：带返回值的递归，依次叠加
 
 
-## <a name="12">树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="13">二叉树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="18">树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">二叉树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="14">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
 - [中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 
@@ -306,7 +571,7 @@ public class Solution {
 }
 ```
 
-#### <a name="15">递归思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="21">递归思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 以二叉树深度为例：
 [二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
 ```java
@@ -338,7 +603,7 @@ public class Solution {
 }
 ```
 
-#### <a name="16">构造及修改二叉树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="22">构造及修改二叉树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 涉及到⼆叉树的构造，⽆论普通⼆叉树还是⼆叉搜索树⼀定前序，都是先构造中节点。
 > 理解TreeNode作为返回值的递归方法的含义，问题可以拆解成小问题到下层递归中。
 
@@ -405,11 +670,11 @@ next:
 
 
 
-#### <a name="17">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 公共祖先问题，如何判断一个节点是公共祖先，如果该节点的左子树及右子树均找到要寻找的节点，那么该节点为公共祖先。
 - [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
  
-### <a name="18">二叉搜索树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="24">二叉搜索树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 二叉搜索树相关问题核心思想：
 1. **中序遍历**（利用其二叉搜索树的结构）
 2. 递归利用二叉搜索树属性进行处理。
@@ -465,9 +730,9 @@ public class Solution {
 二叉搜索树构建：
 - [将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
 
-### <a name="19">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="20">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="26">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 - [二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
 - [二叉树的前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
@@ -476,7 +741,7 @@ public class Solution {
 - [二叉树的层次遍历 II](https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/  )
 - [二叉树的锯齿形层次遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
 
-#### <a name="21">树的属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">树的属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉树的所有路径](https://leetcode-cn.com/problems/binary-tree-paths/)
 - [二叉树中第二小的节点](https://leetcode-cn.com/problems/second-minimum-node-in-a-binary-tree/)
 - [左叶子之和](https://leetcode-cn.com/problems/sum-of-left-leaves/)
@@ -499,18 +764,18 @@ public class Solution {
 完全二叉树：
 - [完全⼆叉树的节点个数](https://leetcode-cn.com/problems/count-complete-tree-nodes/)
 
-#### <a name="22">子树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="28">子树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 子树问题，为了避免重复的遍历判断是否同一子数可以使用序列化的方式解决
 - [另一个树的子树](https://leetcode-cn.com/problems/subtree-of-another-tree/)
 - [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/solution/)
 
-#### <a name="23">树的高度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="29">树的高度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [平衡二叉树](https://leetcode-cn.com/problems/balanced-binary-tree/)
 - [二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
 - [二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
 - [二叉树的最小深度](https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/)
 
-#### <a name="24">树的构建与修改</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="30">树的构建与修改</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
 - [对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
 - [合并二叉树](https://leetcode-cn.com/problems/merge-two-binary-trees/)
@@ -527,22 +792,22 @@ public class Solution {
 - [修剪二叉搜索树](https://leetcode-cn.com/problems/trim-a-binary-search-tree/)
 - [⼆叉搜索树中的插⼊操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
 
-#### <a name="25">树的基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="31">树的基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 - [删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
 
-#### <a name="26">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="32">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 - [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 
 
 
-## <a name="27">回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="33">回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 回溯法⼀般是在集合中递归搜索，集合的⼤⼩构成了树的宽度，递归的深度构成的树的深度。
 
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/backTracking.png)
 
-### <a name="28">伪代码模版</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">伪代码模版</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 void backtracking(参数) {
     if (终⽌条件) {
@@ -557,7 +822,7 @@ void backtracking(参数) {
 }
 ```
 
-#### <a name="29">回溯三部曲</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="35">回溯三部曲</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 回溯函数模板返回值以及参数。回溯算法中函数返回值⼀般为void。
 ```
 void backtracking(参数)
@@ -578,7 +843,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 }
 ```
 
-#### <a name="30">startIndex使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="36">startIndex使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 需要startIndex来控制for循环的起始位置，对于组合问题，什么时候需要startIndex呢？
 1. 如果是⼀个集合来求组合的话，就需要startIndex
 2. 如果是多个集合取组合，各个集合之间相互不影响，那么就不⽤startIndex，例如：回溯算法：电话号 码的字⺟组合
@@ -587,7 +852,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 1. 每层都是从0开始搜索⽽不是startIndex
 2. 需要used数组记录path⾥都放了哪些元素了
 
-### <a name="31">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 回溯算法能解决如下问题：
 - 组合问题：N个数⾥⾯按⼀定规则找出k个数的集合
 - 排列问题：N个数按⼀定规则全排列，有⼏种排列⽅式
@@ -595,7 +860,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 - ⼦集问题：⼀个N个数的集合⾥有多少符合条件的⼦集
 - 棋盘问题：N皇后，解数独等等
 
-### <a name="32">重复问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">重复问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 “树枝去重”和“树层去重”
 
 组合问题可以抽象为树形结构，那么“使⽤过”在这个树形结构上是有两个维度的，⼀个维度是同⼀树枝上“使⽤过”，⼀个维度是同⼀树层上“使⽤过”。\
@@ -638,7 +903,7 @@ public void backTracking() {
 
 ```
 
-### <a name="33">组合问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="39">组合问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [组合](https://leetcode-cn.com/problems/combinations/submissions/)
 - [组合总和](https://leetcode-cn.com/problems/combination-sum/)
 - [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
@@ -647,19 +912,19 @@ public void backTracking() {
 
 - [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)
 
-### <a name="34">切割问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="40">切割问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
 - [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
 - [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
 - [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
 
 
-### <a name="35">排列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">排列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [全排列](https://leetcode-cn.com/problems/permutations/)
 - [全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
 
 
-### <a name="36">子集问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">子集问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [子集（review）](https://leetcode-cn.com/problems/subsets/)
 - [子集 II（review）](https://leetcode-cn.com/problems/subsets-ii/)
 
@@ -700,11 +965,512 @@ public class Soluction {
 }
 ```
 
+## <a name="43">贪心</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+贪⼼的本质是选择每⼀阶段的局部最优，从⽽达到全局最优。
+> 例如，有⼀堆钞票，你可以拿⾛⼗张，如果想达到最⼤的⾦额，你要怎么拿？\
+指定每次拿最⼤的，最终结果就是拿⾛最⼤数额的钱。
+
+如何验证可不可以⽤贪⼼算法呢？
+> 最好⽤的策略就是举反例，如果想不到反例，那么就试⼀试贪⼼吧。
+
+贪⼼算法⼀般分为如下四步：
+- 将问题分解为若⼲个⼦问题
+- 找出适合的贪⼼策略
+- 求解每⼀个⼦问题的最优解
+- 将局部最优解堆叠成全局最优解
+
+### <a name="44">指针与区间局部最优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
+- [跳跃游戏II](https://leetcode-cn.com/problems/jump-game-II/)
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+- [加油站](https://leetcode-cn.com/problems/gas-station/)
+- [划分字⺟区间](https://leetcode-cn.com/problems/partition-labels/)
+- [摆动序列](https://leetcode-cn.com/problems/wiggle-subsequence/)
+
+### <a name="45">区间问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [⽤最少数量的箭引爆⽓球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+- [合并区间](https://leetcode-cn.com/problems/merge-intervals/)
+- [无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+
+- [根据身⾼重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
+
+### <a name="46">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
+- [单调递增的数字](https://leetcode-cn.com/problems/monotone-increasing-digits/)
+- [分发糖果](https://leetcode-cn.com/problems/candy/)
 
 
-## <a name="37">算法归类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [监控⼆叉树](https://leetcode-cn.com/problems/binary-tree-cameras/)
+- [K次取反后最⼤化的数组和](https://leetcode-cn.com/problems/maximize-sum-of-array-after-k-negations/)
+- [修改一个数成为非递减数组](https://leetcode-cn.com/problems/non-decreasing-array/)
+- [柠檬⽔找零](https://leetcode-cn.com/problems/lemonade-change/)
 
-### <a name="38">二分法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+- [买卖股票的最佳时机含⼿续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+- [买卖股票的最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+
+## <a name="47">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="48">基本思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+动态规划的⼀般流程优化三步：
+1. 暴⼒的递归解法 -> 
+2. 带备忘录的 递归解法 -> 
+3. 迭代的动态规划解法。
+
+动态规划思想流程：
+1. 【状态】和【选择】，明确问题存在哪几种状态；问题场景如何做状态选择，进而转换状态。
+2. 确定dp数组以及下标的含义
+3. 根据【选择】的过程，确定递推公式
+4. dp数组如何初始化
+5. 确定遍历顺序
+6. 举例推导dp数组，进行问题模拟
+7. 出错的情况，将dp数组打印出来，保证程序处理流程如设想运行。
+
+
+
+
+如果能写出暴力的递归方法，就回发现在递归过程中，进行了太多重复计算，此时可以使用备忘录的方法进行优化。
+
+斐波那契数列备忘录优化：
+```java
+class Solution {
+    Map<Integer, Integer> map = new HashMap<>();
+    public int fib(int n) {
+        if(n <2 ) {
+            return n;
+        }
+        if(map.containsKey(n)) {
+            return map.get(n);
+        }
+        int result = fib(n-1) + fib(n-2);
+        map.put(n, result);
+        return result;
+    }
+}
+```
+
+动态规划思想优化：
+```java
+class Solution {
+    public int fib(int n) {
+        if(n <2 ) {
+            return n;
+        }
+        int prv = 1;
+        int pprv = 0;
+        int result = 0;
+        for(int i =2;i<=n;i++) {
+            result = prv+pprv;
+            pprv = prv;
+            prv = result;
+        }
+        return result;
+    }
+}
+```
+
+
+### <a name="49">相关问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+- [斐波那契数](https://leetcode-cn.com/problems/fibonacci-number/)
+- [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+- [使用最小花费爬楼梯](https://leetcode-cn.com/problems/min-cost-climbing-stairs/)
+
+- [打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+- [打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+- [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+
+
+- [不同路径](https://leetcode-cn.com/problems/unique-paths/)
+- [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
+- *[整数拆分](https://leetcode-cn.com/problems/integer-break/)
+- [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
+- [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+
+
+
+### <a name="50">字符串问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+第⼀种思路模板是⼀个⼀维的 dp 数组
+
+第二个思路模版是建立一个二维的dp数组
+1. 定义dp：两字符串的动态规划问题，经常的就是以字符串1与字符串2的长度组成二维数组。
+2. 定义下标及含义：dp的含义经常就是求解的结果，下标为从0～i、j的两字符串的子问题
+3. 状态转移公式：主要考虑以下三个的状态转移
+  - `dp[i-1][j-1]`: 匹配条件的，结果顺推
+  - `dp[i-1][j]`
+  - `dp[i][j-1]`
+4. 初始化
+
+#### <a name="51">字符操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [两个字符串的删除操作](https://leetcode-cn.com/problems/delete-operation-for-two-strings/)
+- [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
+
+#### <a name="52">子序列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+- [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+- [最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
+- [剑指 Offer II 095. 最长公共子序列](https://leetcode-cn.com/problems/qJnOS7/)
+- [不相交的线](https://leetcode-cn.com/problems/uncrossed-lines/)
+- [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
+
+- *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
+
+#### <a name="53">子数组问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+- *[最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+#### <a name="54">回文问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+回文问题demo：
+```java
+class Solution {
+    public int countSubstrings(String s) {
+        int len = s.length();
+        boolean[][]dp = new boolean[len][len];
+        int result = 0;
+        // 初始化0值
+        for(int i =0;i<len;i++) {
+            dp[i][i] = true;
+            result++;
+        }
+        // 自底而上，自左而右，遍历右上部分三角区域
+        for(int i = len-2;i>=0;i--) {
+            for(int j = i+1;j<len;j++) {
+                // 状态转移
+                if(s.charAt(i) == s.charAt(j)) {
+                    // i与j相邻情形
+                    if(j-i ==1) {
+                        dp[i][j] = true;
+                        result++;
+                        // 判断子内容是否为回文
+                    } else if(dp[i+1][j-1]) {
+                        dp[i][j] = true;
+                        result++;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+}
+```
+
+- *[回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+- [最长回文子序列](https://leetcode-cn.com/problems/longest-palindromic-subsequence/)
+
+
+### <a name="55">股票问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```java
+public class StockTrading {
+
+    public static void main(String[] args) {
+//        int[] prices = new int[]{3,3,5,0,0,3,1,4};
+        int[] prices = new int[]{1,2,3,4,5};
+        StockTrading st = new StockTrading();
+        System.out.println(st.maxProfit(2, prices));
+    }
+
+
+    /**
+     * 1. 定义dp及下标
+     * dp[i][j][k]含义为第i天所能获取的最大利润
+     * 下标i：天数
+     * 下标j：第j次交易
+     * 下标k：0买入、1卖出
+     * 
+     * 2. 初始化，由于dp代表的是第i天所能获取的最大利润，第0天卖出均要初始化成-price[0]
+     * 
+     * 3. 状态转移：
+     *   dp[i][j][0] = Math.max(dp[i-1][j][0], dp[i-1][j][1] + prices[i]);
+     *   dp[i][j][1] = Math.max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i]);
+     * @param prices
+     * @return
+     */
+    public int maxProfit(int k, int[] prices) {
+        int len = prices.length;
+        int[][][] dp = new int[prices.length][k+1][2];
+
+        // 若交易数超过天数一半，转化为不限交易次数问题
+        if(k> len/2)  return maxProfitNoLimit(prices);
+        for(int i =1;i<=k; i++ ){
+            dp[0][i][1] = -prices[0];
+        }
+        for(int i = 1;i<prices.length;i++) {
+            for(int j = 1; j<=k; j++) {
+                dp[i][j][0] = Math.max(dp[i-1][j][0], dp[i-1][j][1] + prices[i]);
+                dp[i][j][1] = Math.max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i]);
+            }
+        }
+
+        return dp[len-1][k][0];
+    }
+
+    public int maxProfitNoLimit(int[] prices) {
+        int n = prices.length;
+        int buy = -prices[0];
+        int empty = 0;
+        for(int i =1;i<n;i++) {
+            int curEmpty = Math.max(empty, buy+prices[i]);
+            int curBuy = Math.max(buy, empty-prices[i]);
+            empty = curEmpty;
+            buy = curBuy;
+        }
+        return empty;
+    }
+}
+
+```
+
+股票问题中，需要区分的一个点是，代表卖出买入的 `dp[i][0]` 与 `dp[i][1]`的状态转移问题
+1. 若买入`dp[i][1]`从 卖出`dp[i-1][0]` 转移而来说明，可以多次交易
+2. 若买入`dp[i][1]`仅从 `dp[i-1][1]` 转移而来，说明仅能进行一次交易
+
+> 对于含冷冻期的股票，也可以表示为一个状态\
+> 对于限制次数的股票交易，在k数值较小的情况，可以将交易次数k打平，如用数字4表示第二次的卖出
+
+- [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+- [买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+- [买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+- [买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/)
+- [最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+- [买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+
+### <a name="56">背包问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="57">常见求解方式及疑难点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+01背包问题
+```java
+public class ZeroOnePackage {
+
+  public static void main(String[] args) {
+    ZeroOnePackage zeroOnePackage = new ZeroOnePackage();
+    int[] v = {1, 2, 3, 4};
+    int[] val = {2, 4, 4, 5};
+    System.out.println(zeroOnePackage.getMaxValueOfPackage2(4, 5, v, val));
+  }
+
+  /**
+   * 二维矩阵 01 背包
+   * n个物品  m的体积的背包
+   * 先遍历物品再遍历背包，测试每个物品放进背包与不放进背包的最大价值
+   *
+   * f[n][m] = max( f[n-1][m], f[n-1][m-v[i]] + val[i] )
+   *
+   * @param m
+   * @param n
+   * @param v
+   * @param val
+   * @return
+   */
+  public int getMaxValueOfPackage(int n, int m, int[] v, int[] val) {
+    // 这边定义为n+1 与 m+1 个二维矩阵，表示i个物品的j体积的最大价值。下面注意 数组-1问题
+    int[][] dp = new int[n + 1][m + 1];
+    for (int i = 1; i <= n; i++) {
+      for (int j = 0; j <= m; j++) {
+        // 默认第i个物品不放进背包
+        dp[i][j] = dp[i - 1][j];
+        // 第i个物品放进背包， 前提条件体积j大于物品i的体积，取最大价值
+        if (j >= v[i - 1]) {
+          dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - v[i - 1]] + val[i - 1]);
+        }
+      }
+    }
+    return dp[n][m];
+  }
+
+  /**
+   * 01 背包一维数组的解法
+   * 注意需要逆序处理，因为原先的二维压缩成一维，在开始第i个物品的遍历时，dp存储的为i-1个物品的最大价值。
+   * 若使用顺序遍历，则i-1个物品的最大价值会被覆盖，每次放进物品取 dp[j-v[i-1]] 的数据是往前取，因此需要逆序遍历
+   * f[j] = max(f[j], f[j-v[i]])
+   * @param n
+   * @param m
+   * @param v
+   * @param val
+   * @return
+   */
+  public int getMaxValueOfPackage2(int n, int m, int[] v, int[] val) {
+    int[] dp = new int[m + 1];
+    for (int i = 1; i <= n; i++) {
+      //优化使用j>=v[i-1], 仅需要查看 v[i-1] ~ m 这个体积区间的最大价值是否需要更新
+      for (int j = m; j >=v[i-1]; j--) {
+        dp[j] = Math.max(dp[j], dp[j-v[i-1]] + val[i-1]);
+      }
+    }
+    return dp[m];
+  }
+}
+
+```
+
+完全背包问题
+```java
+public class FullPackage {
+
+    public static void main(String[] args) {
+        FullPackage fullPackage = new FullPackage();
+        int[] v = {1, 2, 3, 4};
+        int[] val = {2, 4, 4, 5};
+        System.out.println(fullPackage.getMaxPackageValue2(4, 5, v, val));
+
+    }
+
+    /**
+     * 二维数组完全背包
+     * 按硬币和体积的顺序二维遍历，每次物品只有放与不放两种情况，第i个物品不放则总价值与i-1个物品一致
+     * 第i个物品放进背包，则价值为 f[i][j-v[i]+ val[i] 注意这边同样为第i行，因为物品可以放多次。
+     * f[i][j] = max( f[i-1][j] + f[i][j-v[i]+ val[i])
+     * @param n
+     * @param m
+     * @param v
+     * @param val
+     * @return
+     */
+    public int getMaxPackageValue(int n,int m ,int[]v, int [] val) {
+        int [][]dp = new int[n+1][m+1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                // 默认第i个物品不放进背包
+                dp[i][j] = dp[i-1][j];
+                // 第i个物品放进背包，前提条件体积j大于物品i的体积，取最大价值
+                if (j>=v[i-1]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i][j-v[i-1]] +val[i-1]);
+                }
+            }
+        }
+        return dp[n][m];
+    }
+
+    /**
+     * 一维压缩 完全背包
+     * 此处不需要从大到小遍历，因为物品可以多次放入背包，因此取得状态为第i个物品遍历体积的前序状态。
+     * @param n
+     * @param m
+     * @param v
+     * @param val
+     * @return
+     */
+    public int getMaxPackageValue2(int n,int m ,int[]v, int [] val) {
+        int[] dp = new int[m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = v[i-1]; j <= m; j++) {
+                dp[j] = Math.max(dp[j], dp[j-v[i-1]] + val [i-1]);
+            }
+        }
+        return dp[m];
+    }
+}
+```
+
+
+除了上述背包问题的常见解法，还需**区分先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**。
+- 如果求组合数就是外层for循环遍历物品，内层for遍历背包。组合不强调顺序，如(1,5)和(5,1)是同⼀个组合。
+- 如果求排列数就是外层for遍历背包，内层for循环遍历物品。排列强调顺序，如(1,5)和(5,1)是两个不同的排列。
+
+> 如果把遍历nums（物品）放在外循环，遍历target的作为内循环的话，举⼀个例⼦：计算`dp[4]`的时
+候，结果集只有 {1,3} 这样的集合，不会有{3,1}这样的集合，因为nums遍历放在外层，3只能出现在1后⾯！
+```
+
+for(int i =1; i< 物品.length;i++) {
+  for(int j = 1;j< 背包.length;j++) {
+  
+  
+  }
+}
+
+
+for(int i =1; i< 背包.length;i++) {
+  for(int j = 1;j< 物品.length;j++) {
+  
+  
+  }
+}
+
+```
+
+
+#### <a name="58">典型背包问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [01背包问题](https://www.acwing.com/problem/content/2/)
+- [完全背包问题](https://www.acwing.com/problem/content/3/)
+- [多重背包问题 I](https://www.acwing.com/problem/content/4/)
+- [多重背包问题 II](https://www.acwing.com/problem/content/5/) :对多重背包的数量进行压缩
+- [混合背包问题](https://www.acwing.com/problem/content/7/)
+- [二维费用的背包问题](https://www.acwing.com/problem/content/8/)
+
+
+#### <a name="59">背包场景问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+01背包：
+- [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+- [最后一块石头的重量 II](https://leetcode-cn.com/problems/last-stone-weight-ii/)
+- [目标和](https://leetcode-cn.com/problems/target-sum/)
+- [一和零](https://leetcode-cn.com/problems/ones-and-zeroes/)
+
+完全背包：
+- [零钱兑换 II](https://leetcode-cn.com/problems/coin-change-2/)
+- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
+> 求排列问题，**理解先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**！！！
+- [零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+- [完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+
+
+- *[单词拆分](https://leetcode-cn.com/problems/word-break/)
+
+
+### <a name="60">扔鸡蛋问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+[鸡蛋掉落](https://leetcode-cn.com/problems/super-egg-drop/)
+
+该问题理解的关键为：因为我们要求的是**最坏情况下扔鸡蛋的次数**，所以鸡蛋在第 i 层楼碎没碎，最后搜索的取决于那种情况的结果更⼤。
+```java
+class Solution {
+    Map<Integer, Integer> memo = new HashMap<Integer, Integer>();
+
+    public int superEggDrop(int k, int n) {
+        return dp(k, n);
+    }
+
+    public int dp(int k, int n) {
+        if (!memo.containsKey(n * 100 + k)) {
+            int ans = Integer.MAX_VALUE;
+            // 层数为0，不需要尝试
+            if (n == 0) {
+                ans = 0;
+            // 只剩一个鸡蛋，最坏得试n次
+            } else if (k == 1) {
+                ans = n;
+            } else {
+                int lo = 1, hi = n;
+                while (lo  <=  hi) {
+                    int x = (hi -lo) / 2 + lo;
+                    // 鸡蛋丢坏的区域搜索
+                    int t1 = dp(k - 1, x - 1);
+                    // 鸡蛋未对坏的区域搜索
+                    int t2 = dp(k, n - x);
+                    
+                    // 鸡蛋丢坏的次数与鸡蛋未丢坏的次数对比，搜索次数多的区域，表示搜索最坏情况要丢多少次
+                    if (t1 <=  t2) {
+                        lo = x+1;
+                        ans = Math.min(ans, t2+1);
+                    } else {
+                        hi = x-1;
+                        ans = Math.min(ans, t1+1);
+                    }
+                }
+            }
+            // 备忘录
+            memo.put(n * 100 + k, ans);
+        }
+
+        return memo.get(n * 100 + k);
+    }
+}
+
+```
+
+
+
+## <a name="61">二分法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
@@ -715,140 +1481,16 @@ public class Soluction {
 - [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
 
-### <a name="39">DFS & BFS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
-#### <a name="40">BFS & DFS：</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
-- [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
-- [判断二分图（review）](https://leetcode-cn.com/problems/is-graph-bipartite/)
-    - > 判断方法很特别，通过节点染色
-- [岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
-- [打开转盘锁（经典问题）](https://leetcode-cn.com/problems/open-the-lock/)
-- [太平洋大西洋水流问题](https://leetcode-cn.com/problems/pacific-atlantic-water-flow/)
-- [二进制矩阵中的最短路径](https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/)
-- [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
-  
-  
-#### <a name="41">拓扑排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- [课程表](https://leetcode-cn.com/problems/course-schedule/)
-- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
-
-### <a name="42">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
-
-- [打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
-
-
-### <a name="43">并查集</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```java
-class UnionFindSet {
-        int[] rank;
-        int[] parent;
-
-        public UnionFindSet(int n) {
-            rank = new int[n];
-            parent = new int[n];
-        }
-
-       public int find(int x) {
-           if (parent[x] == 0) return x;
-           return parent[x] = find(parent[x]); // Path compression by halving.
-       }
-
-        public boolean union(int x, int y) {
-           int rootX = find(x);
-           int rootY = find(y);
-           if(rootX == rootY) return true;
-           if(rank[rootX]>rank[rootY]) {
-               parent[rootY] = rootX;
-           } else if(rank[rootX]<rank[rootY]) {
-               parent[rootX] = rootY;
-           } else {
-               parent[rootX] = rootY;
-               rank[rootY]++;
-           }
-           return false;
-       }
-    }
-```
-
-[冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
 
 
 
-### <a name="44">单调栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
-
-     
-- [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
-- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
-```java
-public int[] dailyTemperatures(int[] T) {
-    Deque<Integer> stack = new LinkedList<>();
-    int len = T.length;
-    int[] res = new int[len];
-    // 从尾到头遍历
-    for(int i = len-1; i>=0 ;i--) {
-        while(!stack.isEmpty() && T[stack.peek()] <= T[i]) {
-            stack.pop();
-        }
-        // 判断位置差值
-        res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
-        stack.push(i);
-    }
-    return res;
-}
-```
-
-### <a name="45">单调队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
-- [剑指 Offer 59 - I. 滑动窗口的最大值]( https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
-```java
-public int[] maxSlidingWindow(int[] nums, int k) {
-     if(nums.length == 0 || k == 0) return new int[0];
-    Deque<Integer> deque = new LinkedList<>();
-    int len = nums.length;
-    int[] res=  new int[len -k +1];
-    for(int i =0;i<k ;i++) {
-        // 新元素入队，比较队尾元素，小的元素全部移除，保证队列的单调性
-        while(!deque.isEmpty()&& deque.peekLast() <nums[i]) {
-            deque.removeLast();
-        }
-        deque.addLast(nums[i]);
-    }
-    res[0] = deque.peekFirst();
-    for(int i =k;i<len;i++) {
-        // 滑动窗口的比较
-        if(nums[i-k] == deque.peekFirst()) {
-            deque.removeFirst();
-        }
-        while(!deque.isEmpty()&& deque.peekLast() <nums[i]) {
-            deque.removeLast();
-        }
-        deque.addLast(nums[i]);
-        res[i-k+1] = deque.peekFirst();
-    }
-    return res;
-}
-```
-
-### <a name="46">前缀树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="62">前缀树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
 
 典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
-### <a name="47">贪心算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-[CS-Note](http://www.cyc2018.xyz/%E7%AE%97%E6%B3%95/Leetcode%20%E9%A2%98%E8%A7%A3/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E8%B4%AA%E5%BF%83%E6%80%9D%E6%83%B3.html#_1-%E5%88%86%E9%85%8D%E9%A5%BC%E5%B9%B2)
 
-1. [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
-    - 每次分配给满足孩子的最小的饼干
-2. [不重叠的区间个数](https://leetcode-cn.com/problems/non-overlapping-intervals/)
-    - 每次取结尾最小的区间，留给后面选择的区间更大，移除的区间越小。按区间结尾排序。
-3. [投飞镖刺破气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
-    - 与上述类似，每次取结尾最小的区间，
-    
-
-### <a name="48">TODO List</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="63">TODO 二进制应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 计算1的个数
