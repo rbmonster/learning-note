@@ -91,7 +91,8 @@ modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化
     }
 ```
 
-内存空间占用： ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
+#### 内存空间占用
+ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
 
 ### CopyOnWriteArrayList
 CopyOnWriteArrayList读写分离list

@@ -33,17 +33,19 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 
 - 求余数常见操作
 ```java
- private int getNext(int n) {
+public class Solution {
+  private int getNext(int n) {
     int totalSum = 0;
     while (n > 0) {
-        // 余数
-        int d = n % 10;
-        // 整除进位
-        n = n / 10;
-        // 余数操作
-        totalSum += d * d;
+      // 余数
+      int d = n % 10;
+      // 整除进位
+      n = n / 10;
+      // 余数操作
+      totalSum += d * d;
     }
     return totalSum;
+  }
 }
 ```
 
@@ -66,7 +68,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 ### 字符串
 公共前缀问题
 - [最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/)
-    - 分治法、二分法
+> 分治法、二分法
   
 回文问题（包含子串与子序列问题）
 - [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
@@ -74,9 +76,10 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 双指针问题
 - [反转字符串](https://leetcode-cn.com/problems/reverse-string/)
 - [两数之和 II - 输入有序数组（最基础问题） ](https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/)
-- 快慢指针：
-    - 移除数组
-    - 移动零
+
+快慢指针：
+- 移除数组
+- 移动零
 
 - [反转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
 
@@ -85,13 +88,13 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 - [环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 - [环形链表2](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 - [相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
-    - > 两链表相接最后一段common
+> 两链表相接最后一段common
 - 删除链表的倒数第N个节点
 - 移除链表元素
 - [旋转链表](https://leetcode-cn.com/problems/rotate-list/)
   
 经典问题：
-- 反转链表：栈、头插法、递归
+反转链表：栈、头插法、递归
 - [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 - [合并两有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 
@@ -350,6 +353,7 @@ class Solution {
 ## BFS 与 DFS
 BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
 
+- [剑指 Offer 13. 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
 - [岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/)
 - [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
 - [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
@@ -1421,7 +1425,7 @@ class Solution {
 ## 前缀树
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
 
-典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计
+典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计\
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
