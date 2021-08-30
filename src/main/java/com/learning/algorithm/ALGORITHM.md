@@ -422,10 +422,21 @@ class UnionFindSet {
     }
 ```
 
-[冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
+- [冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
+- [除法求值](https://leetcode-cn.com/problems/evaluate-division/)
 
 
-
+```
+「力扣」第 1319 题：连通网络的操作次数（中等）；
+「力扣」第 1631 题：最小体力消耗路径（中等）；
+「力扣」第 959 题：由斜杠划分区域（中等）；
+「力扣」第 1202 题：交换字符串中的元素（中等）；
+「力扣」第 947 题：移除最多的同行或同列石头（中等）；
+「力扣」第 721 题：账户合并（中等）；
+「力扣」第 803 题：打砖块（困难）；
+「力扣」第 1579 题：保证图可完全遍历（困难）;
+「力扣」第 778 题：水位上升的泳池中游泳（困难）。
+```
 
 ## 递归
 ### 递归三要素
@@ -950,6 +961,7 @@ public class Soluction {
 - [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
 - [单调递增的数字](https://leetcode-cn.com/problems/monotone-increasing-digits/)
 - [分发糖果](https://leetcode-cn.com/problems/candy/)
+- [救生艇](https://leetcode-cn.com/problems/boats-to-save-people/)
 
 
 - [监控⼆叉树](https://leetcode-cn.com/problems/binary-tree-cameras/)

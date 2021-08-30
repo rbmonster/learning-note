@@ -1,4 +1,6 @@
 # JVM 
+大部分参考周志明【深入理解Java虚拟机】
+- 附上官网文档搭配食用 [java8官网文档](https://docs.oracle.com/javase/specs/jvms/se8/html/index.html)
 ## 面试题
 - 介绍下 Java 内存区域（运行时数据区）
 - Java 对象的创建过程（五步，建议能默写出来并且要知道每一步虚拟机做了什么）
@@ -16,49 +18,77 @@
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/heap-detail.jpg)
 
 ## 虚拟机数据区
-1、程序计数器
+
+### 程序计数器
 - 定义：可以看作是当前线程所执行的字节码的行号指示器，为线程隔离的数据区。
 - java多线程切换时，每个线程独立的程序计数器，各条线程之间的计数器互不影响，独立存储，保证了线程切换后能恢复到正确的位置。
 - 唯一一个无OOM的区域
  
-2、Java虚拟机栈
-- 定义：每个方法执行的时候，Java虚拟机都会同步的创建一个栈帧用于储存局部变量表、操作数栈、动态链接、方法出口等信息。每个方法被调用直至执行完毕的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
-    - > 栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息
+### Java虚拟机栈
+定义：每个方法执行的时候，Java虚拟机都会同步的创建一个栈帧用于储存局部变量表、操作数栈、动态链接、方法出口等信息。每个方法被调用直至执行完毕的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
+> 栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息
 - 局部变量表存放了编译期可知的各种Java虚拟机基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference类型）和returnAddress类型（指向一条字节码指令的地址）、
 - 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。 
  
-3、本地方法栈
-- 定义：为虚拟机使用到的本地（Native）方法服务。
+### 本地方法栈
+定义：为虚拟机使用到的本地（Native）方法服务。
 - HotSpot直接把本方法栈和虚拟机栈合二为一。
 - 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。
  
-4、Java堆
-- 定义:是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。
+### Java堆
+定义:是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。
 - 参数-Xmx和-Xms 最大堆内存和最小堆内存
- ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/hotstop-heap.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/hotstop-heap.jpg)
 
-5、方法区
-- 定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
-- JDK8以前使用永久代来实现方法区（-XX:MaxPermSize 设置上限）
-  - 方法区类似于接口，永久代类似于实现类的关系。使用永久代的时候，可以设置内存上限，而且不同的虚拟机的实现不一样，因此更容易遇到内存溢出的问题。
+### 方法区
+定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
+> JDK8以前使用永久代来实现方法区（-XX:MaxPermSize 设置上限）\
+> 方法区类似于接口，永久代类似于实现类的关系。使用永久代的时候，可以设置内存上限，而且不同的虚拟机的实现不一样，因此更容易遇到内存溢出的问题。
  
-6、运行时常量池
-- 定义：运行时常量池是方法区的一部分。Class文件除类字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，在类加载后存放到方法区的运行时常量池中。
-- 运行时常量池具备动态性，运行期间可以将新的常量放入池中，当无法申请到空间抛出OutOfMemoryError异常。
+### 运行时常量池
+- 定义：运行时常量池是方法区的一部分。Class文件除类字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，在类加载后存放到运行时常量池中。
+- 运行时常量池具备动态性，运行期间可以将新的常量放入池中，当无法申请到空间抛出OutOfMemoryError异常。 
 
-  
-  
-### 对象的访问
-定义：java程序会通过栈上的reference数据来操作堆上的具体对象。具体的对象访问方式由虚拟机决定，主要有两种使用句柄和直接指针两种。
-- 使用句柄访问的话，java堆会划分一块内存作为句柄池。而句柄中分为两块指针，一个是指向对象实例的指针，一个是指向对象类型数据的指针(指向方法区)。好处为整理内存是只需要整理实例的指针。
-- 直接指针访问，对实例中包含数据的类型数据的指针(指向方法区)，好处为减少了指向实例的时间定为开销。
+
+> 在 Java 7 之前，JVM 将 Java String Pool 放置在 永久代空间（java7方法区的实现）中，该空间具有固定大小——它不能在运行时扩展并且不符合垃圾收集条件。\
+在永久代（而不是堆）中使用字符串的风险是，如果我们创建太多字符串，我们可能会从 JVM 中得到 OutOfMemory 错误。\
+从 Java 7 开始，Java String Pool 存储在 Heap 空间中，由 JVM 进行垃圾回收。 这种方法的优点是降低了 OutOfMemory 错误的风险，因为未引用的字符串将从池中删除，从而释放内存。
 
 ### HotSpot 的后台线程
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/hotspotThread.jpg)
 
 
+### 应用
+```java
+
+public class JHSDB_TestCase {
+
+    static class Test {
+        static ObjectHolder staticObj = new ObjectHolder();
+        ObjectHolder instantObj = new ObjectHolder();
+
+        void foo(){
+            ObjectHolder localObj = new ObjectHolder();
+            System.out.println("done");
+        }
+    }
+
+    private static class ObjectHolder{}
+
+    public static void main(String[] args) {
+        Test test = new JHSDB_TestCase.Test();
+        test.foo();
+    }
+}
+```
+staticObj、instantObj、localObj三个变量本身(**而不是它们所指向的对象**)存放在哪里？\
+staticObj随着Test的信息类型存放在方法区，instantObj随着Test对象存放在java堆，localObj则存放在foo()方法栈帧的局部变量表。
+- staticObj对象与class对象存放在一起，存储于Eden Java堆中。（JDK7及以后的版本）
+- instantObj对象存放在Eden Java堆中
+- localObj对象存放在Eden Java堆中
+
 ## 垃圾收集器与内存分配策略
-- 程序计数器、虚拟机栈、本地方法栈3个区域随线程而生而灭，因此这几个区域的内存分配和回收都具备确定性，不需要过多考虑回收问题。
+程序计数器、虚拟机栈、本地方法栈3个区域随线程而生而灭，因此这几个区域的内存分配和回收都具备确定性，不需要过多考虑回收问题。
 
 ### 判断对象是否已死的方法
 引用计数法：
@@ -76,13 +106,6 @@
      5. Java虚拟机内部的引用，如基本类型对应的Class对象，一些常驻异常对象（NullPointException)等，还有系统类加载器。
      6. 所有被同步锁(synchronize关键字)持有的对象。
      7. 反映Java虚拟机内部情况的JMXBean、JVMTI中注册的回调、本地缓存代码等。
-     
-### 对象引用
-- 强引用(Strongly Reference): Object obj = new Object()。关系存在虚拟机就不会回收。
-- 软引用(Soft Reference)：用来描述一些还有用但非必须的对象。在系统要发生内存溢出会收集软引用对象，若回收完成仍内存不足，才抛出内存遗传。
-- 弱引用(Weak Reference)：弱引用关联的对象只能生存到下一次垃圾收集发生为止。
-- 虚引用(Phantom Reference)：最弱的引用，意义为一个对象设置虚引用关联的唯一目的是为了在该对象被收集时得到一个通知。
-- 对象死亡的调用，任何一个对象都会被系统调用一次，如果对象下一次面临回收它的finalize()不会再执行。
 
 ### 回收方法区
 方法区的回收主要是两部分内容：废弃的常量和不再使用的类型。
@@ -93,8 +116,8 @@
   - 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。
   
 ### 垃圾收集算法
-弱分代假说：绝大多数对象都是朝生夕灭。
-强分代假说：熬过越多次垃圾手机过程的对象就越难消亡。
+弱分代假说：绝大多数对象都是朝生夕灭。\
+强分代假说：熬过越多次垃圾手机过程的对象就越难消亡。\
 跨代引用假说：存在于新生代的对象可能会引用老年代的对象。因此该假说说明的是，存在互相引用关系的对象，是应该倾向于同时生存或者同时死亡。
 - 解决方案，在新生代上建立一个全局的数据结构（记忆集），这个结构吧老年代划分成若干小块，表示出老年代的哪一块内存会存在跨代引用。之后发生Minor GC时，只有包含跨代引用的小块内存才会加入到GC Root的扫描.
 
@@ -125,11 +148,11 @@
 
 ### 新生代垃圾回收
 1. eden、 survivor From 复制到 survivor To，年龄+1。
-    - 首先，把 Eden 和 survivor From 区域中存活的对象复制到 survivor To 区域（如果有对象的年龄以及达到了老年的标准，则赋值到老年代区），同时把这些对象的年龄+1（如果 ServicorTo 不够位置了就放到老年区）；
+> 首先，把 Eden 和 survivor From 区域中存活的对象复制到 survivor To 区域（如果有对象的年龄以及达到了老年的标准，则赋值到老年代区），同时把这些对象的年龄+1（如果 ServicorTo 不够位置了就放到老年区）；
 2. 清空 eden、 survivor From。
-    - 然后，清空 Eden 和 survivor From 中的对象；
+> 然后，清空 Eden 和 survivor From 中的对象；
 3. survivor To 和 survivor From 互换
-    - 最后， survivor To 和 survivor From 互换，原 survivor To 成为下一次 GC 时的 survivor From区。
+> 最后， survivor To 和 survivor From 互换，原 survivor To 成为下一次 GC 时的 survivor From区。
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/edenGc.jpg)
 
 
@@ -178,7 +201,7 @@
 
 虚拟机完成用户任务及垃圾收集用了100分钟，其中垃圾收集用了1分钟，吞吐量=99%
 - -XX:MaxGCPauseMills：控制最大垃圾收集时间参数
-    - 允许设置的是一个大于0的毫秒数，垃圾收集停顿时间缩短是以牺牲吞吐量和新生代空间为代价换区的。调小新生代会缩短垃圾回收时间，若调的太小会导致垃圾收集变得频繁。
+> 允许设置的是一个大于0的毫秒数，垃圾收集停顿时间缩短是以牺牲吞吐量和新生代空间为代价换区的。调小新生代会缩短垃圾回收时间，若调的太小会导致垃圾收集变得频繁。
 - -XX:GCTimeRatio：设置吞吐量大小时间
     - 设置的值应当是大于0小于100的整数，也就是垃圾回收时间占总时间的比率为吞吐量的倒数。
     - 设置成19，那允许垃圾回收时间为总时间的5%(1/(1+19))，默认值为99,允许最大1%的时间进行垃圾回收。
@@ -435,7 +458,6 @@ java相关的三层类加载器
 1. 加载非classpath下的类，从非标准的来源加载代码
 2. 加载加密过的类文件，使用秘钥进行解密。
 3. 热部署，简单粗暴的方法是自定义类加载器，加载目录外的类对象。使用定时任务或者触发起的方法，每次创建新的类加载器。
-    - [相关资料](https://developer.ibm.com/zh/articles/j-lo-hotswapcls/)
 ```
 public class MyClassLoader extends ClassLoader {
  
@@ -481,7 +503,7 @@ Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/test?c
 ```
 
 JDBC需要破坏双亲委派模式
->  原生的JDBC中的类是放在**rt.jar包**(对应BootStrapClassLoader)的，是由启动类加载器进行类加载的，在JDBC中的Driver类中需要动态去加载不同数据库类型的Driver类，而mysql-connector-.jar中的Driver类是用户自己写的代码，那启动类加载器肯定是不能进行加载的。这就是双亲委派模型的局限性了，父级加载器无法加载子级类加载器路径中的类。
+>  原生的JDBC中的类是放在**rt.jar包**(对应由启用类加载器BootStrapClassLoader)的，是由启动类加载器进行类加载的，在JDBC中的Driver类中需要动态去加载不同数据库类型的Driver类，而mysql-connector-.jar中的Driver类是用户自己写的代码，那启动类加载器肯定是不能进行加载的。这就是双亲委派模型的局限性了，父级加载器无法加载子级类加载器路径中的类。
 
 > 在JDBC4.0以后，开始支持使用SPI(Service Provider Interface)的方式来注册这个Driver，具体做法就是在mysql的jar包中的META-INF/services/java.sql.Driver 文件中指明当前使用的Driver是哪个，然后使用如下：\
 > `Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/test?characterEncoding=GBK", "root", "");`
@@ -509,28 +531,33 @@ private static Connection getConnection(
 ```
 
 ### 类初始化的时机
-Java 虚拟机规范没有强制约束类加载过程的第一阶段（即：加载）什么时候开始，但对于“初始化”阶段，有着严格的规定。有且仅有 5 种情况必须立即对类进行“初始化”：
-- 在遇到 new、putstatic、getstatic、invokestatic 字节码指令时，如果类尚未初始化，则需要先触发其初始化。
-- 对类进行反射调用时，如果类还没有初始化，则需要先触发其初始化。
-- 初始化一个类时，如果其父类还没有初始化，则需要先初始化父类。
-- 虚拟机启动时，用于需要指定一个包含 main() 方法的主类，虚拟机会先初始化这个主类。
-- 当使用 JDK 1.7 的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic、REF_putStatic、REF_invokeStatic 的方法句柄，并且这个方法句柄所对应的类还没初始化，则需要先触发其初始化。
 
-这 5 种场景中的行为称为对一个类进行主动引用，除此之外，其它所有引用类的方式都不会触发初始化，称为被动引用。
+虚拟机严格规范了有且只有6种情况下，必须对类进行初始化(只有主动去使用类才会初始化类)：
+1. 当遇到 new、getstatic、putstatic或invokestatic 这4条直接码指令时，比如 new 一个类，读取一个静态字段(未被 final 修饰)、或调用一个类的静态方法时。
+- 当jvm执行new指令时会初始化类。即当程序创建一个类的实例对象。
+- 当jvm执行getstatic指令时会初始化类。即程序访问类的静态变量(不是静态常量，常量会被加载到运行时常量池)。
+- 当jvm执行putstatic指令时会初始化类。即程序给类的静态变量赋值。
+- 当jvm执行invokestatic指令时会初始化类。即程序调用类的静态方法。
+2. 使用 java.lang.reflect 包的方法对类进行反射调用时如Class.forname("..."),newInstance()等等。 ，如果类没初始化，需要触发其初始化。
+3. 初始化一个类，如果其父类还未初始化，则先触发该父类的初始化。
+4. 当虚拟机启动时，用户需要定义一个要执行的主类 (包含 main 方法的那个类)，虚拟机会先初始化这个类。
+5. MethodHandle和VarHandle可以看作是轻量级的反射调用机制，而要想使用这2个调用， 就必须先使用findStaticVarHandle来初始化要调用的类。
+6. 当一个接口中定义了JDK8新加入的默认方法（被default关键字修饰的接口方法）时，如果有这个接口的实现类发生了初始化，那该接口要在其之前被初始化。
+
 
 ### 类的生命周期
 类的生命周期： 加载、连接[验证、准备、解析]、初始化、使用、卸载。
 #### 加载
 类加载过程的第一步，主要完成下面3件事情：
-- 通过全类名获取定义此类的二进制字节流
-- 将字节流所代表的静态存储结构转换为方法区的运行时数据结构
-- 在内存中生成一个代表该类的 Class 对象,作为方法区这些数据的访问入口
+1. 通过全类名获取定义此类的二进制字节流
+2. 将字节流所代表的静态存储结构转换为方法区的运行时数据结构
+3. 在内存中生成一个代表该类的 Class 对象,作为方法区这些数据的访问入口
 
 #### 验证
 验证的范围：文件格式、元数据、字节码、符号引用验证
 
 #### 准备
-准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些内存都将在方法区中分配。对于该阶段有以下几点需要注意：
+准备阶段是正式为类变量(即静态变量)分配内存并设置类变量初始值的阶段，jdk8中这些内存都将在java堆中分配。对于该阶段有以下几点需要注意：
 - 进行内存分配的仅包括类变量（static），而不包括实例变量
 - 这里所设置的初始值"通常情况"下是数据类型默认的零值（如0、0L、null、false等）
 
@@ -544,22 +571,20 @@ public static final int v = 8080;
 ```
 
 #### 解析
-- 解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程。解析动作主要针对类或接口、字段、类方法、接口方法、方法类型、方法句柄和调用限定符7类符号引用进行。
+解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程。解析动作主要针对类或接口、字段、类方法、接口方法、方法类型、方法句柄和调用限定符7类符号引用进行。
+
+
+以方法解析为例：
+1. 解析出方法表的class_index项中索引的方法所属的类或接口的符号引用。
+2. 在类C中查找是否有简单名称和描述符都与目标相匹配的方法，如果存在返回直接引用。
+3. 同上在类C的父类查找直接引用。
+4. 上述简述了类的查找，具体细节见书本。返回直接引用后，会验证方法的访问权限，即`private、protected、public`，如果发现不具备方法的访问级别，抛出`IllegalAccessError`异常。
 
 #### 初始化
+类的初始化阶段是类加载过程的最后一个步骤，这个阶段Java虚拟机才开始真正执行类中编写的java程序，将主导权移交给应用程序。
 
-虚拟机严格规范了有且只有5种情况下，必须对类进行初始化(只有主动去使用类才会初始化类)：
-1. 当遇到 new 、 getstatic、putstatic或invokestatic 这4条直接码指令时，比如 new 一个类，读取一个静态字段(未被 final 修饰)、或调用一个类的静态方法时。
-  - 当jvm执行new指令时会初始化类。即当程序创建一个类的实例对象。
-  - 当jvm执行getstatic指令时会初始化类。即程序访问类的静态变量(不是静态常量，常量会被加载到运行时常量池)。
-  - 当jvm执行putstatic指令时会初始化类。即程序给类的静态变量赋值。
-  - 当jvm执行invokestatic指令时会初始化类。即程序调用类的静态方法。
-2. 使用 java.lang.reflect 包的方法对类进行反射调用时如Class.forname("..."),newInstance()等等。 ，如果类没初始化，需要触发其初始化。
-3. 初始化一个类，如果其父类还未初始化，则先触发该父类的初始化。
-4. 当虚拟机启动时，用户需要定义一个要执行的主类 (包含 main 方法的那个类)，虚拟机会先初始化这个类。
-5. MethodHandle和VarHandle可以看作是轻量级的反射调用机制，而要想使用这2个调用， 就必须先使用findStaticVarHandle来初始化要调用的类。
-6. 当一个接口中定义了JDK8新加入的默认方法（被default关键字修饰的接口方法）时，如果有这个接口的实现类发生了初始化，那该接口要在其之前被初始化。
-
+在准备阶段已经赋初始化零值的变量，在初始化阶段，会根据程序去初始化类变量和其他资源。\
+初始化阶段就是执行类构造器`<clinit>()`方法的过程。该方法是由编译器收集类中的所有类变量的赋值动作和静态语句块（static{}块）中的语句合并产生的。
 
 #### 卸载
 卸载类即该类的Class对象被GC。
@@ -569,21 +594,49 @@ public static final int v = 8080;
 - 该类没有在其他任何地方被引用
 - 该类的类加载器的实例已被GC
 
-### 虚拟机中对象的创建
- ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/objcreate.jpg)
 
-- 对象的创建
+## 对象创建及使用
+
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/objcreate.jpg)
+
+对象的创建
 1. 类加载检查：虚拟机遇到new命令，先检查是否能在常量池定位到一个类的引用，检查这个符号代表的类是否已被加载、解析和初始化过。
-2. 分配内存：检查通过，在java堆中分配对象内存，分为整齐空间与交错空间的两种分配。
-    - 整齐空间只要移动指针即可“指针碰撞”。（指针碰撞：整理过内存用一个指针标记内存使用过的范围，后序分配内存只需要移动指针。）
-      - 比如Serial、ParNew垃圾回收器
-    - 错乱空间，分配内存方式，根据虚拟机列表上的空闲空间list，选定需要分配的内存更新列表，这种分配内存的方式为“空闲列表”。
-    - **内存分配并发解决方案**
-      - CAS+失败重试
-      - TLAB(Thread local Allocation Buffer) ，即线程预先在堆中分配一块内存。
+2. 分配内存：检查通过，在java堆中分配对象内存，具体看对象的内存分配。
 3. 初始化零值：内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值，这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用。
 4. 设置对象头：进行对象的必要设置如那个类的示例、hashcode、GC分代年龄等信息，这些信息存放在对象头中。
-5. 上数工作完成之后，java开始调用对象的构造函数。
+5. 上述工作完成之后，java开始调用对象的构造函数。
+
+### 对象分配内存的方式
+- 规整空间：指针碰撞，整理过内存用一个指针标记内存使用过的范围，后序分配内存只需要移动指针，仅把指针向空闲空间移动一段与对象大小相等的距离。
+- 碎片空间：空闲链表(free list)，通过额外的维护的列表存储记录空闲的地址，将随机 IO 变为顺序 IO，但带来了额外的空间消耗。
+- 本地线程分配缓冲(Thread Local Allocation Buffer,TLAB) ，每个线程在Java堆中预先分配一小块内存，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
+
+**内存分配并发解决方案**
+- CAS+失败重试
+- TLAB(Thread local Allocation Buffer) ，即线程预先在堆中分配一块内存。
+
+
+### 对象内存分布
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/object-head.jpg)
+对象在堆内存中的存储布局可以分为三部分：对象头、实例数据（对象有效信息）和对齐填充（仅起占位符作用）\
+
+Hotspot的对象头包括两部分信息：
+1. 第一部分：存储对象自身的运行数据，如HashCode、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID等。
+2. 第二部分：类型指针，即对象指向它的类型愿数据的指针。
+
+### 对象的访问
+定义：java程序会通过栈上的reference数据来操作堆上的具体对象。具体的对象访问方式由虚拟机决定，主要有两种使用句柄和直接指针两种。
+- 使用句柄访问的话，java堆会划分一块内存作为句柄池。而句柄中分为两块指针，一个是指向对象实例的指针，一个是指向对象类型数据的指针(指向方法区)。好处为整理内存是只需要整理实例的指针。
+- 直接指针访问，对实例中包含数据的类型数据的指针(指向方法区)，好处为减少了指向实例的时间定为开销。
+
+HotSpot虚拟机主要使用第二种方式进行访问。
+
+### 对象引用
+- 强引用(Strongly Reference): Object obj = new Object()。关系存在虚拟机就不会回收。
+- 软引用(Soft Reference)：用来描述一些还有用但非必须的对象。在系统要发生内存溢出会收集软引用对象，若回收完成仍内存不足，才抛出内存遗传。
+- 弱引用(Weak Reference)：弱引用关联的对象只能生存到下一次垃圾收集发生为止。
+- 虚引用(Phantom Reference)：最弱的引用，意义为一个对象设置虚引用关联的唯一目的是为了在该对象被收集时得到一个通知。
+- 对象死亡的调用，任何一个对象都会被系统调用一次，如果对象下一次面临回收它的finalize()不会再执行。
 
 
 ## JDK编译期
@@ -601,7 +654,8 @@ public static final int v = 8080;
 9. 重写的优化，子类重写方法中会新增一个桥接方法。
 10. 匿名内部类：生成final 修饰的类
 
-- 相关资料： [Java编译期处理](https://blog.csdn.net/gyhdxwang/article/details/104396476)
+
+相关资料： [Java编译期处理](https://blog.csdn.net/gyhdxwang/article/details/104396476)
 
 ## 堆内存的设置要点
 1. 新生代的内存大小设置建议：Sun官方推荐配置为整个堆的3/8。
@@ -630,7 +684,6 @@ java -Xmx3800m -Xms3800m -Xmn2g -Xss128k -XX:+UseParallelGC -XX:ParallelGCThread
 -Xss128 减少默认最大的线程栈大小，提供更多的处理虚拟内存地址空间被进程使用。 
 -XX:+UseParallelGC 采用并行垃圾收集器对年青代的内存进行收集，提高效率。 
 -XX:ParallelGCThreads=20 减少垃圾收集线程，默认是和服务器可支持的线程最大并发数相同，往往不需要配置到最大值。 
-
 ```
 2．尝试采用对老年代并行收集 
 ```
@@ -649,7 +702,7 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
 -XX:TargetSurvivorRatio=90 允许90%的空间被占用，超过默认的50%，提高对于survivor的使用率。
 ```
 
-- 相关文章：[看完你还敢说你懂JVM吗？](https://zhuanlan.zhihu.com/p/61049063?utm_source=wechat_session)
+相关文章：[看完你还敢说你懂JVM吗？](https://zhuanlan.zhihu.com/p/61049063?utm_source=wechat_session)
 
 ## CMS + ParNew收集器的流程梳理
 
@@ -668,11 +721,6 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
 3. 空间分配担保：当 Survivor 空间不足以容纳一次 Minor GC 之后存活的对象时，就需要依赖其他内存区域(实际上大多数情况下就是老年代) 进行分配担保，survior区无法容纳的对象直接晋升到老年代。。
     > 在发生 Minor GC 之前，虚拟机必须先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那这一次 Minor GC 可以确保是安全的。如果不成立，则虚拟机会先查看 - XX:HandlePromotionFailure 参数的设置值是否允许担保失败 (Handle Promotion Failure)；如果允许，那会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，将尝试进行一次 Minor GC，尽管这次 Minor GC 是有风险的；如果小于，或者-XX: HandlePromotionFailure设置不允许冒险，那这时就要改为进行一次 Full GC。
 
-
-#### 对象分配内存方式
-- **TLAB**：Thread Local Allocation Buffer 的简写，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
-- 整齐空间：指针碰撞
-- 碎片空间：空闲链表（free list）：通过额外的存储记录空闲的地址，将随机 IO 变为顺序 IO，但带来了额外的空间消耗。
 
 ### old区域(老年代)
 #### CMS GC原因
@@ -717,8 +765,7 @@ CMS 在Background回收的过程中，STW 的阶段主要是 Init Mark 和 Final
 
 Card Table：中文翻译为卡表，主要是用来标记卡页的状态，每个卡表项对应一个卡页。当卡页中一个对象引用有写操作时，写屏障将会标记对象所在的卡表状态改为 dirty，卡表的本质是用来解决跨代引用的问题。
 
-> 内存分配 
-
+> 内存分配
 1. **TLAB**：Thread Local Allocation Buffer 的简写，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
 2. CAS+失败重试
 
