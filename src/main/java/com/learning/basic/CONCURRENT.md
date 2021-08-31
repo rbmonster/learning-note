@@ -33,10 +33,10 @@ Java 内存模型规定，将所有的变量都存放在 主内存中，当线�
 原子性：原子（atom）指化学反应不可再分的基本微粒，原子性操作你应该能感受到其含义:
 
 count++ 分解为四步，解释一下字节码的指令，
-> - 16 : 获取当前 count 值，并且放入栈顶
-> - 19 : 将常量 1 放入栈顶
-> - 20 : 将当前栈顶中两个值相加，并把结果放入栈顶
-> - 21 : 把栈顶的结果再赋值给 count
+> 16 : 获取当前 count 值，并且放入栈顶\
+> 19 : 将常量 1 放入栈顶\
+> 20 : 将当前栈顶中两个值相加，并把结果放入栈顶\
+> 21 : 把栈顶的结果再赋值给 count
 
 -  JDK 的 rt.jar 包中的 Unsafe 类提供了 硬件级别 的原子性操作
 
@@ -44,10 +44,10 @@ count++ 分解为四步，解释一下字节码的指令，
 对于编译期可能对语句的执行进行了优化。
 - 如双重加锁检查的 `instance = new Singleton()`\
 这 1 行代码转换成了 CPU 指令后又变成了 3 个，我们理解 new 对象应该是这样的:
- ```
- 1. 分配一块内存 M
- 2. 在内存 M 上初始化 Singleton 对象
- 3. 后 M 的地址赋值给 instance 变量
+```
+1. 分配一块内存 M
+2. 在内存 M 上初始化 Singleton 对象
+3. 后 M 的地址赋值给 instance 变量
 
 但编译器擅自优化后可能就变成了这样:
 1. 分配一块内存 M
@@ -344,6 +344,157 @@ public static void main(String[] args) {
     }
 }
 ```
+
+
+
+## 线程安全
+
+### happen-before 先行发生原则
+- 程序次序规则：线程按照控制流顺序执行，控制流顺序不是代码顺序，因为要考虑分支和循环。
+- 管道锁定规则：一个unlock操作先行发生后面对同一个锁的lock操作。时间上先后执行。
+- volatile规则：对一个变量的写操作先行发生于读动作。
+- 线程启动规则：线程对象start()方法先行发生。
+- 线程终止规则：线程中所有操作先行发生于对此线程的终止检测。Thread::isAlive()
+- 线程中断规则：对线程的interrupt()方法的调用先行发生于中断检测。
+- 对象终结规则：对象初始化完成先行发生于finalize()方法。
+- 传递性: A->B, B->C  => A->C
+
+```java
+/**
+ *  不符合程序次序
+ *  不符合管道锁定
+ *  不符合volatile
+ *  不符合线程的相关原则
+ *
+ *  预期中A的操作时间先于B，结果应都为123
+ *  结果出现不少为0的记录，此时线程不安全。
+ */
+public class HappenBefore {
+
+    private class Apple{
+        private  int value = 0;
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+        }
+
+    }
+
+    protected class SetThread implements Runnable {
+        private Apple apple;
+        public SetThread(Apple apple) {
+            this.apple = apple;
+        }
+
+        @Override
+        public void run() {
+            apple.setValue(123);
+        }
+    }
+
+    protected class GetThread implements Runnable {
+        private Apple apple;
+
+        public GetThread(Apple apple) {
+            this.apple = apple;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(apple.getValue());
+        }
+    }
+
+    public void testSetAndGet() {
+        Apple apple = new Apple();
+        Thread thread1 =new Thread(new SetThread(apple));
+        Thread thread2 = new Thread(new GetThread(apple));
+        thread1.start();
+        thread2.start();
+    }
+
+    public static void main(String[] args) {
+        HappenBefore happenBefore = new HappenBefore();
+        for (int i = 0; i < 100; i++) {
+            happenBefore.testSetAndGet();
+        }
+    }
+}
+
+```
+
+### 线程安全的类定义
+1. 无状态的类：没有任何成员变量的类，如无任何方法的枚举类型。
+2. 让类不可变
+    1. 加final关键字
+    2. 不提供修改成员变量，也不提供获取成员变量方法
+3. 使用volatile，保证类的可见性，不能保证线程安全。适合一写多读的场景
+4. 加锁和CAS，使用synchronized、lock、原子变量AtomicInteger等
+    1. 如StringBuffer 修改的方法都使用synchronize修饰。
+    2. 如concurrentHashMap 使用自旋加CAS修改。
+    3. 使用Atomic包的基本类型，如AtomicInteger、AtomicReference、AtmoicStampReference修饰变量。
+
+
+### 枚举类为什么是线程安全？
+
+普通的一个枚举类
+```
+public enum t {
+    SPRING,SUMMER,AUTUMN,WINTER;
+}
+```
+
+反编译后的代码
+```
+public final class T extends Enum
+{
+    private T(String s, int i)
+    {
+        super(s, i);
+    }
+    public static T[] values()
+    {
+        T at[];
+        int i;
+        T at1[];
+        System.arraycopy(at = ENUM$VALUES, 0, at1 = new T[i = at.length], 0, i);
+        return at1;
+    }
+
+    public static T valueOf(String s)
+    {
+        return (T)Enum.valueOf(demo/T, s);
+    }
+
+    public static final T SPRING;
+    public static final T SUMMER;
+    public static final T AUTUMN;
+    public static final T WINTER;
+    private static final T ENUM$VALUES[];
+    static
+    {
+        SPRING = new T("SPRING", 0);
+        SUMMER = new T("SUMMER", 1);
+        AUTUMN = new T("AUTUMN", 2);
+        WINTER = new T("WINTER", 3);
+        ENUM$VALUES = (new T[] {
+            SPRING, SUMMER, AUTUMN, WINTER
+        });
+    }
+}
+```
+
+1. `public final class T extends Enum`，说明，该类是继承了Enum类的，同时final关键字告诉我们，这个类也是不能被继承的。
+2. 类中的几个属性和方法都是static final类型的，说明static类型的属性会在类被加载之后被初始化便不可修改。
+> 创建一个enum类型是线程安全的。
+
+
+相关资料：[深度分析Java的枚举类型—-枚举的线程安全性及序列化问题](https://www.cnblogs.com/z00377750/p/9177097.html)
+
 
 ## 其他
 ### 为什么jdk8要在4s后开启偏向锁？

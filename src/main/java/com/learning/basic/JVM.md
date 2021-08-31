@@ -413,7 +413,7 @@ java相关的三层类加载器
 - 作用：因为这样可以避免重复加载，当父亲已经加载了该类的时候，就没有必要 ClassLoader 再加载一次。考虑到安全因素，我们试想一下，如果不使用这种委托模式，那我们就可以随时使用自定义的String来动态替代java核心api中定义的类型，这样会存在非常大的安全隐患，而双亲委托的方式，就可以避免这种情况，因为String 已经在启动时就被引导类加载器（Bootstrcp ClassLoader）加载，所以用户自定义的ClassLoader永远也无法加载一个自己写的String，除非你改变 JDK 中 ClassLoader 搜索类的默认算法。
 ![avatar](http://ww1.sinaimg.cn/large/8dc363e6ly1g2fwftq83rj20jg0dz3z6.jpg)
 
-  - 相关代码：
+相关代码：
 ```
     protected Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException
@@ -633,12 +633,80 @@ HotSpot虚拟机主要使用第二种方式进行访问。
 
 ### 对象引用
 - 强引用(Strongly Reference): Object obj = new Object()。关系存在虚拟机就不会回收。
-- 软引用(Soft Reference)：用来描述一些还有用但非必须的对象。在系统要发生内存溢出会收集软引用对象，若回收完成仍内存不足，才抛出内存遗传。
+- 软引用(Soft Reference)：用来描述一些还有用但非必须的对象。在系统要发生内存溢出会收集软引用对象，若回收完成仍内存不足，才抛出内存遗传。软引用可用于实现内存敏感缓存，其中内存管理是一个非常重要的因素。
 - 弱引用(Weak Reference)：弱引用关联的对象只能生存到下一次垃圾收集发生为止。
 - 虚引用(Phantom Reference)：最弱的引用，意义为一个对象设置虚引用关联的唯一目的是为了在该对象被收集时得到一个通知。
-- 对象死亡的调用，任何一个对象都会被系统调用一次，如果对象下一次面临回收它的finalize()不会再执行。
 
+对象死亡的调用，任何一个对象都会被系统调用一次，如果对象下一次面临回收它的finalize()不会再执行。
 
+- [Soft References in Java](https://www.baeldung.com/java-soft-references)
+- [Weak References in Java](https://www.baeldung.com/java-weak-reference)
+- [Phantom References in Java](https://www.baeldung.com/java-phantom-reference)
+
+```java
+public class WeakReferenceTest {
+
+    public static void main(String[] args) {
+        Object referent = new Object();
+        ReferenceQueue<Object> referenceQueue = new ReferenceQueue<>();
+
+        WeakReference weakReference1 = new WeakReference<>(referent);
+        WeakReference weakReference2 = new WeakReference<>(referent, referenceQueue);
+
+        referent = null;
+        System.gc();
+
+        Object referent2 = weakReference1.get();
+        System.out.println("after gc, reference get result: " + referent2);
+    }
+}
+```
+
+```java
+
+public class PhantomReferenceTest {
+
+    public static void main(String[] args) {
+        ReferenceQueue<Object> referenceQueue = new ReferenceQueue<>();
+        List<LargeObjectFinalizer> references = new ArrayList<>();
+        List<Object> largeObjects = new ArrayList<>();
+
+        for (int i = 0; i < 10; ++i) {
+            Object largeObject = new Object();
+            largeObjects.add(largeObject);
+            references.add(new LargeObjectFinalizer(largeObject, referenceQueue));
+        }
+
+        largeObjects = null;
+        System.gc();
+
+        Reference<?> referenceFromQueue;
+        for (PhantomReference<Object> reference : references) {
+            System.out.println(reference.isEnqueued());
+            // 此处获取为空
+            System.out.println("get result" + reference.get());
+        }
+
+        while ((referenceFromQueue = referenceQueue.poll()) != null) {
+            ((LargeObjectFinalizer)referenceFromQueue).finalizeResources();
+            referenceFromQueue.clear();
+        }
+    }
+}
+
+class LargeObjectFinalizer extends PhantomReference<Object> {
+
+    public LargeObjectFinalizer(
+            Object referent, ReferenceQueue<? super Object> q) {
+        super(referent, q);
+    }
+
+    public void finalizeResources() {
+        // free resources
+        System.out.println("clearing ...");
+    }
+}
+```
 ## JDK编译期
 
 ### 编译期做的工作
