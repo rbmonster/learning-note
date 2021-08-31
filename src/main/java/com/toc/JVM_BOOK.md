@@ -421,12 +421,12 @@ public class Singleton{
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/lwp.jpg)
 
-- java线程调度
-  - 抢占式调度。
-  - 使用线程优先级不是稳定的调节手段，如Java优先级10个，而在window上运行为6个优先级。
+java线程调度
+- 抢占式调度。
+- 使用线程优先级不是稳定的调节手段，如Java优先级10个，而在window上运行为6个优先级。
   
 ## <a name="20">十三、线程安全与锁安全</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 定义：多个线程同时访问一个对象时，如果不用考虑这些线程在运行时环境的调度和交替执行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个线程的行为都可以获得正确的结果，则这个对象是线程安全的。
+定义：多个线程同时访问一个对象时，如果不用考虑这些线程在运行时环境的调度和交替执行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个线程的行为都可以获得正确的结果，则这个对象是线程安全的。
 #### <a name="21">13.1 java中的线程安全</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 不可变：声明为final，没有发生this引用逃逸(this逃逸就是说在构造函数返回之前其他线程就持有该对象的引用，调用尚未构造完全的对象的方法可能引发错误。)
 - String对象时不可变的，针对其操作均会返回一个新构造的字符串对象。
@@ -444,7 +444,7 @@ public class Singleton{
   - 公平锁：按申请锁的时间顺序获得，通过构造函数的变量实现，会明显影响吞吐量。
   - 锁绑定多个条件：ReentrantLock可绑定多个Condition对象。
   
-- 非阻塞同步：
+非阻塞同步：
   - 乐观锁：基于冲突检测的乐观并发策略。CAS，会有ABA问题。
 
 #### <a name="23">13.3 锁优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
