@@ -37,32 +37,19 @@ public class Solution{
     }
 }
 ```
-
-求余数常见操作
-```java
-public class Solution {
-  private int getNext(int n) {
-    int totalSum = 0;
-    while (n > 0) {
-      // 余数
-      int d = n % 10;
-      // 整除进位
-      n = n / 10;
-      // 余数操作
-      totalSum += d * d;
-    }
-    return totalSum;
-  }
-}
-```
+哈希接口判断元素存在：
+- [字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 
 使用哈希映射的场景：
 - [同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
-
 - [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
 - [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 - [寻找重复的子树（hash表与树的结合）](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
     
+利用哈希表O(1)特性查找：
+- [两数之和](https://leetcode-cn.com/problems/two-sum/)
+- [最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
 ## 数组与字符串
 ### 数组
 - 针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
@@ -1455,6 +1442,30 @@ class Solution {
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
+## 滑动窗口
+- [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+
+
 
 ## TODO 二进制应用
 计算1的个数
+
+## 常用操作
+求余数常见操作
+```java
+public class Solution {
+  private int getNext(int n) {
+    int totalSum = 0;
+    while (n > 0) {
+      // 余数
+      int d = n % 10;
+      // 整除进位
+      n = n / 10;
+      // 余数操作
+      totalSum += d * d;
+    }
+    return totalSum;
+  }
+}
+```

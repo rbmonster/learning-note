@@ -228,11 +228,12 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
     - JDK5中设置CMS在老年代使用了68%便会激活，JDK6默认的设置提高到92%。当运行预留的内存无法满足程序分配新对象的需要，就会出现一次“并发失败”。后备预案为冻结用户线程，启用Serial Old进行老年代的垃圾收集。
     - `-XX:CMSInitiatingOccupancyFraction `可以设置触发CMS收集的百分比。
 > 并发收集失败：收集过程中，老年代被填满；收集完成后，收集的空间仍然无法满足被使用；浮动垃圾
-- 参数-XX:CMSFullGCsBeforeCompaction：作用是要求CMS收集器在执行过若干次不整理的Full GC之后，下一次先进行碎片整理(默认值为0，表示每次FullGC都进行碎片整理) 
+- 参数-XX:CMSFullGCsBeforeCompaction：作用是要求CMS收集器在执行过若干次不整理的Full GC之后，下一次先进行碎片整理(默认值为0，表示每次FullGC都进行碎片整理)
+  
+[CMS官网说明](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/cms.html#concurrent_mode_failure)
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/cms-1.jpg)
 
-[CMS官网说明](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/cms.html#concurrent_mode_failure)
 #### Garbage First 收集器
 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中还有一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
 
@@ -284,100 +285,102 @@ G1计划作为并发标记扫描收集器（CMS）的长期替代品。
 
 ## java虚拟机监控工具
 ### jps
-- jps (JVM Process Status）: 类似 UNIX 的 ps 命令。用户查看所有 Java 进程的启动类、传入参数和 Java 虚拟机参数等信息；
-  - ```
-    [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jps -l
-    3796 sun.tools.jps.Jps
-    2903 org.apache.catalina.startup.Bootstrap
-    [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jps -m
-    3811 Jps -m
-    2903 Bootstrap start
-    [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jps -v
-    3828 Jps -Dapplication.home=/usr/java/jdk1.8.0_221-amd64 -Xms8m
-    2903 Bootstrap -Djava.util.logging.config.file=/usr/local/apache-tomcat-8.5.31/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -Dcatalina.base=/usr/local/apache-tomcat-8.5.31 -Dcatalina.home=/usr/local/apache-tomcat-8.5.31 -Djava.io.tmpdir=/usr/local/apache-tomcat-8.5.31/temp
-    ```
+jps (JVM Process Status）: 类似 UNIX 的 ps 命令。用户查看所有 Java 进程的启动类、传入参数和 Java 虚拟机参数等信息；
+```
+[root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jps -l
+3796 sun.tools.jps.Jps
+2903 org.apache.catalina.startup.Bootstrap
+[root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jps -m
+3811 Jps -m
+2903 Bootstrap start
+[root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jps -v
+3828 Jps -Dapplication.home=/usr/java/jdk1.8.0_221-amd64 -Xms8m
+2903 Bootstrap -Djava.util.logging.config.file=/usr/local/apache-tomcat-8.5.31/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -Dcatalina.base=/usr/local/apache-tomcat-8.5.31 -Dcatalina.home=/usr/local/apache-tomcat-8.5.31 -Djava.io.tmpdir=/usr/local/apache-tomcat-8.5.31/temp
+```
 ### jstat
- jstat（ JVM Statistics Monitoring Tool）: 用于收集 HotSpot 虚拟机各方面的运行数据;
-- jstat -gc -h3 31736 1000 10表示分析进程 id 为 31736 的 gc 情况，每隔 1000ms 打印一次记录，打印 10 次停止，每 3 行后打印指标头部。
-  - ```
-    [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jstat -gc -h3 2903 1000 10
-     S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT   
-    4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
-    4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
-    4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
-     S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT   
-    4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
-    4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
-    4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
-    ```
+jstat（ JVM Statistics Monitoring Tool）: 用于收集 HotSpot 虚拟机各方面的运行数据;
+
+jstat -gc -h3 31736 1000 10表示分析进程 id 为 31736 的 gc 情况，每隔 1000ms 打印一次记录，打印 10 次停止，每 3 行后打印指标头部。
+ ```
+[root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jstat -gc -h3 2903 1000 10
+ S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT   
+4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
+4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
+4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
+ S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT   
+4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
+4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
+4160.0 4160.0 2589.7  0.0   33792.0   8242.5   84096.0    55749.8   61440.0 60173.8 7424.0 7132.2    306    1.047   7      0.345    1.393
+```
 
 - 相关资料：https://www.xttblog.com/?p=3175
 ### jinfo
 jinfo (Configuration Info for Java) : Configuration Info forJava,显示虚拟机配置信息;
-  - ```
-    C:\Users\SnailClimb>jinfo  -flag MaxHeapSize 17340
-    -XX:MaxHeapSize=2124414976
-    C:\Users\SnailClimb>jinfo  -flag PrintGC 17340
-    -XX:-PrintGC
-    ```
+ ```
+C:\Users\SnailClimb>jinfo  -flag MaxHeapSize 17340
+-XX:MaxHeapSize=2124414976
+C:\Users\SnailClimb>jinfo  -flag PrintGC 17340
+-XX:-PrintGC
+```
 ### jmap 和 jhat
 jmap (Memory Map for Java) :生成堆转储快照;
-  - ```
-    [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jmap -dump:format=b,file=elasticfoam.bin 2903
-    Dumping heap to /usr/local/apache-tomcat-8.5.31/elasticfoam.bin ...
-    Heap dump file created
-    ```
+```
+[root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jmap -dump:format=b,file=elasticfoam.bin 2903
+Dumping heap to /usr/local/apache-tomcat-8.5.31/elasticfoam.bin ...
+Heap dump file created
+```
 
-jhat (JVM Heap Dump Browser ) : 用于分析 heapdump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果;
-  - 与上面的jmap配合使用，分析heapdump的堆信息，会生成具体的服务器。
-  - ```
-    [root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jhat elasticfoam.bin 
-    Reading from elasticfoam.bin...
-    Dump file created Sat Nov 07 14:02:33 CST 2020
-    Snapshot read, resolving...
-    Resolving 131419 objects...
-    Chasing references, expect 26 dots..........................
-    Eliminating duplicate references..........................
-    Snapshot resolved.
-    Started HTTP server on port 7000
-    Server is ready.
-    ```
+jhat (JVM Heap Dump Browser ) : 用于分析 heapdump 文件，它会建立一个 HTTP/HTML 服务器，让用户可以在浏览器上查看分析结果;\
+与上面的jmap配合使用，分析heapdump的堆信息，会生成具体的服务器。
+```
+[root@iZuf6ee30yhz3x9bqf63clZ apache-tomcat-8.5.31]# jhat elasticfoam.bin 
+Reading from elasticfoam.bin...
+Dump file created Sat Nov 07 14:02:33 CST 2020
+Snapshot read, resolving...
+Resolving 131419 objects...
+Chasing references, expect 26 dots..........................
+Eliminating duplicate references..........................
+Snapshot resolved.
+Started HTTP server on port 7000
+Server is ready.
+```
 ### jstack
 jstack (Stack Trace for Java):生成虚拟机当前时刻的线程快照，线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合。
-  - ```
-    Found one Java-level deadlock:
-    =============================
-    "线程 2":
-      waiting to lock monitor 0x000000000333e668 (object 0x00000000d5efe1c0, a java.lang.Object),
-      which is held by "线程 1"
-    "线程 1":
-      waiting to lock monitor 0x000000000333be88 (object 0x00000000d5efe1d0, a java.lang.Object),
-      which is held by "线程 2"
+
+```
+Found one Java-level deadlock:
+=============================
+"线程 2":
+  waiting to lock monitor 0x000000000333e668 (object 0x00000000d5efe1c0, a java.lang.Object),
+  which is held by "线程 1"
+"线程 1":
+  waiting to lock monitor 0x000000000333be88 (object 0x00000000d5efe1d0, a java.lang.Object),
+  which is held by "线程 2"
+
+Java stack information for the threads listed above:
+===================================================
+"线程 2":
+        at DeadLockDemo.lambda$main$1(DeadLockDemo.java:31)
+        - waiting to lock <0x00000000d5efe1c0> (a java.lang.Object)
+        - locked <0x00000000d5efe1d0> (a java.lang.Object)
+        at DeadLockDemo$$Lambda$2/1078694789.run(Unknown Source)
+        at java.lang.Thread.run(Thread.java:748)
+"线程 1":
+        at DeadLockDemo.lambda$main$0(DeadLockDemo.java:16)
+        - waiting to lock <0x00000000d5efe1d0> (a java.lang.Object)
+        - locked <0x00000000d5efe1c0> (a java.lang.Object)
+        at DeadLockDemo$$Lambda$1/1324119927.run(Unknown Source)
+        at java.lang.Thread.run(Thread.java:748)
+Found 1 deadlock.
+```
     
-    Java stack information for the threads listed above:
-    ===================================================
-    "线程 2":
-            at DeadLockDemo.lambda$main$1(DeadLockDemo.java:31)
-            - waiting to lock <0x00000000d5efe1c0> (a java.lang.Object)
-            - locked <0x00000000d5efe1d0> (a java.lang.Object)
-            at DeadLockDemo$$Lambda$2/1078694789.run(Unknown Source)
-            at java.lang.Thread.run(Thread.java:748)
-    "线程 1":
-            at DeadLockDemo.lambda$main$0(DeadLockDemo.java:16)
-            - waiting to lock <0x00000000d5efe1d0> (a java.lang.Object)
-            - locked <0x00000000d5efe1c0> (a java.lang.Object)
-            at DeadLockDemo$$Lambda$1/1324119927.run(Unknown Source)
-            at java.lang.Thread.run(Thread.java:748)
-    Found 1 deadlock.
-    ```
-    
-- 一个linux的排除高CUP线程的排查案例
-- ```
-  top -c //查看所有进程
-  top -Hp xxx（PID）  // 查看进程具体的线程ID cup情况
-  jstack -l pid > filename // 输出当前快照
-  cat filename| grep '线程ID（16进制）' -C 8     // 查找匹配线程，-C 查看前后多少行数据
-  ```
+一个linux的排除高CUP线程的排查案例
+ ```
+top -c //查看所有进程
+top -Hp xxx（PID）  // 查看进程具体的线程ID cup情况
+jstack -l pid > filename // 输出当前快照
+cat filename| grep '线程ID（16进制）' -C 8     // 查找匹配线程，-C 查看前后多少行数据
+```
 ### jconsole
 JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看堆的内存释放情况。
 - 如果需要使用 JConsole 连接远程进程，可以在远程 Java 程序启动时加上下面这些参数:
