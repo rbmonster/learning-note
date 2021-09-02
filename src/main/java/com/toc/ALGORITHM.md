@@ -68,55 +68,63 @@
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 哈希表的关键思想是使用哈希函数将键映射到存储桶。
-- HashMap常见操作
+
+
+HashMap常见操作
 ```java
-Map<Integer, Integer> hashmap = new HashMap<>();
-// 2. insert a new (key, value) pair 
-//putIfAbsent()保存数据的时候，如果该链表中保存的有相同key的值，那么就不会对我们当前的value进行保存
-hashmap.putIfAbsent(0, 0);
-hashmap.putIfAbsent(2, 3);
 
-hashmap.putIfAbsent(1,4);
-hashmap.putIfAbsent(2,4);
-int mer = hashmap.merge(1,6,(v1, v2) -> v1+v2);
-//output 1 ->8 
-int value  =12;
-int key2 = map.computeIfAbsent(2,k -> value);
-int key3 = map.computeIfAbsent(3,k -> value);
-// output key2 = 4, key3 = 12
-int res = map.computeIfPresent(3,(key, oldVal) -> oldVal-1);
-//output res = 11
+public class Solution{
+    
+    public static void main(String[] args ) {
 
-int result1 =map.compute(3,(key, oldValue) -> oldValue-10);
-//output 10
-int result = map.compute(4,(key, oldValue) -> oldValue-10);
-//cause error nullPoint,key 4 not exist
+      Map<Integer, Integer> hashmap = new HashMap<>();
+      // 2. insert a new (key, value) pair 
+      //putIfAbsent()保存数据的时候，如果该链表中保存的有相同key的值，那么就不会对我们当前的value进行保存
+      hashmap.putIfAbsent(0, 0);
+      hashmap.putIfAbsent(2, 3);
+      hashmap.putIfAbsent(1,4);
+      hashmap.putIfAbsent(2,4);
+      int mer = hashmap.merge(1,6,(v1, v2) -> v1+v2);
+      //output 1 ->8 
+      int value  =12;
+      int key2 = map.computeIfAbsent(2,k -> value);
+      int key3 = map.computeIfAbsent(3,k -> value);
+      // output key2 = 4, key3 = 12
+      int res = map.computeIfPresent(3,(key, oldVal) -> oldVal-1);
+      //output res = 11
+      int result1 = map.compute(3,(key, oldValue) -> oldValue-10);
+      //output 10
+      int result = map.compute(4,(key, oldValue) -> oldValue-10);
+      //cause error nullPoint,key 4 not exist
 
 
-map.put(1, count.getOrDefault(1, 0) + 1);
-// 取1的值，如果存在则取value 否则默认为0、
-```
-
-- 求余数常见操作
-```java
- private int getNext(int n) {
-    int totalSum = 0;
-    while (n > 0) {
-        // 余数
-        int d = n % 10;
-        // 整除进位
-        n = n / 10;
-        // 余数操作
-        totalSum += d * d;
+      map.put(1, count.getOrDefault(1, 0) + 1);
+      // 取1的值，如果存在则取value 否则默认为0、
     }
-    return totalSum;
 }
 ```
 
-使用哈希映射的第一个场景是，我们需要更多的信息，而不仅仅是键。然后通过哈希映射建立密钥与信息之间的映射关系。
+求余数常见操作
+```java
+public class Solution {
+  private int getNext(int n) {
+    int totalSum = 0;
+    while (n > 0) {
+      // 余数
+      int d = n % 10;
+      // 整除进位
+      n = n / 10;
+      // 余数操作
+      totalSum += d * d;
+    }
+    return totalSum;
+  }
+}
+```
+
+使用哈希映射的场景：
 - [同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
 
-另一个常见的场景是按键聚合所有信息，我们也可以使用哈希映射来实现这一目标。
 - [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
 - [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 - [寻找重复的子树（hash表与树的结合）](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
@@ -132,7 +140,7 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 ### <a name="4">字符串</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 公共前缀问题
 - [最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/)
-    - 分治法、二分法
+> 分治法、二分法
   
 回文问题（包含子串与子序列问题）
 - [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
@@ -140,9 +148,10 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 双指针问题
 - [反转字符串](https://leetcode-cn.com/problems/reverse-string/)
 - [两数之和 II - 输入有序数组（最基础问题） ](https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/)
-- 快慢指针：
-    - 移除数组
-    - 移动零
+
+快慢指针：
+- 移除数组
+- 移动零
 
 - [反转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
 
@@ -151,27 +160,35 @@ map.put(1, count.getOrDefault(1, 0) + 1);
 - [环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
 - [环形链表2](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 - [相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
-    - > 两链表相接最后一段common
-- 删除链表的倒数第N个节点
-- 移除链表元素
+- [剑指 Offer 22. 链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
 - [旋转链表](https://leetcode-cn.com/problems/rotate-list/)
-  
+- [奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+
+虚拟节点：
+- [移除链表元素](https://leetcode-cn.com/problems/remove-linked-list-elements/)
+
+
 经典问题：
-- 反转链表：栈、头插法、递归
-- [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+
+- [剑指 Offer 24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/) 
+> 栈、头插法、递归
 - [合并两有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+- [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 
   
 反转链表递归写法:
 ```java
-public ListNode reverseList(ListNode head) {
+public class Solution{
+
+  public ListNode reverseList(ListNode head) {
     if(head ==null || head.next == null ) {
-        return head;
+      return head;
     }
     ListNode res = reverseList(head.next);
     head.next.next = head;
     head.next = null;
     return res;
+  }
 }
 ```
 
@@ -416,6 +433,7 @@ class Solution {
 ## <a name="12">BFS 与 DFS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
 
+- [剑指 Offer 13. 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
 - [岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/)
 - [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
 - [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
@@ -470,10 +488,21 @@ class UnionFindSet {
     }
 ```
 
-[冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
+- [冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
+- [除法求值](https://leetcode-cn.com/problems/evaluate-division/)
 
 
-
+```
+「力扣」第 1319 题：连通网络的操作次数（中等）；
+「力扣」第 1631 题：最小体力消耗路径（中等）；
+「力扣」第 959 题：由斜杠划分区域（中等）；
+「力扣」第 1202 题：交换字符串中的元素（中等）；
+「力扣」第 947 题：移除最多的同行或同列石头（中等）；
+「力扣」第 721 题：账户合并（中等）；
+「力扣」第 803 题：打砖块（困难）；
+「力扣」第 1579 题：保证图可完全遍历（困难）;
+「力扣」第 778 题：水位上升的泳池中游泳（困难）。
+```
 
 ## <a name="15">递归</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="16">递归三要素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -998,6 +1027,7 @@ public class Soluction {
 - [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
 - [单调递增的数字](https://leetcode-cn.com/problems/monotone-increasing-digits/)
 - [分发糖果](https://leetcode-cn.com/problems/candy/)
+- [救生艇](https://leetcode-cn.com/problems/boats-to-save-people/)
 
 
 - [监控⼆叉树](https://leetcode-cn.com/problems/binary-tree-cameras/)
@@ -1487,7 +1517,7 @@ class Solution {
 ## <a name="62">前缀树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
 
-典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计
+典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计\
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 

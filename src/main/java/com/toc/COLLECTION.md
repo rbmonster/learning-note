@@ -7,34 +7,36 @@
 &emsp;&emsp;&emsp;<a href="#4">1.1.2.  扩容</a>  
 &emsp;&emsp;&emsp;<a href="#5">1.1.3. 删除元素</a>  
 &emsp;&emsp;&emsp;<a href="#6">1.1.4. 快速失败</a>  
-&emsp;&emsp;<a href="#7">1.2. CopyOnWriteArrayList</a>  
-&emsp;&emsp;<a href="#8">1.3. LinkedList</a>  
-&emsp;<a href="#9">2.  Map</a>  
-&emsp;&emsp;<a href="#10">2.1. HashMap</a>  
-&emsp;&emsp;&emsp;<a href="#11">2.1.1. 基本知识</a>  
-&emsp;&emsp;&emsp;<a href="#12">2.1.2. put 操作</a>  
-&emsp;&emsp;&emsp;<a href="#13">2.1.3. 扩容</a>  
-&emsp;&emsp;&emsp;<a href="#14">2.1.4. HashMap红黑树查找</a>  
-&emsp;&emsp;&emsp;<a href="#15">2.1.5. hash 方法</a>  
-&emsp;&emsp;&emsp;<a href="#16">2.1.6. Java1.7并发下循环链表</a>  
-&emsp;&emsp;&emsp;<a href="#17">2.1.7. Java 1.7与1.8区别</a>  
-&emsp;&emsp;<a href="#18">2.2. LinkedHashMap </a>  
-&emsp;&emsp;<a href="#19">2.3. concurrentHashMap实现</a>  
-&emsp;&emsp;&emsp;<a href="#20">2.3.1. get方法</a>  
-&emsp;&emsp;&emsp;<a href="#21">2.3.2. put方法</a>  
-&emsp;&emsp;&emsp;<a href="#22">2.3.3. 扩容 addCount() -> transfer()</a>  
-&emsp;&emsp;<a href="#23">2.4. WeakHashMap</a>  
-&emsp;&emsp;<a href="#24">2.5. TreeMap</a>  
-&emsp;<a href="#25">3. Set</a>  
-&emsp;&emsp;<a href="#26">3.1. HashSet</a>  
-&emsp;&emsp;<a href="#27">3.2. LinkedHashSet实现</a>  
-&emsp;&emsp;<a href="#28">3.3. TreeSet 实现</a>  
-&emsp;<a href="#29">4. 迭代器</a>  
-&emsp;<a href="#30">5. 其他面试问题</a>  
-&emsp;&emsp;<a href="#31">5.1. 如何选用集合?</a>  
-&emsp;&emsp;<a href="#32">5.2. ArrayList 带参数及不带参数</a>  
-&emsp;&emsp;<a href="#33">5.3. Arrays.asList() 方法</a>  
-&emsp;&emsp;<a href="#34">5.4. hash 冲突解决方案</a>  
+&emsp;&emsp;&emsp;<a href="#7">1.1.5. 内存空间占用</a>  
+&emsp;&emsp;<a href="#8">1.2. CopyOnWriteArrayList</a>  
+&emsp;&emsp;<a href="#9">1.3. LinkedList</a>  
+&emsp;<a href="#10">2.  Map</a>  
+&emsp;&emsp;<a href="#11">2.1. HashMap</a>  
+&emsp;&emsp;&emsp;<a href="#12">2.1.1. 基本知识</a>  
+&emsp;&emsp;&emsp;<a href="#13">2.1.2. put 操作</a>  
+&emsp;&emsp;&emsp;<a href="#14">2.1.3. 扩容</a>  
+&emsp;&emsp;&emsp;<a href="#15">2.1.4. HashMap红黑树查找</a>  
+&emsp;&emsp;&emsp;<a href="#16">2.1.5. hash 方法</a>  
+&emsp;&emsp;&emsp;<a href="#17">2.1.6. Java1.7并发下循环链表</a>  
+&emsp;&emsp;&emsp;<a href="#18">2.1.7. Java 1.7与1.8区别</a>  
+&emsp;&emsp;<a href="#19">2.2. LinkedHashMap </a>  
+&emsp;&emsp;&emsp;<a href="#20">2.2.1. accessOrder</a>  
+&emsp;&emsp;<a href="#21">2.3. concurrentHashMap实现</a>  
+&emsp;&emsp;&emsp;<a href="#22">2.3.1. get方法</a>  
+&emsp;&emsp;&emsp;<a href="#23">2.3.2. put方法</a>  
+&emsp;&emsp;&emsp;<a href="#24">2.3.3. 扩容 addCount() -> transfer()</a>  
+&emsp;&emsp;<a href="#25">2.4. WeakHashMap</a>  
+&emsp;&emsp;<a href="#26">2.5. TreeMap</a>  
+&emsp;<a href="#27">3. Set</a>  
+&emsp;&emsp;<a href="#28">3.1. HashSet</a>  
+&emsp;&emsp;<a href="#29">3.2. LinkedHashSet实现</a>  
+&emsp;&emsp;<a href="#30">3.3. TreeSet 实现</a>  
+&emsp;<a href="#31">4. 迭代器</a>  
+&emsp;<a href="#32">5. 其他面试问题</a>  
+&emsp;&emsp;<a href="#33">5.1. 如何选用集合?</a>  
+&emsp;&emsp;<a href="#34">5.2. ArrayList 带参数及不带参数</a>  
+&emsp;&emsp;<a href="#35">5.3. Arrays.asList() 方法</a>  
+&emsp;&emsp;<a href="#36">5.4. hash 冲突解决方案</a>  
 # <a name="0">集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/collectionfamily.jpg)
 - 集合主要分为两大类，一个实现collection接口的，一个是实现了Map接口的。
@@ -128,9 +130,10 @@ modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化
     }
 ```
 
-内存空间占用： ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
+#### <a name="7">内存空间占用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
 
-### <a name="7">CopyOnWriteArrayList</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="8">CopyOnWriteArrayList</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 CopyOnWriteArrayList读写分离list
 
 写操作在一个复制的数组上进行，读操作还是在原始数组中进行，读写分离，互不影响。
@@ -160,7 +163,7 @@ CopyOnWriteArrayList读写分离list
     }
 ```
 
-### <a name="8">LinkedList</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="9">LinkedList</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 LinkedList定义了一个内部的Node 节点，基于双向链表实现，使用 Node 存储链表节点信息。
 
 相关操作：
@@ -183,7 +186,7 @@ LinkedList定义了一个内部的Node 节点，基于双向链表实现，使�
 ```
 
 
-## <a name="9"> Map</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="10"> Map</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - HashMap： JDK1.8 之前 HashMap 由数组+链表组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的（“拉链法”解决冲突）。JDK1.8 以后在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为 8）（将链表转换成红黑树前会判断，如果当前数组的长度小于 64，那么会选择先进行数组扩容，而不是转换为红黑树）时，将链表转化为红黑树，以减少搜索时间
 - LinkedHashMap： LinkedHashMap 继承自 HashMap，所以它的底层仍然是基于拉链式散列结构即由数组和链表或红黑树组成。另外，LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。详细可以查看：《LinkedHashMap 源码详细分析（JDK1.8）》
 - Hashtable： 数组+链表组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的
@@ -194,10 +197,10 @@ LinkedList定义了一个内部的Node 节点，基于双向链表实现，使�
 - IdentityHashMap：使用==代替equals()对“键”进行比较的散列映射。
 - sortedMap: 排序的Map，现阶段TreeMap是其唯一实现。
 - EnumMap:要求键必须来自一个Enum。
-### <a name="10">HashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="11">基本知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="11">HashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="12">基本知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 数据结构：基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点。
-基本的存储的结构为Node 节点的数组 `transient Node<K,V>[] table;`
+基本的存储的结构为`Key Value`的Node节点的数组 `transient Node<K,V>[] table;`
 
 threshold：临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
 
@@ -222,7 +225,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 > 负载因子大小的关系，若负载因子为1，那么在出现大量的hash膨胀的情况下，元素会较密集，并且都是用链表或者红黑树的方式连接，导致查询效率较低。
 > 若负载因子为0.5 那么就会造成空间的浪费，元素分布较为稀疏。
 
-#### <a name="12">put 操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="13">put 操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 首先判断table是否需要扩容，若需要进行扩容操作
 2. 计算当前元素hash经过散列后是否有元素存在，若不存在元素直接添加。
 3. 若存在元素，分下面两个判断
@@ -231,7 +234,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
         - 普通链表：循环判断链表节点是否为key相同替换情况，若均不是需要替换情况，则定位到链表尾部添加新节点。
         - 红黑树：树形遍历判断是否存在，不存在添加。
 
-#### <a name="13">扩容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="14">扩容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 每次扩容的大小为 <<1，表示乘以2。 
 1. 计算扩容新的table长度size 与threshold 的长度
 2. 遍历旧table，如果节点，无哈希冲突的情况，e.hash&(newCap-1)直接定位到新的位置。
@@ -242,7 +245,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 - 如果初始化容量大小不为2的幂次方，那么在初始化的时候，会计算threshold为大于初始化数的最近2的幂次方数，在实际使用的时候声明为table的大小。
 
 
-#### <a name="14">HashMap红黑树查找</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="15">HashMap红黑树查找</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 红黑树建立是基于Hash的大小来建立的。这里的hashcode 为hashMap换算过的hash。hash小的为左子树， hash 大的为右子树
 
 针对hash重复的情况：
@@ -301,7 +304,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
     }
 ```
 
-#### <a name="15">hash 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="16">hash 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一次16位右位移异或混合
 - 混合后的低位掺杂了高位的部分特征，这样高位的信息也被变相保留下来。
 - 混合原始哈希码的高位和低位，以此来加大低位的随机性。
@@ -315,7 +318,7 @@ static final int hash(Object key) {
 问题：为什么采用hashcode的高16位和低16位异或能降低hash碰撞？hash函数能不能直接用key的hashcode？
 1. 上述解释的点，低位与高位混合，加大hash的随机性。
 2. key的hashcode可能被重写，重写的hash函数冲突的概率无法保证。因此hashMap需要在此基础使用自己的hash加大随机性。
-#### <a name="16">Java1.7并发下循环链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="17">Java1.7并发下循环链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Java1.7 中HashMap扩容是使用类似**头插法**的方式把旧节点转移到新的数组上。假设节点出现哈希冲突以链表的方式连接，且头节点1和节点2 扩容的位置仍然不变。
 1. 当线程1与线程2新建完新数组，并且执行到上述链表节点的扩容，执行旧数组的头结点3。举个例子链表为 3->7
 2. 假设线程1先执行，扩容完毕后链表变为： 7 -> 3
@@ -345,7 +348,7 @@ Java1.7 中HashMap扩容是使用类似**头插法**的方式把旧节点转移�
 [美团关于HashMap的讲解](https://tech.meituan.com/2016/06/24/java-hashmap.html)
 
 
-#### <a name="17">Java 1.7与1.8区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="18">Java 1.7与1.8区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1.8还有三点主要的优化：
 
 - 数组+链表改成了数组+链表或红黑树；
@@ -359,7 +362,7 @@ Java1.7 中HashMap扩容是使用类似**头插法**的方式把旧节点转移�
 > 在多线程环境下，1.7 会产生死循环、数据丢失、数据覆盖的问题，1.8 中会有数据覆盖的问题。
 [hashMap头插法和尾插法区别](https://blog.csdn.net/weixin_35523284/article/details/112096437)
 
-### <a name="18">LinkedHashMap </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">LinkedHashMap </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 基于HashMap的基础Node的节点做拓展，添加头尾指针，因此支持顺序访问。双链表加数组的实现。
 ```
 static class Entry<K,V> extends HashMap.Node<K,V> {
@@ -369,7 +372,38 @@ static class Entry<K,V> extends HashMap.Node<K,V> {
     }
 }
 ```
-accessOrder主要用于LRU的构建 ，一个基本的LRU队列需要两点：
+
+#### <a name="20">accessOrder</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+accessOrder主要用于LRU的构建
+```
+/**
+ * The iteration ordering method for this linked hash map: <tt>true</tt>
+ * for access-order, <tt>false</tt> for insertion-order.
+ *
+ * @serial
+ */
+final boolean accessOrder;
+    
+/**
+ * Constructs an empty insertion-ordered <tt>LinkedHashMap</tt> instance
+ * with the default initial capacity (16) and load factor (0.75).
+ */
+public LinkedHashMap() {
+    super();
+    accessOrder = false;
+}
+    
+public V get(Object key) {
+    Node<K,V> e;
+    if ((e = getNode(hash(key), key)) == null)
+        return null;
+    if (accessOrder)
+        afterNodeAccess(e); // 处理LRU逻辑
+    return e.value;
+}
+```
+
+一个基本的LRU队列需要两点：
   - 添加元素添加在队头，
   ``` 
   void afterNodeInsertion(boolean evict) {}
@@ -378,6 +412,7 @@ accessOrder主要用于LRU的构建 ，一个基本的LRU队列需要两点：
   ```
   void afterNodeAccess(Node<K,V> e) {
   ```
+
 因此固定大小的LRU可以像这样构建：
 ```
 class LRUCache<K, V> extends LinkedHashMap<K, V> {
@@ -393,8 +428,8 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
     }
 }
 ```
-### <a name="19">concurrentHashMap实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-数据结构与HashMap一致，并发控制使用 synchronized 和自旋配合 CAS 来操作。 新增了TreeBin和ForwardingNode的概念。
+### <a name="21">concurrentHashMap实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+数据结构与HashMap一致，并发控制使用自旋、配合synchronized及CAS 来操作。 新增了TreeBin和ForwardingNode的概念。
 
 变量 sizeCtl ，它的值决定着当前的初始化状态。
 - -1 说明正在初始化
@@ -409,13 +444,13 @@ ForwardingNode （转移）节点保证扩容时的线程安全。
 
 TreeBin：当链表转为红黑树后，数组中保存的引用为 TreeBin，TreeBin 内部不保存 key/value，他保存了 TreeNode的list以及红黑树 root。充当一颗树的节点锁的概念。
 
-#### <a name="20">get方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="22">get方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 计算出hash位置，通过unsafe的包，保证可见性的获取节点。
 2. 若节点的equals方法不匹配，说明存在链表、红黑树或者ForwardingNode。
 3. 调用链表节点、红黑树节点或ForwardingNode对应的查找方法。
 
 
-#### <a name="21">put方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">put方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 首先进入一个自旋的for循环
 1. 若未初始化，进行初始化操作。设置sizeCtl为-1，表示正在初始化。
 2. 若初始化完成，则直接使用可见性获取的操作定位到节点，节点为空则使用CAS设置。
@@ -467,20 +502,20 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 }
 ```
 
-#### <a name="22">扩容 addCount() -> transfer()</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="24">扩容 addCount() -> transfer()</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 建立新table
 2. 锁节点，节点转移，旧的table的节点设置为ForwardingNode。便于其他线程识别并帮忙转移。
 3. 这里节点转移区分树节点转移和链表转移。
 
 
 
-### <a name="23">WeakHashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">WeakHashMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 WeakHashMap 的 Entry 继承自 WeakReference，被 WeakReference 关联的对象在下一次垃圾回收时会被回收。
 
 WeakHashMap 主要用来实现缓存，通过使用 WeakHashMap 来引用缓存对象，由 JVM 对这部分缓存进行回收。
 > 应用：Tomcat 中的 ConcurrentCache 使用了 WeakHashMap 来实现缓存功能。
   
-### <a name="24">TreeMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">TreeMap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义了一个Entry的节点，基于红黑树的实现
 ```
   static final class Entry<K,V> implements Map.Entry<K,V> {
@@ -492,14 +527,14 @@ WeakHashMap 主要用来实现缓存，通过使用 WeakHashMap 来引用缓存�
         boolean color = BLACK;
 }
 ```
-## <a name="25">Set</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="27">Set</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 HashSet（无序，唯一）: 基于 HashMap 实现的，底层采用 HashMap 来保存元素
 
 LinkedHashSet：LinkedHashSet 是 HashSet 的子类，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的 LinkedHashMap 其内部是基于 HashMap 实现一样，不过还是有一点点区别的
 
 TreeSet（有序，唯一）： 红黑树(自平衡的排序二叉树)
 
-### <a name="26">HashSet</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="28">HashSet</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 HashSet是基于HashMap实现的，HashSet中的元素都存放在HashMap的key上面，而value中的值都是统一的一个固定对象`private static final Object PRESENT = new Object();`
 
 为什么没有get方法？ 因为Map的get方法是通过Key获取的，而HashSet的应用里面，key都用来存值了。
@@ -508,7 +543,7 @@ HashSet是基于HashMap实现的，HashSet中的元素都存放在HashMap的key�
         map = new HashMap<>();
     }
 ```
-### <a name="27">LinkedHashSet实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">LinkedHashSet实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 底层使用LinkedHashMap
 ```
 public LinkedHashSet(int initialCapacity, float loadFactor) {
@@ -520,10 +555,10 @@ HashSet(int initialCapacity, float loadFactor, boolean dummy) {
  }
 ```
 
-### <a name="28">TreeSet 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">TreeSet 实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 基于TreeMap实现
 
-## <a name="29">迭代器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="31">迭代器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 迭代器 Iterator 是什么？
 ```
 public interface Iterator<E> {
@@ -542,12 +577,12 @@ Iterator 对象称为迭代器（设计模式的一种），迭代器可以对�
 Iterator 主要是用来遍历集合用的，它的特点是更加安全，因为它可以确保，在当前遍历的集合元素被更改的时候，就会抛出 ConcurrentModificationException 异常。
 
 
-## <a name="30">其他面试问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="31">如何选用集合?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="32">其他面试问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">如何选用集合?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 主要根据集合的特点来选用，比如我们需要根据键值获取到元素值时就选用 Map 接口下的集合，需要排序时选择 TreeMap,不需要排序时就选择 HashMap,需要保证线程安全就选用 ConcurrentHashMap。
 2. 当我们只需要存放元素值时，就选择实现Collection 接口的集合，需要保证元素唯一时选择实现 Set 接口的集合比如 TreeSet 或 HashSet，不需要就选择实现 List 接口的比如 ArrayList 或 LinkedList，然后再根据实现这些接口的集合的特点来选用。
 
-### <a name="32">ArrayList 带参数及不带参数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">ArrayList 带参数及不带参数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
     public ArrayList(int initialCapacity) {
         if (initialCapacity > 0) {
@@ -568,7 +603,7 @@ Iterator 主要是用来遍历集合用的，它的特点是更加安全，因�
     }
 ```
 
-### <a name="33">Arrays.asList() 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">Arrays.asList() 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Arrays.asList() 方法返回的是Arrays内部的ArrayList，这个ArrayList不支持元素新增及删除，因为未重写抽象父类AbstractList的方法，会抛出UnsupportedOperationException异常。
 ```
 public class Arrays{
@@ -586,7 +621,7 @@ public class Arrays{
 }
 ```
 
-### <a name="34">hash 冲突解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">hash 冲突解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 链地址法：HashMap中hash冲突节点，使用链表和红黑树解决
 2. 线性探测再散列：ThreadLocal中ThreadLocalMap的hash冲突，会线性向后探索直到寻找到向下一个空的节点。
 3. 再哈希法。
