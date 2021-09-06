@@ -26,41 +26,38 @@
 &emsp;&emsp;<a href="#23">3.5. 其他</a>  
 &emsp;&emsp;&emsp;<a href="#24">3.5.1. uniq</a>  
 &emsp;&emsp;&emsp;<a href="#25">3.5.2. wc</a>  
-<a href="#26">输出的三个数字中，分别代表： 『行、字数、字符数』</a>  
-&emsp;&emsp;&emsp;<a href="#27">0.5.3. tee</a>  
-<a href="#28">这个范例可以让我们将 last 的输出存一份到 last.list 文件中</a>  
-&emsp;&emsp;&emsp;<a href="#29">0.5.4. split 分割文件</a>  
-&emsp;<a href="#30">1. sed</a>  
-&emsp;&emsp;<a href="#31">1.1. 选项与参数说明</a>  
-&emsp;&emsp;<a href="#32">1.2. 实例</a>  
-&emsp;<a href="#33">2.  正则表达式</a>  
-&emsp;<a href="#34">3. awk</a>  
-&emsp;&emsp;<a href="#35">3.1. 选项与参数说明</a>  
-&emsp;&emsp;<a href="#36">3.2. awk 动作说明</a>  
-&emsp;&emsp;<a href="#37">3.3. 实例说明</a>  
-&emsp;<a href="#38">4. 文件比对</a>  
-&emsp;&emsp;<a href="#39">4.1. diff</a>  
-&emsp;&emsp;<a href="#40">4.2. comm</a>  
-&emsp;<a href="#41">5. 日志及文件查找</a>  
-&emsp;&emsp;<a href="#42">5.1. less</a>  
-&emsp;&emsp;<a href="#43">5.2. more</a>  
-&emsp;&emsp;<a href="#44">5.3. tail</a>  
-&emsp;&emsp;<a href="#45">5.4. head</a>  
-&emsp;<a href="#46">6. vi 与 vim 文本编辑</a>  
-&emsp;&emsp;<a href="#47">6.1. vi </a>  
-&emsp;&emsp;<a href="#48">6.2. vim</a>  
-&emsp;<a href="#49">7. 软件安装</a>  
-&emsp;&emsp;<a href="#50">7.1. rpm</a>  
-&emsp;&emsp;&emsp;<a href="#51">7.1.1. 安装</a>  
-&emsp;&emsp;&emsp;<a href="#52">7.1.2. 查询</a>  
-&emsp;&emsp;&emsp;<a href="#53">7.1.3. 卸载</a>  
-<a href="#54">2. 若仅移除 pam-devel 这个之前范例安装上的软件呢？</a>  
-&emsp;&emsp;<a href="#55">0.2. yum</a>  
-&emsp;<a href="#56">1. 其他</a>  
-&emsp;&emsp;<a href="#57">1.1. alias</a>  
-&emsp;&emsp;<a href="#58">1.2. tar 打包</a>  
-&emsp;&emsp;<a href="#59">1.3. wget </a>  
-&emsp;&emsp;<a href="#60">1.4. sodu(TODO)</a>  
+&emsp;&emsp;&emsp;<a href="#26">3.5.3. tee</a>  
+&emsp;&emsp;&emsp;<a href="#27">3.5.4. split 分割文件</a>  
+&emsp;<a href="#28">4. sed</a>  
+&emsp;&emsp;<a href="#29">4.1. 选项与参数说明</a>  
+&emsp;&emsp;<a href="#30">4.2. 实例</a>  
+&emsp;<a href="#31">5.  正则表达式</a>  
+&emsp;<a href="#32">6. awk</a>  
+&emsp;&emsp;<a href="#33">6.1. 选项与参数说明</a>  
+&emsp;&emsp;<a href="#34">6.2. awk 动作说明</a>  
+&emsp;&emsp;<a href="#35">6.3. 实例说明</a>  
+&emsp;<a href="#36">7. 文件比对</a>  
+&emsp;&emsp;<a href="#37">7.1. diff</a>  
+&emsp;&emsp;<a href="#38">7.2. comm</a>  
+&emsp;<a href="#39">8. 日志及文件查找</a>  
+&emsp;&emsp;<a href="#40">8.1. less</a>  
+&emsp;&emsp;<a href="#41">8.2. more</a>  
+&emsp;&emsp;<a href="#42">8.3. tail</a>  
+&emsp;&emsp;<a href="#43">8.4. head</a>  
+&emsp;<a href="#44">9. vi 与 vim 文本编辑</a>  
+&emsp;&emsp;<a href="#45">9.1. vi </a>  
+&emsp;&emsp;<a href="#46">9.2. vim</a>  
+&emsp;<a href="#47">10. 软件安装</a>  
+&emsp;&emsp;<a href="#48">10.1. rpm</a>  
+&emsp;&emsp;&emsp;<a href="#49">10.1.1. 安装</a>  
+&emsp;&emsp;&emsp;<a href="#50">10.1.2. 查询</a>  
+&emsp;&emsp;&emsp;<a href="#51">10.1.3. 卸载</a>  
+&emsp;&emsp;<a href="#52">10.2. yum</a>  
+&emsp;<a href="#53">11. 其他</a>  
+&emsp;&emsp;<a href="#54">11.1. alias</a>  
+&emsp;&emsp;<a href="#55">11.2. tar 打包</a>  
+&emsp;&emsp;<a href="#56">11.3. wget </a>  
+&emsp;&emsp;<a href="#57">11.4. sodu(TODO)</a>  
 # <a name="0">Linux 基本知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -163,11 +160,11 @@ sdfadf
 ### <a name="10">单引号与双引号</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 单引号、双引号用于用户把带有空格的字符串赋值给变量的分界符。
 ```
-[root@VM-0-16-centos ~]# str="sdf111 sdf"
-[root@VM-0-16-centos ~]# echo $str
+[root@VM-0-16-centos ~] str="sdf111 sdf"
+[root@VM-0-16-centos ~] echo $str
 sdf111 sdf
 // 如果没有单引号或双引号，shell会把空格后的字符串解释为命令。
-[root@localhost sh]# str=Today is Monday
+[root@localhost sh] str=Today is Monday
 bash: is: command not found
 ```
 2. 单引号和双引号的区别。单引号告诉shell忽略所有特殊字符，而双引号忽略大多数，但不包括 ` $ \ `
@@ -177,7 +174,7 @@ bash: is: command not found
 3. 反引号 (```) 位于键盘的Tab键的上方，1键的左方。注意与单引号(')位于Enter键的左方的区别。在Linux中起着命令替换的作用。命令替换是指shell能够将一个命令的标准输出插在一个命令行中任何位置。
 > 如，shell会执行反引号中的date命令，把结果插入到echo命令显示的内容中。
 ```
-[root@localhost sh]# echo The date is `date`
+[root@localhost sh] echo The date is `date`
 The date is 2011年 03月 14日 星期一 21:15:43 CST
 ```
 
@@ -204,13 +201,13 @@ The date is 2011年 03月 14日 星期一 21:15:43 CST
 -c ：以字符 (characters) 的单位取出固定字符区间；
 
 
-[root@VM-0-16-centos ~]# echo ${PATH}
+[root@VM-0-16-centos ~] echo ${PATH}
 /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
-[root@VM-0-16-centos ~]# echo ${PATH}| cut -d ":" -f 3,4
+[root@VM-0-16-centos ~] echo ${PATH}| cut -d ":" -f 3,4
 /usr/sbin:/usr/bin
 
 // 输出4 之后的字符
-[root@VM-0-16-centos ~]# echo ${PATH}| cut -c 4-
+[root@VM-0-16-centos ~] echo ${PATH}| cut -c 4-
 r/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
 
 ```
@@ -243,7 +240,7 @@ r/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
 #### <a name="17">指令实例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 -c指令说明
 ```
-[root@VM-0-16-centos ~]# last |cut -f 1 -d " "
+[root@VM-0-16-centos ~] last |cut -f 1 -d " "
 root
 root
 root
@@ -267,16 +264,16 @@ root
 reboot
 
 wtmp
-[root@VM-0-16-centos ~]# last |cut -f 1 -d " "| wc -l
+[root@VM-0-16-centos ~] last |cut -f 1 -d " "| wc -l
 23
-[root@VM-0-16-centos ~]# last |cut -f 1 -d " "|grep -c "root"
+[root@VM-0-16-centos ~] last |cut -f 1 -d " "|grep -c "root"
 20
 
 ```
 
 -v反向匹配过滤
 ```
-[root@VM-0-16-centos ~]# last |cut -f 1 -d " "|grep -v "root"
+[root@VM-0-16-centos ~] last |cut -f 1 -d " "|grep -v "root"
 reboot
 
 wtmp
@@ -285,7 +282,7 @@ wtmp
 
 grep "匹配内容" filename 
 ```
-[root@VM-0-16-centos ~]# last -n 5 |cut -f 1 -d " "|grep root --color -n
+[root@VM-0-16-centos ~] last -n 5 |cut -f 1 -d " "|grep root --color -n
 1:root
 2:root
 3:root
@@ -296,7 +293,7 @@ grep "匹配内容" filename
 
 -r递归查找
 ```
-[root@VM-0-16-centos ~]# grep -r 23000 ./test
+[root@VM-0-16-centos ~] grep -r 23000 ./test
 ./test/temp:VBird 23000 24000 25000
 ./test/temp:DMTsai 21000 20000 23000
 ./test/tmp/record:VBird 23000 24000 25000
@@ -311,31 +308,31 @@ grep "匹配内容" filename
 
 -l 与 -L 输出文件名
 ```
-[root@VM-0-16-centos test]# ls ./*
+[root@VM-0-16-centos test] ls ./*
 ./file  ./temp
 
 ./tmp:
 record
 
 // 输出匹配到文本的文件名
-[root@VM-0-16-centos test]# grep -r 23000 ./ -l
+[root@VM-0-16-centos test] grep -r 23000 ./ -l
 ./temp
 ./tmp/record
 
 // 输出未匹配到文本的文件名
-[root@VM-0-16-centos test]# grep -r 23000 ./ -L
+[root@VM-0-16-centos test] grep -r 23000 ./ -L
 ./file
 
 ```
 
 -h匹配不显示文件名-H匹配显示文件名
 ```
-[root@VM-0-16-centos test]# grep -r 23000 ./ -h
+[root@VM-0-16-centos test] grep -r 23000 ./ -h
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
-[root@VM-0-16-centos test]# grep "2300" temp -H
+[root@VM-0-16-centos test] grep "2300" temp -H
 temp:VBird 23000 24000 25000
 temp:DMTsai 21000 20000 23000
 
@@ -343,11 +340,11 @@ temp:DMTsai 21000 20000 23000
 
 -A -B -C 行数显示说明
 ```
-[root@VM-0-16-centos test]# grep "20000" temp -C 1
+[root@VM-0-16-centos test] grep "20000" temp -C 1
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
 Bird2 43000 42000 41000
-[root@VM-0-16-centos test]# grep "20000" temp -A 1 -B 1 
+[root@VM-0-16-centos test] grep "20000" temp -A 1 -B 1 
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
 Bird2 43000 42000 41000
@@ -356,9 +353,9 @@ Bird2 43000 42000 41000
 
 -w 整字匹配
 ```
-[root@VM-0-16-centos test]# grep "VB" temp 
+[root@VM-0-16-centos test] grep "VB" temp 
 VBird 23000 24000 25000
-[root@VM-0-16-centos test]# grep -w "VB" temp 
+[root@VM-0-16-centos test] grep -w "VB" temp 
 ```
 
 ### <a name="18">sort    </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -379,7 +376,7 @@ VBird 23000 24000 25000
 #### <a name="20">实例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 // 内容是以 : 来分隔的，以第三栏来排序
-[root@VM-0-16-centos ~]# cat /etc/passwd |sort -t ":" -k 3
+[root@VM-0-16-centos ~] cat /etc/passwd |sort -t ":" -k 3
 root:x:0:0:root:/root:/bin/bash
 operator:x:11:0:operator:/root:/sbin/nologin
 bin:x:1:1:bin:/bin:/sbin/nologin
@@ -406,7 +403,7 @@ xargs 可以读入 stdin 的数据，并且以空格符或断行字符作为分�
 
 #### <a name="22">实例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
-[root@VM-0-16-centos ~]# find /usr/sbin -perm /7000 | xargs ls -l
+[root@VM-0-16-centos ~] find /usr/sbin -perm /7000 | xargs ls -l
 -rwxr-sr-x 1 root root 11224 Apr  1  2020 /usr/sbin/netreport
 -rwsr-xr-x 1 root root 11232 Apr  1  2020 /usr/sbin/pam_timestamp_check
 -rwsr-xr-x 1 root root 36272 Apr  1  2020 /usr/sbin/unix_chkpwd
@@ -416,16 +413,16 @@ xargs 可以读入 stdin 的数据，并且以空格符或断行字符作为分�
 
 单行与多行的变换-n 
 ```
-[root@VM-0-16-centos ~]# cat test 
+[root@VM-0-16-centos ~] cat test 
 a b c d e f g
 h i j k l m n
 o p q
 r s t
 u v w x y z
 // xargs 也可以将单行或多行文本输入转换为其他格式，例如多行变单行，单行变多行。 单行变多行通过-n指令实现。
-[root@VM-0-16-centos ~]# cat test |xargs
+[root@VM-0-16-centos ~] cat test |xargs
 a b c d e f g h i j k l m n o p q r s t u v w x y z
-[root@VM-0-16-centos ~]# cat test |xargs -n4
+[root@VM-0-16-centos ~] cat test |xargs -n4
 a b c d
 e f g h
 i j k l
@@ -437,17 +434,17 @@ y z
 
 -t 输出执行参数
 ```
-[root@VM-0-16-centos ~]# ls  |grep lsroot| xargs -t 
+[root@VM-0-16-centos ~] ls  |grep lsroot| xargs -t 
 echo lsrootaa lsrootab lsrootac 
 lsrootaa lsrootab lsrootac
-[root@VM-0-16-centos ~]# ls  |grep lsroot| xargs -t rm -rf
+[root@VM-0-16-centos ~] ls  |grep lsroot| xargs -t rm -rf
 rm -rf lsrootaa lsrootab lsrootac 
 
 ```
 
 -p 执行时进行询问
 ```
-[root@VM-0-16-centos ~]# cat test |xargs -p -n4
+[root@VM-0-16-centos ~] cat test |xargs -p -n4
 echo a b c d ?...y
 a b c d
 echo e f g h ?...y
@@ -475,14 +472,14 @@ y z
 
 ```
 范例一：使用 last 将账号列出，仅取出账号栏，进行排序后仅取出一位；
-[root@VM-0-16-centos ~]# last | cut -d ' ' -f1 | sort | uniq
+[root@VM-0-16-centos ~] last | cut -d ' ' -f1 | sort | uniq
 
 reboot
 root
 wtmp
 
 范例二：承上题，如果我还想要知道每个人的登入总次数呢？
-[root@VM-0-16-centos ~]# last | cut -d ' ' -f1 | sort | uniq -c
+[root@VM-0-16-centos ~] last | cut -d ' ' -f1 | sort | uniq -c
       1 
       1 reboot
      27 root
@@ -499,24 +496,24 @@ wtmp
 - -m ：多少字符
 
 ```
-[root@VM-0-16-centos ~]# last |wc
+[root@VM-0-16-centos ~] last |wc
      30     288    2194
-# <a name="26">输出的三个数字中，分别代表： 『行、字数、字符数』</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+//输出的三个数字中，分别代表：『行、字数、字符数』
 
-[root@VM-0-16-centos ~]# last |wc -l
+[root@VM-0-16-centos ~] last |wc -l
 30
 
 ```
 
-#### <a name="27">tee</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="26">tee</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：tee 会同时将数据流分送到文件去与屏幕 (screen)；而输出到屏幕的，其实就是 stdout 
 
 ```
 [dmtsai@study ~]$ last | tee last.list | cut -d " " -f1
-# <a name="28">这个范例可以让我们将 last 的输出存一份到 last.list 文件中</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+//这个范例可以让我们将 last 的输出存一份到 last.list 文件中
 ```
 
-#### <a name="29">split 分割文件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">split 分割文件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 选项与参数：
 - -b ：后面可接欲分区成的文件大小，可加单位，例如 b, k, m 等；
 - -l ：以行数来进行分区。
@@ -524,16 +521,16 @@ wtmp
 
 ```
 // 按1k 分割文件
-[root@VM-0-16-centos ~]# split -b 1k lsrootaa
+[root@VM-0-16-centos ~] split -b 1k lsrootaa
 
 // 按1k 分割文件，指定文件前缀为sadf
-[root@VM-0-16-centos ~]# split -b 1k  lsrootaa sadf
+[root@VM-0-16-centos ~] split -b 1k  lsrootaa sadf
 
 // 使用 ls -al / 输出的信息中，每十行记录成一个文件
-[root@VM-0-16-centos ~]# ls -al / | split -l 10 - lsroot
+[root@VM-0-16-centos ~] ls -al / | split -l 10 - lsroot
 ```
-## <a name="30">sed</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="31">选项与参数说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="28">sed</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">选项与参数说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 [dmtsai@study ~]$ sed [-nefr] [动作]
 选项与参数：
@@ -558,10 +555,10 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
 
 
 
-### <a name="32">实例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">实例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - `function：d` demo
 ```
-[root@VM-0-16-centos ~]# nl file 
+[root@VM-0-16-centos ~] nl file 
      1	sdfadf
      2	123
      3	123
@@ -580,7 +577,7 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
     16	xzcZXc
     17	qwweqwe12
        
-[root@VM-0-16-centos ~]# nl file |sed '2,5d'
+[root@VM-0-16-centos ~] nl file |sed '2,5d'
      1	sdfadf
      6	3123
      7	123123
@@ -596,9 +593,9 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
     17	qwweqwe12
 ```
 
-- `function：a` 新增demo 会新增到下一行
+`function：a` 新增demo 会新增到下一行
 ```
-[root@VM-0-16-centos ~]# nl file |sed '2a|sadf'
+[root@VM-0-16-centos ~] nl file |sed '2a|sadf'
      1	sdfadf
      2	123
 |sadf
@@ -622,7 +619,7 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
 
 ```
 // 新增多行以反斜杠结尾
-[root@VM-0-16-centos ~]# nl file |sed '2a|sadf............\
+[root@VM-0-16-centos ~] nl file |sed '2a|sadf............\
 dsfasdff ? dfsd\
 dsfasdf'
      1	sdfadf
@@ -650,7 +647,7 @@ dsfasdf
 
 - `function：c` 行替换例子
 ```
-[root@VM-0-16-centos ~]# nl file|sed '2,6c go down town'
+[root@VM-0-16-centos ~] nl file|sed '2,6c go down town'
      1	sdfadf
 go down town
      7	123123
@@ -670,7 +667,7 @@ go down town
 - `function：p` 打印修改行数  
 > `-n` 输出sed修改的行数
 ```
-[root@VM-0-16-centos ~]# nl file | sed -n '2,10p' 
+[root@VM-0-16-centos ~] nl file | sed -n '2,10p' 
      2	123
      3	123
      4	123
@@ -686,7 +683,7 @@ go down town
 - `function：s` 替换内容 `sed 's/要被取代的字符串/新的字符串/g'`
 > 被取代的字符串部分可以使用正则表达式
 ```
-[root@VM-0-16-centos ~]# nl file 
+[root@VM-0-16-centos ~] nl file 
      1	sdfadf
      2	123
      3	123
@@ -705,7 +702,7 @@ go down town
     16	xzcZXc
     17	qwweqwe12
        
-[root@VM-0-16-centos ~]# nl file |sed 's/^.*123/456/g'
+[root@VM-0-16-centos ~] nl file |sed 's/^.*123/456/g'
      1	sdfadf
 456
 456
@@ -730,7 +727,7 @@ go down town
 
 - sed 在每行头部或者尾部添加固定字符
 ```
-[root@VM-0-16-centos ~]# cat file |sed 's/^/yep/g'
+[root@VM-0-16-centos ~] cat file |sed 's/^/yep/g'
 yepsdfadf
 yep123
 yep123
@@ -749,7 +746,7 @@ yepsd
 yepxzcZXc
 yepqwweqwe12
 
-[root@VM-0-16-centos ~]# cat file |sed 's/$/~yep/g'
+[root@VM-0-16-centos ~] cat file |sed 's/$/~yep/g'
 sdfadf~yep
 123~yep
 123~yep
@@ -772,17 +769,17 @@ qwweqwe12~yep
 
 -i忽略大小写匹配
 ```
-[root@VM-0-16-centos test]# cat temp 
+[root@VM-0-16-centos test] cat temp 
 Name 1st 2nd 3th
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
 Bird2 43000 42000 41000
-[root@VM-0-16-centos test]# grep  "name"  temp 
-[root@VM-0-16-centos test]# grep -i "name"  temp 
+[root@VM-0-16-centos test] grep  "name"  temp 
+[root@VM-0-16-centos test] grep -i "name"  temp 
 Name 1st 2nd 3th
 ```
 
-## <a name="33"> 正则表达式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="31"> 正则表达式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 | 正则表达式|范例|  匹配结果|
 | --------------- | -----------------------| ----------------------------------- |
 | + | 意义：重复『一个或一个以上』的前一个 RE 字符| `egrep -n 'go+d' regular_express.txt` 搜寻 (god) (good) (goood)... 等等的字符串 |
@@ -792,10 +789,10 @@ Name 1st 2nd 3th
 | ^ | 匹配输入字符串的开始位置 | ` egrep '^ABC' ` 范例：匹配以ABC开头的|
 | $| 匹配输入字符串的结尾位置| `egrep 'CBA$'` 范例：匹配以CBA结尾的|
 
-## <a name="34">awk</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="32">awk</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 awk 主要是处理『每一行的字段内的数据』，而默认的『字段的分隔符为 "空格键" 或 "[tab]键" 』！
 
-### <a name="35">选项与参数说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">选项与参数说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 选项参数：
 -F ： 指定输入文件的分隔符
@@ -806,7 +803,7 @@ awk 主要是处理『每一行的字段内的数据』，而默认的『字段�
 
 -F选项例子： 当未指定分割符号的情况，默认使用空格或者tab作为分割
 ```
-[root@VM-0-16-centos ~]# cat /etc/passwd
+[root@VM-0-16-centos ~] cat /etc/passwd
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/bin:/sbin/nologin
 daemon:x:2:2:daemon:/sbin:/sbin/nologin
@@ -816,7 +813,7 @@ sync:x:5:0:sync:/sbin:/bin/sync
 shutdown:x:6:0:shutdown:/sbin:/sbin/shutdow
 
 // 按 ： 分割 输出1, 2 字段
-[root@VM-0-16-centos ~]# cat /etc/passwd | awk -F ":" '{print $1 "|" $2}'
+[root@VM-0-16-centos ~] cat /etc/passwd | awk -F ":" '{print $1 "|" $2}'
 root|x
 bin|x
 daemon|x
@@ -825,7 +822,7 @@ lp|x
 sync|x
 
 
-[root@VM-0-16-centos ~]# last -n 5
+[root@VM-0-16-centos ~] last -n 5
 root     pts/1        140.206.51.97    Sun Jan 31 12:22   still logged in   
 root     pts/1        59.61.69.209     Tue Jan 12 10:09 - 17:34  (07:25)    
 root     pts/2        223.104.49.216   Mon Jan 11 13:40 - 20:31  (06:50)    
@@ -835,7 +832,7 @@ root     pts/1        59.61.69.209     Mon Jan 11 09:52 - 13:24  (03:31)
 wtmp begins Wed Dec 23 00:06:07 2020
 
 //  
-[root@VM-0-16-centos ~]# last -n 5 |awk  '{print $3"\t"$1}'
+[root@VM-0-16-centos ~] last -n 5 |awk  '{print $3"\t"$1}'
 140.206.51.97	root
 59.61.69.209	root
 223.104.49.216	root
@@ -848,7 +845,7 @@ Wed	wtmp
 
 -v：自定义变量
 ```
-[root@VM-0-16-centos ~]# last -n 5 |awk -v bk=aisibi  '{print $3"\t"$1"\t"bk}'
+[root@VM-0-16-centos ~] last -n 5 |awk -v bk=aisibi  '{print $3"\t"$1"\t"bk}'
 140.206.51.97	root	aisibi
 59.61.69.209	root	aisibi
 223.104.49.216	root	aisibi
@@ -859,7 +856,7 @@ Wed	wtmp	aisibi
 
 ```
 
-### <a name="36">awk 动作说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">awk 动作说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 awk 后面接两个单引号并加上大括号 {} 来设定想要对数据进行的处理动作。 awk 可以处理后续接的文件，也可以读取来自前个指令的 standard output 。 
 ```
 [dmtsai@study ~]$ awk '条件类型 1{动作 1} 条件类型 2{动作 2} ...' filename
@@ -880,7 +877,7 @@ BEGIN：用来预先设定 awk 的变量。`BEGIN{ 这里面放的是执行前�
 END：END {这里面放的是处理完所有的行后要执行的语句 }
 print：打印指定输出内容
 ```
-[root@VM-0-16-centos ~]# last -n 5
+[root@VM-0-16-centos ~] last -n 5
 root     pts/1        140.206.51.97    Sun Jan 31 12:22   still logged in   
 root     pts/1        59.61.69.209     Tue Jan 12 10:09 - 17:34  (07:25)    
 root     pts/2        223.104.49.216   Mon Jan 11 13:40 - 20:31  (06:50)    
@@ -889,7 +886,7 @@ root     pts/1        59.61.69.209     Mon Jan 11 09:52 - 13:24  (03:31)
 
 wtmp begins Wed Dec 23 00:06:07 2020
 
-[root@VM-0-16-centos ~]# last -n 5| awk '{print $1"\t"$3}'
+[root@VM-0-16-centos ~] last -n 5| awk '{print $1"\t"$3}'
 root	140.206.51.97
 root	59.61.69.209
 root	223.104.49.216
@@ -899,7 +896,7 @@ root	59.61.69.209
 wtmp	Wed
 
 
-[root@VM-0-16-centos ~]# last -n 5| awk '{print $1 "\t lines: " NR "\t columns: " NF}'
+[root@VM-0-16-centos ~] last -n 5| awk '{print $1 "\t lines: " NR "\t columns: " NF}'
 root	 lines: 1	 columns: 10
 root	 lines: 2	 columns: 10
 root	 lines: 3	 columns: 10
@@ -911,7 +908,7 @@ wtmp	 lines: 7	 columns: 7
 
 
 ```
-[root@VM-0-16-centos ~]# cat /etc/passwd
+[root@VM-0-16-centos ~] cat /etc/passwd
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/bin:/sbin/nologin
 daemon:x:2:2:daemon:/sbin:/sbin/nologin
@@ -924,7 +921,7 @@ mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
 operator:x:11:0:operator:/root:/sbin/nologin
 
 
-[root@VM-0-16-centos ~]# cat /etc/passwd |awk 'BEGIN {FS=":"} $3<10 {print $1 "\t" $3}'
+[root@VM-0-16-centos ~] cat /etc/passwd |awk 'BEGIN {FS=":"} $3<10 {print $1 "\t" $3}'
 root	0
 bin	1
 daemon	2
@@ -935,7 +932,7 @@ shutdown	6
 halt	7
 mail	8
 
-[root@VM-0-16-centos ~]# cat /etc/passwd |awk -F ":" ' $3<10 {print $1 "\t" $3}'
+[root@VM-0-16-centos ~] cat /etc/passwd |awk -F ":" ' $3<10 {print $1 "\t" $3}'
 root	0
 bin	1
 daemon	2
@@ -949,7 +946,7 @@ mail	8
 
 ```
 
-### <a name="37">实例说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">实例说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 汇总求值：
 ```
 $ ls -l *.txt | awk '{sum+=$5} END {print sum}' 
@@ -959,12 +956,12 @@ $ ls -l *.txt | awk '{sum+=$5} END {print sum}'
 
 字段最后拼接：首行特殊处理，其他行最后拼接字符串
 ```
-[root@VM-0-16-centos ~]# cat temp 
+[root@VM-0-16-centos ~] cat temp 
 Name 1st 2nd 3th
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
 Bird2 43000 42000 41000
-[root@VM-0-16-centos ~]# cat temp |awk 'NR==1 {print $0" ""Totual"} NR>=2 {all=$2+$3+$4;print $0" "all}' 
+[root@VM-0-16-centos ~] cat temp |awk 'NR==1 {print $0" ""Totual"} NR>=2 {all=$2+$3+$4;print $0" "all}' 
 Name 1st 2nd 3th Totual
 VBird 23000 24000 25000 72000
 DMTsai 21000 20000 23000 64000
@@ -972,8 +969,8 @@ Bird2 43000 42000 41000 126000
 
 ```
 
-## <a name="38">文件比对</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="39">diff</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="36">文件比对</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">diff</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 选项与参数：
 from-file ：一个档名，作为原始比对文件的档名；
@@ -984,16 +981,16 @@ to-file ：一个档名，作为目的比对文件的档名；
 - -i ：忽略大小写的不同
 
 ```
-[root@VM-0-16-centos ~]# cp test test-bk
-[root@VM-0-16-centos ~]# diff test test-bk 
-[root@VM-0-16-centos ~]# vi test-bk 
+[root@VM-0-16-centos ~] cp test test-bk
+[root@VM-0-16-centos ~] diff test test-bk 
+[root@VM-0-16-centos ~] vi test-bk 
 // 表示右边的文件新增了字符
-[root@VM-0-16-centos ~]# diff test test-bk 
+[root@VM-0-16-centos ~] diff test test-bk 
 2a3
 > i dsfa 
 ```
 
-### <a name="40">comm</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">comm</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Linux comm 命令用于比较两个已排过序的文件。这项指令会一列列地比较两个已排序文件的差异，并将其结果显示出来，如果没有指定任何参数，则会把结果分成 3 列显示：
 - 第 1 列仅是在第 1 个文件中出现过的列
 - 第 2 列是仅在第 2 个文件中出现过的列
@@ -1006,22 +1003,22 @@ Linux comm 命令用于比较两个已排过序的文件。这项指令会一列
 
 
 ```
-[root@VM-0-16-centos ~]# comm -12 test test-bk 
+[root@VM-0-16-centos ~] comm -12 test test-bk 
 a b c d e f g
 h i j k l m n
 o p q
 r s t
 u v w x y z
-[root@VM-0-16-centos ~]# comm -1 test test-bk 
+[root@VM-0-16-centos ~] comm -1 test test-bk 
 	a b c d e f g
 	h i j k l m n
 i dsfa 
 	o p q
 	r s t
 	u v w x y z
-[root@VM-0-16-centos ~]# comm -13 test test-bk 
+[root@VM-0-16-centos ~] comm -13 test test-bk 
 i dsfa 
-[root@VM-0-16-centos ~]# comm  test test-bk 
+[root@VM-0-16-centos ~] comm  test test-bk 
 		a b c d e f g
 		h i j k l m n
 	i dsfa 
@@ -1030,8 +1027,8 @@ i dsfa
 		u v w x y z
 ```
 
-## <a name="41">日志及文件查找</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="42">less</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="39">日志及文件查找</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="40">less</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 less 与 more 类似，但使用 less 可以随意浏览文件，而且 less 在查看之前不会加载整个文件。
 
 参数与选项
@@ -1044,7 +1041,7 @@ less 与 more 类似，但使用 less 可以随意浏览文件，而且 less 在
 
 
 
-### <a name="43">more</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">more</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 more 命令类似 cat ，不过会以一页一页的形式显示，更方便使用者逐页阅读，而最基本的指令就是按空白键（space）就往下一页显示，按 b 键就会往回（back）一页显示
 
 参数与选项
@@ -1054,7 +1051,7 @@ more 命令类似 cat ，不过会以一页一页的形式显示，更方便使�
 - q 退出more
 - V 调用vi编辑器
 
-### <a name="44">tail</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">tail</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 tail 命令可用于查看文件的内容，有一个常用的参数 -f 常用于查阅正在改变的日志文件。
 
@@ -1064,17 +1061,17 @@ tail 命令可用于查看文件的内容，有一个常用的参数 -f 常用�
 
 ```
 
-[root@VM-0-16-centos logs]# tail -200f zookeeper-root-server-VM-0-16-centos.out 
+[root@VM-0-16-centos logs] tail -200f zookeeper-root-server-VM-0-16-centos.out 
 
-[root@VM-0-16-centos logs]# tail -n 1000  zookeeper-root-server-VM-0-16-centos.out 
+[root@VM-0-16-centos logs] tail -n 1000  zookeeper-root-server-VM-0-16-centos.out 
 
-[root@VM-0-16-centos logs]# tail -c 100  zookeeper-root-server-VM-0-16-centos.out 
+[root@VM-0-16-centos logs] tail -c 100  zookeeper-root-server-VM-0-16-centos.out 
 hreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at java.lang.Thread.run(Thread.java:748)
 ```
 
 
-### <a name="45">head</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="43">head</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 head 命令可用于查看文件的开头部分的内容，有一个常用的参数 -n 用于显示行数，默认为 10，即显示 10 行的内容。
 
 参数与选项：
@@ -1084,16 +1081,16 @@ head 命令可用于查看文件的开头部分的内容，有一个常用的参
 - -n<行数> 显示的行数。
 
 ```
-[root@VM-0-16-centos logs]# head -n 2 zookeeper-root-server-VM-0-16-centos.out 
+[root@VM-0-16-centos logs] head -n 2 zookeeper-root-server-VM-0-16-centos.out 
 2020-12-26 17:21:12,027 [myid:] - INFO  [main:QuorumPeerConfig@174] - Reading configuration from: /usr/local/apache-zookeeper-3.6.2-bin/bin/../conf/zoo.cfg
 2020-12-26 17:21:12,235 [myid:] - INFO  [main:QuorumPeerConfig@460] - clientPortAddress is 0.0.0.0:2181
 
-[root@VM-0-16-centos logs]# head -c 20 zookeeper-root-server-VM-0-16-centos.out
+[root@VM-0-16-centos logs] head -c 20 zookeeper-root-server-VM-0-16-centos.out
 2020-12-26 17:21:12,
 ```
-## <a name="46">vi 与 vim 文本编辑</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="44">vi 与 vim 文本编辑</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="47">vi </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="45">vi </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 vi 共分为三种模式，分别是
 -『一般指令模式』: 默认模式
 -『编辑模式』: 在一般模式中『i, I, o, O, a, A, r, R』等任何一个字母之后才会进入编辑模式
@@ -1125,25 +1122,25 @@ N( shift + n): 这个 N 是英文按键。与 n 刚好相反，为『反向』�
 :r [filename]   : 在编辑的数据中，读入另一个文件的数据。亦即将 『filename』 这个文件内容加到游标所在列后面
 ```
 
-### <a name="48">vim</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="46">vim</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 vi 的额外功能增强 
 TODO
 
 
 
-## <a name="49">软件安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="47">软件安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 
 
-### <a name="50">rpm</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="51">安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-`[root@study ~]# rpm -ivh package_name`
+### <a name="48">rpm</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="49">安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+`[root@study ~] rpm -ivh package_name`
 选项与参数：
 - -i ：install 的意思
 - -v ：察看更细部的安装信息画面
 - -h ：以安装信息列显示安装进度
 
-#### <a name="52">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="50">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```
 -q ：仅查询，后面接的软件名称是否有安装；
@@ -1159,11 +1156,11 @@ TODO
 
 - 查询是否安装，列出详细信息
 ```
-[root@VM-0-16-centos logs]# rpm -qa kernel
+[root@VM-0-16-centos logs] rpm -qa kernel
 kernel-3.10.0-1127.19.1.el7.x86_64
 
 
-[root@VM-0-16-centos logs]# rpm -qi kernel
+[root@VM-0-16-centos logs] rpm -qi kernel
 Name        : kernel
 Version     : 3.10.0
 Release     : 1127.19.1.el7
@@ -1189,31 +1186,31 @@ input and output, etc.
 
 ```
 
-#### <a name="53">卸载</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="51">卸载</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 `rpm -e xxx`
 
 ```
-[root@study ~]# rpm -qa | grep pam
+[root@study ~] rpm -qa | grep pam
 fprintd-pam-0.5.0-4.0.el7_0.x86_64
 pam-1.1.8-12.el7.x86_64
 gnome-keyring-pam-3.8.2-10.el7.x86_64
 pam-devel-1.1.8-12.el7.x86_64
 pam_krb5-2.4.8-4.el7.x86_64
 
-[root@study ~]# rpm -e pam
+[root@study ~] rpm -e pam
 error: Failed dependencies: <==这里提到的是相依性的问题
 libpam.so.0()(64bit) is needed by (installed) systemd-libs-208-20.el7.x86_64
 libpam.so.0()(64bit) is needed by (installed) libpwquality-1.2.3-4.el7.x86_64
 ....(以下省略)....
 
-# <a name="54">2. 若仅移除 pam-devel 这个之前范例安装上的软件呢？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-[root@study ~]# rpm -e pam-devel <==不会出现任何讯息！
-[root@study ~]# rpm -q pam-devel
+//若仅移除 pam-devel 这个之前范例安装上的软件呢？
+[root@study ~] rpm -e pam-devel <==不会出现任何讯息！
+[root@study ~] rpm -q pam-devel
 package pam-devel is not installed
 ```
 
-### <a name="55">yum</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="52">yum</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在rpm的基础上发展而来的，在线升级机制.
 
 选项与参数：
@@ -1230,22 +1227,22 @@ package pam-devel is not installed
 
 清除旧数据：
 ```
-[root@study ~]# yum clean [packages|headers|all]选项与参数：
+[root@study ~] yum clean [packages|headers|all]选项与参数：
 packages：将已下载的软件文件删除
 headers ：将下载的软件文件头删除
 all ：将所有软件库数据都删除！
 
 范例一：删除已下载过的所有软件库的相关数据 (含软件本身与列表)
-[root@study ~]# yum clean all
+[root@study ~] yum clean all
 
 ```
 
-## <a name="56">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="53">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="57">alias</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="54">alias</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 设置别名命名，如`alias lm='ls -al | more'`
 ```
-[root@VM-0-16-centos logs]# alias
+[root@VM-0-16-centos logs] alias
 alias cp='cp -i'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -1259,14 +1256,14 @@ alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-ti
 ```
 
 
-### <a name="58">tar 打包</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="55">tar 打包</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 压 缩：tar -jcv -f filename.tar.bz2 要被压缩的文件或目录名称
 - 查 询：tar -jtv -f filename.tar.bz2
 - 解压缩：tar -jxv -f filename.tar.bz2 -C 欲解压缩的目录
 
 
-### <a name="59">wget </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="56">wget </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 wget是一个下载文件的工具，支持HTTP，HTTPS和FTP协议，可以使用HTTP代理。
 
 wget -O下载并以不同的文件名保存(-O：下载文件到对应目录，并且修改文件名称)
@@ -1277,7 +1274,7 @@ wget -b后台下载
 `wget -b <a href="http://www.minjieren.com/wordpress-3.1-zh_CN.zip">http://www.minjieren.com/wordpress-3.1-zh_CN.zip</a>`
 
 
-### <a name="60">sodu(TODO)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="57">sodu(TODO)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 sudo是linux下常用的允许普通用户使用超级用户权限的工具，允许系统管理员让普通用户执行一些或者全部的root命令，如halt，reboot，su等等。
 

@@ -63,7 +63,10 @@
 &emsp;&emsp;<a href="#60">11.6. 扔鸡蛋问题</a>  
 &emsp;<a href="#61">12. 二分法</a>  
 &emsp;<a href="#62">13. 前缀树</a>  
-&emsp;<a href="#63">14. TODO 二进制应用</a>  
+&emsp;<a href="#63">14. 滑动窗口</a>  
+&emsp;<a href="#64">15. TODO 二进制应用</a>  
+&emsp;<a href="#65">16. 常用操作</a>  
+&emsp;&emsp;<a href="#66">16.1. Kanade 算法</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -103,32 +106,19 @@ public class Solution{
     }
 }
 ```
-
-求余数常见操作
-```java
-public class Solution {
-  private int getNext(int n) {
-    int totalSum = 0;
-    while (n > 0) {
-      // 余数
-      int d = n % 10;
-      // 整除进位
-      n = n / 10;
-      // 余数操作
-      totalSum += d * d;
-    }
-    return totalSum;
-  }
-}
-```
+哈希接口判断元素存在：
+- [字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 
 使用哈希映射的场景：
 - [同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
-
 - [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
 - [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
 - [寻找重复的子树（hash表与树的结合）](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
     
+利用哈希表O(1)特性查找：
+- [两数之和](https://leetcode-cn.com/problems/two-sum/)
+- [最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
 ## <a name="2">数组与字符串</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="3">数组</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
@@ -1138,13 +1128,12 @@ class Solution {
 
 #### <a name="52">子序列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-
 - [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 - [最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
 - [剑指 Offer II 095. 最长公共子序列](https://leetcode-cn.com/problems/qJnOS7/)
 - [不相交的线](https://leetcode-cn.com/problems/uncrossed-lines/)
 - [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
-
+- [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
 - *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
 
 #### <a name="53">子数组问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -1521,6 +1510,46 @@ class Solution {
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
+## <a name="63">滑动窗口</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
 
-## <a name="63">TODO 二进制应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+
+## <a name="64">TODO 二进制应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 计算1的个数
+
+## <a name="65">常用操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+求余数常见操作
+```java
+public class Solution {
+  private int getNext(int n) {
+    int totalSum = 0;
+    while (n > 0) {
+      // 余数
+      int d = n % 10;
+      // 整除进位
+      n = n / 10;
+      // 余数操作
+      totalSum += d * d;
+    }
+    return totalSum;
+  }
+}
+```
+
+### <a name="66">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+对于一个给定数组 A，Kadane 算法可以用来找到 A 的最大子段和。
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+```
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int dp = 0, res = Integer.MIN_VALUE;
+        for(int num : nums) {
+            dp = num + Math.max(dp, 0);
+            res = Math.max(dp, res);
+        }
+        return res;
+    }
+}
+```
