@@ -1059,13 +1059,12 @@ class Solution {
 
 #### 子序列问题
 
-
 - [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 - [最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
 - [剑指 Offer II 095. 最长公共子序列](https://leetcode-cn.com/problems/qJnOS7/)
 - [不相交的线](https://leetcode-cn.com/problems/uncrossed-lines/)
 - [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
-
+- [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
 - *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
 
 #### 子数组问题
@@ -1467,5 +1466,21 @@ public class Solution {
     }
     return totalSum;
   }
+}
+```
+
+### Kanade 算法
+对于一个给定数组 A，Kadane 算法可以用来找到 A 的最大子段和。
+- [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+```
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int dp = 0, res = Integer.MIN_VALUE;
+        for(int num : nums) {
+            dp = num + Math.max(dp, 0);
+            res = Math.max(dp, res);
+        }
+        return res;
+    }
 }
 ```

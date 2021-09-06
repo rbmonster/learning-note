@@ -127,7 +127,14 @@ SAGA事务是一个分布式环境中的大事务分解为一系列本地事务�
 与 TCC 相比，SAGA 不需要为资源设计冻结状态和撤销冻结的操作，补偿操作往往要比冻结操作容易实现得多。SAGA 事务通常也不会直接靠裸编码来实现，一般也是在事务中间件的基础上完成，如阿里巴巴的Seata。
 
 
-## 分布式一致性算法
+
+### seata 阿里巴巴
+分布式事务解决方案：
+[Seata](https://seata.io/zh-cn/index.html)
+
+## 分布式共识算法
+共识（Consensus）与一致性（Consistency）的区别：一致性是指数据不同副本之间的差异，而共识是指达成一致性的方法与过程。
+
 ### Raft算法
 算法：主要用来竞选主节点。
 - [Raft算法图解](http://thesecretlivesofdata.com/raft/)
@@ -155,8 +162,3 @@ SAGA事务是一个分布式环境中的大事务分解为一系列本地事务�
 三阶段提交的改进算法
 
 TODO
-
-
-## seata 阿里巴巴
-分布式事务解决方案：
-[Seata](https://seata.io/zh-cn/index.html)

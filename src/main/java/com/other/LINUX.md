@@ -438,7 +438,7 @@ wtmp
 ```
 [root@VM-0-16-centos ~] last |wc
      30     288    2194
- 输出的三个数字中，分别代表： 『行、字数、字符数』
+//输出的三个数字中，分别代表：『行、字数、字符数』
 
 [root@VM-0-16-centos ~] last |wc -l
 30
@@ -450,7 +450,7 @@ wtmp
 
 ```
 [dmtsai@study ~]$ last | tee last.list | cut -d " " -f1
-// 这个范例可以让我们将 last 的输出存一份到 last.list 文件中
+//这个范例可以让我们将 last 的输出存一份到 last.list 文件中
 ```
 
 #### split 分割文件
@@ -1144,7 +1144,7 @@ libpam.so.0()(64bit) is needed by (installed) systemd-libs-208-20.el7.x86_64
 libpam.so.0()(64bit) is needed by (installed) libpwquality-1.2.3-4.el7.x86_64
 ....(以下省略)....
 
-// 2. 若仅移除 pam-devel 这个之前范例安装上的软件呢？
+//若仅移除 pam-devel 这个之前范例安装上的软件呢？
 [root@study ~] rpm -e pam-devel <==不会出现任何讯息！
 [root@study ~] rpm -q pam-devel
 package pam-devel is not installed

@@ -14,6 +14,7 @@
 - [Java 单元测试](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/UNIT_TEST.md)
 - [Netty](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETTY.md)
 - [MyBatis](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MYBATIS.md)
+- [Drools规则引擎](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/RULE_ENGINE.md)
 
 ## Java并发相关
 - [Java线程](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/THREAD.md)
@@ -36,20 +37,23 @@
 - [Elasticsearch](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ES.md)
 - [ZooKeeper](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/ZOOKEEPER.md)
 - [消息队列(包含MQ)](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/MESSAGEQUEUE.md)
+- [FastDFS](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FASTDFS.md)
 
 ## 算法
 - [算法基础](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/ALGORITHM.md)
 - [排序算法](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/SORT_ALGORITHM.md)
 
-## 其他
+## 计算机基础
 - [计算机网络](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/NETWORK.md)
 - [Linux相关](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/LINUX.md)
-- [FastDFS](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/FASTDFS.md)
-- [Drools规则引擎](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/RULE_ENGINE.md)
 
 ## 系统设计
+### 设计思想及概念
 - [设计及架构思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SYSTEM-DESIGN.md)
+- [设计模式](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
 - [分布式基本概念](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
+
+### 设计案例
 - [Java接口设计](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/INTERFACE_DESIGN.md)
 - [秒杀系统](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/SECONDS_KILL_DESIGN.md)
 - [短连接](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/TINYURL.md)
@@ -78,10 +82,10 @@
 ## 其他
 ### 参考书籍及资料记录
 - [【设计模式 head first】](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/CODEDESIGN_BOOK.md)
-- [【深入理解Java虚拟机(周志明)】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
-- [【基于Redis的设计与实现】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
-- [【MySql 45讲-丁奇】](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
-- [【凤凰架构(周志明)】](https://icyfenix.cn/summary/)
+- [【基于Redis的设计与实现】黄健宏](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/REDIS_BOOK.md)
+- [【MySql 45讲】丁奇](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/MYSQL_BOOK.md)
+- [【深入理解Java虚拟机】周志明](https://github.com/rbmonster/learning-note/tree/master/src/main/java/com/toc/JVM_BOOK.md)
+- [【凤凰架构】周志明](https://icyfenix.cn/summary/)
 
 ## 参考资料
 | 地址 | 简介 |
@@ -91,6 +95,8 @@
 | [AobingJava](https://github.com/AobingJava/JavaFamily) | 敖丙的Java面试总结 |
 | [bugstack](https://bugstack.cn/) | 虫洞栈Java干货，设计模式 面试问题带着例子说明得明明白白 |
 | [advanced-java](https://github.com/doocs/advanced-java) | 互联网Java工程师进阶知识完全扫盲：涵盖高并发、分布式、高可用、微服务、海量数据处理等领域知识 |
+| [mini-spring](https://github.com/DerekYRC/mini-spring) | mini-spring是简化版的spring框架，建议先动手跟着实践一遍再去阅读源码，能帮助你快速熟悉spring源码和掌握spring的核心原理。|
+| [tiny-spring](https://github.com/code4craft/tiny-spring)| Spring的精简版。从使用功能的角度出发，参考Spring的实现，一步一步构建，便于无基础的逐步深入理解Spring|
 | [spring-analysis](https://github.com/seaswalker/spring-analysis) | Spring源码解读(很久未更新了，但是spring基本的精髓都讲到了，适合参考阅读源码) |
 | [fucking-algorithm](https://github.com/labuladong/fucking-algorithm) | labuladong刷算法套路，提供算法题的工具方法思想 |
 | [leetcode-master](https://github.com/youngyangyang04/leetcode-master) | LeetCode 刷题攻略：配思维导图 |
