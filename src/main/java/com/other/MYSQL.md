@@ -501,8 +501,20 @@ WAL机制主要得益于两个方面：
 
 ## 实际sql的执行
 一个sql 语句mysql的执行顺序：
-
 `from -- on  -- JOIN -- where -- group by -- having -- select -- distinct -- order by -- limit`
+
+```
+ (8) SELECT (9) DISTINCT <select_list>
+ (1) FROM <left_table>
+ (3) <join_type> JOIN <right_table>
+ (2) ON <join_condition>
+ (4) WHERE <where_condition>
+ (5) GROUP <group_by_list>
+ (6) WITH {CUBE|ROLLUP}
+ (7) HAVING <having_condition>
+ (10) ORDER BY <order_by_list>
+ (11) LIMIT <limit_number>
+```
 ### count(*)实现
 不同引擎中的实现
 - MyISAM引擎把一个表的总行数存在了磁盘上， 因此执行count(*)的时候会直接返回这个数，效率很高；
@@ -755,6 +767,33 @@ Datetime 和 Timestamp，通常会首选 Timestamp
 
 水平分表是在同一个数据库内，把同一个表的数据按一定规则拆到多个表中。
 
+
+## MGR(MySQL Group Replication)
+MGR(MySQL Group Replication)是 MySQL 自带的一个插件，可以灵活部署。
+> 在MGR出现之前，用户常见的MySQL高可用方式，无论怎么变化架构，本质就是Master-Slave架构。MySQL 5.7版本开始支持无损半同步复制（lossless semi-sync replication），从而进一步提高数据复制的强一致性。\
+> MySQL MGR 集群是多个 MySQL Server 节点共同组成的分布式集群，每个 Server 都有完整的副本，它是基于 ROW 格式的二进制日志文件和 GTID 特性。
+
+1. MGR的定义: MGR是具备强大的分布式协调能力，可用于创建弹性、高可用性、高容错的复制拓扑的一个MySQL插件。
+2. 通讯协议: 基于Paxos算法的GCS原子广播协议，保证了一条事务在集群内要么在全部节点上提交，要么全部回滚。
+3. 组成员资格: MGR内部提供一个视图服务，集群节点之间相互交换各自的视图信息， 从而且实现集群整体的稳态。
+4. 数据一致性: MGR内部实现了一套不同事务之间修改数据的冲突认证检测机制。在集群的所有节点当中进行一个冲突认证检测，反之，通过冲突认证检测的事务即可提交成功。
+
+
+### 主从数据同步
+
+参考资料：[MySQL5.7新特性--官方高可用方案MGR介绍](https://www.cnblogs.com/luoahong/articles/8043035.html)
+#### MySQL异步复制
+master事务的提交不需要经过slave的确认。\
+master不关心slave是否接收到master的binlog。slave接收到master的binlog后先写relay log，最后异步地去执行relay log中的sql应用到自身。
+由于master的提交不需要确保slave relay log是否被正确接受，当slave接受master binlog失败或者relay log应用失败，master无法感知。
+
+#### MySQL半同步复制
+在master事务的commit之前，必须确保一个slave收到relay log并且响应给master以后，才能进行事务的commit。但是slave对于relay log的应用仍然是异步进行的
+
+#### MySQL组复制
+基于传统异步复制和半同步复制的缺陷——数据的一致性问题无法保证
+
+
 ## 其他面试题
 
 ### mysql数据库抖动
@@ -892,19 +931,51 @@ explain 分析例子
 
 ```
 
-- 相关资料：https://mp.weixin.qq.com/s/nEmN4S9JOTVGj5IHyfNtCw
+- 相关资料：[敖丙工作以来总结的大厂SQL调优姿势](https://mp.weixin.qq.com/s/nEmN4S9JOTVGj5IHyfNtCw)
 
+#### order by 优化
+Order by查询的两种情况：
+1. Using index，是针对查询优化器的两种行为来去区分的。Using index就是说MySQL它可以直接通过索引去返回有序
+的记录，而不需要去经过额外的排序的操作；
+2. Using filesort需要去做额外的排序，在某些特殊的情况下，可能还会出现临时表排序的情况。
 
-### 数据库连接池、数据库连接线程安全的吗？
+优化目标：尽量通过索引来避免额外的排序，减少CPU资源的消耗。\
+主要优化策略：
+1. Where条件和Order by使用相同的索引；
+2. Order by的顺序和索引顺序相同；
+3. Order by 的字段同为升序或降序。
 
-数据库连接池就用用来保存数据库连接的一个池子。每当我们的业务代码需要和数据库进行交互时，就从这个池子里面取出一个数据库连接，然后在这个连接上进行查增删改操作。使用结束后，业务代码再将这个连接归还给这个池子，然后这个连接就可以被其他业务代码继续使用了。
-从过程中可以看出，数据库连接池是可以在多个线程中使用的，每个线程获取不同的数据库连接。因此是线程安全的。
+**当无法避免Filesort操作时，优化思路就是让Filesort的操作更快。**
 
-单个数据库连接肯定不是线程安全的，这就是需要实现数据库事务的原因。
+优化策略：
+1. 适当调大max_length_for_sort_data这个参数的值，让优化器更倾向于选择一次扫描算法。一次性取出满足条件的所有记录；
+2. 只使用必要的字段，不要使用Select *的写法；
+3. 适当加大sort_buffer_size这个参数的值，避免磁盘排序的出现（线程参数，不要设置过大）。
 
-### mysql 查询大表
+#### Subquery 子查询
+对于子查询，一般的优化策略是做等价改写\
+Subquery优化总结：\
+1. 子查询会用到临时表，需尽量避免；
+2. 可以使用效率更高的Join查询来替代。
 
-#### 延迟关联
+优化策略：等价改写、反嵌套。
+
+例子：
+`select * from customer where customer_id not in (select customer_id from payment)`\
+改写成：\
+`select * from customer a left join payment b on a.customer_id=b.customer_id where b.customer_id is null`
+#### limit 优化 - 延迟关联
+分页查询，就是将过多的结果在有限的界面上分多页来显示。\
+其实质是每次查询只返回有限行，翻页一次执行一次。\
+优化目标
+1. 消除排序；
+2. 避免扫描到大量不需要的记录。
+
+优化策略： 
+1. 覆盖索引
+2. **延迟关联优化：**
+
+延迟优化案例\
 通过子查询关联，子查询先把对应的主键id查询出来，再进行主表关联
 ```
 select * from user inner join 
@@ -912,8 +983,7 @@ select * from user inner join
 
 ```
 
-#### 小案例
-- 常规查询：
+小案例：常规查询
 ```
 select * from test_table 
 where merchant_id = 43 and status = 'SUCCESS' 
@@ -922,7 +992,7 @@ order by salary_id desc limit 900000,10;
 10 rows in set (0.82 sec)
 ```
 
-- 延迟关联优化:通过id查询减少回表次数
+延迟关联优化:通过id查询减少回表次数
 ```
 SELECT *
 FROM test_table a
@@ -938,10 +1008,31 @@ INNER JOIN
 ```
 
 
-- 最大id查询法
-
-#### 相关资料
+##### 相关资料
 [mysql优化：覆盖索引（延迟关联）](https://cloud.tencent.com/developer/article/1446974?from=information.detail.mysql%20%E5%BB%B6%E8%BF%9F%E5%85%B3%E8%81%94)
+
+
+#### Or/And Condition
+处理策略
+1. And子句多个条件中拥有一个过滤性较高的索引即可;
+2. Or条件前后字段均要创建索引;
+3. 为最常用的And组合条件创建复合索引。
+
+#### join 优化
+对于explain中出现的 `Using join buffer (Block Nested Loop)`当两张表关联，如果不能够通过索引去做关联条件的匹配，这时候就会产生join_buffer的使用。
+1. 关联字段索引：每层内部循环仅获取需要关心的数据。
+2. **小表驱动原则**：外层循环的结果集尽量小，目的是为了减少循环的次数。
+   
+**关联字段索引的必要性**
+
+
+### 数据库连接池、数据库连接线程安全的吗？
+
+数据库连接池就用用来保存数据库连接的一个池子。每当我们的业务代码需要和数据库进行交互时，就从这个池子里面取出一个数据库连接，然后在这个连接上进行查增删改操作。使用结束后，业务代码再将这个连接归还给这个池子，然后这个连接就可以被其他业务代码继续使用了。
+从过程中可以看出，数据库连接池是可以在多个线程中使用的，每个线程获取不同的数据库连接。因此是线程安全的。
+
+单个数据库连接肯定不是线程安全的，这就是需要实现数据库事务的原因。
+
 
 ### InnoDB 和 MyIsam 数据库引擎的区别
 1. 事务处理：MyISAM是非事务安全型的，而InnoDB是事务安全型的（支持事务处理等高级处理）；
