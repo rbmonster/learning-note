@@ -11,6 +11,8 @@
 &emsp;<a href="#8">2. Bean初始化顺序</a>  
 &emsp;&emsp;<a href="#9">2.1. 初始化Bean的所有接口调用流程</a>  
 &emsp;&emsp;<a href="#10">2.2. BeanProcessor 调用流程</a>  
+&emsp;&emsp;<a href="#11">2.3. DisposableBean 销毁方法</a>  
+&emsp;<a href="#12">3. FactoryBean</a>  
 # <a name="0">bean初始化流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">接口介绍</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -82,13 +84,14 @@ finishBeanFactoryInitialization(beanFactory);  -> InstantiationAwareBeanPostProc
 ```
  
 ### <a name="9">初始化Bean的所有接口调用流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- AbstractAutowireCapableBeanFactory.doCreateBean
-- AbstractAutowireCapableBeanFactory.populateBean
-    - 实例化前置方法调用
-- AbstractAutowireCapableBeanFactory.initializeBean
-    - 实例化后方法调用
+AbstractAutowireCapableBeanFactory.doCreateBean\
+AbstractAutowireCapableBeanFactory.populateBean
+> 实例化前置方法调用
 
-- aware 初始化Bean的相关接口调用流程
+AbstractAutowireCapableBeanFactory.initializeBean
+> 实例化后方法调用
+
+`aware` 初始化Bean的相关接口调用流程
 ```
 org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeAwareMethods
 
@@ -128,4 +131,139 @@ public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, S
     }
     return result;
 }
+```
+
+### <a name="11">DisposableBean 销毁方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Bean的销毁使用了适配器模式，注册销毁方法的时候，会根据是接口类型和配置类型统一交给 DisposableBeanAdapter 销毁适配器类来做统一处理。
+
+
+为什么使用适配器的类？ 
+> 因为销毁方法有两种甚至多种方式，目前有实现接口 DisposableBean、配置信息 destroy-method，两种方式。而这两种方式的销毁动作是由 AbstractApplicationContext 在注册虚拟机钩子后看，虚拟机关闭前执行的操作动作。那么在销毁执行时不太希望还得关注都销毁那些类型的方法，它的使用上更希望是有一个统一的接口进行销毁，所以这里就新增了适配类，做统一处理。
+
+DisposableBeanAdapter做的工作：
+- 执行`DestructionAwareBeanPostProcessors`
+- 执行继承 `DisposableBean` 的bean
+- 执行bean定义中的 `destroy-method` 方法
+
+```
+org.springframework.beans.factory.support.AbstractBeanFactory.registerDisposableBeanIfNecessary
+
+// 创建bean 的时候，注册到DisposableBean 的Map中
+protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
+    AccessControlContext acc = (System.getSecurityManager() != null ? getAccessControlContext() : null);
+    // requiresDestruction方法，判断bean在销毁时需要执行销毁方法
+    if (!mbd.isPrototype() && **requiresDestruction**(bean, mbd)) {
+        if (mbd.isSingleton()) {
+            // Register a DisposableBean implementation that performs all destruction
+            // work for the given bean: DestructionAwareBeanPostProcessors,
+            // DisposableBean interface, custom destroy method.
+            // 适配器模式
+            registerDisposableBean(beanName,
+                    new DisposableBeanAdapter(bean, beanName, mbd, getBeanPostProcessors(), acc));
+        }
+        else {
+            // A bean with a custom scope...
+            Scope scope = this.scopes.get(mbd.getScope());
+            if (scope == null) {
+                throw new IllegalStateException("No Scope registered for scope name '" + mbd.getScope() + "'");
+            }
+            scope.registerDestructionCallback(beanName,
+                    new DisposableBeanAdapter(bean, beanName, mbd, getBeanPostProcessors(), acc));
+        }
+    }
+}
+
+org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.destroySingleton
+
+	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
+
+	public void destroySingleton(String beanName) {
+		// Remove a registered singleton of the given name, if any.
+		removeSingleton(beanName);
+
+		// Destroy the corresponding DisposableBean instance.
+		DisposableBean disposableBean;
+		synchronized (this.disposableBeans) {
+			disposableBean = (DisposableBean) this.disposableBeans.remove(beanName);
+		}
+		destroyBean(beanName, disposableBean);
+	}
+
+
+// 在上下文中注册钩子方法
+org.springframework.context.support.AbstractApplicationContext.registerShutdownHook
+
+ public void registerShutdownHook() {
+        if (this.shutdownHook == null) {
+            this.shutdownHook = new Thread("SpringContextShutdownHook") {
+                public void run() {
+                    synchronized(AbstractApplicationContext.this.startupShutdownMonitor) {
+                        AbstractApplicationContext.this.doClose();
+                    }
+                }
+            };
+            Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+        }
+
+    }
+```
+
+## <a name="12">FactoryBean</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+FactoryBean 提供一个能让使用者定义复杂的 Bean 对象的途径
+
+createBean 执行对象创建、属性填充、依赖加载、前置后置处理、初始化等操作后，就要开始做执行判断整个对象是否是一个 FactoryBean 对象，如果是这样的对象，就需要再继续执行获取 FactoryBean 具体对象中的 getObject 对象了。整个 getBean 过程中都会新增一个单例类型的判断factory.isSingleton()，用于决定是否使用内存存放对象信息。
+
+作用： 如 MyBatis 框架中的DAO代理操作、feignClient的Http调用客户端的生成
+```
+org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean
+
+    protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
+			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
+
+		final String beanName = transformedBeanName(name);
+		Object bean;
+
+		// Eagerly check singleton cache for manually registered singletons.
+		Object sharedInstance = getSingleton(beanName);
+		if (sharedInstance != null && args == null) {
+			if (logger.isTraceEnabled()) {
+				if (isSingletonCurrentlyInCreation(beanName)) {
+					logger.trace("Returning eagerly cached instance of singleton bean '" + beanName +
+							"' that is not fully initialized yet - a consequence of a circular reference");
+				}
+				else {
+					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
+				}
+			}
+			// 调用
+			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
+		}
+    }
+    
+    
+    protected Object getObjectForBeanInstance(
+			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
+        ....
+
+		Object object = null;
+		if (mbd != null) {
+			mbd.isFactoryBean = true;
+		}
+		else {
+		    // 从缓存中获取FactoryBean
+			object = getCachedObjectForFactoryBean(beanName);
+		}
+		if (object == null) {
+			// Return bean instance from factory.
+			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
+			// Caches object obtained from FactoryBean if it is a singleton.
+			if (mbd == null && containsBeanDefinition(beanName)) {
+				mbd = getMergedLocalBeanDefinition(beanName);
+			}
+			boolean synthetic = (mbd != null && mbd.isSynthetic());
+			 // 调用factoryBean的 getObject 方法
+			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
+		}
+		return object;
+	}
 ```
