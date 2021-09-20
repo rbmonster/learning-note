@@ -73,7 +73,7 @@ PRIMARY KEY (`id`)
 
 ![image](https://pic2.zhimg.com/v2-4decedbcba9c97c0e8789070f39b55cc_r.jpg)
 
-### 方案二:使用UUID的发号器服务方案
+### 方案二: 使用UUID的发号器服务方案
 使用发号器的好处就是，可以天生保证唯一性，不存在冲突问题
 
 发号器策略如下：

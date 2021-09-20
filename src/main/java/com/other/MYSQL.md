@@ -73,7 +73,7 @@ B树和平衡二叉树稍有不同的是，B树属于多叉树又名平衡多路
 4. 关键字数：枝节点的关键字数量大于等于ceil(m/2)-1个且小于等于M-1个（注：ceil()是个朝正无穷方向取整的函数 如ceil(1.1)结果为2);
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/Btree.jpg)
 
-- B树插入与删除操作：https://zhuanlan.zhihu.com/p/27700617
+- 参考资料：[平衡二叉树、B树、B+树、B*树 理解其中一种你就都明白了](https://zhuanlan.zhihu.com/p/27700617)
 
 #### B+树
 与B树的区别
@@ -97,7 +97,13 @@ B+树的插入与删除：https://www.cnblogs.com/nullzx/p/8729425.html
 - B-Tree中一次检索最多需要h-1次I/O（根节点常驻内存），渐进复杂度为O(h)=O(logdN)。
 - 红黑树这种结构，h明显要深的多。效率明显比B-Tree差很多。
 
+### 增删操作与索引
+对于删除操作，InnoDB引擎只会将记录标记为删除，新数据的插入如果索引的位置刚好在删除记录，那么插入记录就会复用该位置。
+> 如果我们用delete命令把整个表的数据删除呢？结果就是，所有的数据页都会被标记 为可复用。但是磁盘上，文件不会变小。
 
+对于插入操作，如果数据页刚好进行了页分裂，那么分裂完的数据页的中都是会存在空洞的。
+
+**解决空洞问题**，对表进行重建。
 ### 索引规则
 
 #### 覆盖索引
@@ -588,32 +594,32 @@ Extra这个字段中的“Using filesort”表示的就是需要排序， MySQL�
   6. 对sort_buffer中的数据按照字段name做快速排序；
   7. 按照排序结果取前1000行返回给客户端
   
-sort_buffer_size， 是MySQL为排序开辟的内存（sort_buffer） 的大小。 如果要排序的数据量小于sort_buffer_size， 排序就在内存中完成。 但如果排序数据量太大， 内存放不下， 则不得不利用磁盘临时文件辅助排序。
-  - sort_buffer_size大于了需要排序的数据量的大小， number_of_tmp_files就是0，排序直接在内存完成。
+sort_buffer_size: 是MySQL为排序开辟的内存（sort_buffer） 的大小。 如果要排序的数据量小于sort_buffer_size， 排序就在内存中完成。 但如果排序数据量太大， 内存放不下， 则不得不利用磁盘临时文件辅助排序。
+> sort_buffer_size大于了需要排序的数据量的大小， number_of_tmp_files就是0，排序直接在内存完成。
   
 **optimizer_trace** 是一个跟踪功能，跟踪执行的语句的解析优化执行的过程，比explain更详细。
   - number_of_tmp_files表示的是， 排序过程中使用的临时文件数。
   - sort_mode: 表示参与排序的只有name和id这两个字段
-  - ```
-    /* 打开optimizer_trace， 只对本线程有效 */
-    SET optimizer_trace='enabled=on';
-    ```
+```
+/* 打开optimizer_trace， 只对本线程有效 */
+SET optimizer_trace='enabled=on';
+```
 这里的排序使用的是归并排序
 
 #### rowId排序
 max_length_for_sort_data: 是MySQL中专门控制用于排序的行数据的长度的一个参数。 它的意思是， 如果单行的长度超过这个值， MySQL就认为单行太大， 要换一个算法。
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby3.jpg)
-- 主要体现在内存排序完毕之后要多一次查询。
+> 主要体现在内存排序完毕之后要多一次查询。
 
 对于InnoDB表来说， 执行全字段排序会减少磁盘访问， 因此会被优先选择。
 
-在“InnoDB表”中，对于内存表，回表过程只是简单地根据数据行的位置， 直接访问内存得到数据， 根本不会导致多访问磁盘。 
+在“InnoDB表”中，对于内存表，回表过程只是简单地根据数据行的位置，直接访问内存得到数据，根本不会导致多访问磁盘。 
 > 优化器会优先考虑的，就是用于排序的行越少越好。
   
 order by rand()使用了内存临时表， 内存临时表排序的时候使用了rowid排序方法。
 
 内存临时表与磁盘临时表
-- tmp_table_size这个配置限制了内存临时表的大小， 默认值是16M。 如果临时表大小超过了tmp_table_size， 那么内存临时表就会转成磁盘临时表
+> tmp_table_size这个配置限制了内存临时表的大小， 默认值是16M。 如果临时表大小超过了tmp_table_size， 那么内存临时表就会转成磁盘临时表
   
 直接使用order by rand()， 这个语句需要Using temporary和 Using filesort， 查询的执行代价往往是比较大的
 
@@ -734,6 +740,17 @@ mysql> insert into t(id,k) values(id1,k1),(id2,k2);
 1. Page 1在内存中，直接更新内存； 
 2. Page 2没有在内存中，就在内存的change buffer区域，记录下“我要往Page 2插入一行”这个 信息
 3. 将上述两个动作记入redo log中（图中3和4）。
+
+
+
+### sort buffer
+见order by的应用
+
+
+### 内存临时表
+
+### 磁盘临时表
+
 
 ## 数据库设计
 
@@ -874,16 +891,17 @@ alter table T add index(k);
 > 这两个语句，你可以用这个语句代替 ： alter table Tengine=InnoDB
 
 ### mysql数据库抖动
-- 当内存数据页跟磁盘数据页内容不一致的时候， 我们称这个内存页为“脏页”。 
-- 在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
+当内存数据页跟磁盘数据页内容不一致的时候， 我们称这个内存页为“脏页”。 \
+在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
 
 Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（flush）的方法
-- 第一种：对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
-- 第二种：系统的内存需要新的内存页，这时候需要淘汰一些内存也。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
-    - 为什么不直接淘汰脏页，等新数据读取的时候再应用redo log？ 主要为了保证状态统一，内存的数据存在则肯定是最新的，内存没有则文件肯定是最新的。
-- 第三种：Mysql认为系统空闲时，刷脏页。
-- 第四种：MySql关闭时刷脏页。
+1. 对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
+2. 当需要新的内存页，而内存不够用的时候，系统的内存需要新的内存页，这时候需要淘汰一些内存页。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
+> 为什么不直接淘汰脏页，等新数据读取的时候再应用redo log？ 主要为了保证状态统一，内存的数据存在则肯定是最新的，内存没有则文件肯定是最新的。
+3. Mysql认为系统空闲时，刷脏页。
+4. MySql关闭时刷脏页。
 
+InnoDB刷脏页的控制策略
 
 ### 读已提交和可重复读是如何实现的
 1. ReadView：
