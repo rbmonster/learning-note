@@ -220,7 +220,7 @@ MySQL的事务启动方式有以下几种：
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli3.jpg)
 
 - 读提交事务隔离的例子，事务A读取的结果为2。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli4.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli4.png)
 
 ## 索引
 - 索引的出现其实就是为了提高数据查询的效率， 就像书的目录一样。 一本500页的书，对于数据库的表而言， 索引其实就是它的“目录”。

@@ -2,17 +2,20 @@
 
 ## MySQL基本架构
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/mysqlprocess.jpg)
-- MySQL可以分为Server层和存储引擎层两部分
-  - Server层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。
-  - 存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持InnoDB、MyISAM、Memory等多个存储引擎。现在最常用的存储引擎是InnoDB，它从MySQL5.5.5版本开始成为了默认存储引擎
 
+MySQL可以分为Server层和存储引擎层两部分
+- Server层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。
+- 存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持InnoDB、MyISAM、Memory等多个存储引擎。现在最常用的存储引擎是InnoDB，它从MySQL5.5.5版本开始成为了默认存储引擎
+
+MySQL的一个设计思想：如果内存够用，，就要多利用内存，，尽量减少磁盘访问。
 ### Server层基本架构
-1. 连接器：登陆数据库的连接验证，完成经典的TCP握手后，连接器就要开始认证你的身份。  ```mysql -h$ip -P$port -u$user -p```
+1. 连接器：登陆数据库的连接验证，完成经典的TCP握手后，连接器就要开始认证你的身份。 
+```mysql -h$ip -P$port -u$user -p```
 2. 查询缓存：连接建立完成之后，会到查询缓存中查询数据。查询缓存的存储默认key为查询语句，而value为结果。查询缓存弊大于利，因为只要有表更新，这个表相关的缓存就会被清除。
 3. 分析器：主要做语法解析，并判断语法是否合规。
 4. 优化器：对语法的执行流程进行优化，决定使用哪个索引。\
 ```mysql> select * from t1 join t2 using(ID) where t1.c=10 and t2.d=20;```
-> 既可以先从表t1里面取出c=10的记录的ID值，再根据ID值关联到表t2，再判断t2里面d的值是否等于20。也可以先从表t2里面取出d=20的记录的ID值，再根据ID值关联到t1，再判断t1里面c的值是否等于10。
+> 既可以先从表t1里面取出c=10的记录的ID值，再根据ID值关联到表t2，再判断t2里面d的值是否等于20。也可以先从表t2里面取出d=20的记录的ID值，再根据ID值关联到t1，再判断t1里面c的值是否等于10。\
      这两种执行方法的逻辑结果是一样的，但是执行的效率会有不同，而优化器的作用就是决定选择效率高的方案。
 5. 执行器: 负责具体语句的执行，首先判断是否有权限。```mysql> select * from T where ID=10;```
 > 比如我们这个例子中的表T中，ID字段没有索引，那么执行器的执行流程是这样的：
@@ -31,10 +34,12 @@
 1. 一个表中只能有一个主键索引，但是可以有多个普通索引
 2. 主键(聚集)索引存储记录是物理上连续存在，而非聚集索引是逻辑上的连续，物理存储并不连续
 3. 查询区别：主要在于若执行的查询中需要较多的信息，普通索引会执行回表操作。
-  - 如果语句是select * from T where ID=500， 即主键查询方式， 则只需要搜索ID这棵B+树。
-  - 如果语句是select * from T where k=5， 即普通索引查询方式， 则需要先搜索k索引树， 得到ID的值为500， 再到ID索引树搜索一次。 这个过程称为回表。
+   - 如果语句是select * from T where ID=500， 即主键查询方式， 则只需要搜索ID这棵B+树。
+   - 如果语句是select * from T where k=5， 即普通索引查询方式， 则需要先搜索k索引树， 得到ID的值为500， 再到ID索引树搜索一次。 这个过程称为回表。
+
 回到主键索引树搜索的过程， 我们称为**回表**。
-  
+
+
 图解索引结构
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/indexquery.jpg)
 主键长度越小， 普通索引的叶子节点就越小， 普通索引占用的空间也就越小。所以，从**性能和存储空间**方面考量， 自增主键往往是更合理的选择。
@@ -142,11 +147,11 @@ mysql 5.6 后引入索引下推。
 8. 联合索引未满足最左匹配原则
 > (k1,k2,k3)，相当于创建了(k1)、(k1,k2)和(k1,k2,k3)三个索引
 ```
-  select * from t where k2=2;
-  select * from t where k3=3;
-  slect * from t where k2=2 and k3=3;
-  // 以下这条只会部分走索引
-  slect * from t where k1=1 and k3=3;
+select * from t where k2=2;
+select * from t where k3=3;
+slect * from t where k2=2 and k3=3;
+// 以下这条只会部分走索引
+slect * from t where k1=1 and k3=3;
  ```
 
 #### 采样统计储存导致走错索引
@@ -422,11 +427,39 @@ MVCC的实现原理：主要是版本链，undo日志 ，Read View 来实现的
 
 
 #### 隔离级别与MVCC
-- 隔离级别是可重复读：快照读总是读取小于或等于当前事务 ID 的记录，在这个前提下，如果数据仍有多个版本，则取最新（事务 ID 最大）的。
+- 隔离级别是可重复读：快照读总是读取undolog中小于或等于当前事务 ID 的记录，在这个前提下，如果数据仍有多个版本，则取最新（事务 ID 最大）的。
 - 隔离级别是读已提交：快照读总是取最新的版本即可，即最近被 Commit 的那个版本的数据记录。
 另外两个隔离级别都没有必要用到 MVCC，因为读未提交直接修改原始数据即可，其他事务查看数据的时候立刻可以看到，根本无须版本字段。可串行化本来的语义就是要阻塞其他事务的读取操作，而 MVCC 是做读取时无锁优化的，自然就不会放到一起用。
 
 
+在RR隔离级别下，分析隔离级别，此时已有一个事务ID 99，其他三个事务如下，事务开启时刻，带上已生效的版本号ID
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli2.png)
+
+事务A视图版本100，事务B视图版本101，事务C视图版本102
+1. 更新数据都是先读后写的， 而这个读， 只能读当前的值， 称为“当前读”（ current read） 。
+2. 故事务C读到当前值为1，更新为2。事务B读到当前值被C更新为2，再更新为3。
+3. 事务A查询以当前版本为例，则读到为1。
+> RC隔离级别读提交事务隔离的例子，事务A读取的结果为2。
+```
+mysql> select k from t where id=1 lock in share mode;
+mysql> select k from t where id=1 for update;
+ ```
+
+具体分析有三种情况：
+1. 版本未提交，不可见；
+2. 版本已提交，但是是在视图创建后提交的，不可见；
+3. 版本已提交，而且是在视图创建前提交的，可见。
+
+
+读提交(RC)的逻辑和可重复读(RR)的逻辑类似，它们最主要的区别是： 
+1. 在可重复读隔离级别下，只需要在事务开始的时候创建一致性视图，之后事务里的其他查询 都共用这个一致性视图； 
+2. 在读提交隔离级别下，每一个语句执行前都会重新算出一个新的视图。
+
+下述场景中，读提交(RC)隔离级别下：
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli4.png)
+事务A查询语句返回的是k=2。事务B查询结果k=3。
 
 #### 参考资料
 - [全网最全的一篇数据库MVCC详解，不全我负责](https://www.php.cn/mysql-tutorials-460111.html)
@@ -439,7 +472,7 @@ undo log主要有两个作用：回滚和多版本控制(MVCC)
 
 在数据修改的时候，不仅记录了redo log，还记录undo log，如果因为某些原因导致事务失败或回滚了，可以用undo log进行回滚。
 1. 保证事务进行rollback时的原子性和一致性。undo log主要存储的也是逻辑日志，比如我们要insert一条数据了，那undo log会记录的一条对应的delete日志。我们要update一条记录时，它会记录一条对应相反的update记录。
-2. 用于MVCC快照读的数据，在MVCC多版本控制中，通过读取undo log的历史版本数据可以实现不同事务版本号都拥有自己独立的快照数据版本。
+2. **用于MVCC快照读的数据**，在MVCC多版本控制中，通过读取undo log的历史版本数据可以实现不同事务版本号都拥有自己独立的快照数据版本。
 
 
 ### redo log
@@ -492,20 +525,21 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/twocommit.jpg)
 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
 
-图中 两个“commit”的概念：
-- “commit语句”， 是指MySQL语法中， 用于提交一个事务的命令。 一般跟begin/start transaction 配对使用。
-- 图中用到的这个“commit步骤”， 指的是事务提交过程中的一个小步骤， 也是最后一步。 当这个步骤执行完成后， 这个事务就提交完成了。
-- “commit语句”执行的时候， 会包含“commit 步骤
+图中 两个“commit”的概念： 
+“commit语句”， 是指MySQL语法中， 用于提交一个事务的命令。 一般跟begin/start transaction 配对使用。\
+图中用到的这个“commit步骤”， 指的是事务提交过程中的一个小步骤， 也是最后一步。 当这个步骤执行完成后， 这个事务就提交完成了。
+“commit语句”执行的时候， 会包含“commit 步骤
 
-崩溃后的数据恢复阶段
-- 如果在更新或写入数据的过程中，机器出现崩溃。那么在机器在重启后，MySQL会首先去验证redo log的完整性，如果redo log中没有prepare状态的记录，则记录是完整的，就日记提交。如果redolog中存在prepare记录，那么就去验证这条redolog对应的binlog记录，如果这条binlog是完整的，那么完整提交redo log，否则执行回滚逻辑
-- 崩溃恢复时的判断规则。
-    1. 如果redo log里面的事务是完整的， 也就是已经有了commit标识， 则直接提交；
-    2. 如果redo log里面的事务只有完整的prepare， 则判断对应的事务binlog是否存在并完整：
-       - 如果是， 则提交事务；
-       - 否则， 回滚事务。
-    - 如果碰到既有prepare、 又有commit的redo log， 就直接提交；
-    - 如果碰到只有prepare、 而没有commit的redo log， 就拿着XID去binlog找对应的事务。
+**崩溃后的数据恢复阶段**:
+如果在更新或写入数据的过程中，机器出现崩溃。那么在机器在重启后，MySQL会首先去验证redo log的完整性，如果redo log中没有prepare状态的记录，则记录是完整的，就日记提交。如果redolog中存在prepare记录，那么就去验证这条redolog对应的binlog记录，如果这条binlog是完整的，那么完整提交redo log，否则执行回滚逻辑
+
+**崩溃恢复时的判断规则**:
+1. 如果redo log里面的事务是完整的， 也就是已经有了commit标识， 则直接提交；
+2. 如果redo log里面的事务只有完整的prepare， 则判断对应的事务binlog是否存在并完整：
+   - 如果是， 则提交事务；
+   - 否则， 回滚事务。
+- 如果碰到既有prepare、 又有commit的redo log， 就直接提交；
+- 如果碰到只有prepare、 而没有commit的redo log， 就拿着XID去binlog找对应的事务。
          
  
 #### 为何需要两个日志
@@ -583,7 +617,7 @@ KEY `city` (`city`)
 select city,name,age from t where city='杭州' order by name limit 1000 ;
 ```
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby1.jpg)
-Extra这个字段中的“Using filesort”表示的就是需要排序， MySQL会给每个线程分配一块内存用于排序， 称为sort_buffer。
+Extra这个字段中的`Using filesort`表示的就是需要排序， MySQL会给每个线程分配一块内存用于排序， 称为sort_buffer。
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby2.jpg)
 这个语句执行流程如下所示 ：
   1. 初始化sort_buffer， 确定放入name、 city、 age这三个字段；
@@ -716,14 +750,14 @@ select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 
 ### change buffer
 当需要更新一个数据页时，如果数据页在内存中就直接更新，而如果这个数据页还没有在内存中的话，在不影响数据一致性的前提下，InooDB会将这些更新操作缓存在change buffer中，这样就不需要从磁盘中读入这个数据页了。在下次查询需要访问这个数据页的时候，将数据页读入内存，然后执行change buffer中与这个页有关的操作。\
-通过这种方式就能保证这个数据逻辑的正确性。 需要说明的是，虽然名字叫作change buffer，实际上它是可以持久化的数据。也就是说，change buffer在内存中有拷贝，也会被写入到磁盘上。
+通过这种方式就能保证这个数据逻辑的正确性。 需要说明的是，虽然名字叫作`change buffer`，实际上它是可以持久化的数据。也就是说，change buffer在内存中有拷贝，也会被写入到磁盘上。
 
 将change buffer中的操作应用到原数据页，得到最新结果的过程称为merge。除了访问这个数据 页会触发merge外，系统有后台线程会定期merge。在数据库正常关闭（shutdown）的过程中，也会执行merge操作。
 
 merge的时候是真正进行数据更新的时刻，而change buffer的主要目的就是将记录的变更动 作缓存下来，所以在一个**数据页**做merge之前，change buffer记录的变更越多（也就是这个页面 上要更新的次数越多），收益就越大。
 > 对于写多读少的业务来说，页面在写完以后马上被访问到的概率比较小，此时change buffer的使用效果最好。这种业务模型常见的就是账单类、日志类的系统。
 
-change buffer用的是buffer pool里的内存，因此不能无限增大。change buffer的大小，可以通 过参数innodb_change_buffer_max_size来动态设置。这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。
+`change buffer`用的是`buffer pool`里的内存，因此不能无限增大。change buffer的大小，可以通 过参数innodb_change_buffer_max_size来动态设置。这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。
 
 
 这个记录的要更新的记录不在内存页中，这时，InnoDB的处理流程如下： 
@@ -744,14 +778,35 @@ mysql> insert into t(id,k) values(id1,k1),(id2,k2);
 
 
 ### sort buffer
-见order by的应用
+sort_buffer_size: 是MySQL为排序开辟的内存（`sort_buffer`） 的大小。 `如果要排序的数据量小于sort_buffer_size`， 排序就在内存中完成。 但如果排序数据量太大内存放不下， 则不得不利用磁盘临时文件辅助排序。
+> sort_buffer_size大于了需要排序的数据量的大小， number_of_tmp_files就是0，排序直接在内存完成。
 
+具体可见order by排序章节
 
 ### 内存临时表
+使用`explain`关键字分析中：`Extra`字段显示`Using temporary`，表示的是需要使用临时表；`Using filesort`，表示的是需要执行 排序操作。
+
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderTmpMemoryTable.png)
+
+在order by 排序中，若数据超过sort buffer的大小，那么就会考虑使用内存临时表\
+`select word from words order by rand() limit 3;`
+1. 创建一个临时表。这个临时表使用的是memory引擎，这个表没有建索引。 
+2. 从words表中，按主键顺序取出所有的word值。对于每一个word值，调用rand()函数生成一 个大于0小于1的随机小数，并把这个随机小数和word分别存入临时表的R和W字段中，到此，扫描行数是10000。
+3. 现在临时表有10000行数据了，接下来你要在这个没有索引的内存临时表上，按照字段R排序。 
+4. 初始化 sort_buffer。sort_buffer中有两个字段，一个是double类型，另一个是整型。 
+5. 从内存临时表中一行一行地取出R值和位置信息，分别存入sort_buffer中的两个字段里。这个过程要对内存临时表做全表扫描，此时 扫描行数增加10000，变成了20000。 
+6. 在sort_buffer中根据R的值进行排序。注意，这个过程没有涉及到表操作，所以不会增加扫 描行数。 
+7. 排序完成后，取出前三个结果的位置信息，依次到内存临时表中取出word值，返回给客户端。这个过程中，访问了表的三行数据，总扫描行数变成了20003。
+
+
+
 
 ### 磁盘临时表
+**内存临时表切换成磁盘临时表**的参数：`tmp_table_size`这个配置限制了内存临时表的大小，默认值是16M。如果临时表大 小超过了tmp_table_size，那么内存临时表就会转成磁盘临时表。\
+磁盘临时表使用的引擎默认是InnoDB，是由参数`internal_tmp_disk_storage_engine`控制的。 当使用磁盘临时表的时候，对应的就是一个没有显式索引的InnoDB表的排序过程。
 
-
+当使用磁盘临时表的时候，对应的就是一个没有显式索引的InnoDB表的排序过程。而临时文件的排序过程，就是归并排序算法。
 ## 数据库设计
 
 ### 数据库设计原则
@@ -938,6 +993,25 @@ binlog的作用？（说的是监控，其实主要是主从复制或者备份�
 5. 执行redolog与binlog配合的两阶段提交
 
 若事务回滚，根据undolog回滚更新请求。
+
+### 可重复读隔离级别下，事务中select一条记录巨慢
+session A：
+```
+start transaction;
+// 时刻A
+select * from t where id =1; // sql1
+
+select * from t where id = 1 lock in share mode; // sql2
+
+
+```
+
+session B:
+```
+update t set c=c+1 where id =1 // 执行1万次
+```
+
+session B更新完100万次，生成了100万个回滚日志(undo log)。因此第一条查询sql1需要从一条条的undo log回找，查询效率极低。而第二条sql2是当前读，直接定位到对应的结果。
 
 ### 数据库什么情况会出现死锁？如何处理死锁？
 mysql 两个事物更新条件互斥，进入循环等待。
