@@ -91,7 +91,8 @@ modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化
     }
 ```
 
-内存空间占用： ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
+#### 内存空间占用
+ArrayList 的空间浪费主要体现在在 list 列表的结尾会预留一定的容量空间，而 LinkedList 的空间花费则体现在它的每一个元素都需要消耗比 ArrayList 更多的空间（因为要存放直接后继和直接前驱以及数据）。
 
 ### CopyOnWriteArrayList
 CopyOnWriteArrayList读写分离list
@@ -160,7 +161,7 @@ LinkedList定义了一个内部的Node 节点，基于双向链表实现，使�
 ### HashMap
 #### 基本知识
 数据结构：基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点。
-基本的存储的结构为Node 节点的数组 `transient Node<K,V>[] table;`
+基本的存储的结构为`Key Value`的Node节点的数组 `transient Node<K,V>[] table;`
 
 threshold：临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
 
@@ -332,7 +333,38 @@ static class Entry<K,V> extends HashMap.Node<K,V> {
     }
 }
 ```
-accessOrder主要用于LRU的构建 ，一个基本的LRU队列需要两点：
+
+#### accessOrder
+accessOrder主要用于LRU的构建
+```
+/**
+ * The iteration ordering method for this linked hash map: <tt>true</tt>
+ * for access-order, <tt>false</tt> for insertion-order.
+ *
+ * @serial
+ */
+final boolean accessOrder;
+    
+/**
+ * Constructs an empty insertion-ordered <tt>LinkedHashMap</tt> instance
+ * with the default initial capacity (16) and load factor (0.75).
+ */
+public LinkedHashMap() {
+    super();
+    accessOrder = false;
+}
+    
+public V get(Object key) {
+    Node<K,V> e;
+    if ((e = getNode(hash(key), key)) == null)
+        return null;
+    if (accessOrder)
+        afterNodeAccess(e); // 处理LRU逻辑
+    return e.value;
+}
+```
+
+一个基本的LRU队列需要两点：
   - 添加元素添加在队头，
   ``` 
   void afterNodeInsertion(boolean evict) {}
@@ -341,6 +373,7 @@ accessOrder主要用于LRU的构建 ，一个基本的LRU队列需要两点：
   ```
   void afterNodeAccess(Node<K,V> e) {
   ```
+
 因此固定大小的LRU可以像这样构建：
 ```
 class LRUCache<K, V> extends LinkedHashMap<K, V> {
@@ -357,7 +390,7 @@ class LRUCache<K, V> extends LinkedHashMap<K, V> {
 }
 ```
 ### concurrentHashMap实现
-数据结构与HashMap一致，并发控制使用 synchronized 和自旋配合 CAS 来操作。 新增了TreeBin和ForwardingNode的概念。
+数据结构与HashMap一致，并发控制使用自旋、配合synchronized及CAS 来操作。 新增了TreeBin和ForwardingNode的概念。
 
 变量 sizeCtl ，它的值决定着当前的初始化状态。
 - -1 说明正在初始化

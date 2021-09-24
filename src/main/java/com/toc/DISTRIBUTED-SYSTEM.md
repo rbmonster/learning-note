@@ -3,22 +3,28 @@
 <a href="#0">分布式系统</a>  
 &emsp;<a href="#1">1. 经典基础理论</a>  
 &emsp;&emsp;<a href="#2">1.1. 系统设计理念</a>  
-&emsp;&emsp;<a href="#3">1.2. CAP理论</a>  
-&emsp;&emsp;<a href="#4">1.3. 刚性事务与柔性事务</a>  
-&emsp;&emsp;<a href="#5">1.4. BASE理论 与 最大努力交付</a>  
-&emsp;<a href="#6">2. 分布式事务</a>  
-&emsp;&emsp;<a href="#7">2.1. 两阶段提交 2PC(phase-commit)</a>  
-&emsp;&emsp;&emsp;<a href="#8">2.1.1. 两阶段提交的问题</a>  
-&emsp;&emsp;<a href="#9">2.2. 三阶段提交 3PC(phase-commit)</a>  
-&emsp;&emsp;<a href="#10">2.3. paxos算法</a>  
-&emsp;&emsp;<a href="#11">2.4. Raft算法</a>  
-&emsp;&emsp;&emsp;<a href="#12">2.4.1. 选举流程</a>  
-&emsp;&emsp;&emsp;<a href="#13">2.4.2. 数据同步</a>  
-&emsp;&emsp;&emsp;<a href="#14">2.4.3. seata 阿里巴巴</a>  
+&emsp;<a href="#3">2. 分布式事务</a>  
+&emsp;&emsp;<a href="#4">2.1. CAP理论</a>  
+&emsp;&emsp;<a href="#5">2.2. 刚性事务与柔性事务</a>  
+&emsp;&emsp;<a href="#6">2.3. 刚性事务</a>  
+&emsp;&emsp;&emsp;<a href="#7">2.3.1. 两阶段提交 2PC(phase-commit)</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#8">2.3.1.1. 两阶段提交的问题</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.3.2. 三阶段提交 3PC(phase-commit)</a>  
+&emsp;&emsp;<a href="#10">2.4. 柔性事务</a>  
+&emsp;&emsp;&emsp;<a href="#11">2.4.1. BASE理论</a>  
+&emsp;&emsp;&emsp;<a href="#12">2.4.2. 可靠事件队列(最大努力交付)</a>  
+&emsp;&emsp;&emsp;<a href="#13">2.4.3. TCC事务(Try-Confirm-Cancel)</a>  
+&emsp;&emsp;&emsp;<a href="#14">2.4.4. SAGA事务</a>  
+&emsp;&emsp;<a href="#15">2.5. seata 阿里巴巴</a>  
+&emsp;<a href="#16">3. 分布式共识算法</a>  
+&emsp;&emsp;<a href="#17">3.1. Raft算法</a>  
+&emsp;&emsp;&emsp;<a href="#18">3.1.1. 选举流程</a>  
+&emsp;&emsp;&emsp;<a href="#19">3.1.2. 数据同步</a>  
+&emsp;&emsp;<a href="#20">3.2. paxos算法</a>  
 # <a name="0">分布式系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">经典基础理论</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="2">系统设计理念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-中心化设计：分为两种角色： “领导” 和 “干活的”。类似于吉联EDS系统的中心化设计。
+中心化设计：分为两种角色，“领导” 和 “干活的”，强依赖于"领导"节点。
 - 问题1：“领导”节点的正常响应问题。可以使用主备方案解决。
 - 问题2：“领导”节点的性能瓶颈，影响请求分发。
   
@@ -26,24 +32,79 @@
 - 脑裂问题：指一个集群由于网络的故障，被分为至少两个彼此无法通信的单独集群，此时如果两个集群都各自工作，则可能会产生严重的数据冲突和错误。
 - 方案：规模较小的集群就“自杀”或者拒绝服务
 
-### <a name="3">CAP理论</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 强一致性：系统在执行过某项操作后仍然处于一致的状态。在分布式系统中，更新操作执行成功后所有的用户都应该读到最新的值，这样的系统被认为是具有强一致性的。
-- 可用性：每一个操作总是能够在一定的时间内返回结果，这里需要注意的是"一定时间内"和"返回结果"。
-- 分区容错性：理解为在存在网络分区的情况下，仍然可以接受请求（满足一致性和可用性)。这里的网络分区是指由于某种原因，网络被分成若干个孤立的区域，而区域之间互不相通。
 
-理论相关解释：[分布式系统之CAP理论](https://www.cnblogs.com/hxsyl/p/4381980.html)
+## <a name="3">分布式事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+此处，**分布式事务**（Distributed Transaction）特指多个服务同时访问多个数据源的事务处理机制，请注意它与DTP 模型中“分布式事务”的差异。
+### <a name="4">CAP理论</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- **强一致性（Consistency）**：系统在执行过某项操作后仍然处于一致的状态。在分布式系统中，更新操作执行成功后所有的用户都应该读到最新的值，这样的系统被认为是具有强一致性的。
+- **可用性（Availability）**：每一个操作总是能够在一定的时间内返回结果，这里需要注意的是"一定时间内"和"返回结果"。
+- **分区容错性（Partition Tolerance）**：理解为在存在网络分区的情况下，仍然可以接受请求（满足一致性和可用性)。这里的网络分区是指由于某种原因，网络被分成若干个孤立的区域，而区域之间互不相通。
 
-### <a name="4">刚性事务与柔性事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+**如果放弃可用性（CP without A）**，意味着我们将假设一旦网络发生分区，节点之间的信息同步时间可以无限制地延长，此时，问题相当于退化到前面“全局事务”中一个系统使用多个数据源的场景之中，我们可以通过 2PC/3PC 等手段，同时获得分区容忍性和一致性。
+> 在现实中，选择放弃可用性的 CP 系统情况一般用于对数据质量要求很高的场合中，除了 DTP 模型的分布式数据库事务外，著名的 HBase 也是属于 CP 系统，以 HBase 集群为例，假如某个 RegionServer 宕机了，这个 RegionServer 持有的所有键值范围都将离线，直到数据恢复过程完成为止，这个过程要消耗的时间是无法预先估计的。
+
+**如果放弃一致性（AP without C）**，意味着我们将假设一旦发生分区，节点之间所提供的数据可能不一致。选择放弃一致性的 AP 系统目前是设计分布式系统的主流选择，因为 P 是分布式网络的天然属性，你再不想要也无法丢弃；而 A 通常是建设分布式的目的，如果可用性随着节点数量增加反而降低的话，很多分布式系统可能就失去了存在的价值，除非银行、证券这些涉及金钱交易的服务，宁可中断也不能出错，否则多数系统是不能容忍节点越多可用性反而越低的。
+> 目前大多数 NoSQL 库和支持分布式的缓存框架都是 AP 系统，以 Redis 集群为例，如果某个 Redis 节点出现网络分区，那仍不妨碍各个节点以自己本地存储的数据对外提供缓存服务，但这时有可能出现请求分配到不同节点时返回给客户端的是不一致的数据。\
+> 可横向对比的如注册中心的Zookeeper与Eureka，Zookeeper实现CP，Eureka实现AP
+
+理论相关解释：
+[分布式系统之CAP理论](https://www.cnblogs.com/hxsyl/p/4381980.html)
+
+### <a name="5">刚性事务与柔性事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 刚性事务：遵循ACID原则，强一致性。\
 柔性事务：遵循BASE理论，最终一致性；与刚性事务不同，柔性事务允许一定时间内，不同节点的数据不一致，但要求最终一致。
 
-### <a name="5">BASE理论 与 最大努力交付</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-BASE 是Basically Available（基本可用） 、Soft-state（软状态） 和 Eventually Consistent（最终一致性）
+### <a name="6">刚性事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+说明
+2PC和3PC都是一种在分布式环境中仍追求强一致性的事务处理方案，对于多节点而且互相调用彼此服务的场合（典型的就是现在的微服务系统）是极不合适的，今天它几乎只实际应用于单服务多数据源的场合中
+
+#### <a name="7">两阶段提交 2PC(phase-commit)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/2pc.png)
+
+在两阶段提交中，主要涉及到两个角色，分别是协调者和参与者。
+1. 第一阶段：当要执行一个分布式事务的时候，事务发起者首先向协调者发起事务请求，然后协调者会给所有参与者发送 prepare 请求（其中包括事务内容）告诉参与者需要执行事务。如果能执行发送的事务内容那么就先执行但不提交，执行后回复。\
+   然后参与者收到 prepare 消息后，他们会开始执行事务（但不提交），并将 Undo 和 Redo 信息记入事务日志中，之后参与者就向协调者反馈是否准备好了。
+2. 第二阶段：提交事务或者回滚事务。比如这个时候 所有的参与者 都返回了准备好了的消息，这个时候就进行事务的提交，协调者此时会给所有的参与者发送 Commit 请求 ，当参与者收到 Commit 请求的时候会执行前面执行的事务的 提交操作 ，提交完毕之后将给协调者发送提交成功的响应。\
+   如果在第一阶段有参与者返回了为准备好的消息，那么此时协调者将会给所有参与者发送 回滚事务的 rollback 请求，参与者收到之后将会 回滚它在第一阶段所做的事务处理。
+
+##### <a name="8">两阶段提交的问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+1. 单点故障问题。如果协调者挂了那么整个系统都处于不可用的状态了，参与者等待协调者指令时无法做超时处理。
+2. 性能问题。 即当协调者发送 prepare 请求，参与者收到之后如果能处理，那么它将会进行事务的处理但并不提交，这个时候会一直占用着资源不释放
+   - 如果此时协调者挂了，那么这些资源都不会再释放了，这会极大影响性能。
+   - 如果正常处理，整个过程将持续到参与者集群中最慢的那一个处理操作结束为止，这决定了两段式提交的性能通常都较差。
+3. 数据不一致问题。
+   - 协调者宕机。比如当第二阶段，协调者只发送了一部分的 commit 请求就挂了，那么也就意味着，收到消息的参与者会进行事务的提交，而后面没收到的则不会进行事务提交，那么这时候就会产生数据不一致性问题。
+   - 脑裂问题。如果分布式节点出现网络分区，某些参与者未收到commit提交命令，就会出现一部分提交数据，而另一部分未提交数据的不一致问题。
+
+#### <a name="9">三阶段提交 3PC(phase-commit)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/3PC.jpg)
+
+三阶段提交的流程如下：
+1. CanCommit阶段：协调者向所有参与者发送 CanCommit 请求，参与者收到请求后会根据自身情况查看是否能执行事务，如果可以则返回 YES 响应并进入预备状态，否则返回 NO 。
+2. PreCommit阶段：协调者根据参与者返回的响应来决定是否可以进行下面的 PreCommit 操作。
+   1. 如果上面参与者返回的都是 YES，那么协调者将向所有参与者发送 PreCommit 预提交请求，参与者收到预提交请求后，会进行事务的执行操作，并将 Undo 和 Redo 信息写入事务日志中 ，最后如果参与者顺利执行了事务则给协调者返回成功的响应。
+   2. 如果在第一阶段协调者收到了 任何一个 NO 的信息，或者 在一定时间内 并没有收到全部的参与者的响应，那么就会中断事务，它会向所有参与者发送中断请求（abort）
+3. DoCommit阶段：如果协调者收到了所有参与者在 PreCommit 阶段的 YES 响应，那么协调者将会给所有参与者发送 DoCommit 请求，**参与者收到 DoCommit 请求后则会进行事务的提交工作**，完成后则会给协调者返回响应，协调者收到所有参与者返回的事务提交成功的响应之后则完成事务。若协调者在 PreCommit 阶段 收到了任何一个 NO 或者在一定时间内没有收到所有参与者的响应 ，那么就会进行中断请求的发送，参与者收到中断请求后则会 通过上面记录的回滚日志 来进行事务的回滚操作，并向协调者反馈回滚状况，协调者收到参与者返回的消息后，中断事务。
+> 3PC 在 DoCommit 阶段参与者如未收到协调者发送的提交事务的请求，它会在一定时间内进行事务的提交。因为这个时候我们肯定保证了在第一阶段所有的协调者全部返回了可以执行事务的响应，这个时候我们有理由相信其他系统都能进行事务的执行和提交
+
+
+- 总结：3PC 通过一系列的超时机制很好的缓解了阻塞问题，相比2PC参与者也有了超时中断机制。解决了无限阻塞及单点故障问题，但是仍然无法解决网络分区问题。
+- 缺点：未解决网络分区问题：由于网络原因，协调者发送的abort响应没有及时被参与者接收到，那么参与者在等待超时之后执行了commit操作。
+
+
+
+### <a name="10">柔性事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="11">BASE理论</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+BASE 是Basically Available（基本可用） 、Soft-state（软状态，柔性事务） 和 Eventually Consistent（最终一致性）
 - 基本可用是指分布式系统在出现不可预知故障的时候，允许损失部分可用性。但是，这绝不等价于系统不可用。
-- 软状态指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。
+- 软状态(柔性事务)指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。
 - 最终一致性强调的是系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。
 
+#### <a name="12">可靠事件队列(最大努力交付)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+定义：靠着持续重试来保证可靠性的分布式事务最终一致性解决方案\
+缺点：过程无隔离性，缺乏隔离性会带来的一个显而易见的问题便是“超售”：完全有可能两个客户在短时间内都成功购买了同一件商品，而且他们各自购买的数量都不超过目前的库存，但他们购买的数量之和却超过了库存。
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basicTimingDiagram.png)
+
 在系统中建立一个消息服务，定时轮询消息表，将状态是“进行中”的消息同时发送到库存和商家服务节点中去。这时候可能产生以下几种情况。
 1. 商家和仓库服务都成功完成了收款和出库工作，向用户账号服务器返回执行结果，用户账号服务把消息状态从“进行中”更新为“已完成”。整个事务宣告顺利结束，达到最终一致性的状态。
 2. 商家或仓库服务中至少一个因网络原因，未能收到来自用户账号服务的消息。此时，由于用户账号服务器中存储的消息状态一直处于“进行中”，所以消息服务器将在每次轮询的时候持续地向未响应的服务重复发送消息。这个步骤的可重复性决定了所有被消息服务器发送的消息都必须**具备幂等性**，通常的设计是让消息带上一个**唯一的事务 ID**，以保证一个事务中的出库、收款动作会且只会被处理一次。
@@ -51,54 +112,61 @@ BASE 是Basically Available（基本可用） 、Soft-state（软状态） 和 E
 4. 商家和仓库服务成功完成了收款和出库工作，但回复的应答消息因网络原因丢失，此时，用户账号服务仍会重新发出下一条消息，但因操作具备幂等性，所以不会导致重复出库和收款，只会导致商家、仓库服务器重新发送一条应答消息，此过程重复直至双方网络通信恢复正常。
 
 也有一些支持分布式事务的消息框架，如 RocketMQ，原生就支持分布式事务操作，这时候上述情况 2、4 也可以交由消息框架来保障。\
-以上这种是靠着持续重试来保证可靠性的解决方案，它在计算机的其他领域中已被频繁使用，也有了专门的名字叫作“**最大努力交付**”（Best-Effort Delivery），譬如 TCP 协议中未收到 ACK 应答自动重新发包的可靠性保障就属于最大努力交付。
+以上这种是靠着**持续重试来保证可靠性**的解决方案，它在计算机的其他领域中已被频繁使用，也有了专门的名字叫作“**最大努力交付**”（Best-Effort Delivery），譬如 TCP 协议中未收到 ACK 应答自动重新发包的可靠性保障就属于最大努力交付。
 
-## <a name="6">分布式事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="7">两阶段提交 2PC(phase-commit)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-在两阶段提交中，主要涉及到两个角色，分别是协调者和参与者。
-1. 第一阶段：当要执行一个分布式事务的时候，事务发起者首先向协调者发起事务请求，然后协调者会给所有参与者发送 prepare 请求（其中包括事务内容）告诉参与者需要执行事务。如果能执行发送的事务内容那么就先执行但不提交，执行后回复。\
-然后参与者收到 prepare 消息后，他们会开始执行事务（但不提交），并将 Undo 和 Redo 信息记入事务日志中，之后参与者就向协调者反馈是否准备好了。
-2. 第二阶段：提交事务或者回滚事务。比如这个时候 所有的参与者 都返回了准备好了的消息，这个时候就进行事务的提交，协调者此时会给所有的参与者发送 Commit 请求 ，当参与者收到 Commit 请求的时候会执行前面执行的事务的 提交操作 ，提交完毕之后将给协调者发送提交成功的响应。\
-如果在第一阶段有参与者返回了为准备好的消息，那么此时协调者将会给所有参与者发送 回滚事务的 rollback 请求，参与者收到之后将会 回滚它在第一阶段所做的事务处理。
-  
-#### <a name="8">两阶段提交的问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-1. 单点故障问题。如果协调者挂了那么整个系统都处于不可用的状态了。
-2. 性能问题。 即当协调者发送 prepare 请求，参与者收到之后如果能处理，那么它将会进行事务的处理但并不提交，这个时候会一直占用着资源不释放
-    - 如果此时协调者挂了，那么这些资源都不会再释放了，这会极大影响性能。
-    - 如果正常处理，整个过程将持续到参与者集群中最慢的那一个处理操作结束为止，这决定了两段式提交的性能通常都较差。
-3. 数据不一致问题。
-  - 协调者宕机。比如当第二阶段，协调者只发送了一部分的 commit 请求就挂了，那么也就意味着，收到消息的参与者会进行事务的提交，而后面没收到的则不会进行事务提交，那么这时候就会产生数据不一致性问题。
-  - 脑裂问题。如果分布式节点出现网络分区，某些参与者未收到commit提交命令，就会出现一部分提交数据，而另一部分未提交数据的不一致问题。
+#### <a name="13">TCC事务(Try-Confirm-Cancel)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+可靠消息队列虽然能保证最终的结果是相对可靠的，过程也足够简单（相对于 TCC 来说），但整个过程完全没有任何隔离性可言，缺乏隔离性会带来的一个显而易见的问题便是“超售”。
 
-### <a name="9">三阶段提交 3PC(phase-commit)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-三阶段提交的流程如下：
-1. CanCommit阶段：协调者向所有参与者发送 CanCommit 请求，参与者收到请求后会根据自身情况查看是否能执行事务，如果可以则返回 YES 响应并进入预备状态，否则返回 NO 。
-2. PreCommit阶段：协调者根据参与者返回的响应来决定是否可以进行下面的 PreCommit 操作。
-   1. 如果上面参与者返回的都是 YES，那么协调者将向所有参与者发送 PreCommit 预提交请求，参与者收到预提交请求后，会进行事务的执行操作，并将 Undo 和 Redo 信息写入事务日志中 ，最后如果参与者顺利执行了事务则给协调者返回成功的响应。
-   2. 如果在第一阶段协调者收到了 任何一个 NO 的信息，或者 在一定时间内 并没有收到全部的参与者的响应，那么就会中断事务，它会向所有参与者发送中断请求（abort）
-3. DoCommit阶段：如果协调者收到了所有参与者在 PreCommit 阶段的 YES 响应，那么协调者将会给所有参与者发送 DoCommit 请求，**参与者收到 DoCommit 请求后则会进行事务的提交工作**，完成后则会给协调者返回响应，协调者收到所有参与者返回的事务提交成功的响应之后则完成事务。若协调者在 PreCommit 阶段 收到了任何一个 NO 或者在一定时间内没有收到所有参与者的响应 ，那么就会进行中断请求的发送，参与者收到中断请求后则会 通过上面记录的回滚日志 来进行事务的回滚操作，并向协调者反馈回滚状况，协调者收到参与者返回的消息后，中断事务。
-  - > 3PC 在 DoCommit 阶段参与者如未收到协调者发送的提交事务的请求，它会在一定时间内进行事务的提交。因为这个时候我们肯定保证了在第一阶段所有的协调者全部返回了可以执行事务的响应，这个时候我们有理由相信其他系统都能进行事务的执行和提交
-  
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/3PC.jpg)
-
-- 总结：3PC 通过一系列的超时机制很好的缓解了阻塞问题，相比2PC参与者也有了超时中断机制。解决了无限阻塞及单点故障问题，但是仍然无法解决网络分区问题。
-- 缺点：未解决网络分区问题：由于网络原因，协调者发送的abort响应没有及时被参与者接收到，那么参与者在等待超时之后执行了commit操作。
+TCC 它是一种业务侵入式较强的事务方案，要求业务处理过程必须拆分为“预留业务资源”和“确认/释放消费资源”两个子过程。 具体分为以下三个阶段:
+- **Try**：尝试执行阶段，完成所有业务可执行性的检查（保障一致性），并且预留好全部需用到的业务资源（保障隔离性）。
+- **Confirm**：确认执行阶段，不进行任何业务检查，直接使用 Try 阶段准备的资源来完成业务处理。Confirm 阶段可能会重复执行，因此本阶段所执行的操作需要具备幂等性。
+- **Cancel**：取消执行阶段，释放 Try 阶段预留的业务资源。Cancel 阶段可能会重复执行，也需要满足幂等性。
 
 
-### <a name="10">paxos算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 三阶段提交的改进算法
+如上述购书的例子：
+1. 购买书籍，分别去账户服务冻结余额、仓库服务冻结库存、商家服务生成预收款，处理成功进入confirm阶段
+2. 三个操作都进入confirm阶段，进行实际的业务操作：账务服务扣减余额、仓库扣减库存、商家服务支付首款
+3. 三个操作有一个操作超时或者操作失败，进行cancel操作，取消资源预留操作。
 
-TODO
+TCC 其实有点类似 2PC 的准备阶段和提交阶段，但 TCC 是位于用户代码层面，而不是在基础设施层面，这为它的实现带来了较高的灵活性，可以根据需要设计资源锁定的粒度。\
+TCC 在业务执行时只操作预留资源，几乎不会涉及锁和资源的争用，具有很高的性能潜力。但是 TCC 并非纯粹只有好处，它也带来了更高的开发成本和业务侵入性，意味着有更高的开发成本和更换事务实现方案的替换成本。
 
-### <a name="11">Raft算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 算法：主要用来竞选主节点。
-   - 显示地址：http://thesecretlivesofdata.com/raft/
 
-有三种节点：Follower、Candidate 和 Leader。
+#### <a name="14">SAGA事务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+在分布式事务中，若存在与外部交互的系统，那么就不可能使用TCC的冻结或预留等Try阶段操作。\
+SAGA事务是一个分布式环境中的大事务分解为一系列本地事务的设计模式。
+- 大事务拆分若干个小事务，将整个分布式事务 T 分解为 n 个子事务，命名为 T1，T2，…，Ti，…，Tn。每个子事务都应该是或者能被视为是原子行为。如果分布式事务能够正常提交，其对数据的影响（最终一致性）应与连续按顺序成功提交 Ti等价。
+- 为每一个子事务设计对应的补偿动作，命名为 C1，C2，…，Ci，…，Cn。Ti与 Ci必须满足以下条件：
+  1. Ti与 Ci都具备幂等性。
+  2. Ti与 Ci满足交换律（Commutative），即先执行 Ti还是先执行 Ci，其效果都是一样的。
+  3. Ci必须能成功提交，即不考虑 Ci本身提交失败被回滚的情形，如出现就必须持续重试直至成功，或者要人工介入。
+
+如果 T1到 Tn均成功提交，那事务顺利完成，否则，要采取以下两种恢复策略之一：
+- 正向恢复（Forward Recovery）：如果 Ti事务提交失败，则一直对 Ti进行重试，直至成功为止（最大努力交付）。
+> 这种恢复方式不需要补偿，适用于事务最终都要成功的场景，譬如在别人的银行账号中扣了款，就一定要给别人发货。正向恢复的执行模式为：T1，T2，…，Ti（失败），Ti（重试）…，Ti+1，…，Tn。
+- 反向恢复（Backward Recovery）：如果 Ti事务提交失败，则一直执行 Ci对 Ti进行补偿，直至成功为止（最大努力交付）。
+> 这里要求 Ci必须（在持续重试后）执行成功。反向恢复的执行模式为：T1，T2，…，Ti（失败），Ci（补偿），…，C2，C1。
+
+与 TCC 相比，SAGA 不需要为资源设计冻结状态和撤销冻结的操作，补偿操作往往要比冻结操作容易实现得多。SAGA 事务通常也不会直接靠裸编码来实现，一般也是在事务中间件的基础上完成，如阿里巴巴的Seata。
+
+
+
+### <a name="15">seata 阿里巴巴</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+分布式事务解决方案：
+[Seata](https://seata.io/zh-cn/index.html)
+
+## <a name="16">分布式共识算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+共识（Consensus）与一致性（Consistency）的区别：一致性是指数据不同副本之间的差异，而共识是指达成一致性的方法与过程。
+
+### <a name="17">Raft算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+算法：主要用来竞选主节点。
+- [Raft算法图解](http://thesecretlivesofdata.com/raft/)
+
+该算法定义了三种节点：Follower、Candidate 和 Leader。
 - Leader 会周期性的发送心跳包给 Follower。
 - 每个 Follower 都设置了一个随机的竞选超时时间，一般为 150ms~300ms，如果在这个时间内没有收到 Leader 的心跳包，就会变成 Candidate，进入竞选阶段。
 
-#### <a name="12">选举流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="18">选举流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 一个分布式系统的最初阶段，此时只有 Follower 没有 Leader。Node A 等待一个随机的竞选超时时间之后，没收到 Leader 发来的心跳包，因此进入竞选阶段。
 2. Node A 发送投票请求给其它所有节点。其它节点会对请求进行回复，如果超过一半的节点回复了，那么该 Candidate 就会变成 Leader。
 3. leader 会周期性地发送心跳包给 Follower，Follower 接收到心跳包，会重新开始计时。
@@ -106,13 +174,14 @@ TODO
    1. 如果有多个 Follower 成为 Candidate，并且所获得票数相同，那么就需要重新开始投票。
    2. 由于每个节点设置的随机竞选超时时间不同，因此下一次再次出现多个 Candidate 并获得同样票数的概率很低。
    
-#### <a name="13">数据同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">数据同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 自客户端的修改都会被传入 Leader。注意该修改还未被提交，只是写入日志中。
 2. Leader 会把修改复制到所有 Follower。
 3. Leader 会等待大多数的 Follower 也进行了修改，然后才将修改提交。
 4. 此时 Leader 会通知的所有 Follower 让它们也提交修改，此时所有节点的值达成一致。
 
 
-#### <a name="14">seata 阿里巴巴</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-分布式事务解决方案
-[seata](https://seata.io/zh-cn/index.html)
+### <a name="20">paxos算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+三阶段提交的改进算法
+
+TODO

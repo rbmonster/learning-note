@@ -20,8 +20,8 @@
 - 持久化   
 
 ## <a name="2">基本方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-1. 键值对数据结构且线程安全 ConcurrentHashMap
-   - 还可以使用正常的HashMap，但是针对增删改查均使用synchronize修饰保证线程安全。
+1. 键值对数据结构且线程安全 ConcurrentHashMap\
+ 还可以使用正常的HashMap，但是针对增删改查均使用synchronize修饰保证线程安全。
 2. 加载走正常hashMap添加就行
 3. 清除有两种清除策略：
    - 懒清除：使用softReference 或 weakReference，让jvm清除。

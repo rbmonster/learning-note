@@ -3,6 +3,8 @@ package com.learning.algorithm;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * <pre>
@@ -66,9 +68,124 @@ public class Demo {
 //         treeSet.add(3);
 //         treeSet.add(4);
 //        System.out.println(treeSet.last());
-        new Demo().permutation("aab");
+//        new Demo().eraseOverlapIntervals(new int[][] {{1,2},{2,3},{3,4},{1,3}});
 
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
     }
+
+
+    public List<Integer> partitionLabels(String s) {
+        if(s== null || s.length() == 0) {
+            return new ArrayList<>();
+        }
+        Map<Character, int[]> map = new HashMap<>();
+        int len = s.length();
+        for(int i = 0;i< len; i++){
+            char ch = s.charAt(i);
+            if(map.containsKey(ch)) {
+                int[] interval = map.get(ch);
+                interval[1] = i;
+            } else {
+                map.put(ch, new int[]{i, i});
+            }
+        }
+        List<int []> list = map.values().stream().sorted((o1,o2) ->o1[0]-o2[0]).collect(Collectors.toList());
+        int i = 1;
+        int[] prv = list.get(0);
+        while(i< list.size ()) {
+            int[] cur = list.get(i);
+            int limit = prv[1];
+            if(cur[0] < limit && cur[1]<=limit) {
+                list.remove(i);
+            } else if(cur[0] < limit && cur[1]>limit){
+                prv[1] = cur[1];
+                list.remove(i);
+            } else {
+                i++;
+                prv = cur;
+            }
+        }
+        return list.stream().map(tmp -> tmp.length).collect(Collectors.toList());
+    }
+
+    public int eraseOverlapIntervals(int[][] intervals) {
+        Arrays.sort( intervals, (o1, o2) -> {
+            if(o1[1] != o2[1]){
+                return o1[1] - o2[1];
+            } else {
+                return  (o2[1]- o2[0]) -(o1[1] - o1[0]);
+            }
+        });
+        int i = 0;
+        int len = intervals.length;
+        int result = 0;
+        while(i< len) {
+            int[] cur = intervals[i];
+            i++;
+            while(i < len &&cur[1] > intervals[i][0] && cur[1] < intervals[i][1]) {
+                result++;
+                i++;
+            }
+        }
+        return result;
+    }
+
+    public int largestSumAfterKNegations(int[] nums, int k) {
+        List<Integer> list =new LinkedList<>();
+        int sum = 0;
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i< nums.length;i++) {
+            if(nums[i]<0) {
+                list.add(nums[i]);
+                continue;
+            }
+            min = Math.min(nums[i], min);
+            sum +=nums[i];
+        }
+        Collections.sort(list);
+        while(!list.isEmpty() && k>0) {
+            sum = sum - list.remove(0);
+            k--;
+        }
+        int max = Integer.MIN_VALUE;
+        while(!list.isEmpty()) {
+            int value = list.remove(0);
+            max = Math.max(max, value);
+            sum += value;
+        }
+        if(k%2 == 1) {
+            if(max != Integer.MIN_VALUE) {
+                min = Math.min(max, min);
+            }
+            sum -= 2*min;
+        }
+        return sum;
+    }
+
+    public boolean canJump1(int[] nums) {
+        if(nums == null || nums.length ==0) {
+            return false;
+        }
+        int distance = nums[0];
+        int index = 0;
+        while(index + distance+1 < nums.length ){
+            int curMaxInx = index;
+            int curMaxDis = distance;
+            for(int i = index+1;i<= index+distance && i<nums.length;i++) {
+                if(nums[i] +i > index+distance){
+                    curMaxInx = i;
+                    curMaxDis = nums[i];
+                }
+            }
+            if(curMaxInx == index){
+                return false;
+            }
+            index = curMaxInx;
+            distance = curMaxDis;
+        }
+        return true;
+    }
+
     public String[] permutation(String s) {
         char[] array = s.toCharArray();
         Arrays.sort(array);
@@ -351,35 +468,35 @@ public class Demo {
         return res;
     }
 
-    public List<Integer> partitionLabels(String S) {
-        List<Integer> res = new ArrayList<>();
-        int[][] arr = new int[26][2];
-        Arrays.fill(arr[0], -1);
-        Arrays.fill(arr[1], -1);
-        Set<Character> set = new LinkedHashSet<>();
-        for (int i = 0; i < S.length(); i++) {
-            char ch = S.charAt(i);
-            set.add(ch);
-            int index = ch -'a';
-            if (arr[index][0] ==-1) {
-                arr[index][0] = i;
-            } else {
-                arr[index][1] = i;
-            }
-        }
-        int p1 = 0;
-        int p2 = 0;
-        for (Character ch : set) {
-            int cur = ch-'a';
-            if (arr[cur][0] == -1) continue;
-            if(arr[cur][0] > p2) {
-                res.add(p2-p1+1);
-                p1 = arr[cur][0];
-                p2 = arr[cur][1] == -1? arr[cur][0]:arr[cur][1];
-            } else {
-                p2 = Math.max(arr[cur][1],p2);
-            }
-        }
-        return res;
-    }
+//    public List<Integer> partitionLabels(String S) {
+//        List<Integer> res = new ArrayList<>();
+//        int[][] arr = new int[26][2];
+//        Arrays.fill(arr[0], -1);
+//        Arrays.fill(arr[1], -1);
+//        Set<Character> set = new LinkedHashSet<>();
+//        for (int i = 0; i < S.length(); i++) {
+//            char ch = S.charAt(i);
+//            set.add(ch);
+//            int index = ch -'a';
+//            if (arr[index][0] ==-1) {
+//                arr[index][0] = i;
+//            } else {
+//                arr[index][1] = i;
+//            }
+//        }
+//        int p1 = 0;
+//        int p2 = 0;
+//        for (Character ch : set) {
+//            int cur = ch-'a';
+//            if (arr[cur][0] == -1) continue;
+//            if(arr[cur][0] > p2) {
+//                res.add(p2-p1+1);
+//                p1 = arr[cur][0];
+//                p2 = arr[cur][1] == -1? arr[cur][0]:arr[cur][1];
+//            } else {
+//                p2 = Math.max(arr[cur][1],p2);
+//            }
+//        }
+//        return res;
+//    }
 }

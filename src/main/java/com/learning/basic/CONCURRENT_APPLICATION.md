@@ -325,74 +325,69 @@ class TestString implements Runnable{
 2. Interners内部基于ConcurrentHashMap实现，而且可以设置引用类型，不会加重full gc负担，但有一个问题就是如果gc回收了存储在Interners里面的String，那么pool.intern(lock)可能也会返回不同的引用，总之，还是建议使用Interners，效率和内存使用率更高
 
 
+## 类加载中synchronized的应用
 
-## 线程安全的类定义
-1. 无状态的类：没有任何成员变量的类，如无任何方法的枚举类型。
-2. 让类不可变	
-   1. 加final关键字
-   2. 不提供修改成员变量，也不提供获取成员变量方法
-3. 使用volatile，保证类的可见性，不能保证线程安全。适合一写多读的场景
-4. 加锁和CAS，使用synchronized、lock、原子变量AtomicInteger等
-   1. 如StringBuffer 修改的方法都使用synchronize修饰。
-   2. 如concurrentHashMap 使用自旋加CAS修改。
-   3. 使用Atomic包的基本类型，如AtomicInteger、AtomicReference、AtmoicStampReference修饰变量。
-   
+类加载过程中为了控制并发的情况，使用synchronized控制。而synchronized控制并发主要使用锁对象的方式
+1. 使用ConcurrentHashMap存储加锁的对象。
+2. 获取锁对象的时候，先去ConcurrentHashMap获取对象，由于ConcurrentHashMap添加操作是并发安全的，最后保证不同线程加锁的时候获取到同一个对象。
+3. synchronized加锁后，进入到类加载流程。
 
-### 枚举类为什么是线程安全？
+```java
+public class ClassLoader {
+    // ...
 
-普通的一个枚举类
-```
-public enum t {
-    SPRING,SUMMER,AUTUMN,WINTER;
+   private final ConcurrentHashMap<String, Object> parallelLockMap;
+
+   protected Class<?> loadClass(String name, boolean resolve)
+           throws ClassNotFoundException {
+      synchronized (getClassLoadingLock(name)) {
+         // First, check if the class has already been loaded
+         Class<?> c = findLoadedClass(name);
+         if (c == null) {
+            long t0 = System.nanoTime();
+            try {
+               if (parent != null) {
+                  c = parent.loadClass(name, false);
+               } else {
+                  c = findBootstrapClassOrNull(name);
+               }
+            } catch (ClassNotFoundException e) {
+               // ClassNotFoundException thrown if class not found
+               // from the non-null parent class loader
+            }
+
+            if (c == null) {
+               // If still not found, then invoke findClass in order
+               // to find the class.
+               long t1 = System.nanoTime();
+               c = findClass(name);
+
+               // this is the defining class loader; record the stats
+               sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+               sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+               sun.misc.PerfCounter.getFindClasses().increment();
+            }
+         }
+         if (resolve) {
+            resolveClass(c);
+         }
+         return c;
+      }
+   }
+
+   protected Object getClassLoadingLock(String className) {
+      Object lock = this;
+      if (parallelLockMap != null) {
+         Object newLock = new Object();
+         lock = parallelLockMap.putIfAbsent(className, newLock);
+         if (lock == null) {
+            lock = newLock;
+         }
+      }
+      return lock;
+   }
 }
 ```
-
-反编译后的代码
-```
-public final class T extends Enum
-{
-    private T(String s, int i)
-    {
-        super(s, i);
-    }
-    public static T[] values()
-    {
-        T at[];
-        int i;
-        T at1[];
-        System.arraycopy(at = ENUM$VALUES, 0, at1 = new T[i = at.length], 0, i);
-        return at1;
-    }
-
-    public static T valueOf(String s)
-    {
-        return (T)Enum.valueOf(demo/T, s);
-    }
-
-    public static final T SPRING;
-    public static final T SUMMER;
-    public static final T AUTUMN;
-    public static final T WINTER;
-    private static final T ENUM$VALUES[];
-    static
-    {
-        SPRING = new T("SPRING", 0);
-        SUMMER = new T("SUMMER", 1);
-        AUTUMN = new T("AUTUMN", 2);
-        WINTER = new T("WINTER", 3);
-        ENUM$VALUES = (new T[] {
-            SPRING, SUMMER, AUTUMN, WINTER
-        });
-    }
-}
-```
-
-1. `public final class T extends Enum`，说明，该类是继承了Enum类的，同时final关键字告诉我们，这个类也是不能被继承的。
-2. 类中的几个属性和方法都是static final类型的，说明static类型的属性会在类被加载之后被初始化便不可修改。
-> 创建一个enum类型是线程安全的。
-
-
-- 相关资料：[深度分析Java的枚举类型—-枚举的线程安全性及序列化问题](https://www.cnblogs.com/z00377750/p/9177097.html)
 
 ## 单订单重复退款请求
 1. synchronize修饰退款方法。 
@@ -404,9 +399,7 @@ public final class T extends Enum
 ### 分布式锁的处理方案
 
 1. 数据库锁，数据库乐观锁，数据库悲观锁。
-
 2. redis 锁 或者 ZooKeeper锁
-
 3. 使用消息队列顺序消费，保证不重复退款
 
 ## 消息批量发送设计

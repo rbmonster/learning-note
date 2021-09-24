@@ -2,18 +2,12 @@
 
 ## 基本数据类型
 八大基本数据类型
-- byte/8
-  - 取值范围为-128~127，占用1个字节
-- short/16
-  - 取值范围为-32768~32767，占用2个字节
-- int/32
-  - 占用4个字节（-2的31次方到2的31次方-1） 
-- float/32
-  - 占用4个字节 （-3.40292347E+38~3.40292347E+38）
-- long/64
-  - 占用8个字节（-2的63次方到2的63次方-1）
-- double/64
-  - 占用8个字节，IEEE754
+- byte/8: 取值范围为-128~127，占用1个字节
+- short/16: 取值范围为-32768~32767，占用2个字节
+- int/32: 占用4个字节（-2的31次方到2的31次方-1） 
+- float/32: 占用4个字节 （-3.40292347E+38~3.40292347E+38）
+- long/64: 占用8个字节（-2的63次方到2的63次方-1）
+- double/64: 占用8个字节，IEEE754
 - char/16
 - boolean/~
 
@@ -38,7 +32,7 @@ int y = x;         // 拆箱 调用了 X.intValue()
 new Integer(123) 与 Integer.valueOf(123) 的区别在于：
 - new Integer(123) 每次都会新建一个对象；
 - Integer.valueOf(123) 会使用缓存池中的对象，多次调用会取得同一个对象的引用。
-    - valueOf() 方法的实现比较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容
+> valueOf() 方法的实现比较简单，就是先判断值是否在缓存池中，如果在的话就直接返回缓存池的内容
 
 #### 缓冲池
 包装类型内存使用 private static class IntegerCache，声明一个内部使用的缓存池
@@ -77,6 +71,7 @@ String 被声明为 final，因此它不可被继承
 4. 线程安全
   
 new String("abc") :创建两String对象，（前提是 String Pool 中还没有 "abc" 字符串对象）。
+> 使用new关键字创建的字符串对象存储在堆的普通内存部分。[字符串常量池String Constant Pool](https://www.cnblogs.com/LinQingYang/p/12524949.html#importantPointsToRememberLabel)
 
 java 8 字符串常量池放置于方法区中
 
@@ -304,7 +299,7 @@ hashCode()：hashCode是jdk根据对象的地址或者字符串或者数字算�
     }
 ```
 获得当前对象的监听器的方式：
-- 执行此对象的同步 (Sychronized) 实例方法
+- 执行此对象的同步 (`Sychronized`) 实例方法
 - 执行在此对象上进行同步的 synchronized 语句的方法
 - 对于 Class 类型的对象，执行该类的同步静态方法
  
@@ -425,9 +420,8 @@ Exception 分为两种：
 RuntimeException是一种Unchecked Exception，即表示编译器不会检查程序是否对RuntimeException作了处理，在程序中不必捕获RuntimException类型的异常，也不必在方法体声明抛出RuntimeException类。一般来说，RuntimeException发生的时候，表示程序中出现了编程错误，所以应该找出错误修改程序，而不是去捕获RuntimeException。
 > 常见RuntimeException异常：NullPointException、ClassCastException、IllegalArgumentException、IndexOutOfBoundException
   
-如果try语句里有return，返回的是try语句块中变量值。 
 
-详细执行过程如下：
+try语句return问题：**如果try语句里有return，返回的是try语句块中变量值**。详细执行过程如下：
 1. 如果有返回值，就把返回值保存到局部变量中；
 2. 执行jsr指令跳到finally语句里执行；
 3. 执行完finally语句后，返回之前保存在局部变量表里的值。
@@ -436,19 +430,20 @@ RuntimeException是一种Unchecked Exception，即表示编译器不会检查程
   
 ## 泛型
 泛型的本质是参数化类型，也就是所操作的数据类型被指定为一个参数。
-- 在集合中存储对象并在使用前进行类型转换是多么的不方便。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
+- 在集合中存储对象并在使用前进行类型转换是不方便的。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
 - 使用T, E or K,V等被广泛认可的类型占位符。
   
 泛型有三种常用的使用方式：泛型类，泛型接口和泛型方法。
 
 限定通配符和非限定通配符 
 1. 非限定通配符：另一方面<?>表示了非限定通配符，因为<?>可以用任意类型来替代。
-2. 一种是<? extends T>它通过确保类型必须是T的子类来设定类型的上界
-3. 另一种是<? super T>它通过确保类型必须是T的父类来设定类型的下界
+2. 一种是`<? extends T>`它通过确保类型必须是T的子类来设定类型的上界
+3. 另一种是`<? super T>`它通过确保类型必须是T的父类来设定类型的下界
 4. 泛型类型必须用限定内的类型来进行初始化，否则会导致编译错误。
-  
+
+### 类型擦除
 类型擦除: Java的泛型基本上都是在编译器这个层次上实现的，在生成的字节码中是不包含泛型中的类型信息的，使用泛型的时候加上类型参数，在编译器编译的时候会去掉，这个过程成为类型擦除。
-- 如在代码中定义List<Object>和List<String>等类型，在编译后都会变成List，JVM看到的只是List，而由泛型附加的类型信息对JVM是看不到的。
+- 如在代码中定义`List<Object>`和`List<String>`等类型，在编译后都会变成List，JVM看到的只是List，而由泛型附加的类型信息对JVM是看不到的。
 - 类型擦除后保留的原始类型，最后在字节码中的类型变量变成真正类型。无论何时定义一个泛型，相应的原始类型都会被自动提供，无限定的变量用Object替换。
 
 
@@ -467,7 +462,7 @@ RuntimeException是一种Unchecked Exception，即表示编译器不会检查程
 //asd
 ```
 
-类型擦除后保留的原始类型：在调用泛型方法时，可以指定泛型，也可以不指定泛型。
+**类型擦除后保留的原始类型**：在调用泛型方法时，可以指定泛型，也可以不指定泛型。
 - 在不指定泛型的情况下，泛型变量的类型为该方法中的几种类型的同一父类的最小级，直到Object
 - 在指定泛型的情况下，该方法的几种类型必须是该泛型的实例的类型或者其子类
 ```
@@ -498,31 +493,33 @@ Java不能实现真正的泛型，只能使用类型擦除来实现伪泛型，�
 
 ## 注解
 
-内置注解#
+### 内置注解
 Java 定义了一套注解，共有 7 个，3 个在 java.lang 中，剩下 4 个在 java.lang.annotation 中。
-1、作用在代码的注解是
+
+作用在代码的注解是
 - @Override - 检查该方法是否是重写方法。如果发现其父类，或者是引用的接口中并没有该方法时，会报编译错误。
 - @Deprecated - 标记过时方法。如果使用该方法，会报编译警告。
 - @SuppressWarnings - 指示编译器去忽略注解中声明的警告。
 
-2、作用在其他注解的注解(或者说元注解)是:
+作用在其他注解的注解(或者说元注解)是:
 - @Retention - 标识这个注解怎么保存，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问。
 - @Documented - 标记这些注解是否包含在用户文档中。
 - @Target - 标记这个注解应该是哪种 Java 成员。
 - @Inherited - 标记这个注解是继承于哪个注解类(默认 注解并没有继承于任何子类)
 
-3、从 Java 7 开始，额外添加了 3 个注解:
+从 Java 7 开始，额外添加了 3 个注解:
 - @SafeVarargs - Java 7 开始支持，忽略任何使用参数为泛型变量的方法或构造函数调用产生的警告。
 - @FunctionalInterface - Java 8 开始支持，标识一个匿名函数或函数式接口。
 - @Repeatable - Java 8 开始支持，标识某注解可以在同一个声明上使用多次。
 
+### 元注解
 java.lang.annotation 提供了四种元注解，专门注解其他的注解（在自定义注解的时候，需要使用到元注解）：
 1. @Documented：注解是否将包含在JavaDoc中
 2. @Retention：什么时候使用该注解 
     - RetentionPolicy.SOURCE : 在编译阶段丢弃。这些注解在编译结束之后就不再有任何意义，所以它们不会写入字节码。@Override, @SuppressWarnings都属于这类注解。
     - RetentionPolicy.CLASS : 在类加载的时候丢弃。在字节码文件的处理中有用。注解默认使用这种方式
     - RetentionPolicy.RUNTIME : 始终不会丢弃，运行期也保留该注解，因此可以使用反射机制读取该注解的信息。我们自定义的注解通常使用这种方式。
-3. @Target – 注解用于什么地方
+3. @Target：注解用于什么地方
      - ElementType.CONSTRUCTOR: 用于描述构造器
      - ElementType.FIELD: 成员变量、对象、属性（包括enum实例）
      - ElementType.LOCAL_VARIABLE: 用于描述局部变量
@@ -555,7 +552,7 @@ java.lang.annotation 提供了四种元注解，专门注解其他的注解（�
 2. 可运行（RUNABLE）：正在 Java 虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。
 3. 阻塞（BLOCKED）：请求获取 monitor lock 从而进入 synchronized 函数或者代码块，但是其它线程已经占用了该 monitor lock，所以出于阻塞状态。要结束该状态进入从而 RUNABLE 需要其他线程释放 monitor lock。
 4. 无限期等待（WAITING）：等待其它线程显式地唤醒。
-   - 阻塞和等待的区别在于，阻塞是被动的，它是在等待获取 monitor lock。而等待是主动的，通过调用  Object.wait() 等方法进入。
+>  阻塞和等待的区别在于，阻塞是被动的，它是在等待获取 monitor lock。而等待是主动的，通过调用  Object.wait() 等方法进入。
 
 | 进入方法 | 退出方法 |
 | --- | --- |
@@ -563,8 +560,8 @@ java.lang.annotation 提供了四种元注解，专门注解其他的注解（�
 | 没有设置 Timeout 参数的 Thread.join() 方法 | 被调用的线程执行完毕 |
 | LockSupport.park() 方法 | LockSupport.unpark(Thread) |
 
-限期等待（TIMED_WAITING）：无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
- > - 调用 Thread.sleep() 方法使线程进入限期等待状态时，常常用“使一个线程睡眠”进行描述。调用 Object.wait() 方法使线程进入限期等待或者无限期等待时，常常用“挂起一个线程”进行描述。睡眠和挂起是用来描述行为，而阻塞和等待用来描述状态。
+5. 限期等待（TIMED_WAITING）：无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
+>  调用 Thread.sleep() 方法使线程进入限期等待状态时，常常用“使一个线程睡眠”进行描述。调用 Object.wait() 方法使线程进入限期等待或者无限期等待时，常常用“挂起一个线程”进行描述。睡眠和挂起是用来描述行为，而阻塞和等待用来描述状态。
 
 | 进入方法 | 退出方法 |
 | --- | --- |
@@ -574,7 +571,7 @@ java.lang.annotation 提供了四种元注解，专门注解其他的注解（�
 | LockSupport.parkNanos() 方法 | LockSupport.unpark(Thread) |
 | LockSupport.parkUntil() 方法 | LockSupport.unpark(Thread) |
 
-- 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
+6. 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
 ### 创建一个线程的开销
 JVM 在背后帮我们做了哪些事情：
@@ -603,7 +600,7 @@ JVM 在背后帮我们做了哪些事情：
     }
 ```
 为什么使用==比较？
-- 因为枚举类在jvm编译成class文件后，实际编译成使用final 修饰的class，final修饰就意味着实例化后不可修改，且都指向堆中的同一个对象
+> 因为枚举类在jvm编译成class文件后，实际编译成使用final 修饰的class，final修饰就意味着实例化后不可修改，且都指向堆中的同一个对象
 
 
 普通的一个枚举类
@@ -691,7 +688,7 @@ transient 关键字的作用是：阻止实例中那些用此关键字修饰的�
  
 序列化ID：` private static final long serialVersionUID` 该ID决定着是否能够成功反序列化！简单来说，java的序列化机制是通过在运行时判断类的serialVersionUID来验证版本一致性的。
 
-获取键盘输入的两种方式：
+### 获取键盘输入的两种方式
 ```
 //通过 Scanner
 Scanner input = new Scanner(System.in);
@@ -702,10 +699,12 @@ input.close();
 BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 String s = input.readLine();
 ```
-- Arrays.asList():返回的并不是 java.util.ArrayList ，而是 java.util.Arrays 的一个内部类,这个内部类并没有实现集合的add()、remove()、clear()会抛出异常unSupportedOperationException。
+
+### Arrays.asList()
+Arrays.asList(): 返回的并不是 java.util.ArrayList ，而是 java.util.Arrays 的一个内部类,这个内部类并没有实现集合的add()、remove()、clear()会抛出异常unSupportedOperationException。
 
 ### java复制
 对于基本类型，直接赋值复制，对于对象类型分为浅拷贝与深拷贝
 1. 浅拷贝：对引用数据类型进行引用传递般的拷贝，此为浅拷贝。
 2. 深拷贝：对基本数据类型进行值传递，对引用数据类型，创建一个新的对象，并复制其内容，此为深拷贝。
-    - 深拷贝的另一种方式，使用序列化和反序列化，获取一个新对象。
+> 深拷贝的另一种方式，使用序列化和反序列化，获取一个新对象。
