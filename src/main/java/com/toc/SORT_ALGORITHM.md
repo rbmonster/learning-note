@@ -71,7 +71,7 @@
 
 ## <a name="2">快速排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 常见的左右指针交换的快拍的写法中：为什么要先从右开始查找，再从左边开始查找？
-- 主要的区别在于最后执行基点与指针交换的操作。基点定于左侧，若先从左边开始查找，可能会导致找到一个大于的数，而指针相遇了，此时与基点位置坐交换会把一个大于基点的数交换至左侧。
+> 主要的区别在于最后执行基点与指针交换的操作。基点定于左侧，若先从左边开始查找，可能会导致找到一个大于的数，而指针相遇了，此时与基点位置坐交换会把一个大于基点的数交换至左侧。
 ```
     private static void sort1(int[] nums, int left, int right) {
         if (left > right) {
@@ -184,23 +184,22 @@ public static int partition(int[] arr, int left, int right) {
 1. **随机基准**。每次随机选取基准值，而不是固定选取左或右边界值。使用random
 2. **三数取中法**。队头、队尾、队中三个数，取中间值。
 3. **当待排序序列的长度分割到一定大小后，使用插入排序**。在子序列比较小的时候，直接插入排序性能较好，因为对于有序的序列，插排可以达到O(n)的复杂度，如果序列比较小，使用插排效率要比快排高。可以设置一个阈值n，之后使用插排。
-   - ```
-     if(right - left > 5){
-          int pos = partition(array, left, right);
-          Quicksort(array, left, pos - 1);
-          Quicksort(array, pos + 1, right);
-     }else{
-          insertionSort(array);
-     }
-     ```
+```
+ if(right - left > 5){
+    int pos = partition(array, left, right);
+    Quicksort(array, left, pos - 1);
+    Quicksort(array, pos + 1, right);
+ }else{
+    insertionSort(array);
+ }
+```
 4. 优化四：三路划分。如果待排序列中重复元素过多，也会大大影响排序的性能，这是因为大量相同元素参与快排时，**左右序列规模相差极大**，快排将退化为冒泡排序，时间复杂度接近O(n2)。
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/sort/threeWaySort.jpg)
 
 
 思想：
-将待排序列划分为三部分：第一部分小于基准v，第二部分等于基准v，第三部分大于基准v。
-
+将待排序列划分为三部分：第一部分小于基准v，第二部分等于基准v，第三部分大于基准v。\
 这样在递归排序区间的时候，我们就不必再对第二部分元素均相等的区间进行快排了，这在待排序列存在大量相同元素的情况下能大大提高快排效率。
 
 具体算法

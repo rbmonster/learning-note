@@ -1135,6 +1135,7 @@ class Solution {
 - [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
 - [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
 - *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
+- *[最长递增子序列的个数](https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/)
 
 #### <a name="53">子数组问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
