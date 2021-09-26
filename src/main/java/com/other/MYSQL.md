@@ -261,16 +261,22 @@ MySQL的行锁是在引擎层由各个引擎自己实现的。 MyISAM引擎就�
 - 解决方案：1.确定不会出现死锁，关闭死锁检测。2.控制并发度。3.改写mysql源码。
     
 ### 幻读(间隙锁)
+对“幻读”做一个说明：
+1. 在可重复读隔离级别下，普通的查询是快照读，是不会看到别的事务插入的数据的。因此， 幻读在“当前读”下才会出现。
+2. session B的修改结果，被session A之后的select语句用“当前读”看到，不能称为幻读。 **幻读仅专指“新插入的行**”。
+
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead.jpg)
-- session A里执行了三次查询， 分别是Q1、 Q2和Q3。 它们的SQL语句相同， 都是select * from t where d=5 for update。 表示查所有d=5的行， 而且使用的是当前读， 并且加上写锁。 
-- 其中， Q3读到id=1这一行的现象， 被称为“幻读”。 也就是说， 幻读指的是一个事务在前后两次查询同一个范围的时候， 后一次查询看到了前一次查询没有看到的行
+
+session A里执行了三次查询， 分别是Q1、 Q2和Q3。 它们的SQL语句相同， 都是select * from t where d=5 for update。 表示查所有d=5的行， 而且使用的是当前读， 并且加上写锁。 \
+其中， Q3读到id=1这一行的现象， 被称为“幻读”。 也就是说， 幻读指的是一个事务在前后两次查询同一个范围的时候， 后一次查询看到了前一次查询没有看到的行
 
 幻读会导致数据一致性的问题。 锁的设计是为了保证数据的一致性。 而这个一致性， 不止是数据库内部数据状态在此刻的一致性， 还包含了数据和日志在逻辑上的一致性。
 1. 在可重复读隔离级别下， 普通的查询是快照读， 是不会看到别的事务插入的数据的。 因此，幻读在“当前读”下才会出现。
 2. 上面session B的修改结果， 被session A之后的select语句用“当前读”看到， 不能称为幻读。幻读仅专指“新插入的行”
 
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead2.jpg)
-- 尝试解决幻读，把所有语句都上锁，查询语句改成select * from t for update。但是仍然无法解决插入新语句出现的幻读现象。
+
+> 尝试解决幻读，把所有语句都上锁，查询语句改成`select * from t for update`。但是仍然无法解决插入新语句出现的幻读现象。
 
 #### 如何解决幻读？
 InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过程中， 不仅将给行加上了行锁， 还给行两边的空隙， 也加上了间隙锁。
@@ -278,7 +284,7 @@ InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过
 间隙锁之间的冲突：跟间隙锁存在冲突关系的，是“往这个间隙中插入一个记录”这个操作。 间隙锁之间都不存在冲突关系。
 
 间隙锁和行锁合称next-key lock， 每个next-key lock是前开后闭区间。 
-- 如果用select * from t for update要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
+- 如果用`select * from t for update`要把整个表所有记录锁起来， 就形成了7个next-key lock， 分别是 (-∞,0]、 (0,5]、 (5,10]、 (10,15]、 (15,20]、 (20, 25]、 (25, +supremum]。
 - InnoDB给每个索引加了一个不存在的最大值supremum。
 
 间隙锁的引入， 可能会导致同样的语句锁住更大的范围， 这其实是影响了并发度的。
@@ -331,6 +337,7 @@ InnoDB引入新的锁， 也就是间隙锁(Gap Lock)。在一行行扫描的过
 #### 幻读解决——范围锁（间隙锁+行锁）
 Innodb 为解决幻读问题引入了间隙锁+行锁充当范围锁
 
+见上述幻读章节
 ### RC读已提交（Read Committed）
 
 > 读已提交对事务涉及的数据加的写锁会一直持续到事务结束，但加的读锁在查询操作完成后就马上会释放。
@@ -486,6 +493,7 @@ redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志�
 
 #### redo log 写入机制
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/redologwrite.png)
+
 这三种状态分别是：
 1. 存在redo log buffer中， 物理上是在MySQL进程内存中， 就是图中的红色部分；
 2. 写到磁盘(write)， 但是没有持久化（fsync)， 物理上是在文件系统的page cache里面， 也就是图中的黄色部分；
@@ -504,31 +512,47 @@ InnoDB写盘的三种情况：
 ### binlog
 MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
 
-#### bin log写入机制
+#### binlog写入机制
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/binlogwrite.jpg)
+
 每个线程有自己binlog cache， 但是共用同一份binlog文件。
 1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
 2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下，我们认为fsync才占磁盘的IOPS
-  
-bin log 三种数据格式，主要区别于在存储bin log 的格式区别  越来越多的场景要求把MySQL的binlog格式设置成row，有利于恢复数据。
-1. statement 
-2. row
-3. mix 上面两种的混合
 
-### 两种日志区别
-1. redo log是InnoDB引擎特有的； binlog是MySQL的Server层实现的， 所有引擎都可以使用。
-2. redo log是物理日志， 记录的是“在某个数据页上做了什么修改”； binlog是逻辑日志， 记录的是这个语句的原始逻辑， 比如“给ID=2这一行的c字段加1 ”。
-3. redo log是循环写的， 空间固定会用完； binlog是可以追加写入的。 “追加写”是指binlog文件写到一定大小后会切换到下一个， 并不会覆盖以前的日志。
-4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
+write 和fsync的时机，是由参数sync_binlog控制的： 
+1. sync_binlog=0的时候，表示每次提交事务都只write，不fsync； 
+2. sync_binlog=1的时候，表示每次提交事务都会执行fsync； 
+3. sync_binlog=N(N>1)的时候，表示每次提交事务都write，但累积N个事务后才fsync。
+
+
+#### binlog 格式
+binlog 三种格式，主要区别于在存储binlog的格式区别
+1. statement，记录着真实执行的sql原文，部分语句记录时会先设置上下文信息，如`insert`语句调用`now()`函数，log中会先记录一条`set timestamp`的信息。
+2. row，将执行的sql映射成对应的event事件，如删除sql会记录着真实删除的ID信息，不会导致主备删除不同行的情况。
+3. mixed 上面两种的混合，row格式的缺点是，很占空间。MySQL自己会判断这条SQL语句是否可能引起主备不一致，如果有可能，就用row格式，否则就用statement格式。
+> 现在越来越多的场景要求把MySQL的binlog格式设置成row，有利于数据恢复。
+> 1. 如执行完一条delete语句以后，发现删错数据了，可以直接把 binlog中记录的delete语句转成insert，把被错删的数据插入回去就可以恢复了。
+> 2. 如果执行的是update语句的话，binlog里面会记录修改前整行的数据和修改后的整行数据。
+
+>而使用statement，需要注意语句的上下文信息，以防恢复有误。同样的mixed模式下，部分语句转成statement也会导致恢复的过程较难操作的情况
+
+
+
+### crash-safe的设置
+redo log用于保证crash-safe能力。innodb_flush_log_at_trx_commit这个参数设置成1的时候， 表示每次事务的redo log都直接持久化到磁盘，建议设置成1，这样可以保证 MySQL异常重启之后数据不丢失。 \
+sync_binlog这个参数设置成1的时候，表示每次事务的binlog都持久化到磁盘。这个参数也建议你设置成1，这样可以保证MySQL异常重启之后binlog不丢失。
+
+这就是通常说的MySQL的“双1”配置，指的就是sync_binlog和innodb_flush_log_at_trx_commit都设 置成 1。也就是说，一个事务完整提交前，需要等待两次刷盘，一次是**redo log（prepare 阶段）**，一次是binlog。
 
 ### 两阶段提交
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/twocommit.jpg)
+
 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
 
 图中 两个“commit”的概念： 
-“commit语句”， 是指MySQL语法中， 用于提交一个事务的命令。 一般跟begin/start transaction 配对使用。\
-图中用到的这个“commit步骤”， 指的是事务提交过程中的一个小步骤， 也是最后一步。 当这个步骤执行完成后， 这个事务就提交完成了。
-“commit语句”执行的时候， 会包含“commit 步骤
+“commit语句”， 是指MySQL语法中，用于提交一个事务的命令。一般跟begin/start transaction配对使用。\
+图中用到的这个“commit步骤”，指的是事务提交过程中的一个小步骤， 也是最后一步。 当这个步骤执行完成后，这个事务就提交完成了。
+“commit语句”执行的时候，会包含“commit 步骤
 
 **崩溃后的数据恢复阶段**:
 如果在更新或写入数据的过程中，机器出现崩溃。那么在机器在重启后，MySQL会首先去验证redo log的完整性，如果redo log中没有prepare状态的记录，则记录是完整的，就日记提交。如果redolog中存在prepare记录，那么就去验证这条redolog对应的binlog记录，如果这条binlog是完整的，那么完整提交redo log，否则执行回滚逻辑
@@ -544,21 +568,31 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
  
 #### 为何需要两个日志
 1. 只使用binlog的话，相当于一个update语句： => binlog write ->commit ->binlog write -> commit
-    - 若崩溃在binlog write的阶段，就是crash-unsafe
+> 若崩溃在binlog write的阶段，就是crash-unsafe
 2. 只使用redo log，可以保证crash-safe。
-    - binlog作为MySQL一开始就有的功能， 被用在了很多地方。其中， MySQL系统高可用的基础， 就是binlog复制
-    - 很多公司有异构系统（比如一些数据分析系统） ， 这些系统就靠消费MySQL的binlog来更新自己的数据。 
+> binlog作为MySQL一开始就有的功能， 被用在了很多地方。其中， MySQL系统高可用的基础， 就是binlog复制\
+> 很多公司有异构系统（比如一些数据分析系统） ， 这些系统就靠消费MySQL的binlog来更新自己的数据。
+
+InnoDB引擎使用的是WAL技术，执行事务的时候，写完内存和日志，事务就算完成了。 如果之后崩溃，要依赖于日志来恢复数据页。
+binlog write这个位置发生崩溃的话，之前的事务1也是可能丢失了的，而且是数据页级的丢失。此时，**binlog里面并没有记录数据页的更新细节**，是补全丢失的数据。
+
+
+### 两种日志区别
+1. redo log是InnoDB引擎特有的； binlog是MySQL的Server层实现的， 所有引擎都可以使用。
+2. redo log是物理日志， 记录的是“在某个数据页上做了什么修改”； binlog是逻辑日志， 记录的是这个语句的原始逻辑， 比如“给ID=2这一行的c字段加1 ”。
+3. redo log是循环写的， 空间固定会用完； binlog是可以追加写入的。 “追加写”是指binlog文件写到一定大小后会切换到下一个， 并不会覆盖以前的日志。
+4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
+
     
-    
-#### 两阶段提交的实际执行流程
+### 两阶段提交的组提交机制执行流程
+
+crash-safe的参数设置会导致频繁的刷盘，在高TPS下容易达到磁盘能力的瓶颈。\
+MySQL为了让组提交的效果更好，把redo log做fsync的时间拖到了binlog write 之后，整体的提交流程改成如下：
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/actualWrite.jpg)
+
 WAL机制主要得益于两个方面：
 1. redo log 和 binlog都是顺序写， 磁盘的顺序写比随机写速度要快；
-2. 组提交机制， 可以大幅度降低磁盘的IOPS消耗。
-
-#### 其他
-redo log用于保证crash-safe能力。innodb_flush_log_at_trx_commit这个参数设置成1的时候， 表示每次事务的redo log都直接持久化到磁盘，建议你设置成1，这样可以保证 MySQL异常重启之后数据不丢失。 \
-sync_binlog这个参数设置成1的时候，表示每次事务的binlog都持久化到磁盘。这个参数也建议你设置成1，这样可以保证MySQL异常重启之后binlog不丢失。
+2. **组提交机制**， 可以大幅度降低磁盘的IOPS消耗。
 
 ## 实际sql的执行
 一个sql 语句mysql的执行顺序：
@@ -658,35 +692,54 @@ order by rand()使用了内存临时表， 内存临时表排序的时候使用�
 直接使用order by rand()， 这个语句需要Using temporary和 Using filesort， 查询的执行代价往往是比较大的
 
 ### join的执行过程
+以下为三种join算法，主要的区别在于连接的字段是否有索引
 #### Index Nested-Loop Join
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/indexJoin.jpg)
+
 ```
 select * from t1 straight_join t2 on (t1.a=t2.a);
 ```
-执行流程是这样的：
+> t1与t2的a字段均有索引
+
+执行流程：
 1. 从表t1中读入一行数据 R；
 2. 从数据行R中， 取出a字段到表t2里去查找；
 3. 取出表t2中满足条件的行， 跟R组成一行， 作为结果集的一部分；
 4. 重复执行步骤1到3， 直到表t1的末尾循环结束
-- 实际执行的时候使用了BAK优化，将尽可能多的驱动表数据取出放Join Buffer中，再关联查询。
+> 实际执行的时候使用了**BAK优化**，将尽可能多的驱动表数据取出放Join Buffer中，再关联查询。
 
 流程中：
 1. 对驱动表t1做了全表扫描， 这个过程需要扫描100行；
 2. 而对于每一行R， 根据a字段去表t2查找， 走的是树搜索过程。 由于我们构造的数据都是一一对应的， 因此每次的搜索过程都只扫描一行， 也是总共扫描100行；
-3. 所以， 整个执行流程， 总扫描行数是200。
+3. 所以，整个执行流程， 总扫描行数是200。
 
+结论：
+1. 使用join语句，性能比强行拆成多个单表执行SQL语句的性能要好； 
+2. 如果使用join语句的话，需要**让小表做驱动表**。 
+> 注意，这个结论的前提是“可以使用被驱动表的索引”。
 #### Simple Nested-Loop Join
 ```
 select * from t1 straight_join t2 on (t1.a=t2.b);
 ```
-- 表t2的字段b上没有索引，关联查询使用全表扫描。
-- SQL请求就要扫描表t2多达100次， 总共扫描100*1000=10万行。
+> 表t2的**字段b上没有索引**，关联查询使用全表扫描。
+
+查询过程与上述index join相同，从t1拿定位一行数据后，接着就去t2表根据连接字段查询，SQL请求就要扫描表t2多达100次， 总共扫描100*1000=10万行。
 
 #### Block Nested-Loop Join
-将驱动表数据读入线程内存join_buffer中，同样以全表扫描，但是因为使用内存操作，速度比上述方法快。
+执行过程：
+将驱动表数据读入线程内存join_buffer中，同样以全表扫描，但是因为使用内存操作，速度比Simple join的方法快。
+1. 把表t1的数据读入线程内存join_buffer中，由于这个语句中写的是select *，因此是把整 个表t1放入了内存； 
+2. 扫描表t2，把表t2中的每一行取出来，跟join_buffer中的数据做对比，满足join条件的，作为结果集的一部分返回。
+
+
+如果t1的数据超过了join buffer的限制，拿整个执行流程如下，处理完部分数据先放到结果集中：
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/blockJoin.jpg)
+
 
 #### join语句mysql的优化
 Multi-Range Read优化
-- 大多数的数据都是按照主键递增顺序插入得到的， 所以可以认为， 如果按照主键的递增顺序查询的话， 对磁盘的读比较接近顺序读， 能够提升读性能
+- 大多数的数据都是按照主键递增顺序插入得到的， 所以可以认为， 如果按照主键的递增顺序查询的话，对磁盘的读比较接近顺序读，能够提升读性能
 - MRR优化思路即将查询的关联集合排序，再关联查询，提高查询效率。将随机访问改成范围访问。
 
 Batched Key Access （BAK）
@@ -696,26 +749,29 @@ Batched Key Access （BAK）
 #### 总结
 1. 尽量使用被驱动表的索引，即关联表的字段为索引。
 2. 不能使用被驱动表的索引， 只能使用Block Nested-Loop Join算法， 这样的语句就尽量不要使用；
-3. 在使用join的时候， 应该让小表做驱动表。
-4. 把join 的条件写在where和写在on中区别为，一个为连接的条件。
+3. 在使用join的时候，应该让**小表做驱动表**，连接表按各自条件进行过滤后，数据量小的为小表
+4. 把join的条件写在where和写在on中区别为，一个为连接的条件。
 
 ### union执行流程
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/union1.png)
+
 ```
 (select 1000 as f) union (select id from t1 order by id desc limit 2);
 ```
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/union.jpg)
 
-执行流程是这样的：
+执行流程：
 1. 创建一个内存临时表， 这个临时表只有一个整型字段f， 并且f是主键字段。
-2. 执行第一个子查询， 得到1000这个值， 并存入临时表中。
-3. 执行第二个子查询：拿到第一行id=1000， 试图插入临时表中。 但由于1000这个值已经存在于临时表了， 违反了唯一性约束， 所以插入失败， 然后继续执行；取到第二行id=999， 插入临时表成功。
-4. 从临时表中按行取出数据， 返回结果， 并删除临时表， 结果中包含两行数据分别是1000和999
+2. 执行第一个子查询， 得到1000这个值，并存入临时表中。
+3. 执行第二个子查询：拿到第一行id=1000，试图插入临时表中。但由于1000这个值已经存在于临时表了， 违反了唯一性约束， 所以插入失败， 然后继续执行；取到第二行id=999， 插入临时表成功。
+4. 从临时表中按行取出数据，返回结果，并删除临时表，结果中包含两行数据分别是1000和999
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/union.jpg)
 
 #### union all
 ```
 (select 1000 as f) union all(select id from t1 order by id desc limit 2);
 ```
-- 与上面的区别为union all不需要除重，因此直接把查询结果放在结果集中返回。
+与上面的区别为union all不需要除重，因此直接把查询结果放在结果集中返回。
 
 ### group by 执行流程
 ```
@@ -726,7 +782,9 @@ select id%10 as m, count(*) as c from t1 group by m;
 - Using temporary， 表示使用了临时表；
 - Using filesort， 表示需要文件排序。
 
-这个语句的执行流程是这样的：
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/groupby.png)
+
+这个语句的执行流程：
 1. 创建内存临时表， 表里有两个字段m和c， 主键是m；
 2. 扫描表t1的索引a， 依次取出叶子节点上的id值， 计算id%10的结果， 记为x；
    1. 如果临时表中没有主键为x的行， 就插入一个记录(x,1);
@@ -737,7 +795,7 @@ group by语句默认都会对语句进行排序，可以使用order by null 避�
 ```
 select id%10 as m, count(*) as c from t1 group by m order by null;
 ```
-#### group by 优化 ——索引
+#### group by 优化 —— 索引
 索引保证了数据有序，在group by时候，分组计数计算时一片区域的id都是连续的，整个表扫描结束时便可以拿到结果，不需要临时表也不需要排序。
 
 #### group by 优化 —— 直接排序
@@ -746,6 +804,11 @@ select id%10 as m, count(*) as c from t1 group by m order by null;
 select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 ```
 
+#### 小结
+1. 如果对group by语句的结果没有排序要求，要在语句后面加 order by null； 
+2. 尽量让group by过程用上表的索引，确认方法是explain结果里没有Using temporary和 Using filesort； 
+3. 如果group by需要统计的数据量不大，尽量只使用内存临时表；也可以通过适当调大 tmp_table_size参数，来避免用到磁盘临时表； 
+4. 如果数据量实在太大，使用SQL_BIG_RESULT这个提示，来告诉优化器直接使用排序算法 得到group by的结果。
 ## MySQL中的buffer
 
 ### change buffer
@@ -774,7 +837,6 @@ mysql> insert into t(id,k) values(id1,k1),(id2,k2);
 1. Page 1在内存中，直接更新内存； 
 2. Page 2没有在内存中，就在内存的change buffer区域，记录下“我要往Page 2插入一行”这个 信息
 3. 将上述两个动作记入redo log中（图中3和4）。
-
 
 
 ### sort buffer
@@ -807,6 +869,36 @@ sort_buffer_size: 是MySQL为排序开辟的内存（`sort_buffer`） 的大小�
 磁盘临时表使用的引擎默认是InnoDB，是由参数`internal_tmp_disk_storage_engine`控制的。 当使用磁盘临时表的时候，对应的就是一个没有显式索引的InnoDB表的排序过程。
 
 当使用磁盘临时表的时候，对应的就是一个没有显式索引的InnoDB表的排序过程。而临时文件的排序过程，就是归并排序算法。
+
+### binlog cache
+系统给binlog cache分配了一片内存，每个线程一个，参数 binlog_cache_size用于控制单个线程 内binlog cache所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。
+
+### redo log buffer
+
+### net_buffer
+这块内存的大小是由参数net_buffer_length定义的，默认是 16k。
+`mysql -h$host -P$port -u$user -p$pwd -e "select * from db1.t" > $target_file`
+
+### Buffer Pool
+内存的数据页是在Buffer Pool (BP)中管理的，在WAL里Buffer Pool起到了**加速更新**的作用。而 实际上，Buffer Pool 还有一个更重要的作用，就是加速查询。
+
+在change buffer存储了一条更新操作后，如果刚好有一条查询，change buffer会把修改应用到内存页上，这时候内存数据页的结果是最新的，直接读内存页就可以了。
+
+> Buffer Pool对查询的加速效果，依赖于一个重要的指标，即：内存命中率。\
+> InnoDB Buffer Pool的大小是由参数 innodb_buffer_pool_size确定的，一般建议设置成可用物理 内存的60%~80%。\
+
+
+
+#### 内存管理策略
+InnoDB内存管理用的是最近最少使用 (Least RecentlyUsed, LRU)算法。
+
+InnoDB管理Buffer Pool的LRU算法，是用链表来实现的。在InnoDB实现上，按照5:3的比例把整个LRU链表分成了young区域和old区域。
+> 这个策略，就是为了处理类似全表扫描的操作量身定制的。防止一个对历史数据大表的全表扫描，而导致Buffer Pool的内存命中率急剧下降
+
+### join buffer
+join_buffer的大小是由参数join_buffer_size设定的，默认值是256k。如果放不下驱动表的所有数据，策略很简单就是分段放。
+
+
 ## 数据库设计
 
 ### 数据库设计原则
@@ -814,7 +906,6 @@ sort_buffer_size: 是MySQL为排序开辟的内存（`sort_buffer`） 的大小�
 #### 第一范式(列不可再分)
 第一范式是最基本的范式(确保每列保持原子性)。如果数据库表中的所有字段值都是不可分解的原子值，就说明该数据库表满足了第一范式。
 > 第一范式的合理遵循需要根据系统的实际需求来定。比如某些数据库系统中需要用到“地址”这个属性，本来直接将“地址”属性设计成一个数据库表的字段就行。但是如果系统经常会访问“地址”属性中的“城市”部分，那么就非要将“地址”这个属性重新拆分为省份、城市、详细地址等多个部分进行存储。
-
 
 
 #### 第二范式(确保表中的每列都和主键相关)
@@ -826,7 +917,7 @@ sort_buffer_size: 是MySQL为排序开辟的内存（`sort_buffer`） 的大小�
 > 如一个订单表都会有客户字段，可以把客户编码作为一个外键跟订单表建立响应关系。
 
 #### 相关资料
-- https://www.cnblogs.com/linjiqin/archive/2012/04/01/2428695.html
+- [数据库设计三大范式](https://www.cnblogs.com/linjiqin/archive/2012/04/01/2428695.html)
 
 ### 表字段设计
 规则：用尽量少的存储空间来存储一个字段的数据
@@ -872,30 +963,78 @@ Datetime 和 Timestamp，通常会首选 Timestamp
     2. 方案二，使用内存组装树节点数据。
 
 
-## 分库分表
+## MySQL架构
 
-### 分库分表有了解吗？
+### 主从模式(读写分离)
+读写分离的主要目标就是分摊主库的压力
+
+客户端直连
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/readwrite1.png)
+
+上述的结构是客户端(client)主动做负载均衡，这种模式下一般会把数据库的连接信息放在客户端的连接层。也就是说，由客户端来选择后端数据库进行查询。
+- 优点：客户端直连方案，因为少了一层proxy转发，所以查询性能稍微好一点儿，并且整体架构简单，排查问题更方便。
+- 缺点：在出现主备切换、库迁移等操作的时候，客户端都会感知到，并且需要调整数据库连接信息。
+
+
+客户端连接代理proxy
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/readwrite2.png)
+
+在MySQL和客户端之间有一个中间代理层proxy，客户端只连接proxy， 由proxy根据请求类型和上下文决定请求的分发路由。
+- 优点：客户端不需要关注后端细节，连接维护、后端信息维 护等工作，都是由proxy完成的。
+- 缺点：proxy 也需要有高可用架构。带proxy架构的整体系统复杂度就更高了。
+
+
+读写数据不一致问题：
+1. **强制走主库方案**：查询请求做分类，对于必须要拿到最新结果的请求，强制将其发到主库上。对于可以读到旧数据的请求，才将其发到从库上。
+2. **判断主备无延迟方案**：查询前先判断主从同步情况，确定同步完成再进行查询。
+3. 等主库点位方案及等待GTID的方案：利用sql在从库执行，判断数据最新直接返回，若等待超时数据未同步，在主库直接执行或超时返回。
+
+
+### 分库分表
+
+#### 分库分表场景
 由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。
 
-### 垂直切分
+#### 垂直切分
 垂直分表定义：将一个表按照字段分成多表，每个表存储其中一部分字段。通常我们按以下原则进行垂直拆分:
 1. 把不常用的字段单独放在一张表;
 2. 把text，blob等大字段拆分出来放在附表中;
 3. 经常组合查询的列放在一张表中;
-  
+
 垂直分库是指按照业务将表进行分类，分布到不同的数据库上面，每个库可以放在不同的服务器上，它的核心理念是专库专用。
-- 将表按照功能模块、关系密切程度划分出来， 部署到不同的库上。
+> 将表按照功能模块、关系密切程度划分出来， 部署到不同的库上。\
 > 例如，我们会建立定义数据库 workDB、商品数据库 payDB、用户数据库 userDB、日志数据库 logDB 等，分别用于存储项目数据定义表、商品定义表、用户数据表、日志数据表等。
 
 
-### 水平切分
+#### 水平切分
 水平分库是把同一个表的数据按一定规则拆到不同的数据库中，每个库可以放在不同的服务器上。
-- 如将店铺ID为单数的和店铺ID为双数的商品信息分别放在两个库中。
+> 如将店铺ID为单数的和店铺ID为双数的商品信息分别放在两个库中。
 
 水平分表是在同一个数据库内，把同一个表的数据按一定规则拆到多个表中。
 
+#### 分库分表的查询
+一般分库分表的场景，就是要把一个逻辑上的大表分散到不同的数据库实例上。比如。将一个大 表ht，按照**字段f**，拆分成1024个分表，然后分布到32个数据库实例上。一般情况下，这种分库分表系统都有一个中间层proxy。
 
-## MGR(MySQL Group Replication)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/shardTable.png)
+
+`select v from ht where f=N;`\
+通过分表规则（比如，N%1024)来确认需要的数据被放在了哪个分表上。这种语句只需要访问一个分表
+
+`select v from ht where k >= M order by t_modified desc limit 100;`
+由于查询条件里面没有用到分区字段f，只能到所有的分区中去查找满足条件的所有 行，然后统一做order by的操作。
+
+思路1：在proxy层的进程代码中实现排序。\
+缺点：
+1. 需要的开发工作量比较大。比如group by，甚至join这样的操作，对中间层的开发能力要求比较高
+2. 对proxy端的压力比较大，尤其是很容易出现内存不够用和CPU瓶颈的问题。
+
+思路2：把各个分库拿到的数据，汇总到一个MySQL实例的一个表中，然后在这个汇总实例上做逻辑操作。\
+该思路用到了临时表的使用。
+
+
+### MGR(MySQL Group Replication)
 MGR(MySQL Group Replication)是 MySQL 自带的一个插件，可以灵活部署。
 > 在MGR出现之前，用户常见的MySQL高可用方式，无论怎么变化架构，本质就是Master-Slave架构。MySQL 5.7版本开始支持无损半同步复制（lossless semi-sync replication），从而进一步提高数据复制的强一致性。\
 > MySQL MGR 集群是多个 MySQL Server 节点共同组成的分布式集群，每个 Server 都有完整的副本，它是基于 ROW 格式的二进制日志文件和 GTID 特性。
@@ -935,6 +1074,16 @@ master不关心slave是否接收到master的binlog。slave接收到master的binl
 2. 该索引必须是唯一索引。
 > 由于没有其他索引，所以也就不用考虑其他索引的叶子节点大小的问题。
 
+### 临时表与内存表
+内存表，指的是使用Memory引擎的表
+1. 建表语法是`create table …engine=memory`。
+2. 这种表的数据都保存在内存里，系统重启的时候会被清空，但是表结构还在。
+
+临时表，可以使用各种引擎类型。如果是使用InnoDB引擎或者MyISAM引擎的临时表，写数据的时候是写到磁盘上的。当然，临时表也可以使用Memory引擎。
+1. 建表语法是`create temporary table …。`
+2. 一个临时表只能被创建它的session访问，对其他线程不可见。
+3. 在一个session中，session A内有同名的临时表和普通表的时候，show create语句，以及增删改查语句访问的 是临时表。
+
 ### 重建索引是否合理
 
 ```
@@ -959,17 +1108,16 @@ Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（fl
 InnoDB刷脏页的控制策略
 
 ### 读已提交和可重复读是如何实现的
-1. ReadView：
-    - 当进行查询操作时，事务会生成一个ReadView，ReadView是一个事务快照，准确来说是当前时间点系统内活跃的事务列表，也就是说系统内所有未提交的事务，都会记录在这个Readview内，事务就根据它来判断哪些数据是可见的，哪些是不可见的。
-    - 查询一条数据时，事务会拿到这个ReadView，去到undo log中进行判断。若查询到某一条数据：
-2. undo log
-    - 当事务对数据行进行一次更新操作时，会把旧数据行记录在一个叫做undo log的记录中，在undo log中除了记录数据行，还会记录下该行数据的对应的创建版本号，也就是生成这行数据的事务id。并连接原纪录
+1. ReadView：\
+当进行查询操作时，事务会生成一个ReadView，ReadView是一个事务快照，准确来说是当前时间点系统内活跃的事务列表，也就是说系统内所有未提交的事务，都会记录在这个ReadView内，事务就根据它来判断哪些数据是可见的，哪些是不可见的。\
+查询一条数据时，事务会拿到这个ReadView，去到undo log中进行判断。若查询到某一条数据：
+2. undo log: 当事务对数据行进行一次更新操作时，会把旧数据行记录在一个叫做undo log的记录中，在undo log中除了记录数据行，还会记录下该行数据的对应的创建版本号，也就是生成这行数据的事务id。并连接原纪录
 
 ### 读已提交和可重复读区别？
-- 举两个事务线程的例子。
+举两个事务线程的例子。
      
 ### 数据库数据库一致性是如何实现的？
-- 通过redoLog 与binlog 两阶段提交 保证事务一致性。
+通过redoLog 与binlog 两阶段提交 保证事务一致性。
 
 ### redoLog、undoLog、binlog区别？
 binlog是Mysql数据库的日志，而redoLog与undoLog是innodb引擎才有的日志
@@ -1241,11 +1389,17 @@ INNER JOIN
 4. 热点数据的数据库，可以使用缓存数据库来支撑，再异步将数据更新到数据库
 
 ### 其他
-- 什么是覆盖索引跟回表？
+#### 什么是覆盖索引跟回表？
 见索引规则
 
-- `left join,right join,inner join`,表表关联什么区别？
+#### `left join,right join,inner join`,表表关联什么区别？
 > left join：保留左表所有结果，未匹配的右表记录字段为null
 > right join：保留右表结果
 > inner join：两表匹配结果的交集
 > 表表关联：查询结构跟inner join结果一致
+
+
+#### 大事务会有什么影响？
+1. 事务过大，可能导致binlog写入的过慢，因为binlog都是一次性写入。
+2. 大事务执行时间过长， 会导致同步给从库的时间产生了延迟。
+> 因此不要一次性的用delete语句删除太多数据。其实，这就是一个典型的大事务场景。可以使用循环分批删除的方式，减小事务。
