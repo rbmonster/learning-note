@@ -809,31 +809,62 @@ select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 2. 尽量让group by过程用上表的索引，确认方法是explain结果里没有Using temporary和 Using filesort； 
 3. 如果group by需要统计的数据量不大，尽量只使用内存临时表；也可以通过适当调大 tmp_table_size参数，来避免用到磁盘临时表； 
 4. 如果数据量实在太大，使用SQL_BIG_RESULT这个提示，来告诉优化器直接使用排序算法 得到group by的结果。
-## MySQL中的buffer
 
-### change buffer
+
+## MySQL中的组件
+
+### Buffer Pool
+mysql的数据都是存放在磁盘中的，如果每次查询数据都从磁盘读取，性能较低，Buffer Pool就是一层缓存池，来优化查询效率的。
+> 内存的数据页是在Buffer Pool (BP)中管理的，在WAL里Buffer Pool起到了**加速更新**的作用。而 实际上，Buffer Pool 还有一个更重要的作用，就是加速查询。
+
+在change buffer存储了一条更新操作后，如果刚好有一条查询，change buffer会把修改应用到内存页上，这时候内存数据页的结果是最新的，直接读内存页就可以了。
+> Buffer Pool对查询的加速效果，依赖于一个重要的指标，即：内存命中率。\
+> InnoDB Buffer Pool的大小是由参数 innodb_buffer_pool_size确定的，一般建议设置成可用物理 内存的60%~80%。\
+
+#### 内存管理策略
+InnoDB内存管理用的是最近最少使用 (Least RecentlyUsed, LRU)算法。
+
+InnoDB管理Buffer Pool的LRU算法，是用链表来实现的。在InnoDB实现上，按照5:3的比例把整个LRU链表分成了young区域和old区域。
+> 这个策略，就是为了处理类似全表扫描的操作量身定制的。防止一个对历史数据大表的全表扫描，而导致Buffer Pool的内存命中率急剧下降
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/lru.png)
+
+执行流程：
+1. 访问数据页P3，P3位于young区域，移动到队头
+2. 访问不在链表中的数据页，淘汰old区域队尾的Pm，但是新插入的数据页Px，插入的位置为LRU_old处。
+3. 处于old区域的数据页，每次被访问的时候都要做下面这个判断： 
+   - 若这个数据页在LRU链表中存在的时间超过了1秒，就把它移动到链表头部； 
+   - 如果这个数据页在LRU链表中存在的时间短于1秒，位置保持不变。1秒这个时间，是由 参数innodb_old_blocks_time控制的。其默认值是1000，单位毫秒。
+
+#### change buffer
+
+change buffer(写缓存)：在MySQL5.5之前，叫插入缓冲(insert buffer)，只针对insert做了优化；现在对delete和update也有效，叫做写缓冲(change buffer)。
+
 当需要更新一个数据页时，如果数据页在内存中就直接更新，而如果这个数据页还没有在内存中的话，在不影响数据一致性的前提下，InooDB会将这些更新操作缓存在change buffer中，这样就不需要从磁盘中读入这个数据页了。在下次查询需要访问这个数据页的时候，将数据页读入内存，然后执行change buffer中与这个页有关的操作。\
-通过这种方式就能保证这个数据逻辑的正确性。 需要说明的是，虽然名字叫作`change buffer`，实际上它是可以持久化的数据。也就是说，change buffer在内存中有拷贝，也会被写入到磁盘上。
+通过这种方式就能保证这个数据逻辑的正确性。需要说明的是，虽然名字叫作`change buffer`，实际上它是可以持久化的数据。也就是说，change buffer在内存中有拷贝，也会被写入到磁盘上。
 
-将change buffer中的操作应用到原数据页，得到最新结果的过程称为merge。除了访问这个数据 页会触发merge外，系统有后台线程会定期merge。在数据库正常关闭（shutdown）的过程中，也会执行merge操作。
+将change buffer中的操作应用到原数据页，得到最新结果的过程称为merge。除了访问这个数据页会触发merge外，系统有后台线程会定期merge。在数据库正常关闭（shutdown）的过程中，也会执行merge操作。
 
-merge的时候是真正进行数据更新的时刻，而change buffer的主要目的就是将记录的变更动 作缓存下来，所以在一个**数据页**做merge之前，change buffer记录的变更越多（也就是这个页面 上要更新的次数越多），收益就越大。
+merge的时候是真正进行数据更新的时刻，而change buffer的主要目的就是将记录的变更动作缓存下来，所以在一个**数据页**做merge之前，change buffer记录的变更越多（也就是这个页面 上要更新的次数越多），收益就越大。
 > 对于写多读少的业务来说，页面在写完以后马上被访问到的概率比较小，此时change buffer的使用效果最好。这种业务模型常见的就是账单类、日志类的系统。
 
 `change buffer`用的是`buffer pool`里的内存，因此不能无限增大。change buffer的大小，可以通 过参数innodb_change_buffer_max_size来动态设置。这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。
 
 
-这个记录的要更新的记录不在内存页中，这时，InnoDB的处理流程如下： 
+一个更新的记录不在内存页中，这时，InnoDB的处理流程如下： 
 1. 对于唯一索引来说，需要将数据页读入内存，判断到没有冲突，插入这个值，语句执行结束；
 2. 对于普通索引来说，则是将更新记录在change buffer，语句执行就结束了。
 > 将数据从磁盘读入内存涉及随机IO的访问，是数据库里面成本最高的操作之一。
 > change buffer 因为减少了随机磁盘访问，所以对更新性能的提升是会很明显的。
 
 #### change buffer 和 redo log
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/changebuffer.png)
+
 ```
 mysql> insert into t(id,k) values(id1,k1),(id2,k2);
 ```
-它涉及了四个部分：内存、redo log（ib_log_fileX）、 数据表空间 （t.ibd）、系统表空间（ibdata1）。
+图中涉及了四个部分：内存、redo log（ib_log_fileX）、 数据表空间 （t.ibd）、系统表空间（ibdata1）。
 1. Page 1在内存中，直接更新内存； 
 2. Page 2没有在内存中，就在内存的change buffer区域，记录下“我要往Page 2插入一行”这个 信息
 3. 将上述两个动作记入redo log中（图中3和4）。
@@ -848,7 +879,6 @@ sort_buffer_size: 是MySQL为排序开辟的内存（`sort_buffer`） 的大小�
 ### 内存临时表
 使用`explain`关键字分析中：`Extra`字段显示`Using temporary`，表示的是需要使用临时表；`Using filesort`，表示的是需要执行 排序操作。
 
-
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderTmpMemoryTable.png)
 
 在order by 排序中，若数据超过sort buffer的大小，那么就会考虑使用内存临时表\
@@ -860,8 +890,6 @@ sort_buffer_size: 是MySQL为排序开辟的内存（`sort_buffer`） 的大小�
 5. 从内存临时表中一行一行地取出R值和位置信息，分别存入sort_buffer中的两个字段里。这个过程要对内存临时表做全表扫描，此时 扫描行数增加10000，变成了20000。 
 6. 在sort_buffer中根据R的值进行排序。注意，这个过程没有涉及到表操作，所以不会增加扫 描行数。 
 7. 排序完成后，取出前三个结果的位置信息，依次到内存临时表中取出word值，返回给客户端。这个过程中，访问了表的三行数据，总扫描行数变成了20003。
-
-
 
 
 ### 磁盘临时表
@@ -876,24 +904,10 @@ sort_buffer_size: 是MySQL为排序开辟的内存（`sort_buffer`） 的大小�
 ### redo log buffer
 
 ### net_buffer
+定义：当 MySQL开始产生可以返回的结果集，会在通过网络返回给客户端请求线程之前，会先暂存在通过 net_buffer_size 所设置的缓冲区中，等满足一定大小的时候才开始向客户端发送，以提高网络传输效率。
+
 这块内存的大小是由参数net_buffer_length定义的，默认是 16k。
 `mysql -h$host -P$port -u$user -p$pwd -e "select * from db1.t" > $target_file`
-
-### Buffer Pool
-内存的数据页是在Buffer Pool (BP)中管理的，在WAL里Buffer Pool起到了**加速更新**的作用。而 实际上，Buffer Pool 还有一个更重要的作用，就是加速查询。
-
-在change buffer存储了一条更新操作后，如果刚好有一条查询，change buffer会把修改应用到内存页上，这时候内存数据页的结果是最新的，直接读内存页就可以了。
-
-> Buffer Pool对查询的加速效果，依赖于一个重要的指标，即：内存命中率。\
-> InnoDB Buffer Pool的大小是由参数 innodb_buffer_pool_size确定的，一般建议设置成可用物理 内存的60%~80%。\
-
-
-
-#### 内存管理策略
-InnoDB内存管理用的是最近最少使用 (Least RecentlyUsed, LRU)算法。
-
-InnoDB管理Buffer Pool的LRU算法，是用链表来实现的。在InnoDB实现上，按照5:3的比例把整个LRU链表分成了young区域和old区域。
-> 这个策略，就是为了处理类似全表扫描的操作量身定制的。防止一个对历史数据大表的全表扫描，而导致Buffer Pool的内存命中率急剧下降
 
 ### join buffer
 join_buffer的大小是由参数join_buffer_size设定的，默认值是256k。如果放不下驱动表的所有数据，策略很简单就是分段放。
