@@ -10,9 +10,9 @@
 # <a name="0">Spring boot </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">Spring boot start</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/springBootLoadother.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/springBootLoadother.png)
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/spingLoad.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/spingLoad.jpg)
 
 ## <a name="2">spring 构造方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
@@ -228,7 +228,7 @@ public void refresh() throws BeansException, IllegalStateException {
 ---
 
 ## <a name="6">spring boot相关知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/BootStrapLoad.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/BootStrapLoad.png)
 Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application,
 - application 配置文件这个容易理解，主要用于 Spring Boot 项目的自动化配置。
 - bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。

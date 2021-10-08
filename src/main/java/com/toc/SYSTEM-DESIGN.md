@@ -75,9 +75,9 @@ MVC是一种框架模式。经典MVC模式中，M是指业务模型，V是指用
 
 ##### <a name="15">分层架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![image](https://gitee.com/rbmon/file-storage/blob/main/learning-note/design/systemdesign/structure.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/structure.png)
 
-![image](https://gitee.com/rbmon/file-storage/blob/main/learning-note/design/systemdesign/structureIntroduce.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/structureIntroduce.png)
 
 - 应用层（接入层）：通常用来接收前端（展现层）的请求，转发给领域层获取请求结果，再组装结果返回前端。
 - 基础设施层：作为其他层支撑的存在，最通俗的例子就是searchServ，正常的搜索服务都会集成ElasticSearch或者其他搜索功能，searchSearch封装了与基础服务集成的及细节，只暴露了领域需要的接口。
@@ -103,7 +103,7 @@ MVC是一种框架模式。经典MVC模式中，M是指业务模型，V是指用
 > 这个根是一个实体，并且它是外部可以访问的唯一的对象。根可以保持对任意聚合对象的引用，并且其他的对象可以持有任意其他的对象，但一个外部对象只能持有根对象的引用。如果边界内有其他的实体，那些实体的标识符是本地化的，只在聚合内有意义。
 
 一个简单的聚合的案例如下图所示。客户是聚合的根，并且其他所有的对象都是内部的。如果需要地址，一个它的拷贝将被传递到外部对象。
-![image](https://gitee.com/rbmon/file-storage/blob/main/learning-note/design/systemdesign/aggreate.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/aggreate.png)
 
 
 ###### <a name="19">工厂</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

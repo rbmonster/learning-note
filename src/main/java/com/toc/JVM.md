@@ -110,7 +110,7 @@
 - 介绍一下 CMS,G1 收集器。
 - Minor Gc 和 Full GC 有什么不同呢？
   
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/heap-detail.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/heap-detail.jpg)
 
 ## <a name="2">虚拟机数据区</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -133,7 +133,7 @@
 ### <a name="6">Java堆</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义:是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。
 - 参数-Xmx和-Xms 最大堆内存和最小堆内存
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/hotstop-heap.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/hotstop-heap.jpg)
 
 ### <a name="7">方法区</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
@@ -150,7 +150,7 @@
 从 Java 7 开始，Java String Pool 存储在 Heap 空间中，由 JVM 进行垃圾回收。 这种方法的优点是降低了 OutOfMemory 错误的风险，因为未引用的字符串将从池中删除，从而释放内存。
 
 ### <a name="9">HotSpot 的后台线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/hotspotThread.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/hotspotThread.jpg)
 
 
 ### <a name="10">应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -248,7 +248,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 > 然后，清空 Eden 和 survivor From 中的对象；
 3. survivor To 和 survivor From 互换
 > 最后， survivor To 和 survivor From 互换，原 survivor To 成为下一次 GC 时的 survivor From区。
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/edenGc.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/edenGc.jpg)
 
 
 #### <a name="19">相关问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -265,7 +265,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 
 ### <a name="20">经典的垃圾收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/garbage-collector.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/garbage-collector.jpg)
 
 #### <a name="21">Serial收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 定义:一个单线程的垃圾收集器，在垃圾收集时必须暂停其他所有工作线程，直到收集结束。
@@ -279,7 +279,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 - 定义：使用标记-整理算法。
 - 用途：可以Parallel Scavenge收集器搭配使用，另一种是作为CMS收集器发生失败的后背方案。
   
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/serial-1.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/serial-1.jpg)
 
 #### <a name="23">ParNew收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 定义：Serial收集器的多线程并行版本。
@@ -288,7 +288,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 - 新生代：标记复制。老年代：标记-整理
 - 常使用参数：-XX:SurvivorRatio、-XX:PretenureSizeThreshold、-XX:HandlePromotionFailure
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/parNew-1.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/parNew-1.jpg)
 
 #### <a name="24">Parallel Scavenge 收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：新生代收集器，同样基于标记-复制算法，能够并行收集的多线程收集器。特点是达到一个可控制的吞吐量。
@@ -306,7 +306,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 定义：Parallel Scavenge收集器的老年版本，支持多线程并发收集，基于标记-整理算法。
 - 与Parallel Scavenge搭配作为“吞吐量优先”的收集器搭配组合
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/parallel.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/parallel.jpg)
 
 #### <a name="26">CMS(Concurrent Mark Sweep)收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：一种以获取最短回收停顿时间为目标的收集器，工作于老年代。
@@ -327,7 +327,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
   
 [CMS官网说明](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/cms.html#concurrent_mode_failure)
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/cms-1.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/cms-1.jpg)
 
 #### <a name="27">Garbage First 收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中还有一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
@@ -351,8 +351,8 @@ G1整体是基于标记-整理算法实现的收集器，但从局部优势基�
 5. 通过可靠停顿预测模型的建立：根据每个Region的回收成本，分析出收集的平均值、标准偏差、置信度等统计信息。
 - 缺点：内存占用过高，在小内存应用上CMS的表现大于G1。
   
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/g1.jpg)
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/g1-memory.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-memory.jpg)
 
 [G1官网说明](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/g1_gc.html)
 #### <a name="28">CMS 与 G1 对比</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -490,9 +490,9 @@ JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看
 
 ### <a name="39">类文件结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 -  方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/synchronizeMethod.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeMethod.jpg)
 - 方法体对应的访问范围
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/classArea.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/classArea.jpg)
 
 ### <a name="40">双亲委派模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 站在虚拟机角度，只存在两种不同的类加载器：
@@ -695,7 +695,7 @@ public static final int v = 8080;
 
 ## <a name="52">对象创建及使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/objcreate.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/objcreate.jpg)
 
 对象的创建
 1. 类加载检查：虚拟机遇到new命令，先检查是否能在常量池定位到一个类的引用，检查这个符号代表的类是否已被加载、解析和初始化过。
@@ -715,7 +715,7 @@ public static final int v = 8080;
 
 
 ### <a name="54">对象内存分布</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/object-head.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/object-head.jpg)
 对象在堆内存中的存储布局可以分为三部分：对象头、实例数据（对象有效信息）和对齐填充（仅起占位符作用）\
 
 Hotspot的对象头包括两部分信息：
@@ -874,7 +874,7 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
 
 ### <a name="61">young区域(年轻代)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 对象首先分配到Eden，分配满了触发Young Gc(Minor Gc)，基于复制交换算法，晋升对象年龄+1。
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/edenGc.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/edenGc.jpg)
 2. 年龄到达老年代门槛的晋升老年代。
     - 动态对象年龄判断：如果在 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到 -XX:MaxTenuringThreshold 中要求的年龄。
     - 晋升失败触发FULL GC的两种场景：
@@ -922,8 +922,8 @@ CMS 在Background回收的过程中，STW 的阶段主要是 Init Mark 和 Final
 [图解垃圾回收](https://www.cnblogs.com/hynblogs/p/12292345.html)
 
 ## <a name="67">Java虚拟机内存调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
- ![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/jvmParameter.jpg)
- ![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/jvmGCType.jpg)
+ ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/jvmParameter.jpg)
+ ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/jvmGCType.jpg)
 
 
 ### <a name="68">基本概念重述</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -994,9 +994,9 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 ### <a name="76">案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 #### <a name="77">美团技术案例（基于CMS JDK1.8）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/gcProcess.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/gcProcess.jpg)
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/localIssue.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/localIssue.png)
 
 
 ##### <a name="78">场景一：动态扩容引起的空间震荡</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

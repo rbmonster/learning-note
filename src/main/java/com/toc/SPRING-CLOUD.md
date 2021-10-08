@@ -36,13 +36,13 @@
 
 相关资料： [spring-cloud-openFeign源码深度](https://blog.csdn.net/sinat_29899265/article/details/86577997)
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/OpenFeignStructure.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/OpenFeignStructure.png)
 
 
 ## <a name="2">Hystrix</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 整体流程图
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/hystrix-command-flow-chart.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/hystrix-command-flow-chart.png)
 
 基于注解的实现流程：
 1. 使用HystrixCommandAspect切面实现，通过扫描注解属性进而新建不同的HystrixCommand对象。
@@ -77,7 +77,7 @@ public HystrixInvokable create(MetaHolder metaHolder) {
 
 
 ### <a name="4">断路器流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/circuit-breaker.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/circuit-breaker.png)
 
 
 ```

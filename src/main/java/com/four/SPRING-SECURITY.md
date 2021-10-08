@@ -2,7 +2,7 @@
 
 [Spring Security官网][https://docs.spring.io/spring-security/site/docs/5.4.2/reference/html5/#servlet-architecture]
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/spring-security.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/spring-security.jpg)
 
 
 ## 认证 Authentication
@@ -122,7 +122,7 @@ for (Map.Entry<String, String> entry : resourcePermissions.entrySet()) {
 进行Session 认证的时候，我们一般使用 **Cookie 来存储 SessionId**,当我们登陆后后端生成一个SessionId放在Cookie中返回给客户端，服务端通过Redis或者其他存储工具记录保存着这个Sessionid，客户端登录以后每次请求都会带上这个SessionId，服务端通过这个SessionId来标示你这个人。如果别人通过 cookie拿到了 SessionId 后就可以代替你的身份访问系统了。
 
 
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/four/Cookies-attack.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/Cookies-attack.jpg)
 
 可以使用token认证的方式避免误点攻击链接导致的跨服务请求问题。
 > 基于token 认证经常将认证凭证存储在local storage中，在请求的时候前端再动态添加凭证到请求中。因此误点的外部链接无法添加token到转发的请求中。

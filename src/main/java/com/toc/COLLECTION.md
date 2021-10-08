@@ -38,7 +38,7 @@
 &emsp;&emsp;<a href="#35">5.3. Arrays.asList() 方法</a>  
 &emsp;&emsp;<a href="#36">5.4. hash 冲突解决方案</a>  
 # <a name="0">集合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/collectionfamily.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/collectionfamily.jpg)
 - 集合主要分为两大类，一个实现collection接口的，一个是实现了Map接口的。
 
 ## <a name="1">List</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
