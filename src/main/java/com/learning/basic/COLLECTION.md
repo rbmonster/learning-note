@@ -1,5 +1,5 @@
 # 集合
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/collectionfamily.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/collectionfamily.jpg)
 - 集合主要分为两大类，一个实现collection接口的，一个是实现了Map接口的。
 
 ## List

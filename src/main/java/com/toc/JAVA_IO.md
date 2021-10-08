@@ -33,7 +33,7 @@ Java 的 I/O 大概可以分成以下几类：
 5. 网络操作：Socket
 6. 新的输入/输出：NIO
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/inputStreamStructure.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/inputStreamStructure.jpg)
 Java I/O 使用了装饰者模式来实现。以 InputStream 为例，
 
 InputStream 是抽象组件；
@@ -71,7 +71,7 @@ System.out.println(str2);
 ## <a name="3">操作系统中的IO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ### <a name="4">常见I/O模型对比</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/ioModel.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/ioModel.jpg)
 
 所有的系统I/O都分为两个阶段：等待就绪和操作。
 
@@ -149,7 +149,7 @@ linux的AIO的实现方式是内核和应用共享一片内存区域，应用通
 
 
 ### <a name="14">java BIO(Blocking IO 阻塞)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/socket.png)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/socket.png)
 - 在不考虑多线程的情况下，BIO是无法处理多个客户端请求的。
 - BIO 通信模型 的服务端，通常由一个独立的 Acceptor 线程负责监听客户端的连接。
 - 多线程情况下对于服务端，服务端只能用线程开启多个线程与客户端建立连接。
@@ -187,7 +187,7 @@ Reactor模式首先是事件驱动的，有一个或多个并发输入源，有�
  
 Java的Selector对于Linux系统来说，有一个致命限制：同一个channel的select不能被并发的调用。因此，如果有多个I/O线程，必须保证：一个socket只能属于一个IoThread，而一个IoThread可以管理多个socket。另外连接的处理和读写的处理通常可以选择分开，这样对于海量连接的注册和读写就可以分发。虽然read()和write()是比较高效无阻塞的函数，但毕竟会占用CPU，如果面对更高的并发则无能为力。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/NIORefactor.png)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/NIORefactor.png)
 
 ```
 interface ChannelHandler{
@@ -273,7 +273,7 @@ Netty 是一个 基于 NIO 的 client-server(客户端服务器)框架，使用�
 - 支持多种协议 如 FTP，SMTP，HTTP 以及各种二进制和基于文本的传统协议。
   
 支持多个交互模型
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/netty.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/netty.jpg)
 - Reactor分成两部分，mainReactor负责监听server socket，accept新连接；并将建立的socket分派给subReactor。subReactor负责多路分离已连接的socket，读写网络数据，对业务处理功能，其扔给worker线程池完成。
 
 Netty中的事件分为Inbond事件和Outbound事件。

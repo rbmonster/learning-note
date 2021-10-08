@@ -755,7 +755,7 @@ public class Solution {
 ## 回溯
 回溯法⼀般是在集合中递归搜索，集合的⼤⼩构成了树的宽度，递归的深度构成的树的深度。
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/backTracking.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/backTracking.png)
 
 ### 伪代码模版
 ```
@@ -816,7 +816,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 组合问题可以抽象为树形结构，那么“使⽤过”在这个树形结构上是有两个维度的，⼀个维度是同⼀树枝上“使⽤过”，⼀个维度是同⼀树层上“使⽤过”。\
 常规使用树层去重，树枝去重会导致过多无谓的查找，而树层去重对于无用的查找可以及时的中断break
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/backTrackingDuplicate.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/backTrackingDuplicate.png)
 
 
 树层去重

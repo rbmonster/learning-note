@@ -148,11 +148,11 @@ KafkaTemplate.send​(ProducerRecord<K,​V> record)
 
 #### <a name="18">队列模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 消费者之间是竞争关系，即每条消息只能被一个消费者消费。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/queueModel.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/queueModel.jpg)
 
 #### <a name="19">发布订阅模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 解决一条消息能被多个消费者消费的问题，消息发往一个Topic主题中，所有订阅了这个 Topic 的订阅者都能消费这条消息。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/queueModel2.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/queueModel2.jpg)
 
 
 **发布/订阅模型兼容队列模型，即只有一个消费者的情况下和队列模型基本一致**
@@ -189,7 +189,7 @@ offset(消费进度):表示消费者的消费进度，offset在broker以内部to
 
 ## <a name="22">分布式的kafka解决节点宕机或者抖动问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/kafkaStructure.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafkaStructure.jpg)
 - 红色块的partition代表的是主分区，紫色的partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
 - 备份分区仅仅用作于备份，不做读写。如果某个Broker挂了，那就会选举出其他Broker的partition来作为主分区，这就实现了高可用。
 
@@ -366,7 +366,7 @@ spring.kafka.consumer.enable-auto-commit=false
 - 标签（Tag）：为消息设置的标志，用于同一主题下区分不同类型的消息。来自同一业务单元的消息，可以根据不同业务目的在同一主题下设置不同标签。标签能够有效地保持代码的清晰度和连贯性，并优化RocketMQ提供的查询系统。
 
 ## <a name="44">基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/rocketmqAC.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/rocketmqAC.jpg)
 主要包含四部分Producer、Consumer、Broker、NameServer
 
 - Producer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向**提供Topic 服务的Master建立长连接**，且定时向Master发送心跳。
@@ -386,7 +386,7 @@ spring.kafka.consumer.enable-auto-commit=false
 
 ## <a name="46">事务实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 RocketMQ采用了2PC的思想来实现了提交事务消息，同时增加一个补偿逻辑来处理二阶段超时或者失败的消息。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/rocketMqTransaction.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/rocketMqTransaction.jpg)
 
 2pc主要缺点，协调者故障、阻塞、宕机，导致commit消息未全部发送完毕，参与者预提交事务消息请求阻塞。rocketmq引入参与者的回查补偿机制，解决该问题。
 

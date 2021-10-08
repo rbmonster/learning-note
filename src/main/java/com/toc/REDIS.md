@@ -99,7 +99,7 @@
 推荐一下一篇很顶的文章：[Redis 面霸篇：从高频问题透视核心原理](https://mp.weixin.qq.com/s/wrrXz4GoILd5hsbrYACTmA)
 > 本文也参考了很多改文章资料
 ## <a name="1">基本数据结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/data-structure.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/data-structure.jpg)
 
 ### <a name="2">String 字符串</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用场景：如博客的文章数量，粉丝数量。
@@ -156,10 +156,10 @@ quickList是一个ziplist组成的linkedlist双向链表。每个节点使用zip
   - 它在每个节点上除了要保存数据之外，还要额外保存两个指针；
   - 其次，双向链表的各个节点是单独的内存块，地址不连续，节点多了容易产生内存碎片。
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/ziplist.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/ziplist.jpg)
 
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/quicklist.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/quicklist.png)
 
 
 > 旧的数据规则\
@@ -326,7 +326,7 @@ hashtable
 
 skipList 跳跃表是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的。
 跳表在链表的基础上，增加了多层级索引，通过索引位置的几个跳转，实现数据的快速定位。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/skiplist.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/skiplist.png)
 
 #### <a name="18">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 相关指令
@@ -450,7 +450,7 @@ juejin
 - 向布隆过滤器中添加数据时，会使用 多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
 - 判断数据是否存在时，同样使用多个hash函数计算key，只要有一个位为 0，说明key不存在。但是都是1，并不能说明key必定存在，可能位置都是其他元素添加导致的，因此说存在一定的误判率。
 - 布隆过滤器有两关键的参数，一个是元素大小，一个是误差率。当误差率设置越小，布隆过滤器需要的空间越大。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/bloomFilter.png)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/bloomFilter.png)
   
 数据结构： bitmap 比特位的集合。bitmap是一个以比特为基本单位的数组，如一个int类型32个比特，那我们使用比特来应用就可以节省很大的空间。
 
@@ -463,7 +463,7 @@ juejin
 > 布隆过滤器有一个可以预判误判率的公式，查询缓存可能误判的名单存在，进行正常的查询。
 - 爬虫/ 邮箱等系统的过滤：平时不知道你有没有注意到有一些正常的邮件也会被放进垃圾邮件目录中，这就是使用布隆过滤器 误判 导致的。 
 - 应用介绍：在查询缓存的前面加一层布隆过滤器的过滤判断，判断缓存是否存在。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/cacheQueryBloomFilter.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/cacheQueryBloomFilter.jpg)
 
  
 #### <a name="29">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -497,7 +497,7 @@ juejin
 4) (integer) 0
 ```
  
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/cacheQueryNormal.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/cacheQueryNormal.jpg)
   
 
 ### <a name="30">其他命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -536,7 +536,7 @@ QUEUED
 ```
   
 事务开始后，若客户端发送的命令为EXEC、DISCARD、WATCH、MULTI四个命令其中一个，服务器会立即执行，否则执行命令入队操作。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/transaction.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/transaction.png)
 
 - MULTI命令标志着事务的开始
 - EXEC命令会让服务器立即执行事务队列语句。
@@ -551,7 +551,7 @@ QUEUED
 >EXEC
 (nil)
 ```
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/optiLock.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/optiLock.jpg)
 
 redis 事务的ACID
 - 原子性：事务的多个操作当成一个整体来执行，要么全部执行，要么都不执行。
@@ -727,7 +727,7 @@ Sentinel默认每十秒一次的频率，通过命令连接向被监视的主服
     3. 按照复制偏移量排名，最大的表示具有最新的数据信息。相同偏移量则按照ID从小到大选取。
 3. Sentinel系统向Server1属下的从服务器发送新的复制指令，让其成为新主服务器的从服务。当复制完成，故障转移完毕。
 4. Sentinel系统继续监视下线的server1，当其重新上线时设置成主服务器的从服务。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sentinel.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/sentinel.jpg)
 
 
 ## <a name="52">Cluster 集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -745,7 +745,7 @@ Redis集群是Redis提供的分布式数据库方案，集群通过分片实现�
 
 127.0.0.1:7000>CLUSTER MEET 127.0.0.1 7002
 ```
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/cluster.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/cluster.jpg)
 
 ### <a name="53">集群下与客户端交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 #### <a name="54">MOVED错误</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -756,7 +756,7 @@ Redis集群是Redis提供的分布式数据库方案，集群通过分片实现�
 3. 若节点的槽不是当前节点，返回MOVED重定向错误。
 
 MOVED重定向: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redis-move.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/redis-move.jpg)
 
 ```
 // 连接redis集群 计算集群定位的值
@@ -777,7 +777,7 @@ cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 c
 
 > 使用redis-cli命令时，可以加入-c参数支持自动重定向，简化手动发起重定向操作，如下所示：\
 > redis-cli自动帮我们连接到正确的节点执行命令，这个过程是在redis-cli内部维护，实质上是client端接到MOVED信息之后再次发起请 求，并不在Redis节点中完成请求转发，如下图所示
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redisClient-move.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/redisClient-move.jpg)
 
 ```
 #redis-cli -p 6379 -c
@@ -790,7 +790,7 @@ OK
 ASK重定向：在线迁移槽（slot）的过程中，客户端向slot发送请求，若键对象不存在，则可能存在于目标节点，这时源节点会回复 ASK重定向异常。\
 格式如下：(error) ASK {slot} {targetIP}:{targetPort}
 > 客户端从ASK重定向异常提取出目标节点信息，发送asking命令到目标节点打开客户端连接标识，再执行键命令。如果存在则执行，不存在则返 回不存在信息
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redis-ask.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/redis-ask.png)
 
 #### <a name="56">mget批量调用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 hash_tag: 提供不同的键可以具备相同slot的功能，常用于Redis IO优化
@@ -837,8 +837,8 @@ OK
 1. 节点数据库和单机数据库在数据库方面的一个区别是，**节点只能使用0号数据库**，而单机Redis服务器则没有这个限制。 
 2. 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
   - 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/askError.jpg)
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/slotReadd.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/askError.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/slotReadd.jpg)
 
 #### <a name="58">哈希槽</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Redis 集群并没有直接使用一致性哈希，而是使用了哈希槽 （slot） 的概念。没有使用Hash算法，而是使用了crc16校验算法。槽位其实就是一个个的空间的单位。
@@ -1224,9 +1224,9 @@ Redisson的锁会出现故障未同步而加锁失效问题，为了解决该问
 5. Redis 全局 hash 字典，Redis 整体就是一个 哈希表来保存所有的键值对。当我们在 Redis 中创建一个键值对时，至少创建两个对象，一个对象是用做键值对的键对象，另一个是键值对的值对象。而哈希表的时间复杂度是 O(1)，只需要计算每个键的哈希值，便知道对应的Value。
     > Hash 冲突: Redis 通过链式哈希解决冲突：也就是同一个hashtable的index里面的元素使用链表保存。                                                                                                                                                                                                                                                                                                                                    
      渐进式 rehash: Redis 为了追求快，使用了两个全局哈希表。开始默认使用 「hash 表 1 」保存键值对数据，「hash 表 2」 此刻没有分配空间。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/readwrite.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/readwrite.png)
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/globalHash.jpg)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/globalHash.jpg)
                                                                                                                                      
 ### <a name="83">Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 RDB是对 Redis 中的数据执行周期性的持久化，非常适合做冷备。有两个严重性能开销：
@@ -1258,7 +1258,7 @@ Redis 提供了主从模式，通过主从复制，将数据冗余一份复制�
 2. 主库同步数据给从库：master 执行 bgsave命令生成 RDB 文件，并将文件发送给从库，**同时主库为每一个 slave 开辟一块 replication buffer 缓冲区记录从生成 RDB 文件开始收到的所有写命令**。从库保存 RDB 并清空数据库再加载 RDB 数据到内存中。
 3. 发送 RDB 之后接收到的新写命令到从库：在生成 RDB 文件之后的写操作并没有记录到刚刚的 RDB 文件中，为了保证主从库数据的一致性，所以主库会在内存中使用一个叫 replication buffer 记录 RDB 文件生成后的所有写操作。并将里面的数据发送到 slave。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve.png)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/master-salve.png)
 
 ### <a name="88">主从正常运行期间的同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 replication_buffer：对于客户端或从库与redis通信，redis都会分配一个内存buffer进行数据交互，redis先把数据先入这个buffer中，然后再把buffer中的数据发送出去，所以主从在增量同步时，保证主从数据一致。
@@ -1275,8 +1275,8 @@ master 使用 `master_repl_offset`记录自己写到的位置偏移量，slave �
 当主从断开重连后，slave 会先发送 psync 命令给 master，同时将自己的 runID，`slave_repl_offset`发送给 master。
 
 master 只需要把 master_repl_offset与 slave_repl_offset之间的命令同步给从库即可。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve-offline.png)
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/master-salve-offline-copy.png)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/master-salve-offline.png)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/master-salve-offline-copy.png)
      
 ### <a name="90">Redis热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 热点Key：某一件商品被数万次点击、购买时，会形成一个较大的需求量，这种情况下就会产生一个单一的Key，这样就会引起一个热点；同理，当被大量刊发、浏览的热点新闻，热点评论等也会产生热点；另外，在服务端读数据进行访问时，往往会对数据进行分片切分，此类过程中会在某一主机Server上对相应的Key进行访问，当访问超过主机Server极限时，就会导致热点Key问题的产生。

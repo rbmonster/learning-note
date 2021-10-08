@@ -60,7 +60,7 @@ PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, g
 - AutoConfigurationImportSelector 加载配置，先看Exclude注解有没有需要过滤的，在执行过滤器过滤出需要加载的autoConfiguration
 
 ## <a name="4">Spring transaction</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/springTransaction.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/four/springTransaction.jpg)
 
 Spring 框架中，事务管理相关最重要的 3 个接口如下：
 - PlatformTransactionManager： （平台）事务管理器，Spring 事务策略的核心。
@@ -369,5 +369,5 @@ public Object invoke(Object proxy, Method method, Object[] args) throws Throwabl
 ```
 ### <a name="15">AspectJ的方法织入</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 AspectJ的Aop 在方法调用的时候添加了AOP对应的拦截方法，根据对应的拦截类型
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/methodAop.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/four/methodAop.jpg)
 

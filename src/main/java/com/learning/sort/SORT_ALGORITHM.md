@@ -15,7 +15,7 @@
   - 计数排序
   - 基数排序
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/sort/basicSort.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/sort/basicSort.jpg)
 - In-place: 内部排序
 - out-place: 外部排序
 - 相关资料：https://www.jianshu.com/p/47170b1ced23
@@ -171,7 +171,7 @@ public static int partition(int[] arr, int left, int right) {
 ```
 4. 优化四：三路划分。如果待排序列中重复元素过多，也会大大影响排序的性能，这是因为大量相同元素参与快排时，**左右序列规模相差极大**，快排将退化为冒泡排序，时间复杂度接近O(n2)。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/sort/threeWaySort.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/sort/threeWaySort.jpg)
 
 
 思想：
@@ -221,7 +221,7 @@ Arrays.sort并不是单一的排序，而是插入排序，快速排序，归并
 - 快排数据越无序越快（加入随机化后基本不会退化），平均常数最小，不需要额外空间，不稳定排序。
 - 归排速度稳定，常数比快排略大，需要额外空间，稳定排序。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/sort/ArraysSort.png)
+![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/sort/ArraysSort.png)
 
 
 #### 对于小的数据排序使用插入排序
