@@ -105,13 +105,13 @@ Server: Apache 0.84
 - 服务消费者 Service Consumer，客户端需要有从注册中心获取服务的基本能力，它需要在应用启动时，扫描依赖的RPC服务，并为其生成代理调用对象，同时从注册中心拉取服务元数据存入本地缓存，然后发起监听各服务的变动做到及时更新缓存。
 
 围绕上面三个基本要素可以进一步扩展服务路由、负载均衡、服务熔断降级、序列化协议、通信协议等等。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/rpc.png)
+![image](https://gitee.com/rbmon/file-storage/blob/main/learning-note/other/rpc.png)
 
 
 ### <a name="9">技术选型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 #### <a name="10">注册中心</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 目前成熟的注册中心有Zookeeper，Nacos，Consul，Eureka，它们的主要比较如下：
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/rpcRegister.png)
+![image](https://gitee.com/rbmon/file-storage/blob/main/learning-note/other/rpcRegister.png)
 
 #### <a name="11">IO通信框架 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Netty、MINA等等均可以作为底层通信框架，目前使用Netty作为通信框架的居多
@@ -130,7 +130,7 @@ TCP通信过程中会根据TCP缓冲区的实际情况进行包的划分，所�
 目前有多种的序列化协议如JavaSerializer、Protobuf及Hessian。建议选用Protobuf，其序列化后码流小性能高，非常适合RPC调用，Google自家的gRPC也是用其作为通信协议。
 
 ### <a name="14">参考架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/rpcDesign.png)
+![image](https://gitee.com/rbmon/file-storage/blob/main/learning-note/other/rpcDesign.png)
 
 ## <a name="15">Java基于Spring实现思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 注册中心使用zookeeper，通信框架使用Netty

@@ -29,19 +29,19 @@ Reactor线程模型分为单线程模型、多线程模型以及主从多线程�
  
 ### <a name="3">单线程Reactor</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 单线程 Reactor 的优点是对系统资源消耗特别小，但是，没办法支撑大量请求的应用场景并且处理请求的时间可能非常慢
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyRefactor.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/io/nettyRefactor.jpg)
 
 ### <a name="4">多线程Reactor</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一个线程负责接受请求,一组NIO线程处理IO操作。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyRefactor2.png)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/io/nettyRefactor2.png)
 
 ### <a name="5">主从多线程Reactor</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一组NIO线程负责接受请求，一组NIO线程处理IO操作。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyRefactor2.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/io/nettyRefactor2.jpg)
 
 
 ## <a name="6">Netty的核心组件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyAF.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/io/nettyAF.jpg)
 Channel 为 Netty 网络操作(读写等操作)抽象类，EventLoop 负责处理注册到其上的Channel 处理 I/O 操作，两者配合参与 I/O 操作。
 
 ### <a name="7">Channel</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

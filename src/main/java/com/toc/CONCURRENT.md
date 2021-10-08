@@ -76,7 +76,7 @@
 定义： 一个线程对共享变量的修改，另外一个线程能够立刻看到，我们称为可见性
 
 Java 内存模型规定，将所有的变量都存放在 主内存中，当线程使用变量时，会把主内存里面的变量 复制 到自己的工作空间或者叫作 私有内存
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/workingmemory.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/workingmemory.jpg)
 
 刷新的场景:
 >1. 主内存中有变量 x，初始值为 0
@@ -141,7 +141,7 @@ count++ 分解为四步，解释一下字节码的指令，
 
 
 ## <a name="13">java内存模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/java-memory.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/jvm/java-memory.jpg)
 
 java内存模型是关注在虚拟机中把变量值存储到内存和从内存取出变量这样的底层细节。
 > 此处的变量包括了实例字段、静态字段和构成数组对象的元素，但是不包括局部变量和方法参数。 \
@@ -269,7 +269,7 @@ publicclass SynchronizedDemo {
 
 javap -c -s -v -l SynchronizedDemo.class 反编译
 ```
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeCode.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/synchronizeCode.jpg)
 synchronized 同步语句块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。\
 当计数器为0则可以成功获取，获取后将锁计数器设为1也就是加1。相应的在执行 monitorexit 指令后，将锁计数器设为0，表明锁被释放。
 
@@ -281,11 +281,11 @@ public class SynchronizedDemo2 {
 	}
 }
 ```
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeMethod.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/synchronizeMethod.jpg)
 方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
 
 ### <a name="25">对象创建与加锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/objectCreate.png)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/objectCreate.png)
 
 一个对象在new出来之后在内存中主要分为4个部分：
 1. MarkWord这部分其实就是加锁的核心，同时还包含的对象的一些生命信息，例如是否GC、经过了几次Young GC还存活。
@@ -365,7 +365,7 @@ public class SynchronizedDemo2 {
 重量级锁：阻塞所有等待竞争的线程，防止CPU空转，阻塞等待线程1释放锁后进入无锁状态重新竞争。
 
 ##### <a name="35">工作原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeHeavyLock.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/learning/basic/synchronizeHeavyLock.jpg)
 
 ```
 ContentionList：所有请求锁的线程将被首先放在该竞争队列。

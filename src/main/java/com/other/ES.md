@@ -54,7 +54,7 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
 ```
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/ES.jpg)
+![avatar](https://gitee.com/rbmon/file-storage/blob/main/learning-note/other/ES.jpg)
   
 参考资料： [Docker安装部署ELK教程](https://www.cnblogs.com/fbtop/p/11005469.html)
 ### ik分词器安装
