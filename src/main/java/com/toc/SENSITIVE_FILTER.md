@@ -81,20 +81,12 @@ java中只要是字符，不管是数字还是英文还是汉字，都占两个�
 监控敏感词命中率。如命中率很高则查看具体的内容是否有问题。
 
 
-
-
 ## <a name="7">进阶的设计点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 汉字拆分(*)： 把汉字拆分后， 逃避检查， 比如“x教” ＝＝》” 日月孝文“。 
+- 汉字拆分(*)： 把汉字拆分后， 逃避检查， 比如“x教” ＝＝》” x孝文“。 
 - 跳字处理（引入编辑距离的概念）： 中间插入特殊的字符＝＝》"x－产——党"。 
-- 严格 HTML 过滤(*) ： 通过 HTML 的标签， 实现逃避检查 <font color="red">国 
-`</font> <font color="red">民</font> <font color="red">党</font> (显示成: x民党) `
+- 严格 HTML 过滤(*) ： 通过 HTML 的标签， 实现逃避检查 `<font color="red">x</font> <font color="red">民</font> <font color="red">党</font> (显示成: x民党) `
 - 简体／繁体转换: 通过写入繁体字逃避检查。 
-- 组合判断(*)： 对于特殊的人物名字， 需要通过组合方式判定， xzedong｜x越进｜独 
-裁 这样的文本同时出现才能判断违禁。 
+- 组合判断(*)： 对于特殊的人物名字， 需要通过组合方式判定， xzedong｜x越进｜独 裁 这样的文本同时出现才能判断违禁。 
 - 过滤评分体系(Bayers)： 建立一个违禁评分题体系。 
-- 故意逃避检查的惩罚系统：包括插字，插入 tag，汉字拆分，繁简体混合等种种伪装系 
-统。 
-- 高亮方法：能够高亮“x车仑功”“x —轮—功”“<font color="red">国 
-`</font> <font color="red">民</font> <font color="red">党</font> (显示成: x民党)”等种种特殊伪装关键字。`
-
-。
+- 故意逃避检查的惩罚系统：包括插字，插入 tag，汉字拆分，繁简体混合等种种伪装系统。 
+- 高亮方法：能够高亮“x车仑功”“x —轮—功”“`<font color="red">x</font> <font color="red">民</font> <font color="red">党</font> (显示成: x民党)”等种种特殊伪装关键字。`
