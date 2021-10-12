@@ -1434,6 +1434,11 @@ class Solution {
 
 
 
+## 位运算与运算转换
+
+
+[Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
+
 
 ## 前缀树
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
