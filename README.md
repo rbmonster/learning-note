@@ -1,6 +1,9 @@
 # learning-note
 > Motivation、Passion、Evolution
 
+推荐[在线阅读网站](https://rbmon.gitee.io/learning-note/#/)
+（TOP标签会出现失效的情况，使用侧边栏进行导航）
+
 一个技术点，面试官常见的三连问：
 1. xxx是什么？
 2. xxx优缺点是什么？
