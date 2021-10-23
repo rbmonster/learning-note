@@ -1,7 +1,8 @@
 package com.learning.algorithm.basic.treeNode;
 
-import java.util.HashMap;
-import java.util.Map;
+import scala.collection.mutable.Queue;
+
+import java.util.*;
 
 /**
  * <pre>
@@ -96,5 +97,72 @@ public class BuildTree {
         root.left = buildTreeByIndex(postorder, inLeft, rootIndex - 1, postLeft, postLeft + leftLen - 1);
         root.right = buildTreeByIndex(postorder, rootIndex + 1, inRight, postLeft + leftLen, postRight - 1);
         return root;
+    }
+
+
+    /**
+     * 非递归实现
+     * @param preorder
+     * @param inorder
+     * @return
+     */
+    public TreeNode build(int[] preorder, int[] inorder) {
+        int len = inorder.length;
+        for (int i = 0; i < len; i++) {
+            indexMap.put(inorder[i], i);
+        }
+        Deque<BuildRequest> deque= new LinkedList<>();
+        List<TreeNode> list = new LinkedList<>();
+
+        deque.offer(new BuildRequest(0,len-1, 0,len-1));
+        while(!deque.isEmpty()) {
+            BuildRequest request = deque.poll();
+            int pl = request.pl;
+            int pr = request.pr;
+            int il = request.il;
+            int ir = request.ir;
+            if (pl>pr) {
+                list.add(null);
+                System.out.println("--");
+                continue;
+            }
+            TreeNode root = new TreeNode(preorder[pl]);
+            System.out.println(root.val);
+            list.add(root);
+            int inRootIndex = indexMap.get(preorder[pl]);
+            int inLen = inRootIndex - il;
+            deque.offer(new BuildRequest(pl+inLen+1, pr,inRootIndex+1, ir));
+            deque.offer(new BuildRequest(pl+1, pl+inLen, il, inRootIndex-1));
+        }
+        int child = 0;
+        System.out.println(list);
+        for (int i = 0; i < list.size(); i++) {
+            TreeNode treeNode = list.get(i);
+            if (treeNode == null) {
+                continue;
+            }
+            if (child+1< list.size()&&list.get(child+1)!= null) {
+                treeNode.left = list.get(child+1);
+            }
+            if (child+2< list.size()&&list.get(child+2)!= null) {
+                treeNode.right = list.get(child+2);
+            }
+            child = child+2;
+        }
+
+        return list.get(0);
+    }
+}
+
+class BuildRequest {
+    int pl;
+    int pr;
+    int il;
+    int ir;
+    public BuildRequest(int pl, int pr, int il, int ir) {
+        this.pl = pl;
+        this.pr = pr;
+        this.il = il;
+        this.ir = ir;
     }
 }
