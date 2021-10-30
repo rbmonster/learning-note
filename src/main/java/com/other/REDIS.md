@@ -351,31 +351,30 @@ juejin
 ```
 
 ### 布隆过滤器 bloomFilter
-布隆过滤器 本质上 是由长度为 m 的位向量或位列表（仅包含 0 或 1 位值的列表）组成，最初所有的值均设置为 0
-- 向布隆过滤器中添加数据时，会使用 多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
+布隆过滤器 本质上是由长度为 m 的位向量或位列表（仅包含 0 或 1 位值的列表）组成，最初所有的值均设置为 0
+- 向布隆过滤器中添加数据时，会使用多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
 - 判断数据是否存在时，同样使用多个hash函数计算key，只要有一个位为 0，说明key不存在。但是都是1，并不能说明key必定存在，可能位置都是其他元素添加导致的，因此说存在一定的误判率。
 - 布隆过滤器有两关键的参数，一个是元素大小，一个是误差率。当误差率设置越小，布隆过滤器需要的空间越大。
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/bloomFilter.png)
   
-数据结构： bitmap 比特位的集合。bitmap是一个以比特为基本单位的数组，如一个int类型32个比特，那我们使用比特来应用就可以节省很大的空间。
+数据结构：bitmap比特位的集合。bitmap是一个以比特为基本单位的数组，如一个int类型32个比特，那我们使用比特来应用就可以节省很大的空间。
 
-相关资料：
-[JavaGuide-bloom-filter](https://github.com/Snailclimb/JavaGuide/blob/master/docs/dataStructures-algorithms/data-structure/bloom-filter.md)
 
 #### 应用场景
-- 大数据判断是否存在：这就可以实现出上述的去重功能，如果你的服务器内存足够大的话，那么使用 HashMap 可能是一个不错的解决方案，理论上时间复杂度可以达到 O(1 的级别，但是当数据量起来之后，还是只能考虑布隆过滤器。
+- 大数据判断是否存在：这就可以实现出上述的去重功能，如果你的服务器内存足够大的话，那么使用 HashMap 可能是一个不错的解决方案，理论上时间复杂度可以达到 O(1) 的级别，但是当数据量起来之后，还是只能考虑布隆过滤器。
 - 解决缓存穿透：我们经常会把一些热点数据放在 Redis 中当作缓存，例如产品详情。通常一个请求过来之后我们会先查询缓存，而不用直接读取数据库，这是提升性能最简单也是最普遍的做法，但是 如果一直请求一个不存在的缓存，那么此时一定不存在缓存，那就会有 大量请求直接打到数据库 上，造成 缓存穿透，布隆过滤器也可以用来解决此类问题。
 > 布隆过滤器有一个可以预判误判率的公式，查询缓存可能误判的名单存在，进行正常的查询。
-- 爬虫/ 邮箱等系统的过滤：平时不知道你有没有注意到有一些正常的邮件也会被放进垃圾邮件目录中，这就是使用布隆过滤器 误判 导致的。 
+- 爬虫/ 邮箱等系统的过滤：平时不知道你有没有注意到有一些正常的邮件也会被放进垃圾邮件目录中，这就是使用布隆过滤器**误判**导致的。 
 - 应用介绍：在查询缓存的前面加一层布隆过滤器的过滤判断，判断缓存是否存在。
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/cacheQueryBloomFilter.jpg)
 
- 
+
 #### 相关指令
-- bf.add  'bfName'  'value'   //添加元素
-- bf.exists   'bfName'  'value'   //判断元素是否存在。
-- bf.madd 'bfName'  'value' 'value'  //批量添加
-- bf.mexists 'bfName'  'value' 'value'  // 批量判断存在
+- `BF.RESERVE 'bfName' 0.0001 600000`   //自定义参数创建布隆过滤器 `BF.RESERVE {key} {error_rate} {capacity} [EXPANSION {expansion}] [NONSCALING]`
+- `bf.add  'bfName'  'value'`   //添加元素
+- `bf.exists   'bfName'  'value'`   //判断元素是否存在。
+- `bf.madd 'bfName'  'value' 'value'`  //批量添加
+- `bf.mexists 'bfName'  'value' 'value'`  // 批量判断存在
 ```
 127.0.0.1:6379> bf.add codehole user1
 (integer) 1
@@ -401,9 +400,51 @@ juejin
 3) (integer) 1
 4) (integer) 0
 ```
- 
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/cacheQueryNormal.jpg)
-  
+
+#### 相关资料
+- [JavaGuide-bloom-filter](https://github.com/Snailclimb/JavaGuide/blob/master/docs/dataStructures-algorithms/data-structure/bloom-filter.md)
+- [Quick Start Guide for RedisBloom ](https://oss.redis.com/redisbloom/Quick_Start/)
+
+### 布谷鸟过滤器 cockooFilter
+Bloom Filter 可能存在误报，并且无法删除元素，而Cuckoo哈希就是解决这两个问题的。
+
+Cuckoo的哈希函数是成对的（具体的实现可以根据需求设计），每一个元素都是两个，分别映射到两个位置，一个是记录的位置，另一个是备用位置，这个备用位置是处理碰撞时用的。
+如图，使用hashA 和hashB 计算对应key x的位置a和b ：
+1. 当两个哈希位置有一个为空时，则插入该空位置；
+2. 当两个哈希位置均不为空时，随机选择两者之一的位置上key y 踢出，并计算踢出的key y在另一个哈希值对应的位置，若为空直接插入，不为空踢出原元素插入，再对被踢出的元素重新计算，重复该过程，直到有空位置为止。
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/cockooFilter.png)
+> 挤兑循环问题：一般会对踢出操作设一个阈值，超过阈值则认为过滤器容量不足，需要对其进行扩容，解决同一元素不断添加问题。
+
+### 相关指令
+- `CF.RESERVE {key} {capacity} [BUCKETSIZE {bucketsize}] [MAXITERATIONS {maxiterations}] [EXPANSION {expansion}]`
+- `CF.ADD {key} {item}`
+- `CF.ADDNX {key} {item}`
+- `CF.EXISTS {key} {item}`
+- `CF.COUNT {key} {item}`
+- `CF.EXISTS {key} {item}`
+```
+127.0.0.1:6379> CF.RESERVE newCuckooFilter 1000
+OK
+127.0.0.1:6379> cf.add newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> cf.add newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> cf.add newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> CF.DEL newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> CF.exists newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> CF.DEL newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> CF.exists newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> CF.DEL newCuckooFilter 'ssswd@163.com'
+(integer) 1
+127.0.0.1:6379> CF.exists newCuckooFilter 'ssswd@163.com'
+(integer) 0
+```
+
 
 ### 其他命令
 - DEL、EXPIRE、RENAME、TYPE、OBJECT可以对任何键执行
