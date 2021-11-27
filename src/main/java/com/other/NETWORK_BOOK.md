@@ -141,9 +141,248 @@ Web应用程序的两种应用程序体系结构：
 
 **安全性**：运输协议能够为应用程序提供一种或多种安全性服务。
 
-### TCP服务
+#### TCP服务
 TCP服务包括面向连接服务和可靠数据传输服务。另外TCP还具有拥塞控制机制
 
 - 面向连接服务：应用层报文开始流动前，先建立连接。该连接是**全双工**的，即连接双方的进程可以在此连接上同时进行报文收发。
 - 可靠的数据传输服务：通信进程能够依靠TCP，**无差错、按适当顺序交付**所有发送的字节。
 - 拥塞控制机制：当发送方和接收方之间的网络出现拥塞时，TCP的拥塞控制机制会抑制发送进程。
+> 加密传输机制：TCP提供安全套接字层(Secure Sockets Layer, SSL)，用于加密的安全性服务。
+
+
+#### UDP服务
+UDP是一种不提供不必要服务的轻量级运输协议，仅提供最小服务。在通信前没有握手过程，仅提供了一种不可靠数据传输服务，不保证报文能到达接收进程。\
+UDP没有拥塞控制机制，所以UDP可以用它选定的任何速率向其下层(网络层)注入数据。
+> 实际端到端的吞吐量可能小于该速率，这可能是由于中间链路的带宽受限或因为拥塞而造成的。
+
+
+#### 因特网运输协议所不提供的服务
+在TCP和UDP的描述中，没有对吞吐量和定时保证的讨论，这两个指标要求，目前的因特网运输协议并没有提供。
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/applicationAndProtocol.png)
+
+### 应用层协议
+应用层协议定义了运行在不同端系统上的应用程序如何互相传递报文。\
+常规应用层的协议定义：
+- 交换报文类型，如请求和响应报文。
+- 各种报文类型的语法。
+- 字段的语义
+- 确定进程发送报文的时间跟方式，对报文进行响应的规则。
+
+> RFC文档定义的应用层协议如HTTP。邮箱的应用层协议SMTP。
+
+### Web与HTTP
+web的应用层协议是超文本传输协议(HyperText Transfer Protocol, HTTP)
+- 使用TCP作为它的支撑运输协议
+- 无状态的协议(不保存客户的信息)
+- 默认使用持续连接方式，支持配置非持续连接方式
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/httpRequestResponse.png)
+
+#### 非持续连接和持续连接
+- 非持续连接：每个请求/响应对是经一个单独的TCP连接。每个请求和响应使用同一个TCP连接。
+- 持续连接：所有请求及其响应经相同的TCP连接发送。
+
+往返时间(Round-Trip Time, RTT)，指一个短分组从客户到服务器然后再返回客户所花费的时间。
+> 包括分组传播时延、分组在中间路由器和交换机上的排队时延以及分组处理时延
+
+非持续连接缺点：
+1. 必须为每一个请求对象建立和维护一个全新的连接。客户及服务器都需要分配TCP的缓冲区和变量，给Web服务器带来负担。
+2. 每个对象传输经受两倍RTT的交付时延，即一个RTT用于创建TCP，另一个RTT用于请求和接收一个对象。
+
+持续连接:\
+Http1.1 持续连接，服务器在发送响应后保持该TCP连接打开。在相同的客户与服务器之间，后续的请求及响应能在相同的连接进行传送。
+> 一个完整的Web页面可以用单独持续TCP连接进行传送，同一个客户的不同Web页面请求在请求同一个服务器，同样使用相同的TCP连接。
+
+Http2，允许相同连接中多个请求和回答交错，并增加了在该连接中请求HTTP报文请求和回答机制。
+
+#### HTTP请求报文格式
+
+```
+GET /somedir/page.html HTTP/1.1
+Host: www.someschool.edu
+Connection: close
+User-agent: Mozilla/5.0
+Accept-language: fr
+```
+
+`GET /somedir/page.html HTTP/1.1`\
+**请求行**：由方法字段、URL字段和HTTP版本字段组成。方法字段包括GET、POST、HEAD、PUT、DELETE
+
+`Host: www.someschool.edu`\
+首部行Host：指明了该对象所在的主机，是Web代理高速缓存所要求的。
+
+`Connection: close`\
+首部行Connection：该浏览器告诉浏览器不要麻烦的使用持续连接，要求浏览器在发送完被请求对象后就关闭该条连接。
+
+`User-agent: Mozilla/5.0`\
+首部行User-agent：指明向服务器发送请求的浏览器类型。
+
+`Accept-language: fr`\
+首部行Accept-language：表示语言版本
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/generalFormatHttp.png)
+- Request line：请求行
+- Header lines：多个首部行
+- Blank line
+- Entity body：POST方法使用的请求参数体
+
+HTTP方法：
+- HEAD方法类似于GET方法。服务器接收到HEAD方法的请求时，将会用一个HTTP报文进行响应但不返回对象，HEAD方法常用于调试跟踪。
+- PUT方法常与Web发行工具联合使用。允许用户上传对象到指定的Web服务器上的指定路径。也可以用于对象上传。
+- DELETE方法允许用户或者应用程序删除Web服务器上的对象。
+
+#### HTTP响应报文格式
+```
+HTTP/1.1 200 OK
+Connection: close
+Date: Tue, 09 Aug 2011 15:44:04 GMT
+Server: Apache/2.2.3 (CentOS)
+Last-Modified: Tue, 09 Aug 2011 15:11:03 GMT
+Content-Length: 6821
+Content-Type: text/html
+(data data data data data ...)
+```
+
+`HTTP/1.1 200 OK`\
+状态行：包括协议版本字段、状态码和响应的状态信息
+
+`Connection: close`\
+首部行Connection: 告诉客户端，发送完报文后将关闭该TCP连接。
+
+`Date: Tue, 09 Aug 2011 15:44:04 GMT`\
+首部行Date: 指服务器产生并发送该响应报文的时间和日期。时间为从系统中检索到该对象将该对象插入报文，并发送该响应报文的时间。
+
+`Server: Apache/2.2.3 (CentOS)`\
+首部行Server: 服务器版本信息
+
+`Last-Modified: Tue, 09 Aug 2011 15:11:03 GMT`
+首部行Last-Modified: 表示对象创建或最后的修改时间。该首部行与缓存的应用有关。
+
+`Content-Type: text/html`
+首部行Content-Type: 表示响应的对象类型。
+
+状态码：
+- 200 OK： 请求成功
+- 301 Moved Permanently：请求的对象已经被永久转移了，新的URL定义在响应报文的首部行Location。客户端软件将自动获取新的URL地址。
+- 400 Bad Request： 一个通用的差错代码，指示该请求不能被服务器理解。
+- 404 Not Found：被请求的文档不再服务器上。
+- 505 HTTP Version Not Supported: 服务器不支持报文使用的HTTP版本
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/generalFormatHttpResponse.png)
+  
+
+#### 用户与服务器的交互：cookie
+HTTP服务器是无状态的，该设计简化了服务器的设计。
+
+cookie设计的4个组件：
+1. 在HTTP响应报文中的一个cookie首部行。`Set-cookie: 1678`
+2. 在HTTP请求报文中一个cookie首部行。`Cookie: 1678`
+3. 用户端系统中保留一个cookie文件，并由浏览器管理。
+4. 位于Web站点的一个后台数据库。
+
+交互过程：
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/keepingUserStateWithCookie.png)
+
+#### 代理服务器
+Web缓存器(Web cache) 也加代理服务器(proxy server)，它是能够代表初始Web服务器来满足HTTP技术的网络实体。Web缓存器有自己的磁盘存储空间，并在存储空间中保存最近请求过的对象的副本。
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/webCache.png)
+交互过程：
+1. 浏览器创建一个到Web缓存器的TCP连接，并发起HTTP请求。
+2. Web缓存器检查本地是否存储了该对象的副本。如果存在，Web缓存器就向客户浏览器用HTTP响应报文返回。
+3. 如果Web缓存器没有该对象，它就打开一个与该对象的初始服务器的TCP连接，并发起该对象的HTTP请求。服务器收到Web缓存器请求后，返回具有该对象的HTTP响应。
+4. 当Web服务器接收到该对象时，它在**本地磁盘存储空间存储一份副本**，冰箱客户端浏览器用HTTP报文响应。
+
+Web缓存器的好处：
+1. 可以大大减少对客户端的响应时间，特别是客户与服务器之间的带宽远低于客户与Web缓存器间的瓶颈带宽的场景。因为客户与Web缓存器之间常常会有一个高速的连接。
+2. Web缓存器可以大大减少接入链路到互联网的通信量，从整体上大大减低因特网上的Web流量，从而改善所有应用性能。
+
+例子：
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/webCacheExample.png)
+
+Institutional network为一个高速的100 Mbps的内部局域网，接入因特网的带宽为15 Mbps，假设机构内部`15请求/秒`，每个请求传输1M的数据
+- 内部传输时延：`15*1M/100M= 0.15s`
+- 因特网传输时延：`15*1M/15M= 1s`
+- 总时延：因特网传输时延+ 内部传输时延+ 服务处理时延(假设为2s)
+
+当机构的请求数增加大于15Mbps，链路的请求响应时延就会越来越长，因为链路无法完全接受就会出现累计的现象\
+一个解决方案是可以通过把接入因特网的带宽增大，但是费用过高。\
+另一个方案是增加一个Web缓存服务器，实践中的缓存命中率为0.2~0.7之间。假设缓存命中率为0.4,则整体的平均时延甚至比增加带宽的方案表现更为优秀\
+总结一下：缓存器减少了需要**发送因特网的部分流量**，同时**节省了那部分流量的服务请求跟响应时间**。
+
+缓存实现机制：通过条件GET方法实现，条件GET方法为首先一个HTTP GET请求，并且请求报文包含一个`If-Modified-Since`的首部行。\
+实现机制：
+1. Web缓存器代理HTTP请求时，缓存了对象同时缓存了对象的最后修改日期。
+2. 若下次请求时，缓存仍然存在，则缓存器会发送**条件GET命令到服务器执行最新检查**。
+3. 若对象没有修改，则服务器返回`304 Not Modified`状态码，告诉缓存服务器，可以使用该对象，响应报文为空，节省了带宽。
+
+如下为两条件GET请求：
+```
+GET /fruit/kiwi.gif HTTP/1.1
+Host: www.exotiquecuisine.com
+If-modified-since: Wed, 7 Sep 2011 09:23:24
+
+HTTP/1.1 304 Not Modified
+Date: Sat, 15 Oct 2011 15:39:29
+Server: Apache/1.3.0 (Unix)
+(empty entity body)
+```
+
+### 因特网的电子邮件
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/internetEmailSystem.png)
+
+
+
+### DNS：因特网的目录服务
+
+域名管理系统(Domain Name System, DNS) ，提供将主机名转换为其背后的IP地址的服务。
+1. 一个由分层的DNS服务器(DNS server)实现的分布式数据库。
+2. 一个是的主机能够查询分布式数据库的分布式协议。
+> DNS服务器通常是运行BIND软件(Berkeley Internet Name Domain)的UNIX机器\
+> DNS协议运行在**UDP协议**之上，使用**53 端口**
+
+DNS是通过客户-服务器模式提供的重要网络功能。DNS协议是应用层协议，其原因在于：
+1. 使用客户-服务器模式运行在通信的端系统之间。
+2. 在通信的端系统之间通过下层端到端的运输协议来传送DNS报文。
+> DNS的作用非常不同于HTTP与SMTP，因为其不直接和用户打交道。\
+> DNS通过采用来位于网络边缘的客户和服务器，实现了关键的名到地址转换功能。
+
+
+DNS的重要服务：\
+**主机别名(host aliasing)**：有着复杂主机名的主机能拥有一个或多个别名。
+> 如主机`relay1.west-coast.enterprise.com`，可能还有别名`enterprise.com` 和 `www.enterprise.com`。此时`relay1.west-coast.enterprise.com`称为规范主机名
+
+**邮件服务器别名(mail server aliasing)**：与主机别名类似，作用于邮件服务器地址上。
+> 事实上，MX记录允许一个公司的邮件服务器和Web服务器使用相同的主机名。
+
+负载分配(load distribution)：DNS也用于冗余的服务器之间进行负载分配。
+> 如一个IP地址集合与同一个规范主机名相联系，在DNS进行解析时，循环IP地址进行响应，实现了Web服务器之间的负载分配。
+
+
+DNS的为IP地址提供了目录服务，但也带来了额外的时延，使用主机地址请求时需要额外请求DNS拿到真实的IP地址。因此想要获得IP地址应尽量缓存在"附近的"DNS服务器中，这有助于减少DNS的网络流量和DNS的平均时延。
+
+#### DNS工作机理
+
+DNS的工作流程简述：
+1. 用户主机应用程序需要将主机名转换为IP地址，应用程序调用DNS客户端。
+2. 用户主机上的DNS接收到请求的主机名，向网络发送一个DNS的查询报文。
+3. 所有的DNS请求和响应报文使用UDP数据报经端口53发送，经过若干毫秒到若干秒的时延后，用户主机上的DNS收到回答报文
+4. 用户主机的DNS将映射结果传递到调用DNS的应用程序。
+
+
+单一的DNS服务器架构会出现单点故障、通信容量、远距离集中式数据库、维护等问题，因此DNS的服务器使用是分布式的架构。
+
+**分布式、层次数据库**\
+为了处理拓展性问题，DNS使用了大量的DNS服务器，它们以层次方法组织，并且分布在全世界范围内。没有一台DNS服务器拥有因特网上所有主机的映射。
+
+DNS服务器大致可以分为3种类型
+- 根DNS服务器(Root DNS server)：有400多个根名字服务器遍及世界，由13个不同的组织管理。
+- 顶级域DNS服务器(Top-Level Domain, TLD)：对于每个顶级域如(如com、org、net、edu和gov) 和 所有国家的顶级域(如uk、fr、ca和jp)，都有TLD服务器或服务器集群。
+- 权威DNS服务器(authoritative DNS servers)：在因特网上具有公共可访问主机的每个组织机构必须提供公共可访问的DNS记录，这些记录将主机名映射成IP地址。实现的方式有两种，一是实现自己的DNS服务器，另一种是支付费用，让某个服务提供商的DNS服务器帮忙记录。
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/hierarchyDNSServers.png)
+
+
