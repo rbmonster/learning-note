@@ -32,6 +32,7 @@ public class ProConDemo {
         threadPoolExecutor.execute(new Consumer(lock, condition));
         threadPoolExecutor.execute(new Consumer(lock, condition));
         TimeUnit.SECONDS.sleep(3);
+        threadPoolExecutor.shutdownNow();
     }
 }
 

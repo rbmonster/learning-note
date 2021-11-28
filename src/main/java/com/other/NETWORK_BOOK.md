@@ -385,4 +385,49 @@ DNS服务器大致可以分为3种类型
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/hierarchyDNSServers.png)
 
+在更下层的中还有**本地DNS服务器**(local DNS server)，对于居民区ISP，本地DNS服务通常与主机相隔不超过几个路由器。当主机发出DNS请求时，该请求被发往本地DNS服务器，该服务器起着代理作用，并转发请求到DNS服务层次结构中。
 
+
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/interactionOfDNSServer.png)
+1. 用户请求主机，发向本地DNS服务器。
+2. 本地DNS，请求根DNS获取地址
+3. 根DNS，根据前缀返回负责相关前缀的TLD的IP地址列表。
+4. 本地DNS依次请求TLD发送查询报文，TLD返回对应的权威DNS服务器IP地址。
+5. 最后本地DNS请求权威DNS服务器发送查询报文，获取最终真实的IP
+
+上述过程中发送了8份DNS报文：4份查询报文4份回答报文。
+
+
+#### DNS缓存
+为了改善时延性能并减少在因特网上到处传输的DNS报文数量，DNS广泛使用了缓存技术。
+
+某个DNS服务器接收到一个回答时，它能够缓存包含在该回答中的任何信息。由于主机和主机名和IP地址间的映射并不是永久的，DNS服务器在一段时间(**通常为2天**)后将丢弃缓存信息
+
+#### DNS记录和报文
+DNS服务器存储了资源记录(Resource Record, RR)，RR提供了主机名到IP地址的映射。有下列关键信息：`(Name, Value, Type, TTL)`
+
+TTL是记录的生存时间，Type类型可以分为4大类：
+1. Type=A，则Name是主机名，Value 为主机名对应的IP地址，提供了标准的主机名到IP地址的映射。\
+`(relay1.bar.foo.com, 145.37.93.126, A)`
+2. Type=NS，则Name是个域(如foo.com)，而Value是个知道如何获取该域中主机IP地址的**权威DNS服务器的主机名**。\
+`(foo.com, dns.foo.com, NS)`
+3. Type=CNAME，则Value是别名为Name的主机对应的规范主机名。该记录提供一个主机名对应的**规范主机名**。
+`foo.com, relay1.bar.foo.com, CNAME`
+4. Type=MX，则Value是别名为Name的**邮件服务器的规范主机名**。MX记录允许邮件服务器具有简单的别名。一个公司的邮件服务器和其他服务器可以使用相同的别名\
+`(foo.com, mail.bar.foo.com, MX)`
+> 为了获取邮件服务器的规范主机名，DNS客户应该请求一条MX记录。\
+> 为了获取其他服务器的规范主机名，DNS客户应该亲故CNAME记录。\
+> 两者一个MX为邮件服务器服务，一个CNAME为其他服务器服务。
+
+
+#### DNS报文
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/DNSMessageFormat.png)
+
+#### DNS脆弱性
+DDoS分布式拒绝服务带宽洪泛攻击，攻击根DNS服务器或TLD，对DNS的影响很小，主要是本地的DNS的缓存可以部分缓解。
+
+中间人攻击，通过拦截请求并伪造回答。但是很难试下， 因为要求截获分组或扼制住服务器。
+
+DNS自身显示了对抗攻击 令人惊讶的健壮性。
