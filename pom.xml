@@ -123,7 +123,7 @@
         <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
-            <version>0.11</version>
+            <version>0.16</version>
         </dependency>
         <!--      zk官方jar包依赖的建议  https://curator.apache.org/zk-compatibility-34.html-->
         <dependency>
