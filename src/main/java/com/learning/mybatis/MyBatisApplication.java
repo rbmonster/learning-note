@@ -1,8 +1,10 @@
 package com.learning.mybatis;
 
+import com.learning.mybatis.interceptor.TenantInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 /**
  * <pre>
@@ -21,5 +23,11 @@ public class MyBatisApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MyBatisApplication.class, args);
+    }
+
+
+    @Bean
+    public TenantInterceptor tenantInterceptor() {
+        return new TenantInterceptor();
     }
 }
