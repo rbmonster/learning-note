@@ -1,6 +1,7 @@
 package com.learning.mybatis.dao;
 
 import com.learning.mybatis.entity.Demo;
+import com.learning.mybatis.interceptor.TenantAppend;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * @Author: sanwu
  * @Date: 2021/1/23 17:17
  */
+@TenantAppend
 @Mapper
 public interface DemoMapper {
 

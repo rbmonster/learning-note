@@ -1,6 +1,6 @@
 spring:
   application:
-    name:  test
+    name: test
   messages:
     basename: messages,messages_sys,messages_mst
     encoding: UTF-8
@@ -22,3 +22,6 @@ spring:
   h2:
     console:
       enabled: true
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
