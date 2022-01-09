@@ -634,6 +634,7 @@ next:
 - [二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
 - [把二叉搜索树转换为累加树（review）](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
 
+二叉搜索树的树结构修改：
 [删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
 - 如果目标节点没有子节点，我们可以直接移除该目标节点。
 - 如果目标节只有一个子节点，我们可以用其子节点作为替换。
@@ -674,11 +675,11 @@ public class Solution {
 }
 ```
     
-二叉搜索树的最近公共祖先(与树的公共祖先有区别) ：使用了二叉搜索树的特点
-- [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+二叉搜索树的最近公共祖先(与树的公共祖先有区别) ：使用了二叉搜索树的特点\
+[二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 
 二叉搜索树构建：
-- [将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
+[将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
 
 ### 算法
 
