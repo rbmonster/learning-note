@@ -31,7 +31,7 @@ public class DynamicInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        log.info("this is intercept of db");
+        log.debug("this is intercept of db");
         return invocation.proceed();
     }
 

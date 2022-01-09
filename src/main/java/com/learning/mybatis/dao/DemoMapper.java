@@ -19,7 +19,6 @@ import java.util.List;
  * @Date: 2021/1/23 17:17
  */
 @TenantAppend
-@Mapper
 public interface DemoMapper {
 
     Demo selectByPrimaryKey(Long demoId);
@@ -34,11 +33,8 @@ public interface DemoMapper {
 
     int delete(String demoId);
 
-
     List<Demo> selectWithoutParam(Long demoId, String demoName);
 
-
-//    List<Demo> selectWithoutParamByEntity(@Param("demo") Demo demo);
     List<Demo> selectWithoutParamByEntity(Demo demo);
 
     List<Demo> selectWithoutParamByEntityTwo (Demo demo1,Demo demo2);

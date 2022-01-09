@@ -38,3 +38,6 @@ spring:
 feign:
   hystrix:
     enabled: true
+
+mybatis:
+  mapper-locations: mapper/*.xml
