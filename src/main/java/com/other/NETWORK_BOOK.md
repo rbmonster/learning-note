@@ -1212,6 +1212,10 @@ match+action: 统一化各种网络设备提供的功能
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/openFlowExample.png)
 
+### SDN 数据平面与控制平面交互
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/sdn-example.png)
+
 
 ### 控制平面路由选择算法
 
