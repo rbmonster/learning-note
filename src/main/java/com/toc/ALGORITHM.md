@@ -21,52 +21,54 @@
 &emsp;<a href="#18">8. 树</a>  
 &emsp;&emsp;<a href="#19">8.1. 二叉树</a>  
 &emsp;&emsp;&emsp;<a href="#20">8.1.1. 树的遍历</a>  
-&emsp;&emsp;&emsp;<a href="#21">8.1.2. 递归思想</a>  
-&emsp;&emsp;&emsp;<a href="#22">8.1.3. 构造及修改二叉树问题</a>  
-&emsp;&emsp;&emsp;<a href="#23">8.1.4. 公共祖先问题</a>  
-&emsp;&emsp;<a href="#24">8.2. 二叉搜索树</a>  
-&emsp;&emsp;<a href="#25">8.3. 算法</a>  
-&emsp;&emsp;&emsp;<a href="#26">8.3.1. 树的遍历</a>  
-&emsp;&emsp;&emsp;<a href="#27">8.3.2. 树的属性</a>  
-&emsp;&emsp;&emsp;<a href="#28">8.3.3. 子树问题</a>  
-&emsp;&emsp;&emsp;<a href="#29">8.3.4. 树的高度</a>  
-&emsp;&emsp;&emsp;<a href="#30">8.3.5. 树的构建与修改</a>  
-&emsp;&emsp;&emsp;<a href="#31">8.3.6. 树的基本操作</a>  
-&emsp;&emsp;&emsp;<a href="#32">8.3.7. 公共祖先问题</a>  
-&emsp;<a href="#33">9. 回溯</a>  
-&emsp;&emsp;<a href="#34">9.1. 伪代码模版</a>  
-&emsp;&emsp;&emsp;<a href="#35">9.1.1. 回溯三部曲</a>  
-&emsp;&emsp;&emsp;<a href="#36">9.1.2. startIndex使用</a>  
-&emsp;&emsp;<a href="#37">9.2. 问题场景</a>  
-&emsp;&emsp;<a href="#38">9.3. 重复问题</a>  
-&emsp;&emsp;<a href="#39">9.4. 组合问题</a>  
-&emsp;&emsp;<a href="#40">9.5. 切割问题</a>  
-&emsp;&emsp;<a href="#41">9.6. 排列问题</a>  
-&emsp;&emsp;<a href="#42">9.7. 子集问题</a>  
-&emsp;<a href="#43">10. 贪心</a>  
-&emsp;&emsp;<a href="#44">10.1. 指针与区间局部最优</a>  
-&emsp;&emsp;<a href="#45">10.2. 区间问题</a>  
-&emsp;&emsp;<a href="#46">10.3. 其他</a>  
-&emsp;<a href="#47">11. 动态规划</a>  
-&emsp;&emsp;<a href="#48">11.1. 基本思想</a>  
-&emsp;&emsp;<a href="#49">11.2. 相关问题</a>  
-&emsp;&emsp;<a href="#50">11.3. 字符串问题</a>  
-&emsp;&emsp;&emsp;<a href="#51">11.3.1. 字符操作</a>  
-&emsp;&emsp;&emsp;<a href="#52">11.3.2. 子序列问题</a>  
-&emsp;&emsp;&emsp;<a href="#53">11.3.3. 子数组问题</a>  
-&emsp;&emsp;&emsp;<a href="#54">11.3.4. 回文问题</a>  
-&emsp;&emsp;<a href="#55">11.4. 股票问题</a>  
-&emsp;&emsp;<a href="#56">11.5. 背包问题</a>  
-&emsp;&emsp;&emsp;<a href="#57">11.5.1. 常见求解方式及疑难点</a>  
-&emsp;&emsp;&emsp;<a href="#58">11.5.2. 典型背包问题</a>  
-&emsp;&emsp;&emsp;<a href="#59">11.5.3. 背包场景问题</a>  
-&emsp;&emsp;<a href="#60">11.6. 扔鸡蛋问题</a>  
-&emsp;<a href="#61">12. 二分法</a>  
-&emsp;<a href="#62">13. 前缀树</a>  
-&emsp;<a href="#63">14. 滑动窗口</a>  
-&emsp;<a href="#64">15. TODO 二进制应用</a>  
-&emsp;<a href="#65">16. 常用操作</a>  
-&emsp;&emsp;<a href="#66">16.1. Kanade 算法</a>  
+&emsp;&emsp;&emsp;<a href="#21">8.1.2. Morris遍历</a>  
+&emsp;&emsp;&emsp;<a href="#22">8.1.3. 递归思想</a>  
+&emsp;&emsp;&emsp;<a href="#23">8.1.4. 构造及修改二叉树问题</a>  
+&emsp;&emsp;&emsp;<a href="#24">8.1.5. 公共祖先问题</a>  
+&emsp;&emsp;<a href="#25">8.2. 二叉搜索树</a>  
+&emsp;&emsp;<a href="#26">8.3. 高频算法</a>  
+&emsp;&emsp;&emsp;<a href="#27">8.3.1. 树的遍历</a>  
+&emsp;&emsp;&emsp;<a href="#28">8.3.2. 树的属性</a>  
+&emsp;&emsp;&emsp;<a href="#29">8.3.3. 子树问题</a>  
+&emsp;&emsp;&emsp;<a href="#30">8.3.4. 树的高度</a>  
+&emsp;&emsp;&emsp;<a href="#31">8.3.5. 树的构建与修改</a>  
+&emsp;&emsp;&emsp;<a href="#32">8.3.6. 树的基本操作</a>  
+&emsp;&emsp;&emsp;<a href="#33">8.3.7. 公共祖先问题</a>  
+&emsp;<a href="#34">9. 回溯</a>  
+&emsp;&emsp;<a href="#35">9.1. 伪代码模版</a>  
+&emsp;&emsp;&emsp;<a href="#36">9.1.1. 回溯三部曲</a>  
+&emsp;&emsp;&emsp;<a href="#37">9.1.2. startIndex使用</a>  
+&emsp;&emsp;<a href="#38">9.2. 问题场景</a>  
+&emsp;&emsp;<a href="#39">9.3. 重复问题</a>  
+&emsp;&emsp;<a href="#40">9.4. 组合问题</a>  
+&emsp;&emsp;<a href="#41">9.5. 切割问题</a>  
+&emsp;&emsp;<a href="#42">9.6. 排列问题</a>  
+&emsp;&emsp;<a href="#43">9.7. 子集问题</a>  
+&emsp;<a href="#44">10. 贪心</a>  
+&emsp;&emsp;<a href="#45">10.1. 指针与区间局部最优</a>  
+&emsp;&emsp;<a href="#46">10.2. 区间问题</a>  
+&emsp;&emsp;<a href="#47">10.3. 其他</a>  
+&emsp;<a href="#48">11. 动态规划</a>  
+&emsp;&emsp;<a href="#49">11.1. 基本思想</a>  
+&emsp;&emsp;<a href="#50">11.2. 相关问题</a>  
+&emsp;&emsp;<a href="#51">11.3. 字符串问题</a>  
+&emsp;&emsp;&emsp;<a href="#52">11.3.1. 字符操作</a>  
+&emsp;&emsp;&emsp;<a href="#53">11.3.2. 子序列问题</a>  
+&emsp;&emsp;&emsp;<a href="#54">11.3.3. 子数组问题</a>  
+&emsp;&emsp;&emsp;<a href="#55">11.3.4. 回文问题</a>  
+&emsp;&emsp;<a href="#56">11.4. 股票问题</a>  
+&emsp;&emsp;<a href="#57">11.5. 背包问题</a>  
+&emsp;&emsp;&emsp;<a href="#58">11.5.1. 常见求解方式及疑难点</a>  
+&emsp;&emsp;&emsp;<a href="#59">11.5.2. 典型背包问题</a>  
+&emsp;&emsp;&emsp;<a href="#60">11.5.3. 背包场景问题</a>  
+&emsp;&emsp;<a href="#61">11.6. 扔鸡蛋问题</a>  
+&emsp;<a href="#62">12. 二分法</a>  
+&emsp;<a href="#63">13. 位运算与运算转换</a>  
+&emsp;<a href="#64">14. 前缀树</a>  
+&emsp;<a href="#65">15. 滑动窗口</a>  
+&emsp;<a href="#66">16. TODO 二进制应用</a>  
+&emsp;<a href="#67">17. 常用操作</a>  
+&emsp;&emsp;<a href="#68">17.1. Kanade 算法</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -515,8 +517,9 @@ class UnionFindSet {
 #### <a name="20">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
 - [中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+- [后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
 
-> 前中后序遍历递归与迭代写法
+前中后序遍历递归与迭代写法
 ```java
 public class Solution {
     //前序遍历 迭代写法
@@ -590,7 +593,130 @@ public class Solution {
 }
 ```
 
-#### <a name="21">递归思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="21">Morris遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Morris 遍历算法是遍历二叉树的方法，它能将非递归的中序遍历空间复杂度降为**O(1)**。
+
+中序遍历
+```java
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        if(root == null) {
+            return new ArrayList<>();
+        }
+        List<Integer> result = new LinkedList<>();
+        // 定义访问指针
+        TreeNode pos = root;
+        TreeNode rightMost;
+        while(pos != null) {
+            if(pos.left !=null) {
+                rightMost = pos.left;
+                while(rightMost.right != null && rightMost.right != pos) {
+                    rightMost =  rightMost.right;
+                }
+                if(rightMost.right == null) {
+                    //  建立rightMost与pos的线索连接
+                    //  继续递归子节点，建立线索
+                    rightMost.right = pos;
+                    pos = pos.left;
+                } else {
+                    // rightMost已经被访问，断开线索连接
+                    // 访问线索节点pos
+                    // 左子树均被访问，指针指向右侧节点
+                    rightMost.right = null;
+                    result.add(pos.val);
+                    pos = pos.right;
+                }
+            } else {
+                //  如果没有左孩子，则直接访问节点，并将指针指向右节点
+                // 情况1：节点无建立线索，指针指向右节点
+                // 情况2：节点已建立线索，指针指向线索节点
+                result.add(pos.val);
+                pos = pos.right;
+            }
+        }
+        return result;
+    }
+}
+```
+
+先序遍历
+```java
+class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> result = new LinkedList<>();
+        if(root == null) {
+            return result;
+        }
+        TreeNode pos = root;
+        TreeNode rightMost;
+        while(pos != null) {
+            if(pos.left != null) {
+                rightMost = pos.left;
+                while(rightMost.right != null && rightMost.right != pos) {
+                    rightMost = rightMost.right;
+                }
+                if(rightMost.right == null) {
+                    // 此处先访问节点
+                    result.add(pos.val);
+                    rightMost.right = pos;
+                    pos = pos.left;
+                } else {
+                    rightMost.right = null;
+                    pos = pos.right;
+                }
+            } else {
+                result.add(0, pos.val);
+                pos = pos.right;
+            }
+        }
+        return result;
+    }
+}
+```
+
+把二叉搜索树转换为累加树 - Morris遍历\
+将中序遍历过程直接反过来变成，右-中-左
+```java
+class Solution {
+    public TreeNode convertBST(TreeNode root) {
+        if(root == null){
+            return root;
+        }
+        TreeNode pos = root;
+        TreeNode leftMost;
+        int perSum =0;
+        while(pos != null) {
+            if(pos.right != null) {
+                leftMost = pos.right;
+                while(leftMost.left != null && leftMost.left != pos) {
+                    leftMost = leftMost.left;
+                }
+                if(leftMost.left == null) {
+                    leftMost.left = pos;
+                    pos = pos.right;
+                } else {
+                    // 节点访问操作
+                    perSum += pos.val;
+                    pos.val = perSum;
+
+                    leftMost.left = null;
+                    pos = pos.left;
+                }
+            } else {
+                // 节点访问操作
+                perSum += pos.val;
+                pos.val = perSum;
+                
+                pos = pos.left;
+            }
+        }
+        return root;
+    }
+}
+```
+
+
+#### <a name="22">递归思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 以二叉树深度为例：
 [二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
 ```java
@@ -622,7 +748,7 @@ public class Solution {
 }
 ```
 
-#### <a name="22">构造及修改二叉树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">构造及修改二叉树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 涉及到⼆叉树的构造，⽆论普通⼆叉树还是⼆叉搜索树⼀定前序，都是先构造中节点。
 > 理解TreeNode作为返回值的递归方法的含义，问题可以拆解成小问题到下层递归中。
 
@@ -689,11 +815,11 @@ next:
 
 
 
-#### <a name="23">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-公共祖先问题，如何判断一个节点是公共祖先，如果该节点的左子树及右子树均找到要寻找的节点，那么该节点为公共祖先。
-- [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+#### <a name="24">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+公共祖先问题，如何判断一个节点是公共祖先，如果该节点的左子树及右子树均找到要寻找的节点，那么该节点为公共祖先。\
+[二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
  
-### <a name="24">二叉搜索树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">二叉搜索树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 二叉搜索树相关问题核心思想：
 1. **中序遍历**（利用其二叉搜索树的结构）
 2. 递归利用二叉搜索树属性进行处理。
@@ -703,6 +829,7 @@ next:
 - [二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
 - [把二叉搜索树转换为累加树（review）](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
 
+二叉搜索树的树结构修改：
 [删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
 - 如果目标节点没有子节点，我们可以直接移除该目标节点。
 - 如果目标节只有一个子节点，我们可以用其子节点作为替换。
@@ -743,15 +870,15 @@ public class Solution {
 }
 ```
     
-二叉搜索树的最近公共祖先(与树的公共祖先有区别) ：使用了二叉搜索树的特点
-- [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+二叉搜索树的最近公共祖先(与树的公共祖先有区别) ：使用了二叉搜索树的特点\
+[二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 
 二叉搜索树构建：
-- [将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
+[将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
 
-### <a name="25">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">高频算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="26">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">树的遍历</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 - [二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
 - [二叉树的前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
@@ -760,7 +887,7 @@ public class Solution {
 - [二叉树的层次遍历 II](https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/  )
 - [二叉树的锯齿形层次遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
 
-#### <a name="27">树的属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="28">树的属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉树的所有路径](https://leetcode-cn.com/problems/binary-tree-paths/)
 - [二叉树中第二小的节点](https://leetcode-cn.com/problems/second-minimum-node-in-a-binary-tree/)
 - [左叶子之和](https://leetcode-cn.com/problems/sum-of-left-leaves/)
@@ -783,18 +910,18 @@ public class Solution {
 完全二叉树：
 - [完全⼆叉树的节点个数](https://leetcode-cn.com/problems/count-complete-tree-nodes/)
 
-#### <a name="28">子树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="29">子树问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 子树问题，为了避免重复的遍历判断是否同一子数可以使用序列化的方式解决
 - [另一个树的子树](https://leetcode-cn.com/problems/subtree-of-another-tree/)
 - [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/solution/)
 
-#### <a name="29">树的高度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="30">树的高度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [平衡二叉树](https://leetcode-cn.com/problems/balanced-binary-tree/)
 - [二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
 - [二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
 - [二叉树的最小深度](https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/)
 
-#### <a name="30">树的构建与修改</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="31">树的构建与修改</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
 - [对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
 - [合并二叉树](https://leetcode-cn.com/problems/merge-two-binary-trees/)
@@ -811,22 +938,22 @@ public class Solution {
 - [修剪二叉搜索树](https://leetcode-cn.com/problems/trim-a-binary-search-tree/)
 - [⼆叉搜索树中的插⼊操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
 
-#### <a name="31">树的基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="32">树的基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 - [删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
 
-#### <a name="32">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="33">公共祖先问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 - [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 
 
 
-## <a name="33">回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="34">回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 回溯法⼀般是在集合中递归搜索，集合的⼤⼩构成了树的宽度，递归的深度构成的树的深度。
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/backTracking.png)
 
-### <a name="34">伪代码模版</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">伪代码模版</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 void backtracking(参数) {
     if (终⽌条件) {
@@ -841,7 +968,7 @@ void backtracking(参数) {
 }
 ```
 
-#### <a name="35">回溯三部曲</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="36">回溯三部曲</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 回溯函数模板返回值以及参数。回溯算法中函数返回值⼀般为void。
 ```
 void backtracking(参数)
@@ -862,7 +989,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 }
 ```
 
-#### <a name="36">startIndex使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="37">startIndex使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 需要startIndex来控制for循环的起始位置，对于组合问题，什么时候需要startIndex呢？
 1. 如果是⼀个集合来求组合的话，就需要startIndex
 2. 如果是多个集合取组合，各个集合之间相互不影响，那么就不⽤startIndex，例如：回溯算法：电话号 码的字⺟组合
@@ -871,7 +998,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 1. 每层都是从0开始搜索⽽不是startIndex
 2. 需要used数组记录path⾥都放了哪些元素了
 
-### <a name="37">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 回溯算法能解决如下问题：
 - 组合问题：N个数⾥⾯按⼀定规则找出k个数的集合
 - 排列问题：N个数按⼀定规则全排列，有⼏种排列⽅式
@@ -879,7 +1006,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 - ⼦集问题：⼀个N个数的集合⾥有多少符合条件的⼦集
 - 棋盘问题：N皇后，解数独等等
 
-### <a name="38">重复问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="39">重复问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 “树枝去重”和“树层去重”
 
 组合问题可以抽象为树形结构，那么“使⽤过”在这个树形结构上是有两个维度的，⼀个维度是同⼀树枝上“使⽤过”，⼀个维度是同⼀树层上“使⽤过”。\
@@ -922,7 +1049,7 @@ public void backTracking() {
 
 ```
 
-### <a name="39">组合问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="40">组合问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [组合](https://leetcode-cn.com/problems/combinations/submissions/)
 - [组合总和](https://leetcode-cn.com/problems/combination-sum/)
 - [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
@@ -931,19 +1058,19 @@ public void backTracking() {
 
 - [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)
 
-### <a name="40">切割问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">切割问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
 - [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
 - [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
 - [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
 
 
-### <a name="41">排列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">排列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [全排列](https://leetcode-cn.com/problems/permutations/)
 - [全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
 
 
-### <a name="42">子集问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="43">子集问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [子集（review）](https://leetcode-cn.com/problems/subsets/)
 - [子集 II（review）](https://leetcode-cn.com/problems/subsets-ii/)
 
@@ -984,7 +1111,7 @@ public class Soluction {
 }
 ```
 
-## <a name="43">贪心</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="44">贪心</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 贪⼼的本质是选择每⼀阶段的局部最优，从⽽达到全局最优。
 > 例如，有⼀堆钞票，你可以拿⾛⼗张，如果想达到最⼤的⾦额，你要怎么拿？\
 指定每次拿最⼤的，最终结果就是拿⾛最⼤数额的钱。
@@ -998,7 +1125,7 @@ public class Soluction {
 - 求解每⼀个⼦问题的最优解
 - 将局部最优解堆叠成全局最优解
 
-### <a name="44">指针与区间局部最优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="45">指针与区间局部最优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
 - [跳跃游戏II](https://leetcode-cn.com/problems/jump-game-II/)
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
@@ -1006,14 +1133,14 @@ public class Soluction {
 - [划分字⺟区间](https://leetcode-cn.com/problems/partition-labels/)
 - [摆动序列](https://leetcode-cn.com/problems/wiggle-subsequence/)
 
-### <a name="45">区间问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="46">区间问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [⽤最少数量的箭引爆⽓球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
 - [合并区间](https://leetcode-cn.com/problems/merge-intervals/)
 - [无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
 
 - [根据身⾼重建队列](https://leetcode-cn.com/problems/queue-reconstruction-by-height/)
 
-### <a name="46">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="47">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [分配饼干](https://leetcode-cn.com/problems/assign-cookies/description/)
 - [单调递增的数字](https://leetcode-cn.com/problems/monotone-increasing-digits/)
 - [分发糖果](https://leetcode-cn.com/problems/candy/)
@@ -1030,9 +1157,9 @@ public class Soluction {
 - [买卖股票的最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
 
 
-## <a name="47">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="48">动态规划</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="48">基本思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="49">基本思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 动态规划的⼀般流程优化三步：
 1. 暴⼒的递归解法 -> 
 2. 带备忘录的 递归解法 -> 
@@ -1091,7 +1218,7 @@ class Solution {
 ```
 
 
-### <a name="49">相关问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="50">相关问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - [斐波那契数](https://leetcode-cn.com/problems/fibonacci-number/)
 - [爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
@@ -1110,7 +1237,7 @@ class Solution {
 
 
 
-### <a name="50">字符串问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="51">字符串问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 第⼀种思路模板是⼀个⼀维的 dp 数组
 
 第二个思路模版是建立一个二维的dp数组
@@ -1122,11 +1249,11 @@ class Solution {
   - `dp[i][j-1]`
 4. 初始化
 
-#### <a name="51">字符操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="52">字符操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [两个字符串的删除操作](https://leetcode-cn.com/problems/delete-operation-for-two-strings/)
 - [编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
-#### <a name="52">子序列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="53">子序列问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - [最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
 - [最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
@@ -1137,12 +1264,12 @@ class Solution {
 - *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
 - *[最长递增子序列的个数](https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/)
 
-#### <a name="53">子数组问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="54">子数组问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - *[最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
-#### <a name="54">回文问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="55">回文问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 回文问题demo：
 ```java
 class Solution {
@@ -1181,7 +1308,7 @@ class Solution {
 - [最长回文子序列](https://leetcode-cn.com/problems/longest-palindromic-subsequence/)
 
 
-### <a name="55">股票问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="56">股票问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```java
 public class StockTrading {
 
@@ -1257,8 +1384,8 @@ public class StockTrading {
 - [最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
 - [买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 
-### <a name="56">背包问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="57">常见求解方式及疑难点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="57">背包问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="58">常见求解方式及疑难点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 01背包问题
 ```java
@@ -1411,7 +1538,7 @@ for(int i =1; i< 背包.length;i++) {
 ```
 
 
-#### <a name="58">典型背包问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="59">典型背包问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [01背包问题](https://www.acwing.com/problem/content/2/)
 - [完全背包问题](https://www.acwing.com/problem/content/3/)
 - [多重背包问题 I](https://www.acwing.com/problem/content/4/)
@@ -1420,7 +1547,7 @@ for(int i =1; i< 背包.length;i++) {
 - [二维费用的背包问题](https://www.acwing.com/problem/content/8/)
 
 
-#### <a name="59">背包场景问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="60">背包场景问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 01背包：
 - [分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
 - [最后一块石头的重量 II](https://leetcode-cn.com/problems/last-stone-weight-ii/)
@@ -1438,7 +1565,7 @@ for(int i =1; i< 背包.length;i++) {
 - *[单词拆分](https://leetcode-cn.com/problems/word-break/)
 
 
-### <a name="60">扔鸡蛋问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="61">扔鸡蛋问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [鸡蛋掉落](https://leetcode-cn.com/problems/super-egg-drop/)
 
 该问题理解的关键为：因为我们要求的是**最坏情况下扔鸡蛋的次数**，所以鸡蛋在第 i 层楼碎没碎，最后搜索的取决于那种情况的结果更⼤。
@@ -1490,7 +1617,7 @@ class Solution {
 
 
 
-## <a name="61">二分法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="62">二分法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 - [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
@@ -1503,24 +1630,29 @@ class Solution {
 
 
 
+## <a name="63">位运算与运算转换</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-## <a name="62">前缀树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+[Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
+
+
+## <a name="64">前缀树</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 前缀树又名字典树，单词查找树，Trie树，是一种多路树形结构，是哈希树的变种，和hash效率有一拼，是一种用于快速检索的多叉树结构。
 
 典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计\
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
-## <a name="63">滑动窗口</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="65">滑动窗口</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
 
 
 
 
-## <a name="64">TODO 二进制应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="66">TODO 二进制应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 计算1的个数
 
-## <a name="65">常用操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="67">常用操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 求余数常见操作
 ```java
 public class Solution {
@@ -1539,7 +1671,7 @@ public class Solution {
 }
 ```
 
-### <a name="66">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="68">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对于一个给定数组 A，Kadane 算法可以用来找到 A 的最大子段和。
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 ```
