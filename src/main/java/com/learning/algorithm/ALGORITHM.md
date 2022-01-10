@@ -446,8 +446,9 @@ class UnionFindSet {
 #### 树的遍历
 - [前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
 - [中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+- [后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
 
-> 前中后序遍历递归与迭代写法
+前中后序遍历递归与迭代写法
 ```java
 public class Solution {
     //前序遍历 迭代写法
@@ -520,6 +521,129 @@ public class Solution {
     }
 }
 ```
+
+#### Morris遍历
+Morris 遍历算法是遍历二叉树的方法，它能将非递归的中序遍历空间复杂度降为**O(1)**。
+
+中序遍历
+```java
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        if(root == null) {
+            return new ArrayList<>();
+        }
+        List<Integer> result = new LinkedList<>();
+        // 定义访问指针
+        TreeNode pos = root;
+        TreeNode rightMost;
+        while(pos != null) {
+            if(pos.left !=null) {
+                rightMost = pos.left;
+                while(rightMost.right != null && rightMost.right != pos) {
+                    rightMost =  rightMost.right;
+                }
+                if(rightMost.right == null) {
+                    //  建立rightMost与pos的线索连接
+                    //  继续递归子节点，建立线索
+                    rightMost.right = pos;
+                    pos = pos.left;
+                } else {
+                    // rightMost已经被访问，断开线索连接
+                    // 访问线索节点pos
+                    // 左子树均被访问，指针指向右侧节点
+                    rightMost.right = null;
+                    result.add(pos.val);
+                    pos = pos.right;
+                }
+            } else {
+                //  如果没有左孩子，则直接访问节点，并将指针指向右节点
+                // 情况1：节点无建立线索，指针指向右节点
+                // 情况2：节点已建立线索，指针指向线索节点
+                result.add(pos.val);
+                pos = pos.right;
+            }
+        }
+        return result;
+    }
+}
+```
+
+先序遍历
+```java
+class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> result = new LinkedList<>();
+        if(root == null) {
+            return result;
+        }
+        TreeNode pos = root;
+        TreeNode rightMost;
+        while(pos != null) {
+            if(pos.left != null) {
+                rightMost = pos.left;
+                while(rightMost.right != null && rightMost.right != pos) {
+                    rightMost = rightMost.right;
+                }
+                if(rightMost.right == null) {
+                    // 此处先访问节点
+                    result.add(pos.val);
+                    rightMost.right = pos;
+                    pos = pos.left;
+                } else {
+                    rightMost.right = null;
+                    pos = pos.right;
+                }
+            } else {
+                result.add(0, pos.val);
+                pos = pos.right;
+            }
+        }
+        return result;
+    }
+}
+```
+
+把二叉搜索树转换为累加树 - Morris遍历\
+将中序遍历过程直接反过来变成，右-中-左
+```java
+class Solution {
+    public TreeNode convertBST(TreeNode root) {
+        if(root == null){
+            return root;
+        }
+        TreeNode pos = root;
+        TreeNode leftMost;
+        int perSum =0;
+        while(pos != null) {
+            if(pos.right != null) {
+                leftMost = pos.right;
+                while(leftMost.left != null && leftMost.left != pos) {
+                    leftMost = leftMost.left;
+                }
+                if(leftMost.left == null) {
+                    leftMost.left = pos;
+                    pos = pos.right;
+                } else {
+                    // 节点访问操作
+                    perSum += pos.val;
+                    pos.val = perSum;
+
+                    leftMost.left = null;
+                    pos = pos.left;
+                }
+            } else {
+                // 节点访问操作
+                perSum += pos.val;
+                pos.val = perSum;
+                
+                pos = pos.left;
+            }
+        }
+        return root;
+    }
+}
+```
+
 
 #### 递归思想
 以二叉树深度为例：
@@ -621,8 +745,8 @@ next:
 
 
 #### 公共祖先问题
-公共祖先问题，如何判断一个节点是公共祖先，如果该节点的左子树及右子树均找到要寻找的节点，那么该节点为公共祖先。
-- [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+公共祖先问题，如何判断一个节点是公共祖先，如果该节点的左子树及右子树均找到要寻找的节点，那么该节点为公共祖先。\
+[二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
  
 ### 二叉搜索树
 二叉搜索树相关问题核心思想：
@@ -681,7 +805,7 @@ public class Solution {
 二叉搜索树构建：
 [将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
 
-### 算法
+### 高频算法
 
 #### 树的遍历
 - [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
