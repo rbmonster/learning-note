@@ -386,6 +386,117 @@ Server: Apache/1.3.0 (Unix)
 ### 因特网的电子邮件
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/internetEmailSystem.png)
+电子邮件系统的总体组成：
+1. 用户代理(user agent)
+2. 邮箱服务器(mail server)
+3. 简单邮件传输协议(Simple Mail Transfer Protocol, SMTP)
+
+邮箱服务器：
+1. 邮箱(mailBox):接收方在邮件服务器上有一个邮箱(mailBox)，邮箱管理和维护发送的报文。\
+2. 输出报文队列：保持着输出报文的队列。
+3. 邮箱服务器之间以SMTP进行通信
+
+
+
+队列的作用：
+1. 进来的速度和出去的能力有差异，用队列平滑过度。
+2. 服务器发送设置了频率如5min、10min，减少服务器的耗能。
+3. 故障处理，如果发送方无法直接将邮件交付接收方，则在报文队列中存储，并等待再次发送，通常30min进行一次重试。
+
+
+#### SMTP
+SMTP是用于从发送方的邮件服务器发送报文到接收方的邮件服务器。(RFC 5321定义)
+
+报文必须为7位ASCII编码，英文看得懂
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/mailcommunicate.png)
+
+流程简述:
+1. 从发送方Alice的用户代理开始，调用邮件代理程序并提供Bob的邮件地址，进行发送。
+2. Alice用户代理把报文发送给她的邮件服务器，报文被放在队列中。
+3. 运行在Alice的邮件服务器的SMTP客户端发现了队列的报文，与Bod的邮件服务器上的SMTP服务器建立TCP连接。
+4. 两个邮箱服务器进行SMTP的握手，发送方通过TCP连接发送Alice报文。
+5. Bod的邮箱服务器接收到报文，分发到对应的邮箱中。
+   
+
+
+SMTP与Http的比较：
+1. SMTP使用持久连接。
+2. SMTP及HTTP报文均为二者都是7位ASCII形式的命令、响应交互、状态码
+
+不同:
+- HTTP：拉(pull), SMTP：推(push)
+- HTTP：每个对象封装在各自的响应报文中。一个request一个obj
+- SMTP：多个对象包含在一个报文中。一个request包含多个obj，如邮件报文、附件、图片。
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/smtpformat.png)
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/smtpformatExtend.png)
+
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/emailcommunicate-protocol.png)
+
+
+#### POP3
+POP3(Post Office Protocol-Version 3, 第三版邮局协议) 由RFC 1939进行定义，当用户代理打开一个到邮件服务器端口110的TCP连接，POP3就开始工作了。
+
+POP3按照三个阶段进行工作：
+1. Authorization 认证
+2. transaction 事务处理
+3. update 更新
+
+认证
+```
+Authonrization
+===============
+user <user name> : 用户名
+pass <password>  : 密码
+
+S: +OK POP3 server ready 
+C: user bob 
+S: +OK 
+C: pass hungry 
+S: +OK user successfully logged on
+```
+
+事务处理
+```
+Tansaction 
+====================
+list: 报文号列表
+retr: 根据报文号检索报文
+dele: 删除
+quit
+
+C: list 
+S: 1 498 
+S: 2 912 
+S: ...
+C: retr 1 
+S: <message 1 contents>
+S: . 
+C: dele 1 
+C: retr 2 
+S: <message 1 contents>
+S: . 
+C: dele 2 
+C: quit 
+S: +OK POP3 server signing off
+```
+
+更新：在处理quit命令后，POP3服务器进入更新阶段，从用户邮箱中删除事务处理阶段对应的邮件。
+
+⚠️使用POP3的用户代理通常被用户配置为"下载并删除"或"下载并保留"，正常使用下载并保留以满足多设备之间的邮件获取。\
+POP3在会话中是无状态的，且POP3没有给用户提供任何远程创建远程文件夹并为报文指派文件夹的方法。 因此在一台设备上设立文件，仅仅只在本地管理，并不会在多设备上同步。
+
+#### IMAP
+IMAP(Internet Mail Access Protocol，因特网邮件访问协议)，RFC 3501定义
+
+1. IMAP服务器将每个报文与一个文件夹联系起来
+2. 允许用户在远程文件夹中查询邮件
+3. 允许用户读取报文的部分内容，如获取一个报文的首部，或是MIME的报文的一部分。
+4. IMAP在会话过程中保留用户状态：目录名、报文ID与目录名之间映射
+
 
 ### DNS：因特网的目录服务
 
