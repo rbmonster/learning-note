@@ -100,6 +100,43 @@ public class BuildTree {
     }
 
 
+    // ================================================================================================================================
+
+    Map<Integer, Integer> postIndexMap = new HashMap<>();
+
+    /**
+     * 前序后序构造二叉树
+     * 1. 前序后序如何区分左右子树？
+     *    主要通过preorder[index+1]节点，在后序中的位置确定左右子树的大小
+     * @param preorder
+     * @param postorder
+     * @return
+     */
+    public TreeNode constructFromPrePost(int[] preorder, int[] postorder) {
+        for(int i =0;i< postorder.length;i++) {
+            postIndexMap.put(postorder[i], i);
+        }
+        int len = preorder.length;
+        return buildTree(preorder, 0,len-1, 0, len-1);
+    }
+
+    public TreeNode buildTree(int[] preorder, int pl, int pr, int pol, int por) {
+        if(pl>pr) {
+            return null;
+        }
+        TreeNode node =  new TreeNode(preorder[pl]);
+        if(pl == pr) {
+            return node;
+        }
+        int index = postIndexMap.get(preorder[pl+1]);
+        int len = index - pol;
+        node.left = buildTree(preorder, pl+1, pl+1+len, pol, index);
+        node.right = buildTree(preorder, pl+1+len+1, pr, index+1, por-1);
+        return node;
+    }
+
+    // ================================================================================================================================
+
     /**
      * 非递归实现
      * @param preorder
