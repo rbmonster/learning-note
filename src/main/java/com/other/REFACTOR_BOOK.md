@@ -940,3 +940,6 @@ const scrolls = aDocument
         record.catalogData.id,
         catalog));
 ```
+
+## 参考在线地址
+[《重构 改善既有代码的设计第二版》中文翻译](https://github.com/NxeedGoto/Refactoring2-zh)
