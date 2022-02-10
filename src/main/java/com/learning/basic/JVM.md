@@ -17,12 +17,12 @@
   
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/jvm/heap-detail.jpg)
 
-## 虚拟机数据区
+## 虚拟机内存区域
 
 ### 程序计数器
-- 定义：可以看作是当前线程所执行的字节码的行号指示器，为线程隔离的数据区。
-- java多线程切换时，每个线程独立的程序计数器，各条线程之间的计数器互不影响，独立存储，保证了线程切换后能恢复到正确的位置。
-- 唯一一个无OOM的区域
+定义：可以看作是当前线程所执行的字节码的行号指示器，为线程隔离的数据区。\
+java多线程切换时，每个线程独立的程序计数器，各条线程之间的计数器互不影响，独立存储，保证了线程切换后能恢复到正确的位置。
+> 唯一一个无OOM的区域
  
 ### Java虚拟机栈
 定义：每个方法执行的时候，Java虚拟机都会同步的创建一个栈帧用于储存局部变量表、操作数栈、动态链接、方法出口等信息。每个方法被调用直至执行完毕的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
@@ -30,6 +30,7 @@
 - 局部变量表存放了编译期可知的各种Java虚拟机基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用（reference类型）和returnAddress类型（指向一条字节码指令的地址）、
 - 在栈深度溢出或栈扩展失败时分别抛出StackOverFlowError和OutOfMemoryError的异常。 
  
+
 ### 本地方法栈
 定义：为虚拟机使用到的本地（Native）方法服务。
 - HotSpot直接把本方法栈和虚拟机栈合二为一。
@@ -41,10 +42,14 @@
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/jvm/hotstop-heap.jpg)
 
 ### 方法区
-定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
-> JDK8以前使用永久代来实现方法区（-XX:MaxPermSize 设置上限）\
+定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息(类名、方法描述、字段描述)、常量、静态变量、即时编译器编译后的代码缓存等数据。
+> JDK8以前使用**永久代来实现方法区**\
 > 方法区类似于接口，永久代类似于实现类的关系。使用永久代的时候，可以设置内存上限，而且不同的虚拟机的实现不一样，因此更容易遇到内存溢出的问题。
- 
+
+`-XX:MaxMetaspaceSize`:设置元空间最大值，默认-1，不限制或者说仅受限于机器内存。
+`-XX:MetaspaceSize`: 指定元空间的初始空间大小，以字节为单位，达到该值就会触发垃圾收集进行类型卸载，同时收集器会根据收集结果对该值进行动态调整。
+``
+
 ### 运行时常量池
 - 定义：运行时常量池是方法区的一部分。Class文件除类字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，在类加载后存放到运行时常量池中。
 - 运行时常量池具备动态性，运行期间可以将新的常量放入池中，当无法申请到空间抛出OutOfMemoryError异常。 
@@ -52,10 +57,106 @@
 
 > 在 Java 7 之前，JVM 将 Java String Pool 放置在 永久代空间（java7方法区的实现）中，该空间具有固定大小——它不能在运行时扩展并且不符合垃圾收集条件。\
 在永久代（而不是堆）中使用字符串的风险是，如果我们创建太多字符串，我们可能会从 JVM 中得到 OutOfMemory 错误。\
-从 Java 7 开始，Java String Pool 存储在 Heap 空间中，由 JVM 进行垃圾回收。 这种方法的优点是降低了 OutOfMemory 错误的风险，因为未引用的字符串将从池中删除，从而释放内存。
+从 Java 7 开始，Java String Pool 存储在 **Heap 空间**中，由 JVM 进行垃圾回收。 这种方法的优点是降低了 OutOfMemory 错误的风险，因为未引用的字符串将从池中删除，从而释放内存。
 
 ### HotSpot 的后台线程
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/hotspotThread.jpg)
+
+
+### 内存区域溢出分析
+
+#### java堆溢出
+```java
+// -Xms20m -Xmx20m -XX:+HeapDumpOnOutOfMemoryError
+public class HeapOOM {
+    static class OOMObject {
+
+    }
+
+    public static void main(String[] args) {
+        List<OOMObject> list = new ArrayList<>();
+        while (true) {
+            list.add(new OOMObject());
+        }
+    }
+}
+```
+#### 虚拟机栈和本地方法栈溢出
+虚拟机栈和本地方法栈的溢出有StackOverflowError和OutOfMemoryError
+
+导致StackOverflowError的两种行为
+1. `-Xss`参数减少栈内存容量，递归过程导致堆栈溢出
+2. 定义大量本地变量，导致堆栈溢出
+
+```java
+// -Xss128k
+public class JavaVMStackSOF {
+    private int stackLength = 1;
+
+    public void stackLeak() {
+        stackLength++;
+        stackLeak();
+    }
+
+    public static void main(String[] args) {
+        JavaVMStackSOF oom = new JavaVMStackSOF();
+        try {
+            oom.stackLeak();
+        } catch (Exception e) {
+            System.out.println("stack length:" + oom.stackLength);
+            throw e;
+        }
+    }
+}
+```
+```java
+public class JavaVMStackSOF {
+    private int stackLength = 1;
+
+    public void stackLeak() {
+        long unused1,unused2; // .... unused199
+    }
+
+    public static void main(String[] args) {
+        JavaVMStackSOF oom = new JavaVMStackSOF();
+        try {
+            oom.stackLeak();
+        } catch (Exception e) {
+            System.out.println("stack length:" + oom.stackLength);
+            throw e;
+        }
+    }
+}
+```
+
+内存溢出OutOfMemoryError的原因：因为创建一个线程的本地方法栈及虚拟机栈也是占用堆内存空间的，在内存有限的情况，创建一定数量的线程将导致内存溢出
+```java
+// -Xss2M  设置每个线程的堆栈大小
+public class JavaVMStackOOM {
+    private void dontStop() {
+
+    }
+
+    public void stackLeakByThread() {
+        while (true) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dontStop();
+                }
+            });
+            thread.start();
+        }
+    }
+
+    public static void main(String[] args) {
+        JavaVMStackOOM oom = new JavaVMStackOOM();
+        oom.stackLeakByThread();
+    }
+}
+```
+
+#### 方法区和运行时常量池溢出
 
 
 ### 应用
@@ -119,7 +220,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 弱分代假说：绝大多数对象都是朝生夕灭。\
 强分代假说：熬过越多次垃圾手机过程的对象就越难消亡。\
 跨代引用假说：存在于新生代的对象可能会引用老年代的对象。因此该假说说明的是，存在互相引用关系的对象，是应该倾向于同时生存或者同时死亡。
-- 解决方案，在新生代上建立一个全局的数据结构（记忆集），这个结构吧老年代划分成若干小块，表示出老年代的哪一块内存会存在跨代引用。之后发生Minor GC时，只有包含跨代引用的小块内存才会加入到GC Root的扫描.
+- 解决方案，在新生代上建立一个全局的数据结构（记忆集），这个结构把老年代划分成若干小块，表示出老年代的哪一块内存会存在跨代引用。之后发生Minor GC时，只有包含跨代引用的小块内存才会加入到GC Root的扫描.
 
 
 #### 标记-清除算法
@@ -383,7 +484,7 @@ cat filename| grep '线程ID（16进制）' -C 8     // 查找匹配线程，-C 
 ```
 ### jconsole
 JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看堆的内存释放情况。
-- 如果需要使用 JConsole 连接远程进程，可以在远程 Java 程序启动时加上下面这些参数:
+> 如果需要使用 JConsole 连接远程进程，可以在远程 Java 程序启动时加上下面这些参数:
 ```
 -Djava.rmi.server.hostname=外网访问 ip 地址 
 -Dcom.sun.management.jmxremote.port=60001   //监控的端口号
@@ -394,9 +495,10 @@ JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看
 ## 类文件
 
 ### 类文件结构
--  方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
+方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/synchronizeMethod.jpg)
-- 方法体对应的访问范围
+
+方法体对应的访问范围
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/classArea.jpg)
 
 ### 双亲委派模型
@@ -611,12 +713,12 @@ public static final int v = 8080;
 
 ### 对象分配内存的方式
 - 规整空间：指针碰撞，整理过内存用一个指针标记内存使用过的范围，后序分配内存只需要移动指针，仅把指针向空闲空间移动一段与对象大小相等的距离。
-- 碎片空间：空闲链表(free list)，通过额外的维护的列表存储记录空闲的地址，将随机 IO 变为顺序 IO，但带来了额外的空间消耗。
-- 本地线程分配缓冲(Thread Local Allocation Buffer,TLAB) ，每个线程在Java堆中预先分配一小块内存，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
+- 碎片空间：空闲链表(free list)，通过额外的维护的列表存储记录空闲的地址，将随机IO变为顺序IO，但带来了额外的空间消耗。
+> 使用Serial、ParNew等带压缩过程的垃圾回收器，使用指针分配算法。而CMS这种基于清除的算法理论上使用空闲链表的方式分配。
 
-**内存分配并发解决方案**
+对象分配内存并发控制(**内存分配并发解决方案**)：
 - CAS+失败重试
-- TLAB(Thread local Allocation Buffer) ，即线程预先在堆中分配一块内存。
+- 本地线程分配缓冲(Thread Local Allocation Buffer,TLAB) ，每个线程在Java堆中预先分配一小块内存，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
 
 
 ### 对象内存分布
@@ -631,8 +733,7 @@ Hotspot的对象头包括两部分信息：
 定义：java程序会通过栈上的reference数据来操作堆上的具体对象。具体的对象访问方式由虚拟机决定，主要有两种使用句柄和直接指针两种。
 - 使用句柄访问的话，java堆会划分一块内存作为句柄池。引用会指向句柄，而句柄中分为两块指针，一个是指向对象实例的指针，一个是指向对象类型数据的指针(指向方法区)。好处为整理内存是只需要整理实例的指针。
 - 直接指针访问，引用直接指向堆中的对象实例，而对象实例中包含数据的类型数据的指针(指向方法区)，好处为减少了指向实例的时间定为开销。
-
-HotSpot虚拟机主要使用第二种方式进行访问。
+> HotSpot虚拟机主要使用第二种方式进行访问。
 
 ### 对象引用
 - 强引用(Strongly Reference): Object obj = new Object()。关系存在虚拟机就不会回收。
@@ -827,16 +928,18 @@ CMS 在Background回收的过程中，STW 的阶段主要是 Init Mark 和 Final
 [图解垃圾回收](https://www.cnblogs.com/hynblogs/p/12292345.html)
 
 ## Java虚拟机内存调优
+jdk1.8前的参数设置
  ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/jvmParameter.jpg)
  ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/jvmGCType.jpg)
 
 
 ### 基本概念重述
-> 跨代引用解决方案
+
+跨代引用解决方案
 
 Card Table：中文翻译为卡表，主要是用来标记卡页的状态，每个卡表项对应一个卡页。当卡页中一个对象引用有写操作时，写屏障将会标记对象所在的卡表状态改为 dirty，卡表的本质是用来解决跨代引用的问题。
 
-> 内存分配
+内存分配
 1. **TLAB**：Thread Local Allocation Buffer 的简写，基于 CAS 的独享线程（Mutator Threads）可以优先将对象分配在 Eden 中的一块内存，因为是 Java 线程独享的内存区没有锁竞争，所以分配速度更快，每个 TLAB 都是一个线程独享的。
 2. CAS+失败重试
 
