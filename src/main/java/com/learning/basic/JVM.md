@@ -811,6 +811,98 @@ class LargeObjectFinalizer extends PhantomReference<Object> {
     }
 }
 ```
+
+
+### 栈上分配
+栈上分配是Java虚拟机的一项优化技术，基本思想是对于那些线程私有的对象(指不能被其他线程访问到的对象)，可以把他们打散分配在栈上，而不是分配在堆上。
+> 分配在对象上的好处是可以在函数调用结束后自行销毁，而不需要垃圾回收器的介入，从而提高系统的性能
+
+#### 逃逸分析
+逃逸分析是编译语言中的一种优化分析，而不是一种优化的手段。通过对象的作用范围的分析，为其他优化手段提供分析数据从而进行优化。
+> 目的是判断对象的作用域是否可能逃逸出函数体
+
+对象逃逸的三种类型：
+1. `GlobalEscape`: 对象逃逸出方法或线程，如静态对象、对象作为方法的返回值、是已确认为逃逸对象的对象字段等
+2. `ArgEscape`: 对象作为方法调用的参数，传递引用给方法，但是在调用过程中不是全局逃逸对象。
+3. `NoEscape`: 可以标量替换的对象。
+> 标量即不可被进一步分解的量，而JAVA的基本数据类型就是标量（如：int，long等基本数据类型以及reference类型等）
+
+参考文献：\
+[逃逸分析官网解答](https://docs.oracle.com/javase/7/docs/technotes/guides/vm/performance-enhancements-7.html#escapeAnalysis)
+
+#### 标量替换
+标量可以理解成一种不可分解的变量，如java内部的基本数据类型、引用类型等。 与之对应的聚合量是可以被拆解的，如对象。
+
+当通过逃逸分析一个对象只会作用于方法内部，虚拟机可以通过使用标量替换来进行优化。
+
+#### 应用
+- `-XX:+DoEscapeAnalysis`：用于开启逃逸分析
+- `-XX:+EliminateAllocations`：用于开启标量替换，允许将对象打散分配在栈上
+```java
+/**
+ * -server -Xmx10m -Xms10m -XX:+DoEscapeAnalysis -XX:+PrintGC -XX:-UseTLAB -XX:+EliminateAllocations
+ */
+public class OnStackTest {
+
+    public static class User {
+        public int id = 0;
+        public String name = "";
+    }
+
+    public static void alloc() {
+        User u = new User();
+        u.id = 5;
+        u.name = "geym";
+    }
+
+    public static void main(String[] args) {
+        long b = System.currentTimeMillis();
+        for (int i = 0; i < 100000000; i++) {
+            alloc();
+        }
+        long e = System.currentTimeMillis();
+        System.out.println(e-b);
+    }
+}
+```
+如果关闭逃逸分析或者标量替换的任何一个，再次执行程序就会看到大量的GC日志，说明栈上分配依赖逃逸分析和标亮替换的实现。
+
+### TLAB
+TLAB，全称Thread Local Allocation Buffer, 即：线程本地分配缓存。这是一块线程专用的内存分配区域。TLAB占用的是eden区的空间。在TLAB启用的情况下（默认开启），JVM会为每一个线程分配一块TLAB区域。
+
+
+为什么需要TLAB？
+这是为了加速对象的分配。由于对象一般分配在堆上，而堆是线程共用的，因此可能会有多个线程在堆上申请空间，而每一次的对象分配都必须**线程同步**，会使分配的效率下降。考虑到对象分配几乎是Java中最常用的操作，因此JVM使用了TLAB这样的线程专有区域来避免多线程冲突，提高对象分配的效率。
+
+局限性： TLAB空间一般不会太大（占用eden区），所以大对象无法进行TLAB分配，只能直接分配到堆上。
+
+
+分配策略：\
+一个100KB的TLAB区域，如果已经使用了80KB，当需要分配一个30KB的对象时，TLAB是如何分配的呢？
+此时，虚拟机有两种选择：第一，废弃当前的TLAB（会浪费20KB的空间）；第二，将这个30KB的对象直接分配到堆上，保留当前TLAB（当有小于20KB的对象请求TLAB分配时可以直接使用该TLAB区域）。
+JVM选择的策略是：在虚拟机内部维护一个叫refill_waste的值，当请求对象大于refill_waste时，会选择在堆中分配，反之，若小于refill_waste值，则会废弃当前TLAB，新建TLAB来分配新对象。
+> 【默认情况下，TLAB和refill_waste都是会在运行时不断调整的，使系统的运行状态达到最优。】
+
+|  参数   | 作用  | 备注 |
+|  ----  | ----  |----  |
+| -XX:+UseTLAB	| 启用TLAB	| 默认启用 | 
+| -XX:TLABRefillWasteFraction	| 设置允许空间浪费的比例	| 默认值：64，即：使用1/64的TLAB空间大小作为refill_waste值 | 
+| -XX:-ResizeTLAB	| 禁止系统自动调整TLAB大小	 |
+| -XX:TLABSize | 	指定TLAB大小	| 单位：B |
+
+### 对象内存分配流程
+java对象分配流程
+1. 首先运行栈上分配。编译器通过逃逸分析及标量替换，决定对象应该分配在栈上还是堆中。如果逃逸分析及标量替换其中一个未启用，则直接分配在堆中。如果决定分配在堆中，那么执行步骤2
+2. 进行TLAB分配。如果TLAB的空间`TALB_TOP+SIZE <= TLAB_END`，对象可以直接分配在TLAB中，那么`TLAB_TOP`加上对象`SIZE`进行位置移动。若不能执行步骤3
+3. 重新申请一块TALB，并尝试存储对象。若对象过大仍无法存储在TLAB中，执行步骤4
+4. 判断是否满足进入老年代的条件(`PretenureSizeThreshold`参数)，若满足直接进入老年代，不满足进行新声代分配
+5. 将对象存储在新声代`Eden`中，`EDEN_TOP`指针移位。若新声代无法存储对象，执行`Young GC`，并尝试重新分配对象。
+6. `Young GC` 后重新分配对象，若仍然无法分配。对象直接进入老年代。
+
+
+- [JVM About Object Distribution In Pile, Stack, TLAB](https://programmerall.com/article/46551700936/)
+- [JVM之对象分配：栈上分配 & TLAB分配](https://www.cnblogs.com/BlueStarWei/p/9358757.html)
+
 ## JDK编译期
 
 ### 编译期做的工作
