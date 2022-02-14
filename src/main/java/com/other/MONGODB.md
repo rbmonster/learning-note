@@ -178,7 +178,7 @@ MapReduce：同样用于数据的聚合、映射、归约
 
 
 ### oplog
-在MongoDB中，有一个系统库“”Local”，库里有一个集合“oplog.rs”，这个集合类似于binlog文件，里面记录了MongoDB的所有操作。从节点通过读取oplog.rs里的数据做到数据同步。
+在MongoDB中，有一个系统库“Local”，库里有一个集合“oplog.rs”，这个集合类似于binlog文件，里面记录了MongoDB的所有操作。从节点通过读取oplog.rs里的数据做到数据同步。
 > oplog是local库下的一个固定集合，Secondary就是通过查看Primary 的oplog这个集合来进行复制的。每个节点都有oplog，记录这从主节点复制过来的信息，这样每个成员都可以作为同步源给其他节点。 Oplog 可以说是Mongodb Replication的纽带了。
 
 
