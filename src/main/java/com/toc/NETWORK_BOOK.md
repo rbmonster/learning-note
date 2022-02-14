@@ -26,67 +26,72 @@
 &emsp;&emsp;&emsp;<a href="#23">2.3.4. 用户与服务器的交互：cookie</a>  
 &emsp;&emsp;&emsp;<a href="#24">2.3.5. 代理服务器</a>  
 &emsp;&emsp;<a href="#25">2.4. 因特网的电子邮件</a>  
-&emsp;&emsp;<a href="#26">2.5. DNS：因特网的目录服务</a>  
-&emsp;&emsp;&emsp;<a href="#27">2.5.1. DNS工作机理</a>  
-&emsp;&emsp;&emsp;<a href="#28">2.5.2. DNS缓存</a>  
-&emsp;&emsp;&emsp;<a href="#29">2.5.3. DNS记录和报文</a>  
-&emsp;&emsp;&emsp;<a href="#30">2.5.4. DNS报文</a>  
-&emsp;&emsp;&emsp;<a href="#31">2.5.5. DNS脆弱性</a>  
-&emsp;<a href="#32">3. 运输层</a>  
-&emsp;&emsp;<a href="#33">3.1. 多路复用和多路分解</a>  
-&emsp;&emsp;&emsp;<a href="#34">3.1.1. 无连接的多路复用与多路分解</a>  
-&emsp;&emsp;&emsp;<a href="#35">3.1.2. 面向连接的多路复用与多路分解</a>  
-&emsp;&emsp;<a href="#36">3.2. 无连接运输 UDP</a>  
-&emsp;&emsp;&emsp;<a href="#37">3.2.1. UDP报文段结构</a>  
-&emsp;&emsp;<a href="#38">3.3. 可靠数据传输协议原理</a>  
-&emsp;&emsp;&emsp;<a href="#39">3.3.1. 构建一个可靠传输协议的过程</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#40">3.3.1.1. rdt1.0</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#41">3.3.1.2. rdt2.0</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#42">3.3.1.3. rdt2.1</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#43">3.3.1.4. rdt2.2</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#44">3.3.1.5. rdt3.0 经具有比特差错的丢包信道的可靠数据传输</a>  
-&emsp;&emsp;&emsp;<a href="#45">3.3.2. 流水线可靠数据传输协议</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#46">3.3.2.1. 回退N步(Go-Back-N,GBN)</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#47">3.3.2.2. 选择重传(Select Repeat, SR)</a>  
-&emsp;&emsp;&emsp;<a href="#48">3.3.3. 总结</a>  
-&emsp;&emsp;<a href="#49">3.4. 面向连接的TCP</a>  
-&emsp;&emsp;&emsp;<a href="#50">3.4.1. TCP报文段结构</a>  
-&emsp;&emsp;&emsp;<a href="#51">3.4.2. 往返时间RTT的估计与超时</a>  
-&emsp;&emsp;&emsp;<a href="#52">3.4.3. TCP实践原则</a>  
-&emsp;&emsp;&emsp;<a href="#53">3.4.4. TCP的可靠数据传输服务</a>  
-&emsp;&emsp;&emsp;<a href="#54">3.4.5. TCP流量控制</a>  
-&emsp;&emsp;&emsp;<a href="#55">3.4.6. TCP的连接管理</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#56">3.4.6.1. TCP三次握手</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#57">3.4.6.2. TCP四次挥手</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#58">3.4.6.3. TCP SYN洪泛攻击</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#59">3.4.6.4. TCP连接的三种情况</a>  
-&emsp;&emsp;&emsp;<a href="#60">3.4.7. TCP拥塞控制</a>  
-&emsp;&emsp;&emsp;<a href="#61">3.4.8. 其他</a>  
-&emsp;<a href="#62">4. 网络层</a>  
-&emsp;&emsp;<a href="#63">4.1. 路由器组成</a>  
-&emsp;&emsp;&emsp;<a href="#64">4.1.1. 交换技术</a>  
-&emsp;&emsp;&emsp;<a href="#65">4.1.2. 输入输出端口处理</a>  
-&emsp;&emsp;<a href="#66">4.2. IPv4</a>  
-&emsp;&emsp;&emsp;<a href="#67">4.2.1. IPv4数据报分片</a>  
-&emsp;&emsp;&emsp;<a href="#68">4.2.2. IPv4编址</a>  
-&emsp;&emsp;&emsp;<a href="#69">4.2.3. DHCP</a>  
-&emsp;&emsp;&emsp;<a href="#70">4.2.4. 网络地址转换</a>  
-&emsp;&emsp;<a href="#71">4.3. IPv6</a>  
-&emsp;&emsp;<a href="#72">4.4. 通用转发与SDN</a>  
-&emsp;&emsp;&emsp;<a href="#73">4.4.1. 通用传统转发</a>  
-&emsp;&emsp;&emsp;<a href="#74">4.4.2. SDN</a>  
-&emsp;&emsp;&emsp;<a href="#75">4.4.3. 流表OpenFlow</a>  
-&emsp;&emsp;<a href="#76">4.5. SDN 数据平面与控制平面交互</a>  
-&emsp;&emsp;<a href="#77">4.6. 控制平面路由选择算法</a>  
-&emsp;&emsp;&emsp;<a href="#78">4.6.1. 链路状态路由选择LS(Link state)</a>  
-&emsp;&emsp;&emsp;<a href="#79">4.6.2. 距离矢量路由选择DV(distance vector routing)</a>  
-&emsp;&emsp;&emsp;<a href="#80">4.6.3. LS 和 DV 算法的比较</a>  
-&emsp;&emsp;<a href="#81">4.7. 因特网中自治系统内部的路由选择(路由选择协议)</a>  
-&emsp;&emsp;&emsp;<a href="#82">4.7.1. RIP(Routing Information Protocol)</a>  
-&emsp;&emsp;&emsp;<a href="#83">4.7.2. OSPF (Open Shortest Path First)</a>  
-&emsp;&emsp;&emsp;<a href="#84">4.7.3. 层次路由</a>  
-&emsp;&emsp;&emsp;<a href="#85">4.7.4. 互联网AS间路由：BGP</a>  
-&emsp;<a href="#86">5. 其他概念</a>  
+&emsp;&emsp;&emsp;<a href="#26">2.4.1. SMTP</a>  
+&emsp;&emsp;&emsp;<a href="#27">2.4.2. 邮件DNS路由过程</a>  
+&emsp;&emsp;&emsp;<a href="#28">2.4.3. 邮件组件拆分</a>  
+&emsp;&emsp;&emsp;<a href="#29">2.4.4. POP3</a>  
+&emsp;&emsp;&emsp;<a href="#30">2.4.5. IMAP</a>  
+&emsp;&emsp;<a href="#31">2.5. DNS：因特网的目录服务</a>  
+&emsp;&emsp;&emsp;<a href="#32">2.5.1. DNS工作机理</a>  
+&emsp;&emsp;&emsp;<a href="#33">2.5.2. DNS缓存</a>  
+&emsp;&emsp;&emsp;<a href="#34">2.5.3. DNS记录和报文</a>  
+&emsp;&emsp;&emsp;<a href="#35">2.5.4. DNS报文</a>  
+&emsp;&emsp;&emsp;<a href="#36">2.5.5. DNS脆弱性</a>  
+&emsp;<a href="#37">3. 运输层</a>  
+&emsp;&emsp;<a href="#38">3.1. 多路复用和多路分解</a>  
+&emsp;&emsp;&emsp;<a href="#39">3.1.1. 无连接的多路复用与多路分解</a>  
+&emsp;&emsp;&emsp;<a href="#40">3.1.2. 面向连接的多路复用与多路分解</a>  
+&emsp;&emsp;<a href="#41">3.2. 无连接运输 UDP</a>  
+&emsp;&emsp;&emsp;<a href="#42">3.2.1. UDP报文段结构</a>  
+&emsp;&emsp;<a href="#43">3.3. 可靠数据传输协议原理</a>  
+&emsp;&emsp;&emsp;<a href="#44">3.3.1. 构建一个可靠传输协议的过程</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#45">3.3.1.1. rdt1.0</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#46">3.3.1.2. rdt2.0</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#47">3.3.1.3. rdt2.1</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#48">3.3.1.4. rdt2.2</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#49">3.3.1.5. rdt3.0 经具有比特差错的丢包信道的可靠数据传输</a>  
+&emsp;&emsp;&emsp;<a href="#50">3.3.2. 流水线可靠数据传输协议</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#51">3.3.2.1. 回退N步(Go-Back-N,GBN)</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#52">3.3.2.2. 选择重传(Select Repeat, SR)</a>  
+&emsp;&emsp;&emsp;<a href="#53">3.3.3. 总结</a>  
+&emsp;&emsp;<a href="#54">3.4. 面向连接的TCP</a>  
+&emsp;&emsp;&emsp;<a href="#55">3.4.1. TCP报文段结构</a>  
+&emsp;&emsp;&emsp;<a href="#56">3.4.2. 往返时间RTT的估计与超时</a>  
+&emsp;&emsp;&emsp;<a href="#57">3.4.3. TCP实践原则</a>  
+&emsp;&emsp;&emsp;<a href="#58">3.4.4. TCP的可靠数据传输服务</a>  
+&emsp;&emsp;&emsp;<a href="#59">3.4.5. TCP流量控制</a>  
+&emsp;&emsp;&emsp;<a href="#60">3.4.6. TCP的连接管理</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#61">3.4.6.1. TCP三次握手</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#62">3.4.6.2. TCP四次挥手</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#63">3.4.6.3. TCP SYN洪泛攻击</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#64">3.4.6.4. TCP连接的三种情况</a>  
+&emsp;&emsp;&emsp;<a href="#65">3.4.7. TCP拥塞控制</a>  
+&emsp;&emsp;&emsp;<a href="#66">3.4.8. 其他</a>  
+&emsp;<a href="#67">4. 网络层</a>  
+&emsp;&emsp;<a href="#68">4.1. 路由器组成</a>  
+&emsp;&emsp;&emsp;<a href="#69">4.1.1. 交换技术</a>  
+&emsp;&emsp;&emsp;<a href="#70">4.1.2. 输入输出端口处理</a>  
+&emsp;&emsp;<a href="#71">4.2. IPv4</a>  
+&emsp;&emsp;&emsp;<a href="#72">4.2.1. IPv4数据报分片</a>  
+&emsp;&emsp;&emsp;<a href="#73">4.2.2. IPv4编址</a>  
+&emsp;&emsp;&emsp;<a href="#74">4.2.3. DHCP</a>  
+&emsp;&emsp;&emsp;<a href="#75">4.2.4. 网络地址转换</a>  
+&emsp;&emsp;<a href="#76">4.3. IPv6</a>  
+&emsp;&emsp;<a href="#77">4.4. 通用转发与SDN</a>  
+&emsp;&emsp;&emsp;<a href="#78">4.4.1. 通用传统转发</a>  
+&emsp;&emsp;&emsp;<a href="#79">4.4.2. SDN</a>  
+&emsp;&emsp;&emsp;<a href="#80">4.4.3. 流表OpenFlow</a>  
+&emsp;&emsp;<a href="#81">4.5. SDN 数据平面与控制平面交互</a>  
+&emsp;&emsp;<a href="#82">4.6. 控制平面路由选择算法</a>  
+&emsp;&emsp;&emsp;<a href="#83">4.6.1. 链路状态路由选择LS(Link state)</a>  
+&emsp;&emsp;&emsp;<a href="#84">4.6.2. 距离矢量路由选择DV(distance vector routing)</a>  
+&emsp;&emsp;&emsp;<a href="#85">4.6.3. LS 和 DV 算法的比较</a>  
+&emsp;&emsp;<a href="#86">4.7. 因特网中自治系统内部的路由选择(路由选择协议)</a>  
+&emsp;&emsp;&emsp;<a href="#87">4.7.1. RIP(Routing Information Protocol)</a>  
+&emsp;&emsp;&emsp;<a href="#88">4.7.2. OSPF (Open Shortest Path First)</a>  
+&emsp;&emsp;&emsp;<a href="#89">4.7.3. 层次路由</a>  
+&emsp;&emsp;&emsp;<a href="#90">4.7.4. 互联网AS间路由：BGP</a>  
+&emsp;<a href="#91">5. 其他概念</a>  
 # <a name="0">计算机网络-自顶而下</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">计算机网络与因特网</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -476,7 +481,160 @@ Server: Apache/1.3.0 (Unix)
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/internetEmailSystem.png)
 
-### <a name="26">DNS：因特网的目录服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+电子邮件系统的总体组成：
+1. 用户代理(user agent)
+2. 邮箱服务器(mail server)
+3. 简单邮件传输协议(Simple Mail Transfer Protocol, SMTP)
+
+邮箱服务器：
+1. 邮箱(mailBox):接收方在邮件服务器上有一个邮箱(mailBox)，邮箱管理和维护发送的报文。\
+2. 输出报文队列：保持着输出报文的队列。
+3. 邮箱服务器之间以SMTP进行通信
+
+
+
+队列的作用：
+1. 进来的速度和出去的能力有差异，用队列平滑过度。
+2. 服务器发送设置了频率如5min、10min，减少服务器的耗能。
+3. 故障处理，如果发送方无法直接将邮件交付接收方，则在报文队列中存储，并等待再次发送，通常30min进行一次重试。
+
+
+#### <a name="26">SMTP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+SMTP是用于从发送方的邮件服务器发送报文到接收方的邮件服务器。(RFC 5321定义)
+
+报文必须为7位ASCII编码，英文看得懂
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/mailcommunicate.png)
+
+流程简述:
+1. 从发送方Alice的用户代理开始，调用邮件代理程序并提供Bob的邮件地址，进行发送。
+2. Alice用户代理把报文发送给她的邮件服务器，报文被放在队列中。
+3. 运行在Alice的邮件服务器的SMTP客户端发现了队列的报文，与Bod的邮件服务器上的SMTP服务器建立TCP连接。
+4. 两个邮箱服务器进行SMTP的握手，发送方通过TCP连接发送Alice报文。
+5. Bod的邮箱服务器接收到报文，分发到对应的邮箱中。
+   
+```
+S: 220 hamburger.edu
+C: HELO crepes.fr
+S: 250 Hello crepes.fr, pleased to meet you
+C: MAIL FROM: <alice@crepes.fr>
+S: 250 alice@crepes.fr ... Sender ok
+C: RCPT TO: <bob@hamburger.edu>
+S: 250 bob@hamburger.edu ... Recipient ok
+C: DATA
+S: 354 Enter mail, end with “.” on a line by itself
+C: Do you like ketchup?
+C: How about pickles?
+C: .
+S: 250 Message accepted for delivery
+C: QUIT
+S: 221 hamburger.edu closing connection
+```
+
+
+SMTP与Http的比较：
+1. SMTP使用持久连接。
+2. SMTP及HTTP报文均为二者都是7位ASCII形式的命令、响应交互、状态码
+
+不同:
+- HTTP：拉(pull), SMTP：推(push)
+- HTTP：每个对象封装在各自的响应报文中。一个request一个obj
+- SMTP：多个对象包含在一个报文中。一个request包含多个obj，如邮件报文、附件、图片。
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/smtpformat.png)
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/smtpformatExtend.png)
+
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/emailcommunicate-protocol.png)
+
+
+#### <a name="27">邮件DNS路由过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+SMTP服务器基于DNS中的MX记录来路由电子邮件，MX记录注册了域名和相关的SMTP中继主机，属于该域的电子邮件都应向该主机发送。
+
+若SMTP服务器 mail.abc.com 收到一封信要发到**shuer@sh.abc.com**，则执行以下过程：
+1. sendmail 请求DNS给出主机**sh.abc.com**的CNAME 记录，如有，假若CNAME（别名记录）到shmail.abc.com，则再次请求shmail.abc.com的CNAME记录，直到没有为止。
+2. 假定被CNAME到shmail.abc.com，然后sendmail请求`@abc.com` 域的DNS给出shmail.abc.com的MX记录（邮件路由及记录）
+   `shmail MX 5 shmail.abc.com 10 shmail2.abc.com`
+3. Sendmail组合请求DNS给出shmail.abc.com的A记录（主机名或域名对应的IP地址记录），即IP地址，若返回值为1.2.3.4（假设值）。
+4. Sendmail与1.2.3.4连接，传送这封给shuser@sh.abc.com 的信到1.2.3.4
+
+
+#### <a name="28">邮件组件拆分</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- MUA（Mail User Agent）: 接收邮件所使用的邮件客户端，它提供了阅读，发送和接受电子邮件的用户接口。
+- MSA（Mail Submission Agent）:负责消息有MTA发送之前必须完成的所有准备工作和错误检测，MSA就像在MUA和MTA之间插入了一个头脑清醒的检测员对所有的主机名，从MUA得到的信息头等信息进行检测。
+- MTA（Mail Transfer Agent）: MTA是在邮件主机上的软件，它也是主要的邮件服务器。MTA负责发送邮件，中转邮件，当然也要接收邮件。
+- MDA（Mail Delivery Agent）: “邮件投递代理”主要的功能就是将MTA接收的信件依照信件的流向（送到哪里）将该信件放置到本机账户下的邮件文件中（收件箱），或者再经由MTA将信件送到下个MTA。
+- MRA（Mail Receive Agent）: 负责实现IMAP与POP3协议，与MUA进行交互；相当于让你的邮件账户支持离线邮件收取，而不是电脑打开才能收取邮件。
+> MAA（Mail Access Agent）邮件访问代理 用于将用户连接到系统邮件库，使用POP或IMAP协议收取邮件。Linux下常用的MAA有UW-IMAP，Cyrus-IMAP，COURIER-IMAP等邮件中继:就是当邮件向目的地址传输时，一旦源地址和目的地址都不是本地系统，那么本地系统就是邮件的中继（中转站）
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/email-lifecycle.png)
+
+
+
+#### <a name="29">POP3</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+POP3(Post Office Protocol-Version 3, 第三版邮局协议) 由RFC 1939进行定义，当用户代理打开一个到邮件服务器端口110的TCP连接，POP3就开始工作了。
+
+POP3按照三个阶段进行工作：
+1. Authorization 认证
+2. transaction 事务处理
+3. update 更新
+
+认证
+```
+Authonrization
+===============
+user <user name> : 用户名
+pass <password>  : 密码
+
+S: +OK POP3 server ready 
+C: user bob 
+S: +OK 
+C: pass hungry 
+S: +OK user successfully logged on
+```
+
+事务处理
+```
+Tansaction 
+====================
+list: 报文号列表
+retr: 根据报文号检索报文
+dele: 删除
+quit
+
+C: list 
+S: 1 498 
+S: 2 912 
+S: ...
+C: retr 1 
+S: <message 1 contents>
+S: . 
+C: dele 1 
+C: retr 2 
+S: <message 1 contents>
+S: . 
+C: dele 2 
+C: quit 
+S: +OK POP3 server signing off
+```
+
+更新：在处理quit命令后，POP3服务器进入更新阶段，从用户邮箱中删除事务处理阶段对应的邮件。
+
+⚠️使用POP3的用户代理通常被用户配置为"下载并删除"或"下载并保留"，正常使用下载并保留以满足多设备之间的邮件获取。\
+POP3在会话中是无状态的，且POP3没有给用户提供任何远程创建远程文件夹并为报文指派文件夹的方法。 因此在一台设备上设立文件，仅仅只在本地管理，并不会在多设备上同步。
+
+#### <a name="30">IMAP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+IMAP(Internet Mail Access Protocol，因特网邮件访问协议)，RFC 3501定义
+
+1. IMAP服务器将每个报文与一个文件夹联系起来
+2. 允许用户在远程文件夹中查询邮件
+3. 允许用户读取报文的部分内容，如获取一个报文的首部，或是MIME的报文的一部分。
+4. IMAP在会话过程中保留用户状态：目录名、报文ID与目录名之间映射
+
+
+### <a name="31">DNS：因特网的目录服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 域名管理系统(Domain Name System, DNS) ，提供将主机名转换为其背后的IP地址的服务。
 
@@ -508,7 +666,7 @@ DNS的重要服务：\
 
 DNS的为IP地址提供了目录服务，但也带来了额外的时延，使用主机地址请求时需要额外请求DNS拿到真实的IP地址。因此想要获得IP地址应尽量缓存在"附近的"DNS服务器中，这有助于减少DNS的网络流量和DNS的平均时延。
 
-#### <a name="27">DNS工作机理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="32">DNS工作机理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 DNS的工作流程简述：
 
@@ -544,13 +702,13 @@ DNS服务器大致可以分为3种类型
 
 上述过程中发送了8份DNS报文：4份查询报文4份回答报文。
 
-#### <a name="28">DNS缓存</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="33">DNS缓存</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 为了改善时延性能并减少在因特网上到处传输的DNS报文数量，DNS广泛使用了缓存技术。
 
 某个DNS服务器接收到一个回答时，它能够缓存包含在该回答中的任何信息。由于主机和主机名和IP地址间的映射并不是永久的，DNS服务器在一段时间(**通常为2天**)后将丢弃缓存信息
 
-#### <a name="29">DNS记录和报文</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="34">DNS记录和报文</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 DNS服务器存储了资源记录(Resource Record, RR)，RR提供了主机名到IP地址的映射。有下列关键信息：`(Name, Value, Type, TTL)`
 
@@ -566,14 +724,14 @@ TTL是记录的生存时间，Type类型可以分为4大类：
    `(foo.com, mail.bar.foo.com, MX)`
 
 > 为了获取邮件服务器的规范主机名，DNS客户应该请求一条MX记录。\
-> 为了获取其他服务器的规范主机名，DNS客户应该亲故CNAME记录。\
+> 为了获取其他服务器的规范主机名，DNS客户应该请求CNAME记录。\
 > 两者一个MX为邮件服务器服务，一个CNAME为其他服务器服务。
 
-#### <a name="30">DNS报文</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="35">DNS报文</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/DNSMessageFormat.png)
 
-#### <a name="31">DNS脆弱性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="36">DNS脆弱性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 DDoS分布式拒绝服务带宽洪泛攻击，攻击根DNS服务器或TLD，对DNS的影响很小，主要是本地的DNS的缓存可以部分缓解。
 
@@ -581,7 +739,7 @@ DDoS分布式拒绝服务带宽洪泛攻击，攻击根DNS服务器或TLD，对D
 
 DNS自身显示了对抗攻击 令人惊讶的健壮性。
 
-## <a name="32">运输层</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="37">运输层</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 运输层协议为运行在不同主机上的应用程序之间提供**逻辑通信**(logic communication) 功能。
 
@@ -592,21 +750,21 @@ DNS自身显示了对抗攻击 令人惊讶的健壮性。
 
 **运输层协议只工作在端系统中**。因此运输协议能够提供的服务常常受限于底层网络层协议的服务模型。
 
-### <a name="33">多路复用和多路分解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">多路复用和多路分解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 IP的服务模型是尽力而为交付服务(best-effort delivery service)。但是不确保报文段的交付、不保证报文段中数据的完整性。
 
 **多路分解**：将运输层报文段中的数据交付到正确的套接字的工作。即接收端接收到数据，通过标识分发到各个应用层程序的套接字上。\
 **多路复用**：在源主机从不同套接字中收集数据块，并为每个数据块封装上首部信息从而生成报文段，然后将**报文段传递到网络层**，上述所有工作称为多路复用。即收集应用层程序发送到运输层的套接字数据，将数据封装成segment传输到网络层。
 
-#### <a name="34">无连接的多路复用与多路分解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="39">无连接的多路复用与多路分解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 无连接的多路复用与多路分解，即UDP的连接。\
 UDP连接中，若未指定端口，运输层将自动为该套接字分配一个端口号。\
 一个UDP套接字是有一个二元组全面标识的，该二元组包含了一个目的IP地址和一个目的端口号。因此如果两个UDP报文段有不同的**源IP地址或源端口号**
 ，但具有相同的目的IP地址和目的端口号，那么两个报文段将通过相同的目的套接字被定向到相同的目的进程。
 
-#### <a name="35">面向连接的多路复用与多路分解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="40">面向连接的多路复用与多路分解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 TCP套接字是由一个四元组(源IP地址、源端口号、目的IP地址、目的端口号)来标识的。
 
@@ -619,7 +777,7 @@ TCP套接字是由一个四元组(源IP地址、源端口号、目的IP地址、
 
 ⚠️连接套接字与进程之间并非总是有着一一对应的关系，如今的高性能的web服务器通常使用一个进程，但是为每个新的客户创建一个具有**新连接套接字的新线程**。
 
-### <a name="36">无连接运输 UDP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">无连接运输 UDP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 UDP除了复用/分解即少量的差错检测外，该协议几乎没有对IP协议增加别的东西。使用UDP发送报文段之前，发送方和接收方的运输层实体之间没有握手，这也是UDP无连接的体现。
 > DNS是一个通常使用UDP的应用层协议的例子。\
@@ -646,7 +804,7 @@ UDP除了复用/分解即少量的差错检测外，该协议几乎没有对IP�
 UDP常用于承载网络管理数据(SNMP)，因为网络管理应用程序通常必须在该网络处于重压状态时运行，而这时候可靠、拥塞受控的数据传输难以实现。
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/popularApplicationAndProtocol.png)
 
-#### <a name="37">UDP报文段结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="42">UDP报文段结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/udpSegment.png)
 
@@ -660,7 +818,7 @@ UDP校验和提供了差错检测功能。发送方的UDP对报文的所有16比
 
 UDP提供了差错检测原因：不能保证源和目的之间的所有链路都提供了差错检测，且无法确保逐链路的可靠性，作为一个数据传输的保险措施。
 
-### <a name="38">可靠数据传输协议原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="43">可靠数据传输协议原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/reliableDataTransfer.png)
 
@@ -671,16 +829,16 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 - 有限状态机(Finite-State Machine,FSM)
 - rdt_send函数：上层可以调用数据传输协议的发送方。(rdt标识可靠传输协议,_send表示rdt的发送方正在被调用)
 
-#### <a name="39">构建一个可靠传输协议的过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="44">构建一个可靠传输协议的过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 可靠数据传输协议的技术要点：检验和、答复机制(肯定和否定确认分组)、序号、定时器
 
-##### <a name="40">rdt1.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="45">rdt1.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 `rdt1.0`：最简单的情况，底层信道完全可靠。
 > 发送及接收端均不需要反馈信息，因为底层信道可靠。类似于依赖TCP的上游。
 
-##### <a name="41">rdt2.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="46">rdt2.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 `rdt2.0`：底层信道模型是分组中比特可能受损的模型。
 
@@ -693,7 +851,7 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 基于口述报文的重传机制的可靠数据传输协议被称为**自重传请求协议**(Automatic Repeat reQuest, ARQ)\
 **停等协议**(stop-and-wait): 发送方等待ACK或NCK的状态时，不能继续发送新数据，因为不知道ACK或NCK是答复哪个分组的响应。
 
-##### <a name="42">rdt2.1</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="47">rdt2.1</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 问题：`rtd2.0`问题ACK或NCK答复分组受损？还可能是发送的分组数据受损？\
 解决方案：
@@ -706,13 +864,13 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 
 `rtd2.1` 实现： 引入序号字段。分组序号使用0和1，循环的表示分组，因为停等协议的存在，仅用两个编码就能表示新分组与旧分组重传。
 
-##### <a name="43">rdt2.2</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="48">rdt2.2</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 `rdt2.2`简化发送方与接收方的交互，仅使用ACK。该协议是在有比特差错的情况下，实现一个无NAK的可靠数据传输协议。
 
 实现：引入冗余ACK。如果发送方收到一个冗余ACK，表示接收方没有正确收到 **被确认两次的分组** 后面的分组。
 
-##### <a name="44">rdt3.0 经具有比特差错的丢包信道的可靠数据传输</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="49">rdt3.0 经具有比特差错的丢包信道的可靠数据传输</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 问题：发送方不知道需要等待多长时间才能确认数据丢失，若ACK数据若传输过程丢包，那么传输将停滞。\
 解决方案：
@@ -723,7 +881,7 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 `rtd3.0`的传输过程：a-无丢包操作、b-分组丢失、c-丢失ACK、d-过早超时
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/rtd3.png)
 
-#### <a name="45">流水线可靠数据传输协议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="50">流水线可靠数据传输协议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 `rtd3.0`因为停等协议的存在，导致了严重的性能问题。对于整个传输的信道的**利用率**过低。
 
@@ -738,7 +896,7 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/piplineCompare.png)
 
-##### <a name="46">回退N步(Go-Back-N,GBN)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="51">回退N步(Go-Back-N,GBN)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 回退N步协议：允许发送方**发送多个分组而不需等待确认**，但是受限于流水线中未确认的分组数不能**超过某个最大允许数N**。
 > N常被称为**窗口长度**，GBN协议也常被称为**滑动窗口协议**(sliding-window protocol)
@@ -766,7 +924,7 @@ GBN协议中，接收方丢弃所有失序分组。\
 
 GBN协议潜在地允许发送发用多个分组"填充流水线"，因此避免了停等协议中所提到的信道利用率问题。但是GBN本身也存在着性能问题，尤其是当窗口长度和带宽时延积都很大时。单个分组的差错就能引起GBN重传大量分组，许多分组根本没有必要重传。
 
-##### <a name="47">选择重传(Select Repeat, SR)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="52">选择重传(Select Repeat, SR)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 选择重传(SR)协议通过让发送方**仅重传**那些怀疑在接收端出错(即丢失或受损)的分组而避免了不必要的重传。接收方需要对于正确接收的分组逐个确认。同时再次用窗口长度N来限制流水线中未完成、未被确认的分组数。
 
@@ -802,7 +960,7 @@ SR接收方将确认一个正确接收的分组而不管其是否按序。失序
 当发送方对0分组进行重传时，接收方会进行误确认的情况。\
 因此对于SR协议而言，窗口长度必须小于或等于序号空间大小的一半。
 
-#### <a name="48">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="53">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 构建可靠数据传输信息依赖于如下机制：
 
@@ -815,7 +973,7 @@ SR接收方将确认一个正确接收的分组而不管其是否按序。失序
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/summaryOfReliable.png)
 
-### <a name="49">面向连接的TCP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="54">面向连接的TCP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 与其他运输层协议类似，TCP的"连接"为一条逻辑连接，其共同状态仅保留在两个通信端系统的TCP程序中。
 > TCP协议只是在端系统中运行，而不在中间的网络元素(路由器和链路层交换机)中运行，所以中间的网络元素不会维持TCP连接状态。**事实上，中间路由器对TCP连接完全视而不见，它们看到的是数据报，而不是连接**。
@@ -824,7 +982,7 @@ SR接收方将确认一个正确接收的分组而不管其是否按序。失序
 TCP提供的是**全双工服务**(full-duplex service)，建立连接的不同主机进程，可以互相发送消息。\
 TCP连接是**点对点**的(point-to-point)，即单个发送方与单个接收方直接的连接。
 
-#### <a name="50">TCP报文段结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="55">TCP报文段结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 TCP的**应用层数据**受限于**最大报文段长度**(Maximum Segment Size,MSS)\
 MSS通常根据最初确定的由本地发送主机发送的最大链路层长度(最大传输单元 Maximum Transmission Unit, MTU)设置
@@ -864,7 +1022,7 @@ TCP把数据看成一个无结构的、有序的数据流。序号是建立在�
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/seqACK.png)
 
-#### <a name="51">往返时间RTT的估计与超时</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="56">往返时间RTT的估计与超时</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 样本RTT(Sample RTT)的估计是通过从某个报文段被发出(即交给IP)到对该报文段的确认被收到之间的时间和。
 > TCP决不为已被重传的报文段计算Sample RTT，主要防止重传报文异常的Sample RTT的影响整体的往返时间的估计。
@@ -880,13 +1038,13 @@ TCP把数据看成一个无结构的、有序的数据流。序号是建立在�
 `TimeoutInterval = EstimatedRTT + 4*DevRTT`
 > 推荐的初始TimeoutInterval的值为1秒，当出现超时后，**TimeoutInterval值将加倍**，以避免确认的后继报文段过早的出现超时。而只要接收到报文段并使用公式更新EstimatedRTT，
 
-#### <a name="52">TCP实践原则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="57">TCP实践原则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - TCP使用肯定确认ACK与定时器来提供可靠数据传输。
 - TCP无法明确的分辨一个报文段或其ACK是丢失了、受损了还是时延过长了，在发送方，TCP响应是相同的，使用重传机制处理有疑问报文。
 - TCP使用流水线，是的发送方在任意时刻都可以有多个已发出但未被确认的报文段存在。
 
-#### <a name="53">TCP的可靠数据传输服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="58">TCP的可靠数据传输服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 TCP在IP(不可靠的尽力而为服务)服务之上构建了一种**可靠传输数据服务**(reliable data transfer service)
 
@@ -930,7 +1088,7 @@ TCP差错恢复机制：GBN协议与SR协议的混合体
 2. 选择确认：TCP接收方有选择地确认失序报文段，而不是累积地确认最后一个失序报文段。
 3. TCP超时重传是**传输未确认的最小序号的数据**。
 
-#### <a name="54">TCP流量控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="59">TCP流量控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 流量控制服务(flow-control service)：为消除发送方使接收方缓存溢出的可能性，而提供的一个速度匹配服务。
 
@@ -956,7 +1114,7 @@ TCP通过若昂发送方维护一个称为接收窗口(receive window)的变量�
 `LastByteSend - LastByteAcked <= rwnd`
 > 窗口大小使用为0的通信：当接收主机的接收窗口为0是，发送主机继续发送只有一个字节数据的报文段。接收到接收到后将开始进行缓存情况，并确认报文包含一个非0的rwnd值。
 
-#### <a name="55">TCP的连接管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="60">TCP的连接管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 TCP client状态转换序列
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/tcpClientState.png)
@@ -964,7 +1122,7 @@ TCP client状态转换序列
 TCP server状态转换序列
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/tcpServerState.png)
 
-##### <a name="56">TCP三次握手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="61">TCP三次握手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 第一步：client发送server一个特殊的TCP报文段，即TCP SYN报文。
     - 报文段不包含应用数据
@@ -984,7 +1142,7 @@ TCP server状态转换序列
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/tcpThreeWayHandshake.png)
 
-##### <a name="57">TCP四次挥手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="62">TCP四次挥手</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - client发送一个FIN报文段，将报文段首部的FIN设置为1
 - server接收到返回FINACK报文段，报文段首部的FIN设置为1
@@ -993,7 +1151,7 @@ TCP server状态转换序列
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/tcpCloseConnect.png)
 
-##### <a name="58">TCP SYN洪泛攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="63">TCP SYN洪泛攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 SYN洪泛攻击：攻击者发送大量的TCP SYN报文，而不完成第三次握手，服务器不断为这些半开连接分配资源，导致服务器的连接资源消耗殆尽
 
@@ -1004,7 +1162,7 @@ SYN洪泛攻击：攻击者发送大量的TCP SYN报文，而不完成第三次�
 
 > 好处：如果客户没返回ACK报文，则初始SYN并没有对服务器造成危害，因为服务器没有分配任何资源。
 
-##### <a name="59">TCP连接的三种情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="64">TCP连接的三种情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 当client对server发送连接的时候，可能产生如下三种情况：
 
@@ -1012,7 +1170,7 @@ SYN洪泛攻击：攻击者发送大量的TCP SYN报文，而不完成第三次�
 2. 从目标主机收到RST报文段。意味着目标主机无应用程序运行在相应的端口上。
 3. 源主机没有收到任何返回。说明服务器的防火墙拦截了SYN报文。
 
-#### <a name="60">TCP拥塞控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="65">TCP拥塞控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 拥塞控制(congestion control): TCP的发送方因为IP网络的拥塞而被遏制。
 
@@ -1061,14 +1219,14 @@ TCP拥塞控制算法：慢启动、拥塞避免、快速恢复。
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/tcpCongestionControl.png)
 
 
-#### <a name="61">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="66">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **TCP分岔**\
 背景：如果端系统远离数据中心，则RTT大，且由于慢启动潜在的导致低下的响应事件性能。\
 解决措施：部署邻近用户的前端服务器。在该前端服务器利用TCP分岔来分裂TCP连接。客户向临近前端连接一条TCP连接，并且前端**以非常大的窗口与数据中心**进行TCP连接。
 
 
 
-## <a name="62">网络层</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="67">网络层</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 网络层的协议：
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/networkLayer.png)
 
@@ -1089,7 +1247,7 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 因特网的网络层提供了单一的服务模型，称为尽力而为的服务(best-effort service)
 
 
-### <a name="63">路由器组成</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="68">路由器组成</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 路由器4个组件：
 - 输入端口
 - 交换机构
@@ -1100,12 +1258,12 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 
 路由器使用分组目标路径的前缀与转发表进行**最长前缀匹配**，确定输出端口方向。
 
-#### <a name="64">交换技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="69">交换技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 经内存交换：转发速率被内存的带宽限制、经过bus两次(输入内存、处理完成输出内存)、一次只能转发一个分组
 - 经总线交换：交换速率受限于总线带宽
 - 经互联网络交换：由2N条总线组成的互联网络，N个输入及N个输出、非阻塞的实现
 
-#### <a name="65">输入输出端口处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="70">输入输出端口处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 输入端口为何存在队列？输出端口为何存在队列？
 > 解决输入输出速率不一致的情况，引入队列协调。\
 > **交换速率**与输入端口**接收分组速率不一致**的情况\
@@ -1121,7 +1279,7 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 - 循环排队规则：循环遍历队列提供服务
 - 加权公平排队(Weighted Fair Queuing, WFQ)：每个队列有对应的权重，概率被服务的概率
 
-### <a name="66">IPv4</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="71">IPv4</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/ipv4Format.png)
 
 - 版本号(version): IP协议的版本
@@ -1136,11 +1294,11 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 - 选项：拓展字段
 - 数据(有效载荷，payload data)
 
-#### <a name="67">IPv4数据报分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="72">IPv4数据报分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一个链路层帧能承载的最大数据量为**最大传输单元**(Maximum Transmission Unit, MTU)\
 当传输的数据报大于链路层帧的MTU，IP数据报就要进行分片，到目的地的传输层重新进行组装。
 
-#### <a name="68">IPv4编址</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="73">IPv4编址</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 主机与物理链路之间的边界叫做**接口**。一个IP地址与一个接口相关联，而不是与包括该接口的主机或者路由器相关联。
 
 **子网**(subnetwork)：要判断一个子网，将每一个接口从主机或者路由器上分开，构成一个个网络孤岛。交互无需经过路由器。\
@@ -1165,7 +1323,7 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 
 **路由聚合**：使用**单个网络前缀通告多个网络的能力**，相当于一个路由代理了另一ISP的IP端进行通告。
 
-#### <a name="69">DHCP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="74">DHCP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一个组织的子网内，如何获得一块IP地址？
 1. 手工配置
 2. DHCP动态主机配置协议
@@ -1185,7 +1343,7 @@ DHCP客户-服务器交互
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/dhcp.png)
 
 
-#### <a name="70">网络地址转换</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="75">网络地址转换</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 网络地址转换(Network Address Translation, NAT) 所有离开本地网络的数据报具有一个 相同的源地址NAT 如`IP address:138.76.29.7`, 但是具有不同的端口号
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/natProcess.png)
@@ -1201,7 +1359,7 @@ DHCP客户-服务器交互
 - 地址短缺问题可以被IPv6 解决
 - NAT穿越： 如果客户端需要连接在NAT后面的服务器，如何操作
 
-### <a name="71">IPv6</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="76">IPv6</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/ipv6Format.png)
 特点：
@@ -1228,9 +1386,9 @@ DHCP客户-服务器交互
 IPv4到IPv6的迁移：使用隧道技术，在IPv4路由器之间传输的IPv4数据报中携带IPv6数据报
 
 
-### <a name="72">通用转发与SDN</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="77">通用转发与SDN</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="73">通用传统转发</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="78">通用传统转发</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 网络设备控制平面的实现方式特点
 
 互联网网络设备：传统方式都是通过分布式，每台 设备的方法来实现数据平面和控制平面功能
@@ -1257,7 +1415,7 @@ IPv4到IPv6的迁移：使用隧道技术，在IPv4路由器之间传输的IPv4�
 - 远程：数据平面和控制平面的分离
 
 
-#### <a name="74">SDN</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="79">SDN</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 SDN：逻辑上集中的控制平面一个不同的（通常是远程）控制器和CA(Certification Authority)交互，控制器决定分组转发的逻辑（可编程），CA所在设备执行逻辑。
 
 SDN的主要思路
@@ -1280,7 +1438,7 @@ SDN控制平面和数据平面分离的优势:
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/sdn.png)
 
 
-#### <a name="75">流表OpenFlow</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="80">流表OpenFlow</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 路由器中的流表定义了路由器的**匹配+行动规则**（流表由控制器计算并下发）
 
 流: 由分组（帧）头部字段所定义\
@@ -1301,12 +1459,12 @@ match+action: 统一化各种网络设备提供的功能
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/openFlowExample.png)
 
-### <a name="76">SDN 数据平面与控制平面交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="81">SDN 数据平面与控制平面交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/sdn-example.png)
 
 
-### <a name="77">控制平面路由选择算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="82">控制平面路由选择算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 路由:按照某种指标(传输延迟,所经过的站点数目等)找到一条从源节点到目标节点的较好路径 
 - 较好路径: 按照某种指标较小的路径 
@@ -1350,7 +1508,7 @@ match+action: 统一化各种网络设备提供的功能
 4. 动态：路由变化快，周期性更新或者根据链路代价变化而变化。**自适应路由选择**(adaptive algorithm)：能适应网络拓扑和通信量的变化
 
 
-#### <a name="78">链路状态路由选择LS(Link state)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="83">链路状态路由选择LS(Link state)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 配置LS路由选择算法的路由工作过程：各点通过各种渠道获得整个网络拓扑, 网络中所有链路代价等信息(这部分和算法没关系，属于协议和实现)，使用LS路由算法,计算本站点到其它站点的最优路径(汇集树),得到路由表。
 
 LS路由的基本工作过程
@@ -1370,7 +1528,7 @@ LS路由的基本工作过程
 > 链路代价=链路承载的流量:
 
 
-#### <a name="79">距离矢量路由选择DV(distance vector routing)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="84">距离矢量路由选择DV(distance vector routing)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 距离矢量路由选择的基本思想
 - 各路由器维护一张路由表
 - 各路由器与相邻路由器交换路由表
@@ -1404,7 +1562,7 @@ DV的特点: 好消息传的快，坏消息传的慢
 > 坏消息传的慢的一种解决算法：水平分裂(split horizon)算法，但是在存在环路的问题下仍然会失败。
 
 
-#### <a name="80">LS 和 DV 算法的比较</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="85">LS 和 DV 算法的比较</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 消息复杂度（DV胜出）
 - LS: 有 n 节点, E 条链路,发送报文O(nE)个。局部的路由信息；全局传播。
 - DV: 只和邻居交换信息。全局的路由信息，局部传播
@@ -1422,9 +1580,9 @@ DV:
 - DV 节点可能通告对全网所有节点的不正确路径代价 —— 距离矢量 
 - 每一个节点的路由表可能被其它节点使用 —— 错误可以扩散到全网
 
-### <a name="81">因特网中自治系统内部的路由选择(路由选择协议)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="86">因特网中自治系统内部的路由选择(路由选择协议)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="82">RIP(Routing Information Protocol)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="87">RIP(Routing Information Protocol)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 RIP 基于Distance vector算法，距离矢量为每条链路`cost=1，# of hops (max = 15 hops)`跳数
 - 通告：DV每隔30秒和邻居交换DV
@@ -1432,7 +1590,7 @@ RIP 基于Distance vector算法，距离矢量为每条链路`cost=1，# of hops
 > 通告报文通过UDP报文传送，周期性重复
 
 
-#### <a name="83">OSPF (Open Shortest Path First)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="88">OSPF (Open Shortest Path First)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 使用LS算法 LS 分组在网络中（一个AS内部）分发
 2. 全局网络拓扑、代价在每一个节点中都保持
 3. 路由计算采用Dijkstra算法
@@ -1447,10 +1605,10 @@ RIP 基于Distance vector算法，距离矢量为每条链路`cost=1，# of hops
 - 边界路由器: 连接其它的AS’s.
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/networkbook/ospfLevel.png)
 
-#### <a name="84">层次路由</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="89">层次路由</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 
-#### <a name="85">互联网AS间路由：BGP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="90">互联网AS间路由：BGP</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 BGP (Border Gateway Protocol): 自治区域间路由协议“事实上的”标准，“将互联网各个AS粘在一起的胶水”
 
 BGP 提供给每个AS以以下方法：
@@ -1458,4 +1616,4 @@ BGP 提供给每个AS以以下方法：
 - iBGP: 将获得的子网可达信息传遍到AS内部的所有路由器
 - 根据子网可达信息和策略来决定到达子网的“好”路径
 
-## <a name="86">其他概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="91">其他概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
