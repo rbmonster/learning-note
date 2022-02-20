@@ -945,7 +945,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 
 
 树层去重
-1. 数据无序
+1. **数据无序**
 ```
 public void backTracking() {
     
@@ -962,7 +962,7 @@ public void backTracking() {
 }
 
 ```
-2. 数据有序
+2. **数据有序**
 ```
 public void backTracking() {
     
@@ -975,41 +975,8 @@ public void backTracking() {
         backTracking();
     }
 }
-
 ```
-
-### 组合问题
-- [组合](https://leetcode-cn.com/problems/combinations/submissions/)
-- [组合总和](https://leetcode-cn.com/problems/combination-sum/)
-- [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
-- [组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
-- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
-
-- [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)
-
-### 切割问题
-- [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
-- [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
-- [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
-- [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
-
-
-### 排列问题
-- [全排列](https://leetcode-cn.com/problems/permutations/)
-- [全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
-
-
-### 子集问题
-- [子集（review）](https://leetcode-cn.com/problems/subsets/)
-- [子集 II（review）](https://leetcode-cn.com/problems/subsets-ii/)
-
-
-- [括号生成（review）](https://leetcode-cn.com/problems/generate-parentheses/)
-    - > 动态规划 + dfs + 回溯 或者 dfs + 回溯
-- [解数独](https://leetcode-cn.com/problems/sudoku-solver/)
-- [单词搜索](https://leetcode-cn.com/problems/word-search/)
-- [二叉树路径](https://leetcode-cn.com/problems/binary-tree-paths/)
-- [重新安排行程](https://leetcode-cn.com/problems/reconstruct-itinerary/)
+3. **排列问题中的树层去重**
 
 ```java   
 public class Soluction {
@@ -1021,7 +988,6 @@ public class Soluction {
       return res;
     }
   
-  
     public void dfs(int[]nums, List<Integer>path,boolean[] used, List<List<Integer>> res ){
       if(path.size() == nums.length) {
           res.add(new ArrayList<>(path));
@@ -1029,6 +995,8 @@ public class Soluction {
       }
 
       for (int i = 0; i < nums.length; i++) {
+           // nums[i] == nums[i-1] && used[i-1] == false 
+           // 因为排列是从0～n进行的，说明上次已经使用nums[i]进行过排列，为了防重复直接skip
           if (used[i]|| i>0&& nums[i] == nums[i-1] && !used[i-1]) continue;
           path.add(nums[i]);
           used[i] = true;
@@ -1039,6 +1007,41 @@ public class Soluction {
     }
 }
 ```
+
+### 组合问题
+- [组合](https://leetcode-cn.com/problems/combinations/submissions/)
+- [组合总和](https://leetcode-cn.com/problems/combination-sum/)
+- [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/)
+- [组合总和 III](https://leetcode-cn.com/problems/combination-sum-iii/)
+
+### 切割问题
+- [电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+- [字符串的排列]( https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+- [复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+- [分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
+
+### 排列问题
+- [全排列](https://leetcode-cn.com/problems/permutations/)
+- [全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
+
+### 子集问题
+- [子集](https://leetcode-cn.com/problems/subsets/): review
+- [子集 II](https://leetcode-cn.com/problems/subsets-ii/): review
+- [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)
+
+
+- [括号生成（review）](https://leetcode-cn.com/problems/generate-parentheses/) - > 动态规划 + dfs + 回溯 或者 dfs + 回溯
+- [解数独](https://leetcode-cn.com/problems/sudoku-solver/)
+- [单词搜索](https://leetcode-cn.com/problems/word-search/)
+- [二叉树路径](https://leetcode-cn.com/problems/binary-tree-paths/)
+- [重新安排行程](https://leetcode-cn.com/problems/reconstruct-itinerary/)
+
+### 去重问题横向对比
+- [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/): 排序后树层去重`if(i>index  && candidates[i]== candidates[i-1])`
+- [全排列 II](https://leetcode-cn.com/problems/permutations-ii/): 排序后树层去重```if(i>0 && nums[i] == nums[i-1] && used[i-1] == false) ```
+- [子集 II](https://leetcode-cn.com/problems/subsets-ii/): 树层去重`if (i != index && nums[i] == nums[i-1])`
+- [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/): 无序元素树层去重`if(used.contains(nums[i]))`
+
 
 ## 贪心
 贪⼼的本质是选择每⼀阶段的局部最优，从⽽达到全局最优。
@@ -1560,8 +1563,6 @@ class Solution {
 
 
 ## 位运算与运算转换
-
-
 [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
 
 

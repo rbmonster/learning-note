@@ -12,8 +12,8 @@ storage server：存储服务器（又称：存储节点或数据服务器），
   
   
   
-如何保证数据不丢失：
-- 在于Trunk-Server上，Trunk-Server实现空间的分配，每一次的空间分配都记录到Trunk-Binlog文件之中，并且定期（每秒）将该文件的更新同步给组内的其他Storage服务器
+如何保证数据不丢失：\
+在于Trunk-Server上，Trunk-Server实现空间的分配，每一次的空间分配都记录到Trunk-Binlog文件之中，并且定期（每秒）将该文件的更新同步给组内的其他Storage服务器
 
 内部机制如下：
 1. 选择tracker server当集群中不止一个tracker server时，由于tracker之间是完全对等的关系，客户端在upload文件时可以任意选择一个trakcer。 选择存储的group 当tracker接收到upload file的请求时，会为该文件分配一个可以存储该文件的group，支持如下选择group的规则：

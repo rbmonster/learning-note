@@ -28,7 +28,7 @@ public class TestController {
     }
 
 
-    @GetMapping("/stream-reponse/{testId}")
+    @GetMapping("/stream-response/{testId}")
     public void responseTest(@PathVariable("testId") String testId, HttpServletResponse response) throws IOException {
         try(ServletOutputStream outputStream = response.getOutputStream()) {
             byte[] bytes = Files.readAllBytes(Paths.get("/Users/sanwu/private/es-demo/src/main/resources/2021062503821.pdf"));
@@ -39,7 +39,7 @@ public class TestController {
         }
     }
 
-    @GetMapping("/stream-reponse-name/{testId}")
+    @GetMapping("/stream-response-name/{testId}")
     public void responseTest11(@PathVariable("testId") String testId, HttpServletResponse response) throws IOException {
         try(ServletOutputStream outputStream = response.getOutputStream()) {
             byte[] bytes = Files.readAllBytes(Paths.get("/Users/sanwu/private/es-demo/src/main/resources/2021062503821.pdf"));

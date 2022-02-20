@@ -27,7 +27,26 @@ MVC是一种框架模式。经典MVC模式中，M是指业务模型，V是指用
 
 使用MVC的目的是将M和V的实现代码分离，从而使同一个程序可以使用不同的表现形式。其中，View的定义比较清晰，就是用户界面。
 
+## BFF(Backend for Frontend)
+BFF，即 Backend For Frontend（服务于前端的后端），也就是服务器设计 API 时会考虑前端的使用，并在服务端直接进行业务逻辑的处理，又称为用户体验适配器。BFF 只是一种逻辑分层，而非一种技术
 
+BFF 解决了什么问题？\
+前端页面时常存在，某个页面需要向 backend A、backend B 以及 backend C...... 发送请求，不同服务的返回值用于渲染页面中不同的 component，即一个页面存在很多请求的场景。
+有了 BFF 这一层时，我们就不需要考虑系统后端的迁移。后端发生的变化都可以在 BFF 层做一些响应的修改。
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/bff.png)
+
+- 多端应用: 为不同的设备提供不同的 API，虽然它们可能是实现相同的功能，但因为不同设备的特殊性，它们对服务端的 API 访问也各有其特点，需要区别处理。
+- 服务聚合：BFF 的出现为前端应用提供了一个对业务服务调用的聚合点，它屏蔽了复杂的服务调用链，让前端可以聚焦在所需要的数据上，而不用关注底层提供这些数据的服务。
+- 认证、授权、请求记录等通用功能可以在BFF层实现，使用依赖包共享的方式实现。而引入额外的服务层可能导致的请求延迟的情况。
+
+缺点：
+- 在基础服务上多加了一层转发，带来了响应时间延迟
+- 带来的代码重复和工作量增加
+
+参考资料：
+- [BFF —— Backend For Frontend](https://www.jianshu.com/p/eb1875c62ad3)
+- [Pattern: Backends For Frontends](https://samnewman.io/patterns/architectural/bff/)
 ## 系统架构
 
 ### 单体
@@ -49,14 +68,12 @@ MVC是一种框架模式。经典MVC模式中，M是指业务模型，V是指用
 
 
 ##### 分层架构
-
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/structure.png)
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/structureIntroduce.png)
 
 - 应用层（接入层）：通常用来接收前端（展现层）的请求，转发给领域层获取请求结果，再组装结果返回前端。
 - 基础设施层：作为其他层支撑的存在，最通俗的例子就是searchServ，正常的搜索服务都会集成ElasticSearch或者其他搜索功能，searchSearch封装了与基础服务集成的及细节，只暴露了领域需要的接口。
-
 
 ##### 服务
 当一个操作凸现为一个领域中的重要概念时，就需要为它建立一个服务了。以下是服务的 3 个特征：

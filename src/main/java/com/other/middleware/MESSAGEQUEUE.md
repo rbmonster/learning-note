@@ -1,7 +1,9 @@
 # 消息队列
 
 参考资料：
-[消息队列背后的设计思想](https://mp.weixin.qq.com/s/k8sA6XPrp80JiNbuwKaVfgc)
+- [消息队列背后的设计思想](https://mp.weixin.qq.com/s/k8sA6XPrp80JiNbuwKaVfgc)
+- [Kafka 精妙的高性能设计（上篇）](https://mp.weixin.qq.com/s/kImrkVLE4dtpVnb-Yp479Q)
+- [Kafka 精妙的高性能设计（下篇）](https://mp.weixin.qq.com/s/knn6gPUkG41ByJAxilDyoQ)
 
 为什么使用消息队列？
 - 异步、解耦、削峰、统一管理所有的消息
@@ -81,11 +83,11 @@
     3. 如果未指定分区但是指定了key，那么就会使用key进行hash算法计算对应的分区。要求key要均匀，否则会出现Kafka分区间数据不均衡。
     4. 若key和分区均未指定，那么将会使用轮询发送的方式。
 ```
-KafkaTemplate.send​(ProducerRecord<K,​V> record)
+KafkaTemplate.send(ProducerRecord<K,V> record)
 ```
 
 ##### 处理措施
-- 临时处理措施：同时增加kafka的服务器与消费者，增加partition，同时增加消费能力。
+临时处理措施：同时增加kafka的服务器与消费者，**增加partition，同时增加消费能力**。
 
 上述典型原因处理方法：
 1. 实时/消费任务挂掉
@@ -145,12 +147,9 @@ KafkaTemplate.send​(ProducerRecord<K,​V> record)
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/push-pull.png)
 
-
-
 ### 消息队列模型
 消息队列有两种模型：队列模型和发布/订阅模型。
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/queue-core.png)
-
 
 #### 队列模型
 消费者之间是竞争关系，即每条消息只能被一个消费者消费。
@@ -168,22 +167,19 @@ KafkaTemplate.send​(ProducerRecord<K,​V> record)
 
 **RabbitMQ采用队列模型，RocketMQ和Kafka 采用发布/订阅模型**
 
-
-
 # Kafka
 ## 基本概念
-生产者Producer：发布消息的对象称之为话题生产者(Kafka topic producer)
 
-消费者Consumer：订阅消息并处理发布的消息的种子的对象称之为话题消费者(consumers)
-> 消费者可以通过设置消息位移（offset）来控制自己想要获取的数据，比如可以从头读取，最新数据读取，重读读取等功能
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-structure.png)
 
-话题Topic(具体的队列)： Kafka将消息种子(Feed)分门别类， 每一类的消息称之为话题(Topic).
-
-代理Broker：已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理(Broker). 
-
-Partition(分区)：为了提高一个队列(topic)的吞吐量，Kafka会把topic进行分区(Partition)。Topic由一个或多个partition（分区）组成，生产者的消息可以指定或者由系统根据算法分配到指定分区。
-> 其中每个partition中的消息是有序的，但相互之间的顺序就不能保证了，若Topic有多个partition，生产者的消息可以指定或者由系统根据算法分配到指定分区，若你需要所有消息都是有序的，那么你最好只用一个分区。
-
+1. 生产者`Producer`：生产者，负责创建消息，然后投递到 Kafka 集群中，投递时需要指定消息所属的 Topic，同时确定好发往哪个 Partition。
+2. 消费者`Consumer`：消费者，会根据它所订阅的 Topic 以及所属的消费组，决定从哪些 Partition 中拉取消息。
+    > 消费者可以通过设置消息位移（offset）来控制自己想要获取的数据，比如可以从头读取，最新数据读取，重读读取等功能
+3. 话题`Topic`(具体的队列)： Kafka将消息种子(Feed)分门别类， 每一类的消息称之为话题(Topic).
+4. 代理`Broker`：已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理(Broker). 
+5. 分区`Partition`：为了提高一个队列(topic)的吞吐量，Kafka会把topic进行分区(Partition)。Topic由一个或多个partition（分区）组成，生产者的消息可以指定或者由系统根据算法分配到指定分区。
+    > 其中每个partition中的消息是有序的，但相互之间的顺序就不能保证了，若Topic有多个partition，生产者的消息可以指定或者由系统根据算法分配到指定分区，若你需要所有消息都是有序的，那么你最好只用一个分区。
+6. `Zookeeper`：负责集群的元数据管理等功能，比如集群中有哪些 broker 节点以及 Topic，每个 Topic 又有哪些 Partition 等。
 
 消费组Consumers：一群消费者的集合，向Topic订阅消费消息的单位是Consumers。
   - 假如所有消费者都在**同一个消费者组**中，那么它们将协同消费订阅Topic的部分消息（根据分区与消费者的数量分配），保存负载平衡；
@@ -195,6 +191,39 @@ Partition(分区)：为了提高一个队列(topic)的吞吐量，Kafka会把top
   - 消费者读消息的系统处理流程：正常的读磁盘数据是需要将内核态数据拷贝到用户态的，而Kafka 通过调用`sendfile()`直接从内核空间（DMA的）到内核空间（Socket的），少做了一步拷贝的操作。
 
 offset(消费进度):表示消费者的消费进度，offset在broker以内部topic(__consumer_offsets)的方式来保存起来。
+
+## Kafka 高性能设计技术
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-advantage.png)
+
+### Producer发送端
+1. 批量发送消息。Kafka 采用了批量发送消息的方式，通过将多条消息按照分区进行分组，然后每次发送一个消息集合，从而大大减少了网络传输的`overhead`。
+2. 消息压缩。消息压缩的目的是为了进一步减少网络传输带宽。
+  > 其实压缩消息不仅仅减少了网络 IO，它还大大降低了磁盘 IO。因为批量消息在持久化到 Broker 中的磁盘时，仍然保持的是压缩状态，最终是在 Consumer 端做了解压缩操作。
+3. 高效序列化。支持自定义类型，只需要提供相应的序列化和反序列化器。用户可以根据实际情况选用快速且紧凑的序列化方式（比如 ProtoBuf、Avro）来减少实际的网络传输量以及磁盘存储量，进一步提高吞吐量。
+4. 内存池复用。
+    > Producer 一上来就会占用一个固定大小的内存块，比如 64MB，然后将 64 MB 划分成 M 个小内存块（比如一个小内存块大小是 16KB）。当需要创建一个新的 Batch 时，直接从内存池中取出一个 16 KB 的内存块即可，然后往里面不断写入消息，但最大写入量就是 16 KB，接着将 Batch 发送给 Broker ，此时该内存块就可以还回到缓冲池中继续复用了，根本不涉及垃圾回收。
+   ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-producer.png)
+
+### Broker存储消息
+1. IO多路复用: kafka采用`Reactor`网络通信模型。
+    > `Acceptor`线程，负责监听新的连接。`Processor`线程都有自己的`selector`，负责从`socket`中读写数据。`KafkaRequestHandler`业务处理线程，进行业务处理，然后生成`response`，再交由给`Processor`线程。
+      ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-broker-connect.png)
+2. 磁盘顺序写。快速的存储消息。kafka本质上就是一个队列，是先进先出的，而且消息一旦生产了就不可变。这种有序性和不可变性使得Kafka完全可以「**顺序写**」日志文件。
+    > 对于普通的机械磁盘，如果是随机写入，性能确实极差，也就是随便找到文件的某个位置来写数据。但如果是顺序写入，因为可大大节省磁盘寻道和盘片旋转的时间，因此性能提升了 3 个数量级。
+3. `Page Cache`技术。利用了操作系统本身的缓存技术，在读写磁盘日志文件时，其实操作的都是内存，然后由操作系统决定什么时候将`Page Cache`里的数据真正刷入磁盘。
+    > 大部分组件设计时，往往会选择一种主要介质来存储、另一种介质作为辅助使用。而`Page Cache`技术就是来内存来主力提升系统的性能。并且Kafka作为消息队列，消息先是顺序写入，而且立马又会被消费者读取到。
+4. 分区分段结构。当面对海量消息时，单机的存储容量和读写性能有限，对数据进行分区存储，可以更好的利用不同机器的读写能力，应对海量数据的存储。
+    > kafka通过水平拆分方案，对数据进行拆分，拆分后的数据子集叫做 Partition（分区），各个分区的数据合集即全量数据。每个`Partition`又被分成了多个`Segment`，引入`Segment`可以防止`Partition`过大。同时做历史消息删除时，常见的操作时需要将文件前面的内容删除，这有悖顺序写的设计。而`Segment`的引入，只需将旧的`Segment`文件删除即可，保证了每个`Segment`的顺序写。
+
+### Consumer消费端
+1. 稀疏索引。kafka查询的场景主要是能按照`offset`或者`timestamp`查到消息即可。Kafka消息的`offset`设计成有序的，将消息划分成若干个`block`，而稀疏索引记录每个`block`第一条消息的`offset`，查找的时候便可以便捷的使用二分查找高效定位。
+    > 稀疏索引不会为**每个搜索关键字创建索引记录**。此处的索引记录包含搜索键和指向磁盘上数据的实际指针。搜索记录时，首先按索引记录进行操作，然后到达数据的实际位置。再进行顺序搜索，直到找到所需的数据为止。\
+      B+树随着记录插入需要频繁的页分裂效率较低，而hash索引的常驻内存，若高达几百万的消息写入，会将内存撑爆。
+2. mmap(memory mapped files)。kafka在**索引文件的读写**中用到了mmap。
+    > mmap是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对映关系。实现这样的映射关系后，进程就可以采用指针的方式读写操作这一段内存，而系统会自动回**写脏页面**到对应的文件磁盘上，即完成了对文件的操作而不必再调用read,write等系统调用函数。\
+    kafka的log文件为什么不使用mmap？mmap 有多少字节可以映射到内存中与地址空间有关，32 位的体系结构只能处理 4GB 甚至更小的文件。Kafka 日志通常足够大，可能一次只能映射部分，因此读取它们将变得非常复杂。然而，索引文件是稀疏的，它们相对较小。将它们映射到内存中可以加快查找过程，这是内存映射文件提供的主要好处。
+3. 零拷贝。零拷贝是指数据直接从磁盘文件复制到网卡设备，而无需经过应用程序，减少了内核和用户模式之间的上下文切换。
+4. 批量拉取。和生产者批量发送消息类似，消息者也是批量拉取消息的，每次拉取一个消息集合，从而大大减少了网络传输的 overhead。
 
 ## 分布式的kafka解决节点宕机或者抖动问题
 
@@ -239,7 +268,7 @@ Kafka 通过给特定 Topic 指定多个 Partition, 而各个 Partition 可以�
 ### 消息 消费进度Offset 记录
 在消费者对指定消息分区进行消息消费的过程中，需要定时地将分区消息的消费进度Offset记录到Zookeeper上，以便在该消费者进行重启或者其他消费者重新接管该消息分区的消息消费后，能够从之前的进度开始继续进行消息消费。Offset在Zookeeper中由一个专门节点进行记录，其节点路径为:
 
-/consumers/[group_id]/offsets/[topic]/[broker_id-partition_id]
+`/consumers/[group_id]/offsets/[topic]/[broker_id-partition_id]`
 
 节点内容就是Offset的值。
 
@@ -254,25 +283,21 @@ Kafka 是一个分布式流式处理平台。具有三个关键功能：
 - 流式处理平台： 在消息发布的时候进行处理，Kafka 提供了一个完整的流式处理类库。
 
 Kafka 主要有两大应用场景：
-- 消息队列 ：建立实时流数据管道，以可靠地在系统或应用程序之间获取数据。
+- 消息队列：建立实时流数据管道，以可靠地在系统或应用程序之间获取数据。
 - 数据处理： 构建实时的流数据处理程序来转换或处理数据流。
 
 和其他消息队列相比,Kafka的优势在哪里？
-- 极致的性能 ：基于 Scala 和 Java 语言开发，设计中大量使用了批量处理和异步的思想，最高可以每秒处理千万级别的消息。
-- 生态系统兼容性无可匹敌 ：Kafka 与周边生态系统的兼容性是最好的没有之一，尤其在大数据和流计算领域。
+- 极致的性能：基于 Scala 和 Java 语言开发，设计中大量使用了批量处理和异步的思想，最高可以每秒处理千万级别的消息。
+- 生态系统兼容性无可匹敌：Kafka 与周边生态系统的兼容性是最好的没有之一，尤其在大数据和流计算领域。
 
 #### kafka优点
-1、Kafka操作的是序列文件I / O（序列文件的特征是按顺序写，按顺序读），为保证顺序，Kafka强制点对点的按顺序传递消息，这意味着，一个consumer在消息流（或分区）中只有一个位置。
-
-2、Kafka不保存消息的状态，即消息是否被“消费”。一般的消息系统需要保存消息的状态，并且还需要以随机访问的形式更新消息的状态。而Kafka 的做法是保存Consumer在Topic分区中的位置offset，在offset之前的消息是已被“消费”的，在offset之后则为未“消费”的，并且offset是可以任意移动的，这样就消除了大部分的随机IO。
-
-3、Kafka支持点对点的批量消息传递。
-
-4、Kafka的消息存储在OS pagecache（页缓存，page cache的大小为一页，通常为4K，在Linux读写文件时，它用于缓存文件的逻辑内容，从而加快对磁盘上映像和数据的访问）。
+1. Kafka操作的是序列文件I/O（序列文件的特征是按顺序写，按顺序读），为保证顺序，Kafka强制点对点的按顺序传递消息，这意味着，一个consumer在消息流（或分区）中只有一个位置。
+2. Kafka不保存消息的状态，即消息是否被“消费”。一般的消息系统需要保存消息的状态，并且还需要以随机访问的形式更新消息的状态。而Kafka 的做法是保存Consumer在Topic分区中的位置offset，在offset之前的消息是已被“消费”的，在offset之后则为未“消费”的，并且offset是可以任意移动的，这样就消除了大部分的随机IO。
+3. Kafka支持点对点的批量消息传递。
+4. Kafka的消息存储在OS page Cache（页缓存，page cache的大小为一页，通常为4K，在Linux读写文件时，它用于缓存文件的逻辑内容，从而加快对磁盘上映像和数据的访问）。
 
 ### kafka 为什么快
-
-- 顺序写磁盘、大量使用内存页 、零拷贝技术的使用、消息压缩及批量发送
+顺序写磁盘、大量使用内存页 、零拷贝技术的使用、消息压缩及批量发送
 
 #### 顺序写磁盘
 在顺序读写的情况下，磁盘的顺序读写速度和内存持平。因为硬盘是机械结构，每次读写都会寻址->写入，其中寻址是一个“机械动作”，它是最耗时的。而且 Linux 对于磁盘的读写优化也比较多，包括 read-ahead 和 write-behind，磁盘缓存等。
@@ -309,14 +334,22 @@ Sendfile 系统调用则提供了一种减少以上多次 Copy，提升文件传
 ### Kafka 如何保证消息队列不丢失
 
 ACK 机制：Kafka 采用的是至少一次（At least once），消息不会丢，但是可能会重复传输。 acks 的默认值即为1，代表我们的消息被leader副本接收之后就算被成功发送。我们可以配置 acks = all ，代表则所有副本都要接收到该消息之后该消息才算真正成功被发送。
-  - 即保证消息不丢失的，设置消息持久化后再返回消息发送成功响应。
-  - ```
-    //设置等待acks返回的机制，有三个值
-    // 0：不等待返回的acks（可能会丢数据，因为发送消息没有了失败重试机制，但是这是最低延迟）
-    // 1：消息发送给kafka分区中的leader后就返回（如果follower没有同步完成leader就宕机了，就会丢数据）
-    // -1（默认）：等待所有follower同步完消息后再发送（绝对不会丢数据）
-    spring.kafka.producer.acks=-1
-    ```
+> 即保证消息不丢失的，设置消息持久化后再返回消息发送成功响应。
+```
+spring.kafka.producer.acks=-1
+```
+
+设置等待acks返回的机制，有三个值
+- `0`：不等待返回的acks（可能会丢数据，因为发送消息没有了失败重试机制，但是这是最低延迟）
+- `1`：消息发送给kafka分区中的leader后就返回（如果follower没有同步完成leader就宕机了，就会丢数据）
+- `-1`（默认）：等待所有follower同步完消息后再发送（绝对不会丢数据）
+
+| ack取值 | ack=0 | ack=1 | ack=-1(all) |
+| --- | --- | --- | --- |
+| 取值含义 |  leader接收到消息后，立即返回给生产者 | leader接收到消息记录完毕后，返回给生产者 | leader接收到消息并同步给ISR中的follower节点。等待follower节点都响应leader后才返回给生产者 |
+| 特点 | 数据异步复制和存储，速度快、吞吐量高、可用性高、可靠性差 | Leader保存有完整数据，速度较快、吞吐量较高、可用性较高、可靠性较差 | Leader和ISR中的follower节点都保存有数据，同步较慢、可靠性较高 |
+| 数据一致性 | 丢失数据风险最高、基本没有一致性 | 丢失数据风险较高 | 丢失数据的风险最低。极端情况(ISR列表为空)时也有丢失数据的风险 |
+
 
 设置分区:为了保证 leader 副本能有 follower 副本能同步消息，我们一般会为 topic 设置 replication.factor >= 3。保证每个 分区(partition) 至少有 3 个副本.
 
