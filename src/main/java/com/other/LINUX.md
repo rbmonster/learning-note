@@ -1235,3 +1235,11 @@ sudo mkdir -p /var/log/mongodb
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/linux/zero-copy1.png)
 如果采用零拷贝技术（底层通过 sendfile 方法实现），流程将变成下面这样。可以看到：只需 3 次拷贝以及 2 次上下文切换，显然性能更高。
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/linux/zero-copy2.png)
+
+
+传统 Read/Write 方式进行网络文件传输，在传输过程中，文件数据实际上是经过了四次 Copy 操作，其具体流程细节如下：
+1. 调用 Read 函数，文件数据被 Copy 到内核缓冲区。
+2. Read 函数返回，文件数据从内核缓冲区 Copy 到用户缓冲区
+3. Write 函数调用，将文件数据从用户缓冲区 Copy 到内核与 Socket 相关的缓冲区。
+4. 数据从 Socket 缓冲区 Copy 到相关协议引擎。
+   `硬盘—>内核 buf—>用户 buf—>Socket 相关缓冲区—>协议引擎`

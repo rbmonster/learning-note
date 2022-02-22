@@ -4,6 +4,7 @@
 - [消息队列背后的设计思想](https://mp.weixin.qq.com/s/k8sA6XPrp80JiNbuwKaVfgc)
 - [Kafka 精妙的高性能设计（上篇）](https://mp.weixin.qq.com/s/kImrkVLE4dtpVnb-Yp479Q)
 - [Kafka 精妙的高性能设计（下篇）](https://mp.weixin.qq.com/s/knn6gPUkG41ByJAxilDyoQ)
+- [Kafka 概述：深入理解架构](https://juejin.cn/post/6844904050064883725#heading-8)
 
 为什么使用消息队列？
 - 异步、解耦、削峰、统一管理所有的消息
@@ -87,7 +88,7 @@ KafkaTemplate.send(ProducerRecord<K,V> record)
 ```
 
 ##### 处理措施
-临时处理措施：同时增加kafka的服务器与消费者，**增加partition，同时增加消费能力**。
+临时处理措施：同时增加kafka的服务器与消费者，**增加Partition，同时增加消费能力**。
 
 上述典型原因处理方法：
 1. 实时/消费任务挂掉
@@ -177,20 +178,11 @@ KafkaTemplate.send(ProducerRecord<K,V> record)
     > 消费者可以通过设置消息位移（offset）来控制自己想要获取的数据，比如可以从头读取，最新数据读取，重读读取等功能
 3. 话题`Topic`(具体的队列)： Kafka将消息种子(Feed)分门别类， 每一类的消息称之为话题(Topic).
 4. 代理`Broker`：已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理(Broker). 
-5. 分区`Partition`：为了提高一个队列(topic)的吞吐量，Kafka会把topic进行分区(Partition)。Topic由一个或多个partition（分区）组成，生产者的消息可以指定或者由系统根据算法分配到指定分区。
-    > 其中每个partition中的消息是有序的，但相互之间的顺序就不能保证了，若Topic有多个partition，生产者的消息可以指定或者由系统根据算法分配到指定分区，若你需要所有消息都是有序的，那么你最好只用一个分区。
+5. 分区`Partition`：为了提高一个队列(topic)的吞吐量，Kafka会把topic进行分区(Partition)。Topic由一个或多个Partition（分区）组成，生产者的消息可以指定或者由系统根据算法分配到指定分区。
+    > 使用分区的原因是：方便在集群中扩展，每个 `Partition` 可以通过调整以适应它所在的机器。第二个原因是多个`Partition`文件比单文件可以提升读写效率。\
+    其中每个Partition中的消息是有序的，但相互之间的顺序就不能保证了，若Topic有多个Partition，生产者的消息可以指定或者由系统根据算法分配到指定分区，若需要所有消息都是有序的，那么最好只用一个分区。
 6. `Zookeeper`：负责集群的元数据管理等功能，比如集群中有哪些 broker 节点以及 Topic，每个 Topic 又有哪些 Partition 等。
-
-消费组Consumers：一群消费者的集合，向Topic订阅消费消息的单位是Consumers。
-  - 假如所有消费者都在**同一个消费者组**中，那么它们将协同消费订阅Topic的部分消息（根据分区与消费者的数量分配），保存负载平衡；
-  - 假如所有消费者都在不同的消费者组中，并且订阅了同个Topic，那么它们将可以消费Topic的**所有消息**；
-  - > 1. 若消费者数小于partition数，且消费者数为一个，那么它就消费所有消息；
-    > 2. 若消费者数小于partition数，假设消费者数为N，partition数为M，那么每个消费者能消费的分区数为M/N或M/N+1；
-    > 3. 若消费者数等于partition数，那么每个消费者都会均等分配到一个分区的消息；
-    > 4. 若消费者数大于partition数，则将会出现部分消费者得不到消息分区，出现空闲的情况；
-  - 消费者读消息的系统处理流程：正常的读磁盘数据是需要将内核态数据拷贝到用户态的，而Kafka 通过调用`sendfile()`直接从内核空间（DMA的）到内核空间（Socket的），少做了一步拷贝的操作。
-
-offset(消费进度):表示消费者的消费进度，offset在broker以内部topic(__consumer_offsets)的方式来保存起来。
+7. 消费组`Consumer Group`：一群消费者的集合，向Topic订阅消费消息的单位是Consumers。
 
 ## Kafka 高性能设计技术
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-advantage.png)
@@ -225,33 +217,103 @@ offset(消费进度):表示消费者的消费进度，offset在broker以内部to
 3. 零拷贝。零拷贝是指数据直接从磁盘文件复制到网卡设备，而无需经过应用程序，减少了内核和用户模式之间的上下文切换。
 4. 批量拉取。和生产者批量发送消息类似，消息者也是批量拉取消息的，每次拉取一个消息集合，从而大大减少了网络传输的 overhead。
 
-## 分布式的kafka解决节点宕机或者抖动问题
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafkaStructure.jpg)
-- 红色块的partition代表的是主分区，紫色的partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
-- 备份分区仅仅用作于备份，不做读写。如果某个Broker挂了，那就会选举出其他Broker的partition来作为主分区，这就实现了高可用。
+## 数据同步
 
-**partition持久化**(解决宕机消息丢失)：Kafka是将partition的数据写在磁盘的(消息日志)，不过Kafka只允许追加写入(顺序访问)，避免缓慢的随机 I/O 操作。写入时先缓存一部分，等到足够多数据量或等待一定的时间再批量写入(flush)。
+### kafka replica
+1. 当某个topic的replication-factor为N且N大于1时，每个Partition都会有N个副本(Replica)。kafka的replica包含leader与follower。
+2. Replica的个数小于等于Broker的个数，也就是说，对于每个Partition而言，每个Broker上最多只会有一个Replica，因此可以使用Broker id 指定Partition的Replica。
+3. 所有Partition的Replica默认情况会均匀分布到所有Broker上。
 
+### ISR
+常见的同步方式：
+- **同步复制**：只有所有的follower把数据拿过去后才commit，一致性好，可用性不高。
+- **异步复制**：只要leader拿到数据立即commit，等follower慢慢去复制，可用性高，立即返回，一致性差一些。
+
+Kafka的ISR(in-sync replica set)机制:
+1. leader会维护一个与其基本保持同步的Replica列表，该列表称为ISR，每个Partition都会有一个ISR，而且是由leader动态维护。
+2. 如果一个flower比一个leader落后太多，或者超过一定时间未发起数据复制请求，则leader将其重ISR中移除。
+3. 当ISR中所有Replica都向Leader发送ACK时，leader才commit。
+> 该时间阈值由replica.lag.time.max.ms参数设定。leader发生故障后，就会从ISR中选举出新的leader。
+
+### ACK机制
+ACK 机制：Kafka 采用的是至少一次`At least once`，消息不会丢，但是可能会重复传输。`acks`的默认值即为1，代表我们的消息被leader副本接收之后就算被成功发送。
+> 可以配置 `acks = all` ，代表则所有副本都要接收到该消息之后该消息才算真正成功被发送。即保证消息不丢失的，设置消息持久化后再返回消息发送成功响应。对应Spring配置`spring.kafka.producer.acks=-1`
+
+设置等待`acks`返回的机制，有三个值
+- `0`：不等待返回的`ack`（可能会丢数据，因为发送消息没有了失败重试机制，但是这是最低延迟）
+- `1`：消息发送给kafka分区中的leader后就返回（如果follower没有同步完成leader就宕机了，就会丢数据）
+- `-1`（默认）：等待所有follower同步完消息后再发送（绝对不会丢数据）
+
+| ack取值 | ack=0(At Most Once) | ack=1 | ack=-1(At Least Once) |
+| --- | --- | --- | --- |
+| 取值含义 |  leader接收到消息后，立即返回给生产者 | leader接收到消息记录完毕后，返回给生产者 | leader接收到消息并同步给ISR中的follower节点。等待follower节点都响应leader后才返回给生产者 |
+| 特点 | 数据异步复制和存储，速度快、吞吐量高、可用性高、可靠性差 | Leader保存有完整数据，速度较快、吞吐量较高、可用性较高、可靠性较差 | Leader和ISR中的follower节点都保存有数据，同步较慢、可靠性较高 |
+| 数据一致性 | 丢失数据风险最高、基本没有一致性 | 丢失数据风险较高 | 丢失数据的风险最低。极端情况(ISR列表为空)时也有丢失数据的风险 |
+
+### 故障转移过程
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-collapse.png)
+> LEO：每个副本最大的 offset。\
+  HW：消费者能见到的最大的 offset，ISR 队列中最小的 LEO。
+
+**Follower 故障**\
+follower 发生故障后会被临时踢出 ISR 集合，待该 follower 恢复后，follower 会 读取本地磁盘记录的上次的 HW，并将 log 文件高于 HW 的部分截取掉，从 HW 开始向 leader 进行同步数据操作。等该 follower 的 LEO 大于等于该 partition 的 HW，即 follower 追上 leader 后，就可以重新加入 ISR 了。
+
+**Leader 故障**\
+leader 发生故障后，会从 ISR 中选出一个新的 leader，之后，为保证多个副本之间的数据一致性，其余的 follower 会先将各自的 log 文件高于 HW 的部分截掉，然后从新的 leader 同步数据。
+> 这只能保证副本之间的数据一致性，并不能保证数据不丢失或者不重复。
+
+### 其他
+kafka 幂等功能：producer 不论向 server 发送多少重复数据，server 端都只会持久化一条。
+> producer的参数中`enable.idompotence`设置为true即可。开启幂等性的producer在初始化时会被分配一个PID，发往同一partition的消息会附带Sequence Number。而broker端会对`<PID,Partition,SeqNumber>`做缓存，当具有相同主键的消息提交时，broker 只会持久化一条。
+但是 PID 重启后就会变化，同时不同的partition也具有不同主键，所以幂等性无法保证跨分区会话的Exactly Once。
 
 ## 消息消费细节
-Kafka 使用拉取得方式消费消息。通过建立`长轮询`的模式来拉取消费。
+Kafka 使用`pull`的方式消费消息。通过建立`长轮询`的模式来拉取消费。
+> pull模式不足之处是，如果Kafka没有数据，消费者可能会陷入循环中，一直返回空数据。解决方案是引入参数`timeout`\
+> 消费者去Broker拉消息，定义了一个超时时间，也就是说消费者去请求消息，如果有的话马上返回消息，如果当前没有数据可供消费，consumer 会等待一段时间之后再返回，这段时长即为`timeout`，然后再次发起拉消息请求。
 
-消费者去 Broker 拉消息，定义了一个超时时间，也就是说消费者去请求消息，如果有的话马上返回消息，如果没有的话消费者等着直到超时，然后再次发起拉消息请求。
-最后调用的就是 Kafka 包装过的 selector，而最终会调用 Java nio 的 select(timeout)。
-
-大流程： 消费者等待消息，当有消息的时候 Broker 会直接返回消息，如果没有消息都会采取延迟处理的策略，并且为了保证消息的及时性，在对应队列或者分区有新消息到来的时候都**会提醒消息来了**，及时返回消息。
+具体流程：消费者等待消息，当有消息的时候`Broker`会直接返回消息，如果没有消息都会采取延迟处理的策略，并且为了保证消息的及时性，在对应队列或者分区有新消息到来的时候都**会提醒消息来了**，及时返回消息。
 
 拉取消费的方式的优势：
 1. 为broker减压，减少broker的工作量。
 2. 消费者端实现各式各样，使用拉取的方式，消费者端更灵活。
+3. 匹配消费者端的消费效率，消费速度由消费端控制。
+
+### 消费者组与Partition
+一个consumer group中有多个consumer，一个topic有多个partition，所以必然会涉及到partition的分配问题，即确定哪个partition由哪个consumer来消费。\
+Kafka有两种分配策略，一个是RoundRobin，一个是Range，默认为range，当消费者组内消费者发生变化时，会触发分区分配策略（方法重新分配）。
+
+消费者组与Partition关系
+1. 假如所有消费者都在**同一个消费者组**中，那么它们将协同消费订阅Topic的部分消息(根据分区与消费者的数量分配)，保存负载均衡；
+2. 假如所有消费者都在**不同的消费者组**中，并且订阅了同个Topic。消费者组中的消费者与`Partition`关系如下：
+   > 1. 若消费者数小于`partiton`数，且消费者数为一个，那么它就消费所有`partiton`消息；
+   > 2. 若消费者数小于`partiton`数，假设消费者数为N，`partiton`数为M，那么每个消费者能消费的分区数为`M/N`或`M/N+1`；
+   > 3. 若消费者数等于`partiton`数，那么每个消费者都会均等分配到一个分区的消息；
+   > 4. 若消费者数大于`partiton`数，则将会出现部分消费者得不到消息分区，出现空闲的情况；
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-partition-consumer.png)
+
+### offset
+`offset`(消费进度):表示消费者的消费进度，offset在broker以内部`topic(__consumer_offsets)`的方式来保存起来。
+
+
+## 分布式的kafka解决节点宕机或者抖动问题
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafkaStructure.jpg)
+- 红色块的Partition代表的是主分区，紫色的Partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
+- 备份分区仅仅用作于备份，不做读写。如果某个Broker挂了，那就会选举出其他Broker的Partition来作为主分区，这就实现了高可用。
+
+**Partition持久化**(解决宕机消息丢失)：Kafka是将Partition的数据写在磁盘的(消息日志)，不过Kafka只允许追加写入(顺序访问)，避免缓慢的随机 I/O 操作。写入时先缓存一部分，等到足够多数据量或等待一定的时间再批量写入(flush)。
+
+
 
 ## 与ZooKeeper的依赖
 - 探测broker和consumer的添加或移除。
 
-- 负责维护所有partition的领导者/从属者关系（主分区和备份分区），如果主分区挂了，需要选举出备份分区作为主分区。
+- 负责维护所有Partition的领导者/从属者关系（主分区和备份分区），如果主分区挂了，需要选举出备份分区作为主分区。
 
-- 维护topic、partition等元配置信息
+- 维护topic、Partition等元配置信息
 
 
 ### Broker 注册 
@@ -303,7 +365,6 @@ Kafka 主要有两大应用场景：
 在顺序读写的情况下，磁盘的顺序读写速度和内存持平。因为硬盘是机械结构，每次读写都会寻址->写入，其中寻址是一个“机械动作”，它是最耗时的。而且 Linux 对于磁盘的读写优化也比较多，包括 read-ahead 和 write-behind，磁盘缓存等。
 
 使用磁盘操作有以下几个好处：
-
 - 磁盘顺序读写速度超过内存随机读写。
 - JVM 的 GC 效率低，内存占用大。使用磁盘可以避免这一问题。
 - 系统冷启动后，磁盘缓存依然可用。
@@ -313,7 +374,7 @@ Kafka 主要有两大应用场景：
 - 「基于 Partition 文件大小」
 
 #### 大量使用内存页
-mmf （Memory Mapped Files）直接利用操作系统的Page来实现文件到物理内存的映射，完成之后对物理内存的操作会直接同步到硬盘。mmf 通过内存映射的方式大大提高了IO速率，省去了用户空间到内核空间的复制。
+mmap （Memory Mapped Files）直接利用操作系统的Page来实现文件到物理内存的映射，完成之后对物理内存的操作会直接同步到硬盘。mmf 通过内存映射的方式大大提高了IO速率，省去了用户空间到内核空间的复制。
 
 #### 零拷贝技术
 传统 Read/Write 方式进行网络文件传输，在传输过程中，文件数据实际上是经过了四次 Copy 操作，其具体流程细节如下：
@@ -340,7 +401,7 @@ spring.kafka.producer.acks=-1
 ```
 
 设置等待acks返回的机制，有三个值
-- `0`：不等待返回的acks（可能会丢数据，因为发送消息没有了失败重试机制，但是这是最低延迟）
+- `0`：不等待返回的`ack`（可能会丢数据，因为发送消息没有了失败重试机制，但是这是最低延迟）
 - `1`：消息发送给kafka分区中的leader后就返回（如果follower没有同步完成leader就宕机了，就会丢数据）
 - `-1`（默认）：等待所有follower同步完消息后再发送（绝对不会丢数据）
 
@@ -351,7 +412,7 @@ spring.kafka.producer.acks=-1
 | 数据一致性 | 丢失数据风险最高、基本没有一致性 | 丢失数据风险较高 | 丢失数据的风险最低。极端情况(ISR列表为空)时也有丢失数据的风险 |
 
 
-设置分区:为了保证 leader 副本能有 follower 副本能同步消息，我们一般会为 topic 设置 replication.factor >= 3。保证每个 分区(partition) 至少有 3 个副本.
+设置分区:为了保证 leader 副本能有 follower 副本能同步消息，我们一般会为 topic 设置 replication.factor >= 3。保证每个 分区(Partition) 至少有 3 个副本.
 
 关闭 unclean leader 选举: leader 副本发生故障时， follower 副本与leader副本 同步程度不一致的副本不会加入选举。
   - `unclean.leader.election.enable = false`
@@ -373,10 +434,10 @@ spring.kafka.consumer.enable-auto-commit=false
 
 ### kafka会存在数据丢失问题
 > 数据在消息队列是如何持久化(磁盘？数据库？Redis？分布式文件系统？)
-- Kafka会将partition以消息日志的方式(落磁盘)存储起来，通过 顺序访问IO和缓存(等到一定的量或时间)才真正把数据写到磁盘上，来提高速度。
+- Kafka会将Partition以消息日志的方式(落磁盘)存储起来，通过 顺序访问IO和缓存(等到一定的量或时间)才真正把数据写到磁盘上，来提高速度。
 
 ### 想要保证消息（数据）是有序的，怎么做？
-- Kafka会将数据写到partition，单个partition的写入是有顺序的。如果要保证全局有序，那只能写入一个partition中。如果要消费也有序，消费者也只能有一个。
+- Kafka会将数据写到Partition，单个Partition的写入是有顺序的。如果要保证全局有序，那只能写入一个Partition中。如果要消费也有序，消费者也只能有一个。
 
 ### 为什么在消息队列中重复消费了数据
 - 凡是分布式就无法避免网络抖动/机器宕机等问题的发生，很有可能消费者A读取了数据，还没来得及消费，就挂掉了。Zookeeper发现消费者A挂了，让消费者B去消费原本消费者A的分区，等消费者A重连的时候，发现已经重复消费同一条数据了。(各种各样的情况，消费者超时等等都有可能…)
