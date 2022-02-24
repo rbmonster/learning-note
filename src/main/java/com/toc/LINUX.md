@@ -58,6 +58,9 @@
 &emsp;&emsp;<a href="#55">11.2. tar 打包</a>  
 &emsp;&emsp;<a href="#56">11.3. wget </a>  
 &emsp;&emsp;<a href="#57">11.4. sodu(TODO)</a>  
+<a href="#58">Linux 中的技术</a>  
+&emsp;<a href="#59">1. mmap</a>  
+&emsp;<a href="#60">2. 零拷贝Zero-Copy</a>  
 # <a name="0">Linux 基本知识</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -1282,3 +1285,24 @@ sudo是linux下常用的允许普通用户使用超级用户权限的工具，�
 sudo mkdir -p /var/lib/mongo
 sudo mkdir -p /var/log/mongodb
 ```
+
+# <a name="58">Linux 中的技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+## <a name="59">mmap</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+[mmap可以让程序员解锁哪些骚操作？](https://mp.weixin.qq.com/s/bKq-b9Ga2IA2nbhi9weZtw)
+
+## <a name="60">零拷贝Zero-Copy</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+零拷贝是指数据直接从磁盘文件复制到网卡设备，而无需经过应用程序，减少了内核和用户模式之间的上下文切换。
+
+下面这个过程是不采用零拷贝技术时，从磁盘中读取文件然后通过网卡发送出去的流程，可以看到：经历了 4 次拷贝，4 次上下文切换。
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/linux/zero-copy1.png)
+如果采用零拷贝技术（底层通过 sendfile 方法实现），流程将变成下面这样。可以看到：只需 3 次拷贝以及 2 次上下文切换，显然性能更高。
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/linux/zero-copy2.png)
+
+
+传统 Read/Write 方式进行网络文件传输，在传输过程中，文件数据实际上是经过了四次 Copy 操作，其具体流程细节如下：
+1. 调用 Read 函数，文件数据被 Copy 到内核缓冲区。
+2. Read 函数返回，文件数据从内核缓冲区 Copy 到用户缓冲区
+3. Write 函数调用，将文件数据从用户缓冲区 Copy 到内核与 Socket 相关的缓冲区。
+4. 数据从 Socket 缓冲区 Copy 到相关协议引擎。
+   `硬盘—>内核 buf—>用户 buf—>Socket 相关缓冲区—>协议引擎`

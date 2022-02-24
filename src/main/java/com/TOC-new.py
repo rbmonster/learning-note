@@ -66,7 +66,8 @@ def creat_directory(f):
 """以目录列表为参数生成添加目录的文件"""
 def creat_file_with_toc(f, file_name):
     directory = creat_directory(f)
-    file_with_toc = os.getcwd() + '\\' +file_name
+    file_with_toc = os.getcwd() + os.sep +file_name
+    print(file_with_toc)
     if not os.path.exists(file_with_toc):
         with open(file_with_toc, 'w+',encoding='utf-8') as f:
             for directory_line in directory:
@@ -76,7 +77,7 @@ def creat_file_with_toc(f, file_name):
             lines_in_file.clear()
             print('文件已生成')
     else:
-        print('文件名重复，请修改文件'+'file_with_toc.md'+'的文件名后重试')
+        print('文件名重复，请修改文件'+file_with_toc+'.md 的文件名后重试')
 
 result=[]
 
@@ -88,13 +89,13 @@ def search(path="", name=""):
         elif os.path.isfile(item_path):
             if name in item:
                 global result
-                result.append(''+item_path.replace('\\', '\\\\'))
+                result.append(item_path)
 
 def generateFile(file_name):
     if os.path.exists(file_name) and os.path.isfile(file_name):
         with open(file_name,'r',encoding='utf-8') as f:
-            newFileName = file_name.split('\\')
-            creat_file_with_toc(f, newFileName[-1])
+            newFileName = os.path.basename(file_name)
+            creat_file_with_toc(f, newFileName)
     else:
         msg = "未找到文件"
         print(msg)
@@ -123,7 +124,6 @@ if __name__=='__main__':
     if 'all' == file_name:
         path = os.getcwd()
         search(path,'md')
-        print(os.path.exists('C:\\Users\\86159\\Desktop\\learning-note\\src\\main\\java\\com\\toc\\FILTERANDINTERCEPTOR.md'))
         print(os.path.exists(str(result[1]).strip()))
         for i in range(len(result)):
             print("序号：%s   值：%s" % (   i  , result[i]  ))

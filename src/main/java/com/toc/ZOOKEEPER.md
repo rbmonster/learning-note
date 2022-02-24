@@ -77,7 +77,7 @@ ZooKeeper 是 Hadoop 生态系统的一员；
 - data ：节点存放的数据的具体内容
 
 以下为客户端获取znode节点信息的内容：
-- ```
+```
   [zk: 127.0.0.1:2181(CONNECTED) 6] get /dubbo
   // 该数据节点关联的数据内容为空
   null
@@ -93,7 +93,7 @@ ZooKeeper 是 Hadoop 生态系统的一员；
   ephemeralOwner = 0x0
   dataLength = 0
   numChildren = 1   // 当前节点的子节点个数
-  ```
+```
 
 ### <a name="9">ACL权限控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ZooKeeper 采用 ACL（AccessControlLists）策略来进行权限控制，类似于 UNIX 文件系统的权限控制。
@@ -115,7 +115,7 @@ ZooKeeper 采用 ACL（AccessControlLists）策略来进行权限控制，类似
   
 ### <a name="10">Watcher（事件监听器）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ZooKeeper 允许用户在指定节点上注册一些 Watcher，并且在一些特定事件触发的时候，ZooKeeper 服务端会将事件通知到感兴趣的客户端上去，该机制是 **ZooKeeper 实现分布式协调服务的重要特性**。
-  - 特定事件如：监听Znode节点的数据变化、监听子节点的增减变化
+> 特定事件如：监听Znode节点的数据变化、监听子节点的增减变化
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/zookeeperWatcher.png)
 
 ### <a name="11">会话</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -142,7 +142,7 @@ Server为ZooKeeper服务器，集群间通过 ZAB 协议（ZooKeeper Atomic Broa
 - Follower：为客户端提供读服务，如果是写服务则转发给 Leader。在选举过程中参与投票。
 - Observer：为客户端提供读服务器，如果是写服务则转发给 Leader。不参与选举过程中的投票，也不参与“过半写成功”策略。在不影响写性能的情况下提升集群的读性能。此角色于 ZooKeeper3.3 系列新增的角色。
 
-具体选举的流程为Raft算法：
+具体选举的流程为Raft算法
 
 
 #### <a name="14">ZooKeeper 集群中的服务器状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
