@@ -977,7 +977,6 @@ public void backTracking() {
 }
 ```
 3. **排列问题中的树层去重**
-
 ```java   
 public class Soluction {
     public List<List<Integer>> permute(int[] nums) {
@@ -1078,7 +1077,6 @@ public class Soluction {
 - [分发糖果](https://leetcode-cn.com/problems/candy/)
 - [救生艇](https://leetcode-cn.com/problems/boats-to-save-people/)
 
-
 - [监控⼆叉树](https://leetcode-cn.com/problems/binary-tree-cameras/)
 - [K次取反后最⼤化的数组和](https://leetcode-cn.com/problems/maximize-sum-of-array-after-k-negations/)
 - [修改一个数成为非递减数组](https://leetcode-cn.com/problems/non-decreasing-array/)
@@ -1093,8 +1091,8 @@ public class Soluction {
 
 ### 基本思想
 动态规划的⼀般流程优化三步：
-1. 暴⼒的递归解法 -> 
-2. 带备忘录的 递归解法 -> 
+1. 暴⼒的递归解法
+2. 带备忘录的 递归解法
 3. 迭代的动态规划解法。
 
 动态规划思想流程：
@@ -1550,16 +1548,246 @@ class Solution {
 
 
 ## 二分法
-- [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
-- [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
+[一道可以考察「二分」本质的面试题](https://mp.weixin.qq.com/s/RW20ob2oO4Bfd-PcukTVJA)
+> 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
+
+### 代码模版
+
+#### 常见模版
+```java
+public class Solution {
+
+    /**
+     * 闭区间
+     * int left = 0, right = nums.length - 1; 且 left <= right
+     * 通用的二分法模板
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            if (nums[mid] == target) return mid;
+            if (nums[mid] < target)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        return -1;
+    }
+
+    /**
+     * 开区间变形
+     *  int left = 0, right = nums.length; 且 left < right
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search2(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0, right = nums.length;
+        while (left < right) {
+            int mid = (left + right) >>> 1;
+            if (nums[mid] == target) return mid;
+            if (nums[mid] < target)
+                left = mid + 1;
+            else
+                right = mid;
+        }
+        return -1;
+    }
+
+}
+```
+
+#### 左边界问题
+```java
+public class BinarySearchLeft {
+
+    /**
+     * left <= right 且 int left = 0, right = nums.length - 1;
+     * 寻找第一个等于或大于的target左边界
+     *
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> left: 0 第一个大于的数   result:-1
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> left: 1 第一个相等      result:1
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> left: 8 越界           result:-1
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> left: 7 第一个大于的数  result:-1
+     *
+     * <p>
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int left_bound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1; // 搜索区间为 [left, right]
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < target) {
+                // 搜索区间变为 [mid+1, right]
+                left = mid + 1;
+            } else if (nums[mid] > target) { // 搜索区间变为 [left, mid-1]
+                right = mid - 1;
+            } else if (nums[mid] == target) {
+                // 收缩右侧边界
+                right = mid - 1;
+            }
+        }
+        System.out.print("left ->" + left + " ");
+        /**
+         * 出界检查: 若搜索区间无目标元素 会出现越界情况 如{1,2,2,4,4,5,5,7} target:8
+         * 使用left判断的原因： 若存在目标元素往左收缩，最后跳出循坏的结果肯定是：{x, x, right, left, x, x}
+         */
+        if (left != nums.length && nums[left] == target) {
+            return left;
+        }
+        return -1;
+    }
+
+
+    /**
+     * 查找第一个等于或者小于key的元素
+     *
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> right: -1  越界        result:-1
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> right: 0   第一个小于   result:0
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> right: 7   第一个小于    result:7
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> right: 6   第一个小于   result:6
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int findFirstSmaller(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] == target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            }
+        }
+        System.out.print("right ->" + right + " ");
+        if (right < 0) {
+            return -1;
+        }
+        return right;
+    }
+}
+```
+
+#### 右边界问题
+```java
+
+public class BinarySearchRight {
+
+    /**
+     * left <= right 且 int left = 0, right = nums.length - 1;
+     * 寻找等于或小于 的target右边界的二分
+     *  注意：结果左侧越界
+     *
+     * <p>
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> right: -1  越界           result:-1
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> right: 2   最后一个相等    result:2
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> right: 7   第一个小于      result:7
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> right: 6   第一个小于      result:8
+     *
+     * <p>
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int right_bound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                left = mid + 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            }
+        }
+        System.out.print("right ->" + right + " ");
+        // 为啥用right判断? 若存在重复target元素，循坏跳出的条件肯定是想右收缩过程中 left+1 导致的break
+        if (right < 0) {
+            return -1;
+        }
+        return right;
+    }
+
+
+    /**
+     * 查找第一个等于或大于key的元素
+     *  注意：结果右侧越界
+     *
+     * <p>
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> left: 0  第一个大于  result:0
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> left: 3  第一个大于  result:3
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> left: 8  越界       result:-1
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> left: 7  第一个大于  result:7
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int findFirstLarger(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] == target) {
+                left = mid + 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            }
+        }
+        System.out.print("left ->" + left + " ");
+        // 为什么用left，因为left是循环跳出的地方默认在right的右边
+        if (left >= nums.length) {
+            return -1;
+        }
+        return left;
+    }
+}
+```
+
+### 经典问题
+- [搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
+- [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+- [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/): 通过左右边界确定序列是否为递增
+- [搜索旋转排序数组 II](https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii/)
+
+- [猜数字大小](https://leetcode-cn.com/problems/guess-number-higher-or-lower/)
+- [有序矩阵中第 K 小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/): 猜数字
+
+平方根问题
+- [x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
+- [有效的完全平方数](https://leetcode-cn.com/problems/valid-perfect-square/)
+- [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/): 注意精度问题
+
+非模版二分问题：
+> 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
+- [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/): 以右边界为目标点，寻找左边界，与常规的边界问题不同。
 - [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
 - [寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
-- [有效的完全平方数](https://leetcode-cn.com/problems/valid-perfect-square/)
-- [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/)
-
-- [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
-
-
+- [山脉数组的峰顶索引](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/)
 
 
 ## 位运算与运算转换
