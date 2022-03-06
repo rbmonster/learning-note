@@ -90,9 +90,7 @@ public class Solution{
 
 
 经典问题：
-
-- [剑指 Offer 24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/) 
-> 栈、头插法、递归
+- [剑指 Offer 24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/) :栈、头插法、递归
 - [合并两有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 - [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 
@@ -114,15 +112,11 @@ public class Solution{
 ```
 
 
-
 - [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
-
-
-
 
 ## 队列
 
-队列是典型的 FIFO 数据结构。
+队列是典型的 FIFO 数据结构：
 - 插入（insert）操作也称作入队（enqueue），新元素始终被添加在队列的末尾。 
 - 删除（delete）操作也被称为出队（dequeue)。 你只能移除第一个元素。
 
@@ -1811,7 +1805,7 @@ public class BinarySearchRight {
 计算1的个数
 
 ## 常用操作
-求余数常见操作
+### 求余数常见操作
 ```java
 public class Solution {
   private int getNext(int n) {
