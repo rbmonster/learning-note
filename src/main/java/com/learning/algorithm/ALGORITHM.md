@@ -226,7 +226,7 @@ class MaxQueue {
 
 ```
 - [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
-- **[剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+- [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/): review
 
 ## 栈
 - 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
@@ -1090,16 +1090,13 @@ public class Soluction {
 3. 迭代的动态规划解法。
 
 动态规划思想流程：
-1. 【状态】和【选择】，明确问题存在哪几种状态；问题场景如何做状态选择，进而转换状态。
+1. 【状态】和【选择】，明确问题存在哪几种状态。问题场景如何做状态选择，进而转换状态。
 2. 确定dp数组以及下标的含义
 3. 根据【选择】的过程，确定递推公式
 4. dp数组如何初始化
 5. 确定遍历顺序
 6. 举例推导dp数组，进行问题模拟
 7. 出错的情况，将dp数组打印出来，保证程序处理流程如设想运行。
-
-
-
 
 如果能写出暴力的递归方法，就回发现在递归过程中，进行了太多重复计算，此时可以使用备忘录的方法进行优化。
 
