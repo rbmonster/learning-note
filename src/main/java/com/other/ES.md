@@ -357,6 +357,49 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 - `/g*,u*/_search`：在任何以 g 或者 u 开头的索引中搜索所有的类型
 - `/gb,us/user,tweet/_search`：在 gb 和 us 索引中搜索 user 和 tweet 类型
 
+
+#### 搜索相关的优化
+##### 查询语句权重改变
+`boost` 参数被用来提升一个语句的相对权重（ `boost` 值大于 1 ）或降低相对权重（ `boost` 值处于 0 到 1 之间）
+
+```
+GET /_search
+{
+    "query": {
+        "bool": {
+            "must": {
+                "match": {  
+                    "content": {
+                        "query":    "full text search",
+                        "operator": "and"
+                    }
+                }
+            },
+            "should": [
+                { "match": {
+                    "content": {
+                        "query": "Elasticsearch",
+                        "boost": 3 
+                    }
+                }},
+                { "match": {
+                    "content": {
+                        "query": "Lucene",
+                        "boost": 2 
+                    }
+                }}
+            ]
+        }
+    }
+}
+```
+
+##### 最佳字段查询调优
+指定 `tie_breaker` 这个参数将其他匹配语句的评分也考虑其中。
+- [最佳字段查询调优](https://www.elastic.co/guide/cn/elasticsearch/guide/2.x/_tuning_best_fields_queries.html)
+
+
+
 ### 索引
 创建索引的方式分为两种
 1. 通过索引文档的方式直接创建一个新的索引，新的字段通过动态映射的方式被添加到类型映射中。
@@ -528,76 +571,6 @@ DELETE  sw_test.trade_contract_v1
 ```
 
 
-### 倒排索引
-倒排索引：是一种可以根据属性的值来查找记录的索引。这种索引表中的每一项都包括一个属性值和具有该属性值的各条记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，故成为倒排索引。
-> 经常被用来存储在全文搜索下某个单词在一个文档或者一组文档中的存储位置的映射。它是文档检索系统中最常用的数据结构。
-
-
-#### 倒排索引创建
-例如，假设我们有两个文档，每个文档的 content 域包含如下内容：
-- position 1: The quick brown fox jumped over the lazy dog
-- position 2: Quick brown foxes leap over lazy dogs in summer
-
-**倒排索引创建过程**：
-1. 首先把所有的原始数据进行编号，形成文档列表 DocId
-2. 把文档数据进行分词 Term，得到很多的词条，以词条为索引。保存包含这些词条的文档的编号信息。
-
-
-#### 搜索过程
-当用户输入任意的词条时，首先对用户输入的数据进行分词，得到用户要搜索的所有词条，然后拿着这些词条去倒排索引列表中进行匹配。找到这些词条就能找到包含这些词条的所有文档的编号。
-
-|**Term**    |  Doc_1  | Doc_2| Posting list|
-| --- | --- | ---|  --- |
-|Quick   |       |  X| 2|
-|The     |   X   | | 1|
-|brown   |   X   |  X| 1,2|
-|dog     |   X   | | 1|
-|dogs    |       |  X| 2|
-|fox     |   X   | | 1|
-|foxes   |       |  X| 2|
-|in      |       |  X| 2|
-|jumped  |   X   | | 1|
-|lazy    |   X   |  X| 1,2|
-|leap    |       |  X| 2|
-|over    |   X   |  X| 1,2|
-|quick   |   X   | | 1|
-|summer  |       |  X| 2|
-|the     |   X   |  | 1|
-
-搜索 quick brown 
-
-Term    |  Doc_1 |  Doc_2 |
- ---| ---| ---|
-brown   |   X   |  X
-quick   |   X   |
-Total   |   2   |  1
-
-两个文档都匹配，但是第一个文档比第二个匹配度更高。优先排在前面。
-
-#### 倒排索引优化
-倒排索引的在输入或者构建的分词中，经常有以下问题
-1. 文本词条化：如带上撇号的格式——“Teacher’s office”，连字符格式——“English-speaking”,也需要进行对应的处理，把单词提取出来。
-2. 停用词过滤：如英文：the, is, and，中文：的、是、个等等
-3. 词条归一化：如英文：color、colour。
-4. 词干提取、词形还原：如英文将“doing”、“done”、“did”转化成原型“do”
-
-
-#### ES中分词
-
-ES在处理输入的内容是通过分词器处理的。分析器处理将过三个步骤：
-1. 字符过滤器: 首先，字符串按顺序通过每个 字符过滤器 。他们的任务是在分词前整理字符串。一个字符过滤器可以用来去掉HTML，或者将 & 转化成 and。
-2. 分词器:其次，字符串被 分词器 分为单个的词条。一个简单的分词器遇到空格和标点的时候，可能会将文本拆分成词条。
-3. Token过滤器： 最后，词条按顺序通过每个 token 过滤器 。这个过程可能会改变词条（例如，小写化 Quick ），删除词条（例如， 像 a， and， the 等无用词），或者增加词条（例如，像 jump 和 leap 这种同义词）。
-
-
-Elasticsearch的分词器的一般工作流程：
-1. 切分关键词
-2. 去除停用词
-3. 对于英文单词，把所有字母转为小写（搜索时不区分大小写）
-
-参考资料：
-- [搜索引擎之倒排索引解读](https://zhuanlan.zhihu.com/p/28320841)
-
 ### 排序
 为了按照**相关性**来排序，需要将相关性表示为一个数值。在 Elasticsearch 中，**相关性得分**由一个浮点数进行表示，并在搜索结果中通过 `_score` 参数返回， 默认排序是 `_score` 降序。
 
@@ -636,78 +609,6 @@ GET /_search
 ```
 - `_score`: 不被计算, 因为它并没有用于排序。
 - `sort`: 在每个结果中有一个新的名为 sort 的元素，它包含了我们用于排序的值。
-
-
-#### 相关性
-每个文档都有相关性评分，用一个正浮点数字段 `_score` 来表示 。 `_score` 的评分越高，相关性越高。
-
-查询语句会为每个文档生成一个 `_score` 字段。\
-评分的计算方式取决于查询类型，不同的查询语句用于不同的目的： 
-- fuzzy 查询会计算与关键词的拼写相似程度
-- terms 查询会计算 找到的内容与关键词组成部分匹配的百分比
-> 通常我们说的 relevance 是我们用来计算全文本字段的值相对于全文本检索词相似程度的算法。
-
-Elasticsearch 的相似度算法被定义为检索词频率/反向文档频率， TF/IDF ，包括以下内容：
-- 检索词频率： 检索词在该字段出现的频率。出现频率越高，相关性也越高。 字段中出现过 5 次要比只出现过 1 次的相关性高。
-- 反向文档频率：每个检索词在索引中出现的频率。频率越高，相关性越低。检索词出现在多数文档中会比出现在少数文档中的权重更低。
-- 字段长度准则：字段的长度是多少。长度越长，相关性越低。 检索词出现在一个短的 title 要比同样的词出现在一个长的 content 字段权重更大。
-
-**评分的标准可以通过`_explain`进行进一步了解**
-```
-GET /_search?explain 
-{
-   "query"   : { "match" : { "tweet" : "honeymoon" }}
-}
-
-结果：
-"_explanation": { 
-   "description": "weight(tweet:honeymoon in 0)
-                  [PerFieldSimilarity], result of:",
-   "value":       0.076713204,
-   "details": [
-      {
-         "description": "fieldWeight in 0, product of:",
-         "value":       0.076713204,
-         "details": [
-            {  
-                // 检索词频率。`honeymoon` 在这个文档的 `tweet` 字段中的出现次数。
-               "description": "tf(freq=1.0), with freq of:", 
-               "value":       1,
-               "details": [
-                  {
-                     "description": "termFreq=1.0",
-                     "value":       1
-                  }
-               ]
-            },
-            { 
-              // 反向文档频率。检索词 `honeymoon` 在索引上所有文档的 `tweet` 字段中出现的次数。
-               "description": "idf(docFreq=1, maxDocs=1)",   
-               "value":       0.30685282
-            },
-            { 
-                // 字段长度准则。在这个文档中， `tweet` 字段内容的长度 -- 内容越长，值越小。
-               "description": "fieldNorm(doc=0)",    
-               "value":        0.25,
-            }
-         ]
-      }
-   ]
-}
-```
-
-
-#### Doc Values 
-
-在 Elasticsearch 中，`Doc Values` 就是一种列式存储结构，默认情况下每个字段的 `Doc Values` 都是激活的，`Doc Values` 是在索引时创建的，当字段索引时，Elasticsearch 为了能够快速检索，会把字段的值加入倒排索引中，同时它也会存储该字段的 `Doc Values`。
-
-Elasticsearch 中的 Doc Values 常被应用到以下场景：
-- 对一个字段进行排序
-- 对一个字段进行聚合
-- 某些过滤，比如地理位置过滤
-- 某些与字段相关的脚本计算
-
-
 
 
 ### 深度分页
@@ -897,6 +798,236 @@ SEARCH_AFTER不是自由跳转到任意页面的解决方案，而是并行滚�
 - [Elasticsearch 5.x 源码分析（3）from size, scroll 和 search after](https://www.jianshu.com/p/91d03b16af77)
 - [Elasticsearch之SearchScroll原理剖析和优化](https://developer.aliyun.com/article/771575)
 - [ElasticSearch深度分页解决方案](https://developer.51cto.com/article/684507.html)
+
+### 聚合
+聚合允许我们向数据提出一些复杂的问题。虽然功能完全不同于搜索，但它使用相同的数据结构。这意味着聚合的执行速度很快并且就像搜索一样几乎是实时的。
+
+聚合相关操作：
+> 汽车经销商可能会想知道哪个颜色的汽车销量最好，用聚合可以轻易得到结果，用 terms 桶操作
+```
+GET /cars/transactions/_search
+{
+    "size" : 0,
+    "aggs" : { 
+        "popular_colors" : { 
+            "terms" : { 
+              "field" : "color"
+            }
+        }
+    }
+}
+
+聚合查询response：
+{
+...
+   "hits": {
+      "hits": [] 
+   },
+   "aggregations": {
+      "popular_colors": { 
+         "buckets": [
+            {
+               "key": "red", 
+               "doc_count": 4 
+            },
+            {
+               "key": "blue",
+               "doc_count": 2
+            },
+            {
+               "key": "green",
+               "doc_count": 2
+            }
+         ]
+      }
+   }
+}
+```
+
+聚合的过滤：
+- 在 `filter` 过滤中的 `non-scoring` 查询，同时影响搜索结果和聚合结果。
+- `filter` 桶影响聚合。
+- `post_filter` 只影响搜索结果。
+
+
+### 相关性
+每个文档都有相关性评分，用一个正浮点数字段 `_score` 来表示 。 `_score` 的评分越高，相关性越高。
+
+查询语句会为每个文档生成一个 `_score` 字段。\
+评分的计算方式取决于查询类型，不同的查询语句用于不同的目的：
+- fuzzy 查询会计算与关键词的拼写相似程度
+- terms 查询会计算 找到的内容与关键词组成部分匹配的百分比
+> 通常我们说的 relevance 是我们用来计算全文本字段的值相对于全文本检索词相似程度的算法。
+
+Elasticsearch 的相似度算法被定义为检索词频率/反向文档频率， TF/IDF ，包括以下内容：
+- 检索词频率： 检索词在该字段出现的频率。出现频率越高，相关性也越高。 字段中出现过 5 次要比只出现过 1 次的相关性高。
+- 反向文档频率：每个检索词在索引中出现的频率。频率越高，相关性越低。检索词出现在多数文档中会比出现在少数文档中的权重更低。
+- 字段长度准则：字段的长度是多少。长度越长，相关性越低。 检索词出现在一个短的 title 要比同样的词出现在一个长的 content 字段权重更大。
+
+**评分的标准可以通过`_explain`进行进一步了解**
+```
+GET /_search?explain 
+{
+   "query"   : { "match" : { "tweet" : "honeymoon" }}
+}
+
+结果：
+"_explanation": { 
+   "description": "weight(tweet:honeymoon in 0)
+                  [PerFieldSimilarity], result of:",
+   "value":       0.076713204,
+   "details": [
+      {
+         "description": "fieldWeight in 0, product of:",
+         "value":       0.076713204,
+         "details": [
+            {  
+                // 检索词频率。`honeymoon` 在这个文档的 `tweet` 字段中的出现次数。
+               "description": "tf(freq=1.0), with freq of:", 
+               "value":       1,
+               "details": [
+                  {
+                     "description": "termFreq=1.0",
+                     "value":       1
+                  }
+               ]
+            },
+            { 
+              // 反向文档频率。检索词 `honeymoon` 在索引上所有文档的 `tweet` 字段中出现的次数。
+               "description": "idf(docFreq=1, maxDocs=1)",   
+               "value":       0.30685282
+            },
+            { 
+                // 字段长度准则。在这个文档中， `tweet` 字段内容的长度 -- 内容越长，值越小。
+               "description": "fieldNorm(doc=0)",    
+               "value":        0.25,
+            }
+         ]
+      }
+   ]
+}
+```
+
+
+### 倒排索引
+倒排索引：是一种可以根据属性的值来查找记录的索引。这种索引表中的每一项都包括一个属性值和具有该属性值的各条记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，故成为倒排索引。
+> 经常被用来存储在全文搜索下某个单词在一个文档或者一组文档中的存储位置的映射。它是文档检索系统中最常用的数据结构。
+
+
+#### 倒排索引创建
+例如，假设我们有两个文档，每个文档的 content 域包含如下内容：
+- position 1: The quick brown fox jumped over the lazy dog
+- position 2: Quick brown foxes leap over lazy dogs in summer
+
+**倒排索引创建过程**：
+1. 首先把所有的原始数据进行编号，形成文档列表 DocId
+2. 把文档数据进行分词 Term，得到很多的词条，以词条为索引。保存包含这些词条的文档的编号信息。
+
+
+#### 搜索过程
+当用户输入任意的词条时，首先对用户输入的数据进行分词，得到用户要搜索的所有词条，然后拿着这些词条去倒排索引列表中进行匹配。找到这些词条就能找到包含这些词条的所有文档的编号。
+
+|**Term**    |  Doc_1  | Doc_2| Posting list|
+| --- | --- | ---|  --- |
+|Quick   |       |  X| 2|
+|The     |   X   | | 1|
+|brown   |   X   |  X| 1,2|
+|dog     |   X   | | 1|
+|dogs    |       |  X| 2|
+|fox     |   X   | | 1|
+|foxes   |       |  X| 2|
+|in      |       |  X| 2|
+|jumped  |   X   | | 1|
+|lazy    |   X   |  X| 1,2|
+|leap    |       |  X| 2|
+|over    |   X   |  X| 1,2|
+|quick   |   X   | | 1|
+|summer  |       |  X| 2|
+|the     |   X   |  | 1|
+
+搜索 quick brown
+
+Term    |  Doc_1 |  Doc_2 |
+ ---| ---| ---|
+brown   |   X   |  X
+quick   |   X   |
+Total   |   2   |  1
+
+两个文档都匹配，但是第一个文档比第二个匹配度更高。优先排在前面。
+
+#### 倒排索引优化
+倒排索引的在输入或者构建的分词中，经常有以下问题
+1. 文本词条化：如带上撇号的格式——“Teacher’s office”，连字符格式——“English-speaking”,也需要进行对应的处理，把单词提取出来。
+2. 停用词过滤：如英文：the, is, and，中文：的、是、个等等
+3. 词条归一化：如英文：color、colour。
+4. 词干提取、词形还原：如英文将“doing”、“done”、“did”转化成原型“do”
+
+
+#### ES中分词
+
+ES在处理输入的内容是通过分词器处理的。分析器处理将过三个步骤：
+1. 字符过滤器: 首先，字符串按顺序通过每个 字符过滤器 。他们的任务是在分词前整理字符串。一个字符过滤器可以用来去掉HTML，或者将 & 转化成 and。
+2. 分词器:其次，字符串被 分词器 分为单个的词条。一个简单的分词器遇到空格和标点的时候，可能会将文本拆分成词条。
+3. Token过滤器： 最后，词条按顺序通过每个 token 过滤器 。这个过程可能会改变词条（例如，小写化 Quick ），删除词条（例如， 像 a， and， the 等无用词），或者增加词条（例如，像 jump 和 leap 这种同义词）。
+
+
+Elasticsearch的分词器的一般工作流程：
+1. 切分关键词
+2. 去除停用词
+3. 对于英文单词，把所有字母转为小写（搜索时不区分大小写）
+
+参考资料：
+- [搜索引擎之倒排索引解读](https://zhuanlan.zhihu.com/p/28320841)
+
+### Doc Values
+在 Elasticsearch 中，`Doc Values` 就是一种**列式存储结构**，默认情况下每个字段的 `Doc Values` 都是激活的，`Doc Values` 是在索引时创建的，当字段索引时，Elasticsearch 为了能够快速检索，会把字段的值加入倒排索引中，同时它也会存储该字段的 `Doc Values`。
+
+Elasticsearch 中的 Doc Values 常被应用到以下场景：
+- 对一个字段进行**排序**
+- 对一个字段进行**聚合**
+- 某些过滤，比如地理位置过滤
+- 某些与字段相关的脚本计算
+> 对于聚合部分，我们需要找到 Doc_1 和 Doc_2 里所有唯一的词项。\
+> 对于排序部分，我们需要找到 Doc 中对应的排序词项
+
+#### 结构
+Doc values 的存在是因为倒排索引只对某些操作是高效的。 倒排索引的优势**在于查找包含某个项的文档，而对于从另外一个方向的相反操作并不高效**，即：确定哪些项是否存在单个文档里。
+
+
+**倒排索引**：
+
+|**Term**    |  Doc_1  | Doc_2| Posting list|
+| --- | --- | ---|  --- |
+|Quick   |       |  X| 2|
+|The     |   X   | | 1|
+|brown   |   X   |  X| 1,2|
+|dog     |   X   | | 1|
+|dogs    |       |  X| 2|
+|fox     |   X   | | 1|
+|foxes   |       |  X| 2|
+|in      |       |  X| 2|
+|jumped  |   X   | | 1|
+|lazy    |   X   |  X| 1,2|
+|leap    |       |  X| 2|
+|over    |   X   |  X| 1,2|
+|quick   |   X   | | 1|
+|summer  |       |  X| 2|
+|the     |   X   |  | 1|
+
+
+`Doc Value`**转置**了倒排索引中词项 `term` 与文档`Doc`之间的关系：
+
+| Doc    |  Terms |
+| ---| ---|
+|Doc_1 | brown, dog, fox, jumped, lazy, over, quick, the |
+|Doc_2 | brown, dogs, foxes, in, lazy, leap, over, quick, summer|
+|Doc_3 | dog, dogs, fox, jumped, over, quick, the|
+
+
+#### 存储优化
+从广义来说，Doc Values 本质上是一个**序列化**的 列式存储。\
+压缩式存储：序列化的存储方式非常便于压缩，特别是数字类型。这样可以**减少磁盘空间并且提高访问速度**。现代 CPU 的处理速度要比磁盘快几个数量级，减少直接存磁盘读取数据的大小，额外消耗 CPU 运算用来进行解压。
+> 存储的策略是通过借用CPU的处理速度，来提高整体的存取效率。CPU压缩，减少存储磁盘空间。磁盘空间小读取的速度变快，CPU进行解压。。
 
 ## docker 安装
 

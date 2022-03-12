@@ -1152,7 +1152,7 @@ class Solution {
 
 - [不同路径](https://leetcode-cn.com/problems/unique-paths/)
 - [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
-- *[整数拆分](https://leetcode-cn.com/problems/integer-break/)
+- [整数拆分](https://leetcode-cn.com/problems/integer-break/) : review
 - [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
 - [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
 
