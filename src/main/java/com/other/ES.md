@@ -105,6 +105,25 @@ POST test/_doc/12374/_update
 #### 乐观并发控制
 利用 `_version` 号来确保 应用中相互冲突的变更不会导致数据丢失。我们通过指定想要修改文档的 `version` 号来达到这个目的。 如果该版本不是当前版本号，我们的请求将会失败。
 
+### 集群
+当一个节点被选举成为 **主节点**时， 它将负责管理集群范围内的所有变更，例如增加、删除索引，或者增加、删除节点等。 \
+而**主节点并不需要涉及到文档级别的变更和搜索**等操作，所以当集群只拥有一个主节点的情况下，即使流量的增加它也不会成为瓶颈。 任何节点都可以成为主节点。
+
+ES 集群多个节点，会自动选举一个节点为 master 节点，这个 master 节点其实就是干一些管理的工作的，比如维护索引元数据、负责切换 primary shard 和 replica shard 身份等。要是 master 节点宕机了，那么会重新选举一个节点为 master 节点。\
+如果是非 master 节点宕机了，那么会由 master 节点，让那个宕机节点上的 primary shard 的身份转移到其他机器上的 replica shard。
+
+集群中节点的概念：
+- **master节点**：主要职责是和集群操作相关的内容，如创建或删除索引，跟踪哪些节点是群集的一部分，并决定哪些分片分配给相关的节点。
+- **data节点**(主分片、副本分片)：这个节点作为一个数据节点，数据节点主要是存储索引数据的节点，主要对文档进行增删改查操作，聚合操作等。数据节点对cpu，内存，io要求较高， 在优化的时候需要监控数据节点的状态，当资源不够的时候，需要在集群中添加新的节点。**节点启动后，默认就是数据节点**。
+- **协调节点**：处理请求的节点，负责路由请求到正确的节点，如创建索引的请求需要路由到 Master 节点。**所有节点默认都是** Coordinating Node；
+
+
+| 节点类型	|配置参数	| 默认值 |
+| ---           | ---| ---|
+|master eligible	| node.master	| true|
+|data	          | node.data	| true |
+|ingest	          | node.ingest | true|
+|coordinating only |	无 |	设置上面三个参数全部为false|
 
 ### 分片
 
@@ -147,6 +166,7 @@ POST test/_doc/12374/_update
 基于ID的查询：
 
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/cluster-3.png)
+
 以下是从主分片或者副本分片检索文档的步骤顺序：
 1. 客户端向 `Node 1` 发送获取请求。
 2. 节点使用文档的 `_id` 来确定文档属于分片 0 。分片 0 的副本分片存在于所有的三个节点上。 在这种情况下，它将请求转发到 `Node 2` 。
@@ -1616,3 +1636,9 @@ The replica shards will automatically become primaries, and the cluster will wor
 ## 面试题
 
 ### ES 的分布式架构原理
+ElasticSearch 设计的理念就是分布式搜索引擎，底层其实还是基于 lucene 的。核心思想就是在多台机器上启动多个 ES 进程实例，组成了一个 ES 集群。\
+ES 中存储数据的**基本单位是索引**，索引创建的时候需要指定 `shard`，每个 `shard` 存储部分数据。创建`Index`的时候，每个`shard`都有一个`primary shard`，负责写入数据，但是还有几个`replica shard`负责处理查询请求以及做`primary shard`的备份。如果拥有`primary shard`的分片挂了，ES会重新选出一个`replica shard`作为主分片。每个`shard`分布在**不同节点的机器**上。
+> ES 集群多个节点，会自动选举一个节点为 master 节点，这个 master 节点其实就是干一些管理的工作的，比如维护索引元数据、负责切换 primary shard 和 replica shard 身份等。要是 master 节点宕机了，那么会重新选举一个节点为 master 节点。\
+> 如果是非 master 节点宕机了，那么会由 master 节点，让那个宕机节点上的 primary shard 的身份转移到其他机器上的 replica shard。接着你要是修复了那个宕机机器，重启了之后，master 节点会控制将缺失的 replica shard 分配过去，同步后续修改的数据之类的，让集群恢复正常。
+
+
