@@ -1369,15 +1369,15 @@ INNER JOIN
 
 ### InnoDB 和 MyIsam 数据库引擎的区别
 1. 事务处理：MyISAM是非事务安全型的，而InnoDB是事务安全型的（支持事务处理等高级处理）；
-2. 外键支持: mysiam表不支持外键，而InnoDB支持
+2. 外键支持: myisam表不支持外键，而InnoDB支持
 3. 锁机制不同：MyISAM是表级锁，而InnoDB是行级锁；
 4. select查询的区别：
     - count优化： MyISAM只要简单的读出保存好的行数，InnoDB要选择表的索引进而计算行数计算。
     - 缓存区别：InnoDB要缓存数据块，MyISAM只缓存索引，加载索引更快
     - InnoDB要维护MVCC一致
 5. 数据存储方式不同：
-    - MyISAM索引文件和数据文件是分离的（.myi索引文件和.myd数据文件）
-    - InnoDB的数据文件按主键聚集（.idb数据文件）
+    - MyISAM索引文件和数据文件是分离的（`.myi`索引文件和`.myd`数据文件）
+    - InnoDB的数据文件按主键聚集（`.idb`数据文件）
     - 由于数据存储的方式区别，MyISAM主键索引是非聚簇索引，InnoDB主键索引是聚簇索引；
 6. 崩溃恢复，InnoDB特有的redo log 可以保证崩溃安全，
 > - DELETE FROM table时，InnoDB不会重新建立表，而是一行一行的删除。
