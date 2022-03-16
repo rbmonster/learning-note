@@ -16,7 +16,7 @@
 &emsp;&emsp;&emsp;&emsp;<a href="#13">2.4.1.2. 处理措施</a>  
 &emsp;&emsp;<a href="#14">2.5. 数据一致性</a>  
 &emsp;&emsp;<a href="#15">2.6. 可用性</a>  
-&emsp;&emsp;<a href="#16">2.7. 分布式事务问题 TODO</a>  
+&emsp;&emsp;<a href="#16">2.7. 分布式事务问题</a>  
 &emsp;<a href="#17">3. 消息队列选型</a>  
 &emsp;<a href="#18">4. 消息队列背后的设计思想</a>  
 &emsp;&emsp;<a href="#19">4.1. 消息队列核心模型</a>  
@@ -24,45 +24,52 @@
 &emsp;&emsp;<a href="#21">4.3. 消息队列模型</a>  
 &emsp;&emsp;&emsp;<a href="#22">4.3.1. 队列模型</a>  
 &emsp;&emsp;&emsp;<a href="#23">4.3.2. 发布订阅模型</a>  
-<a href="#24">Kafka</a>  
-&emsp;<a href="#25">1. 基本概念</a>  
-&emsp;<a href="#26">2. Kafka 高性能设计技术</a>  
-&emsp;&emsp;<a href="#27">2.1. Producer发送端</a>  
-&emsp;&emsp;<a href="#28">2.2. Broker存储消息</a>  
-&emsp;&emsp;<a href="#29">2.3. Consumer消费端</a>  
-&emsp;<a href="#30">3. 数据同步</a>  
-&emsp;&emsp;<a href="#31">3.1. kafka replica</a>  
-&emsp;&emsp;<a href="#32">3.2. ISR</a>  
-&emsp;&emsp;<a href="#33">3.3. ACK机制</a>  
-&emsp;&emsp;<a href="#34">3.4. 故障转移过程</a>  
-&emsp;&emsp;<a href="#35">3.5. 其他</a>  
-&emsp;<a href="#36">4. 消息消费细节</a>  
-&emsp;&emsp;<a href="#37">4.1. 消费者组与Partition</a>  
-&emsp;&emsp;<a href="#38">4.2. offset</a>  
-&emsp;<a href="#39">5. 分布式的kafka解决节点宕机或者抖动问题</a>  
-&emsp;<a href="#40">6. 与ZooKeeper的依赖</a>  
-&emsp;&emsp;<a href="#41">6.1. Broker 注册 </a>  
-&emsp;&emsp;<a href="#42">6.2. Topic 注册 </a>  
-&emsp;&emsp;<a href="#43">6.3. 负载均衡 </a>  
-&emsp;&emsp;<a href="#44">6.4. 消息 消费进度Offset 记录</a>  
-&emsp;<a href="#45">7. 面试题</a>  
-&emsp;&emsp;<a href="#46">7.1. Kafka 是什么？主要应用场景有哪些？</a>  
-&emsp;&emsp;&emsp;<a href="#47">7.1.1. kafka优点</a>  
-&emsp;&emsp;<a href="#48">7.2. kafka 为什么快</a>  
-&emsp;&emsp;&emsp;<a href="#49">7.2.1. 顺序写磁盘</a>  
-&emsp;&emsp;&emsp;<a href="#50">7.2.2. 大量使用内存页</a>  
-&emsp;&emsp;&emsp;<a href="#51">7.2.3. 零拷贝技术</a>  
-&emsp;&emsp;&emsp;<a href="#52">7.2.4. 消息压缩、批量发送</a>  
-&emsp;&emsp;<a href="#53">7.3. Kafka 如何保证消息队列不丢失</a>  
-&emsp;&emsp;<a href="#54">7.4. kafka 高可用是如何实现?</a>  
-&emsp;&emsp;<a href="#55">7.5. kafka会存在数据丢失问题</a>  
-&emsp;&emsp;<a href="#56">7.6. 想要保证消息（数据）是有序的，怎么做？</a>  
-&emsp;&emsp;<a href="#57">7.7. 为什么在消息队列中重复消费了数据</a>  
-<a href="#58">RocketMQ</a>  
-&emsp;<a href="#59">1. 基本概念</a>  
-&emsp;<a href="#60">2. 基本架构</a>  
-&emsp;<a href="#61">3. 优缺点</a>  
-&emsp;<a href="#62">4. 事务实现</a>  
+&emsp;<a href="#24">5. 消息队列相关概念</a>  
+&emsp;&emsp;<a href="#25">5.1. 优先级队列</a>  
+&emsp;&emsp;<a href="#26">5.2. 延迟队列</a>  
+&emsp;&emsp;<a href="#27">5.3. 死信队列</a>  
+&emsp;&emsp;<a href="#28">5.4. 重试队列</a>  
+&emsp;&emsp;<a href="#29">5.5. 消息回溯</a>  
+&emsp;&emsp;<a href="#30">5.6. 其他概念</a>  
+<a href="#31">Kafka</a>  
+&emsp;<a href="#32">1. 基本概念</a>  
+&emsp;<a href="#33">2. Kafka 高性能设计技术</a>  
+&emsp;&emsp;<a href="#34">2.1. Producer发送端</a>  
+&emsp;&emsp;<a href="#35">2.2. Broker存储消息</a>  
+&emsp;&emsp;<a href="#36">2.3. Consumer消费端</a>  
+&emsp;<a href="#37">3. 数据同步</a>  
+&emsp;&emsp;<a href="#38">3.1. kafka replica</a>  
+&emsp;&emsp;<a href="#39">3.2. ISR</a>  
+&emsp;&emsp;<a href="#40">3.3. ACK机制</a>  
+&emsp;&emsp;<a href="#41">3.4. 故障转移过程</a>  
+&emsp;&emsp;<a href="#42">3.5. 其他</a>  
+&emsp;<a href="#43">4. 消息消费细节</a>  
+&emsp;&emsp;<a href="#44">4.1. 消费者组与Partition</a>  
+&emsp;&emsp;<a href="#45">4.2. offset</a>  
+&emsp;<a href="#46">5. 分布式的kafka解决节点宕机或者抖动问题</a>  
+&emsp;<a href="#47">6. 与ZooKeeper的依赖</a>  
+&emsp;&emsp;<a href="#48">6.1. Broker 注册 </a>  
+&emsp;&emsp;<a href="#49">6.2. Topic 注册 </a>  
+&emsp;&emsp;<a href="#50">6.3. 负载均衡 </a>  
+&emsp;&emsp;<a href="#51">6.4. 消息 消费进度Offset 记录</a>  
+&emsp;<a href="#52">7. 面试题</a>  
+&emsp;&emsp;<a href="#53">7.1. Kafka 是什么？主要应用场景有哪些？</a>  
+&emsp;&emsp;&emsp;<a href="#54">7.1.1. kafka优点</a>  
+&emsp;&emsp;<a href="#55">7.2. kafka 为什么快</a>  
+&emsp;&emsp;&emsp;<a href="#56">7.2.1. 顺序写磁盘</a>  
+&emsp;&emsp;&emsp;<a href="#57">7.2.2. 大量使用内存页</a>  
+&emsp;&emsp;&emsp;<a href="#58">7.2.3. 零拷贝技术</a>  
+&emsp;&emsp;&emsp;<a href="#59">7.2.4. 消息压缩、批量发送</a>  
+&emsp;&emsp;<a href="#60">7.3. Kafka 如何保证消息队列不丢失</a>  
+&emsp;&emsp;<a href="#61">7.4. kafka 高可用是如何实现?</a>  
+&emsp;&emsp;<a href="#62">7.5. kafka会存在数据丢失问题</a>  
+&emsp;&emsp;<a href="#63">7.6. 想要保证消息（数据）是有序的，怎么做？</a>  
+&emsp;&emsp;<a href="#64">7.7. 为什么在消息队列中重复消费了数据</a>  
+<a href="#65">RocketMQ</a>  
+&emsp;<a href="#66">1. 基本概念</a>  
+&emsp;<a href="#67">2. 基本架构</a>  
+&emsp;<a href="#68">3. 优缺点</a>  
+&emsp;<a href="#69">4. 事务实现</a>  
 # <a name="0">消息队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 参考资料：
@@ -148,9 +155,7 @@
     2. 若指定了分区，那么消息会发送指定分区。
     3. 如果未指定分区但是指定了key，那么就会使用key进行hash算法计算对应的分区。要求key要均匀，否则会出现Kafka分区间数据不均衡。
     4. 若key和分区均未指定，那么将会使用轮询发送的方式。
-```
-KafkaTemplate.send(ProducerRecord<K,V> record)
-```
+> `KafkaTemplate.send(ProducerRecord<K,V> record)`
 
 ##### <a name="13">处理措施</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 临时处理措施：同时增加kafka的服务器与消费者，**增加Partition，同时增加消费能力**。
@@ -159,24 +164,60 @@ KafkaTemplate.send(ProducerRecord<K,V> record)
 1. 实时/消费任务挂掉
     1. 任务重新启动后直接消费最新的消息，对于"滞后"的历史数据采用离线程序进行"补漏"。
     2. 任务启动从上次提交offset处开始消费处理
-2. Kafka分区数设置的不合理(TODO) 
-    - 增加分区或者重新评估分区设置 
+2. Kafka分区数设置的不合理(TODO) :增加分区或者重新评估分区设置 
 3. 消息发送不均匀，合理设置
-    - 在Kafka producer处，给key加随机后缀，使其均衡。 
-    - 评估顺序消费的能力。
+    1. 在Kafka producer处，给key加随机后缀，使其均衡。 
+    2. 评估顺序消费的能力。
 
 ### <a name="14">数据一致性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用分布式事务解决消息发送后，一个消息被不同系统分别监听可能导致的 数据不一致问题。
-  - 如把下单，优惠券，积分。。。都放在一个事务里面一样，要成功一起成功，要失败一起失败。
+> 如把下单，优惠券，积分。。。都放在一个事务里面一样，要成功一起成功，要失败一起失败。
   
 ### <a name="15">可用性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 如何保证消息队列可用
 
-### <a name="16">分布式事务问题 TODO</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">分布式事务问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+分布式事务就是指事务的参与者、支持事务的服务器、资源服务器以及事务管理器分别位于不同的分布式系统的不同节点之上。简单的说，就是一次大的操作由不同的小操作组成，这些小的操作分布在不同的服务器上，且属于不同的应用，分布式事务需要保证这些小操作要么全部成功，要么全部失败。本质上来说，分布式事务就是为了保证不同数据库的数据一致性。
 
-- https://www.cnblogs.com/FlyAway2013/p/10124283.html
-- https://blog.csdn.net/hosaos/article/details/108644527
-- https://www.cnblogs.com/rjzheng/p/10115798.html
+在业务开发中，经常遇到更新服务数据库事务并且需要发送消息的场景，比如订单付款成功+发消息，用于给下游的积分系统给用户增加积分等等。\
+实际上在开发中，很多人都会如此实现：
+```
+@Transactional
+public void createOrder() {
+
+    //1. 创建订单
+    orderDAO.insert(orderDO);
+    
+    //2. 发消息
+    kafkaProducer.send()
+}
+```
+这段实现的问题：
+1. 把中间件的通信放在事务中处理，如果中间件通信出现问题，可能导致事务过长。在并发量大的时候，可能会因为长事务占满数据库的连接，导致服务出现故障。
+2. 下游服务，如果依赖于上游记录。可能在发送消息而事务还未提交时，下游服务回调上游服务，未找到对应的记录。
+3. 如果发送消息成功，而本地事务提交失败，而出现了不一致的情况。
+
+> **任何涉及到数据库和中间件之间的业务逻辑操作，都需要考虑二者之间的一致性。**
+
+**本地消息表**
+
+本地消息表这个方案最初是ebay提出的[ebay的完整方案](https://queue.acm.org/detail.cfm?id=1394128)
+
+此方案的核心是将需要分布式处理的任务通过消息日志的方式来异步执行。消息日志可以存储到本地文本、数据库或消息队列，再通过业务规则自动或人工发起重试。人工重试更多的是应用于支付场景，通过对账系统对事后问题的处理。
+
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/local-message-table.png)
+
+本地消息表实现：
+1. 在发送端建立一张用于发送消息专用的数据库表，在必须要发送事务的场景下，更新数据同时插入本地消息表，保证事务的一致性。
+2. 通过定时job，扫描消息表发送队列消息，成功后更新消息表对应记录，来保证消息必定发送成功。
+3. 发送消息与更新本地消息表同样数据分布式事务，会出现发送队列消息成功，而更新本地消息表失败的情况。因此消费端需要做好幂等的处理。
+4. 消费端幂等的处理，可见本文重复消费的内容。
+> 本地消息表实现的缺点：业务方需要单独设计消息表，以及需要定时发送消息的定时器，增加了与业务无关的开发负担
+
+参考文章：
+- [老生常谈——利用消息队列处理分布式事务 ](https://www.cnblogs.com/rjzheng/p/10115798.html)
+- [分布式事务之本地消息表](https://www.cnblogs.com/FlyAway2013/p/10124283.html)
+- [最终一致性之本地消息表、消息事务(三种常见错误场景)](https://blog.csdn.net/hosaos/article/details/108644527)
 
 ## <a name="17">消息队列选型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 目前主要的消息队列有 ActiveMQ、RabbitMq、Kafka、RocketMq，用的比较多的是Kafka和RocketMq两个，主要这两个都支持10万级的高吞吐量，而且相应的开发社区活跃，遇到源码问题便于维护。
@@ -233,8 +274,54 @@ KafkaTemplate.send(ProducerRecord<K,V> record)
 
 **RabbitMQ采用队列模型，RocketMQ和Kafka 采用发布/订阅模型**
 
-# <a name="24">Kafka</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-## <a name="25">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="24">消息队列相关概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="25">优先级队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+优先级队列不同于先进先出队列，优先级高的消息具备优先被消费的特权，这样可以为下游提供不同消息级别的保证。
+> 不过这个优先级也是需要有一个前提的：如果消费者的消费速度大于生产者的速度，并且消息中间件服务器(一般简单的称之为Broker)中没有消息堆积，那么对于发送的消息设置优先级也就没有什么实质性的意义了，因为生产者刚发送完一条消息就被消费者消费了，那么就相当于Broker中至多只有一条消息，对于单条消息来说优先级是没有什么意义的。
+
+### <a name="26">延迟队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+延迟队列存储的是对应的延迟消息，所谓“延迟消息”是指当消息被发送以后，并不想让消费者立刻拿到消息，而是等待特定时间后，消费者才能拿到这个消息进行消费。
+
+延迟队列一般分为两种：
+1. 基于消息的延迟和基于队列的延迟。
+2. 基于消息的延迟是指为每条消息设置不同的延迟时间，那么每当队列中有新消息进入的时候就会重新根据延迟时间排序，当然这也会对性能造成极大的影响。
+> 实际应用中大多采用基于队列的延迟，设置不同延迟级别的队列，比如5s、10s、30s、1min、5min、10min等，每个队列中消息的延迟时间都是相同的，这样免去了延迟排序所要承受的性能之苦，通过一定的扫描策略(比如定时)即可投递超时的消息。
+
+### <a name="27">死信队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+**死信队列**用于处理无法被正常消费的消息，即死信消息。由于某些原因消息无法被正确的投递，为了确保消息不会被无故的丢弃，一般将其置于一个特殊角色的队列，这个队列一般称之为死信队列。这种正常情况下无法被消费的消息称为**死信消息**(Dead-Letter Message)
+> 死信队列解决的问题是：如果消费者在消费时发生了异常，那么就不会对这一次消费进行确认(Ack),进而发生回滚消息的操作之后消息始终会放在队列的顶部，然后不断被处理和回滚，导致队列陷入死循环。\
+> RocketMq的死信队列介绍：当一条消息初次消费失败，消息队列RocketMQ版会自动进行消息重试，达到最大重试次数后，若消费依然失败，则表明消费者在正常情况下无法正确地消费该消息。此时，消息队列RocketMQ版不会立刻将消息丢弃，而是将其发送到该消费者对应的特殊队列中。
+
+RocketMq中支持导出死信消息以及在控制台上重新发送死信消息。
+> 一条消息进入死信队列，意味着某些因素导致消费者无法正常消费该消息，因此，通常需要您对其进行特殊处理。排查可疑因素并解决问题后，可以在消息队列RocketMQ版控制台重新发送该消息，让消费者重新消费一次。
+
+- [RocketMq死信队列](https://help.aliyun.com/document_detail/87277.html)
+
+### <a name="28">重试队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+重试队列，具体指消费端消费消息失败时，为防止消息无故丢失而重新将消息回滚到Broker中。与回退队列不同的是重试队列一般分成多个重试等级，每个重试等级一般也会设置重新投递延时，重试次数越多投递延时就越大。
+> 举个例子：消息第一次消费失败入重试队列Q1，Q1的重新投递延迟为5s，在5s过后重新投递该消息;如果消息再次消费失败则入重试队列Q2，Q2的重新投递延迟为10s，在10s过后再次投递该消息。\
+> 重试越多次重新投递的时间就越久，为此需要设置一个上限，超过投递次数就入死信队列。重试队列与延迟队列有相同的地方，都是需要设置延迟级别，它们彼此的区别是：延迟队列动作由内部触发，重试队列动作由外部消费端触发;延迟队列作用一次，而重试队列的作用范围会向后传递。
+
+### <a name="29">消息回溯</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+一般消息在消费完成之后就被处理了，之后再也不能消费到该条消息。消息回溯正好相反，是指消息在消费完成之后，还能消费到之前被消费掉的消息。
+> 主要解决的问题是：对于消息而言，经常面临的问题是“消息丢失”，至于是真正由于消息中间件的缺陷丢失还是由于使用方的误用而丢失一般很难追查，如果消息中间件本身具备消息回溯功能的话，可以通过回溯消费复现“丢失的”消息进而查出问题的源头之所在。\
+> 典型业务场景: 如consumer做订单分析，但是由于程序逻辑或者依赖的系统发生故障等原因，导致今天消费的消息全部无效，需要重新从昨天零点开始消费，那么以时间为起点的消息重放功能对于业务非常有帮助。
+
+### <a name="30">其他概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+消息追踪/轨迹: 引入消息轨迹可以知道消息从生产者触发，经由broker等代理存储，再到消费者消费的整个过程，各个节点的状态、时间、地点等数据汇聚而成完整的链路信息。
+
+消息过滤: 指按照既定的过滤规则为下游用户提供指定类别的消息。
+> 以Kafka为例，可以通过客户端提供的ConsumerInterceptor接口或者Kafka Stream的filter功能进行消息过滤。对于rocketmq来说，支持Tag、SQL92和类过滤器(新版去除)等3种模式。
+
+消息审计: 指在消息在生产、存储和消费的整个过程之间对消息个数及延迟的审计，以此来检测是否有数据丢失、是否有数据重复、端到端的延迟又是多少等。
+
+消息路由: 将消息路由到指定的队列中，消费者消费队列里的消息。
+
+# <a name="31">Kafka</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="32">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-structure.png)
 
@@ -249,19 +336,19 @@ KafkaTemplate.send(ProducerRecord<K,V> record)
 6. `Zookeeper`：负责集群的元数据管理等功能，比如集群中有哪些 broker 节点以及 Topic，每个 Topic 又有哪些 Partition 等。
 7. 消费组`Consumer Group`：一群消费者的集合，向Topic订阅消费消息的单位是Consumers。
 
-## <a name="26">Kafka 高性能设计技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="33">Kafka 高性能设计技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-advantage.png)
 
-### <a name="27">Producer发送端</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">Producer发送端</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 批量发送消息。Kafka 采用了批量发送消息的方式，通过将多条消息按照分区进行分组，然后每次发送一个消息集合，从而大大减少了网络传输的`overhead`。
 2. 消息压缩。消息压缩的目的是为了进一步减少网络传输带宽。
-  > 其实压缩消息不仅仅减少了网络 IO，它还大大降低了磁盘 IO。因为批量消息在持久化到 Broker 中的磁盘时，仍然保持的是压缩状态，最终是在 Consumer 端做了解压缩操作。
+    > 其实压缩消息不仅仅减少了网络 IO，它还大大降低了磁盘 IO。因为批量消息在持久化到 Broker 中的磁盘时，仍然保持的是压缩状态，最终是在 Consumer 端做了解压缩操作。
 3. 高效序列化。支持自定义类型，只需要提供相应的序列化和反序列化器。用户可以根据实际情况选用快速且紧凑的序列化方式（比如 ProtoBuf、Avro）来减少实际的网络传输量以及磁盘存储量，进一步提高吞吐量。
 4. 内存池复用。
     > Producer 一上来就会占用一个固定大小的内存块，比如 64MB，然后将 64 MB 划分成 M 个小内存块（比如一个小内存块大小是 16KB）。当需要创建一个新的 Batch 时，直接从内存池中取出一个 16 KB 的内存块即可，然后往里面不断写入消息，但最大写入量就是 16 KB，接着将 Batch 发送给 Broker ，此时该内存块就可以还回到缓冲池中继续复用了，根本不涉及垃圾回收。
    ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-producer.png)
 
-### <a name="28">Broker存储消息</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">Broker存储消息</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. IO多路复用: kafka采用`Reactor`网络通信模型。
     > `Acceptor`线程，负责监听新的连接。`Processor`线程都有自己的`selector`，负责从`socket`中读写数据。`KafkaRequestHandler`业务处理线程，进行业务处理，然后生成`response`，再交由给`Processor`线程。
       ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-broker-connect.png)
@@ -272,7 +359,7 @@ KafkaTemplate.send(ProducerRecord<K,V> record)
 4. 分区分段结构。当面对海量消息时，单机的存储容量和读写性能有限，对数据进行分区存储，可以更好的利用不同机器的读写能力，应对海量数据的存储。
     > kafka通过水平拆分方案，对数据进行拆分，拆分后的数据子集叫做 Partition（分区），各个分区的数据合集即全量数据。每个`Partition`又被分成了多个`Segment`，引入`Segment`可以防止`Partition`过大。同时做历史消息删除时，常见的操作时需要将文件前面的内容删除，这有悖顺序写的设计。而`Segment`的引入，只需将旧的`Segment`文件删除即可，保证了每个`Segment`的顺序写。
 
-### <a name="29">Consumer消费端</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">Consumer消费端</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 稀疏索引。kafka查询的场景主要是能按照`offset`或者`timestamp`查到消息即可。Kafka消息的`offset`设计成有序的，将消息划分成若干个`block`，而稀疏索引记录每个`block`第一条消息的`offset`，查找的时候便可以便捷的使用二分查找高效定位。
     > 稀疏索引不会为**每个搜索关键字创建索引记录**。此处的索引记录包含搜索键和指向磁盘上数据的实际指针。搜索记录时，首先按索引记录进行操作，然后到达数据的实际位置。再进行顺序搜索，直到找到所需的数据为止。\
       B+树随着记录插入需要频繁的页分裂效率较低，而hash索引的常驻内存，若高达几百万的消息写入，会将内存撑爆。
@@ -283,14 +370,14 @@ KafkaTemplate.send(ProducerRecord<K,V> record)
 4. 批量拉取。和生产者批量发送消息类似，消息者也是批量拉取消息的，每次拉取一个消息集合，从而大大减少了网络传输的 overhead。
 
 
-## <a name="30">数据同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="37">数据同步</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="31">kafka replica</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">kafka replica</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 当某个topic的replication-factor为N且N大于1时，每个Partition都会有N个副本(Replica)。kafka的replica包含leader与follower。
 2. Replica的个数小于等于Broker的个数，也就是说，对于每个Partition而言，每个Broker上最多只会有一个Replica，因此可以使用Broker id 指定Partition的Replica。
 3. 所有Partition的Replica默认情况会均匀分布到所有Broker上。
 
-### <a name="32">ISR</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="39">ISR</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 常见的同步方式：
 - **同步复制**：只有所有的follower把数据拿过去后才commit，一致性好，可用性不高。
 - **异步复制**：只要leader拿到数据立即commit，等follower慢慢去复制，可用性高，立即返回，一致性差一些。
@@ -301,7 +388,7 @@ Kafka的ISR(in-sync replica set)机制:
 3. 当ISR中所有Replica都向Leader发送ACK时，leader才commit。
 > 该时间阈值由replica.lag.time.max.ms参数设定。leader发生故障后，就会从ISR中选举出新的leader。
 
-### <a name="33">ACK机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="40">ACK机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ACK 机制：Kafka 采用的是至少一次`At least once`，消息不会丢，但是可能会重复传输。`acks`的默认值即为1，代表我们的消息被leader副本接收之后就算被成功发送。
 > 可以配置 `acks = all` ，代表则所有副本都要接收到该消息之后该消息才算真正成功被发送。即保证消息不丢失的，设置消息持久化后再返回消息发送成功响应。对应Spring配置`spring.kafka.producer.acks=-1`
 
@@ -316,7 +403,7 @@ ACK 机制：Kafka 采用的是至少一次`At least once`，消息不会丢，�
 | 特点 | 数据异步复制和存储，速度快、吞吐量高、可用性高、可靠性差 | Leader保存有完整数据，速度较快、吞吐量较高、可用性较高、可靠性较差 | Leader和ISR中的follower节点都保存有数据，同步较慢、可靠性较高 |
 | 数据一致性 | 丢失数据风险最高、基本没有一致性 | 丢失数据风险较高 | 丢失数据的风险最低。极端情况(ISR列表为空)时也有丢失数据的风险 |
 
-### <a name="34">故障转移过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">故障转移过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-collapse.png)
 > LEO：每个副本最大的 offset。\
   HW：消费者能见到的最大的 offset，ISR 队列中最小的 LEO。
@@ -328,12 +415,12 @@ follower 发生故障后会被临时踢出 ISR 集合，待该 follower 恢复�
 leader 发生故障后，会从 ISR 中选出一个新的 leader，之后，为保证多个副本之间的数据一致性，其余的 follower 会先将各自的 log 文件高于 HW 的部分截掉，然后从新的 leader 同步数据。
 > 这只能保证副本之间的数据一致性，并不能保证数据不丢失或者不重复。
 
-### <a name="35">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 kafka 幂等功能：producer 不论向 server 发送多少重复数据，server 端都只会持久化一条。
 > producer的参数中`enable.idompotence`设置为true即可。开启幂等性的producer在初始化时会被分配一个PID，发往同一partition的消息会附带Sequence Number。而broker端会对`<PID,Partition,SeqNumber>`做缓存，当具有相同主键的消息提交时，broker 只会持久化一条。
 但是 PID 重启后就会变化，同时不同的partition也具有不同主键，所以幂等性无法保证跨分区会话的Exactly Once。
 
-## <a name="36">消息消费细节</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="43">消息消费细节</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Kafka 使用`pull`的方式消费消息。通过建立`长轮询`的模式来拉取消费。
 > pull模式不足之处是，如果Kafka没有数据，消费者可能会陷入循环中，一直返回空数据。解决方案是引入参数`timeout`\
 > 消费者去Broker拉消息，定义了一个超时时间，也就是说消费者去请求消息，如果有的话马上返回消息，如果当前没有数据可供消费，consumer 会等待一段时间之后再返回，这段时长即为`timeout`，然后再次发起拉消息请求。
@@ -345,7 +432,7 @@ Kafka 使用`pull`的方式消费消息。通过建立`长轮询`的模式来拉
 2. 消费者端实现各式各样，使用拉取的方式，消费者端更灵活。
 3. 匹配消费者端的消费效率，消费速度由消费端控制。
 
-### <a name="37">消费者组与Partition</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="44">消费者组与Partition</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一个consumer group中有多个consumer，一个topic有多个partition，所以必然会涉及到partition的分配问题，即确定哪个partition由哪个consumer来消费。\
 Kafka有两种分配策略，一个是RoundRobin，一个是Range，默认为range，当消费者组内消费者发生变化时，会触发分区分配策略（方法重新分配）。
 
@@ -359,11 +446,11 @@ Kafka有两种分配策略，一个是RoundRobin，一个是Range，默认为ran
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafka-partition-consumer.png)
 
-### <a name="38">offset</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="45">offset</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 `offset`(消费进度):表示消费者的消费进度，offset在broker以内部`topic(__consumer_offsets)`的方式来保存起来。
 
 
-## <a name="39">分布式的kafka解决节点宕机或者抖动问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="46">分布式的kafka解决节点宕机或者抖动问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/kafkaStructure.jpg)
 - 红色块的Partition代表的是主分区，紫色的Partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
@@ -373,7 +460,7 @@ Kafka有两种分配策略，一个是RoundRobin，一个是Range，默认为ran
 
 
 
-## <a name="40">与ZooKeeper的依赖</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="47">与ZooKeeper的依赖</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 探测broker和consumer的添加或移除。
 
 - 负责维护所有Partition的领导者/从属者关系（主分区和备份分区），如果主分区挂了，需要选举出备份分区作为主分区。
@@ -381,18 +468,18 @@ Kafka有两种分配策略，一个是RoundRobin，一个是Range，默认为ran
 - 维护topic、Partition等元配置信息
 
 
-### <a name="41">Broker 注册 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="48">Broker 注册 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Broker是分布式部署并且相互之间相互独立，但是需要有一个注册系统能够将整个集群中的Broker管理起来
 
 在 Zookeeper 上会有一个专门用来进行 **Broker 服务器列表记录的节点**。每个 Broker 在启动时，都会到 Zookeeper 上进行注册，即到/brokers/ids 下创建属于自己的节点。每个 Broker 就会将自己的 IP 地址和端口等信息记录到该节点中去
 
-### <a name="42">Topic 注册 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="49">Topic 注册 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在 Kafka 中，同一个Topic 的消息会被分成多个分区并将其分布在多个 Broker 上，这些分区信息及与 Broker 的对应关系也都是由 Zookeeper 在维护。比如我创建了一个名字为 my-topic 的主题并且它有两个分区，对应到 zookeeper 中会创建这些文件夹：/brokers/topics/my-topic/Partitions/0、/brokers/topics/my-topic/Partitions/1
 
-### <a name="43">负载均衡 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="50">负载均衡 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Kafka 通过给特定 Topic 指定多个 Partition, 而各个 Partition 可以分布在不同的 Broker 上, 这样便能提供比较好的并发能力。 对于同一个 Topic 的不同 Partition，Kafka 会尽力将这些 Partition 分布到不同的 Broker 服务器上。当生产者产生消息后也会尽量投递到不同 Broker 的 Partition 里面。当 Consumer 消费的时候，Zookeeper 可以根据当前的 Partition 数量以及 Consumer 数量来实现动态负载均衡。
 
-### <a name="44">消息 消费进度Offset 记录</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="51">消息 消费进度Offset 记录</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在消费者对指定消息分区进行消息消费的过程中，需要定时地将分区消息的消费进度Offset记录到Zookeeper上，以便在该消费者进行重启或者其他消费者重新接管该消息分区的消息消费后，能够从之前的进度开始继续进行消息消费。Offset在Zookeeper中由一个专门节点进行记录，其节点路径为:
 
 `/consumers/[group_id]/offsets/[topic]/[broker_id-partition_id]`
@@ -401,9 +488,9 @@ Kafka 通过给特定 Topic 指定多个 Partition, 而各个 Partition 可以�
 
 
 
-## <a name="45">面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="52">面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="46">Kafka 是什么？主要应用场景有哪些？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="53">Kafka 是什么？主要应用场景有哪些？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Kafka 是一个分布式流式处理平台。具有三个关键功能：
 - 消息队列：发布和订阅消息流，这个功能类似于消息队列，这也是 Kafka 也被归类为消息队列的原因。
 - 容错的持久方式存储记录消息流： Kafka 会把消息持久化到磁盘，有效避免了消息丢失的风险·。
@@ -417,16 +504,16 @@ Kafka 主要有两大应用场景：
 - 极致的性能：基于 Scala 和 Java 语言开发，设计中大量使用了批量处理和异步的思想，最高可以每秒处理千万级别的消息。
 - 生态系统兼容性无可匹敌：Kafka 与周边生态系统的兼容性是最好的没有之一，尤其在大数据和流计算领域。
 
-#### <a name="47">kafka优点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="54">kafka优点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. Kafka操作的是序列文件I/O（序列文件的特征是按顺序写，按顺序读），为保证顺序，Kafka强制点对点的按顺序传递消息，这意味着，一个consumer在消息流（或分区）中只有一个位置。
 2. Kafka不保存消息的状态，即消息是否被“消费”。一般的消息系统需要保存消息的状态，并且还需要以随机访问的形式更新消息的状态。而Kafka 的做法是保存Consumer在Topic分区中的位置offset，在offset之前的消息是已被“消费”的，在offset之后则为未“消费”的，并且offset是可以任意移动的，这样就消除了大部分的随机IO。
 3. Kafka支持点对点的批量消息传递。
 4. Kafka的消息存储在OS page Cache（页缓存，page cache的大小为一页，通常为4K，在Linux读写文件时，它用于缓存文件的逻辑内容，从而加快对磁盘上映像和数据的访问）。
 
-### <a name="48">kafka 为什么快</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="55">kafka 为什么快</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 顺序写磁盘、大量使用内存页 、零拷贝技术的使用、消息压缩及批量发送
 
-#### <a name="49">顺序写磁盘</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="56">顺序写磁盘</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在顺序读写的情况下，磁盘的顺序读写速度和内存持平。因为硬盘是机械结构，每次读写都会寻址->写入，其中寻址是一个“机械动作”，它是最耗时的。而且 Linux 对于磁盘的读写优化也比较多，包括 read-ahead 和 write-behind，磁盘缓存等。
 
 使用磁盘操作有以下几个好处：
@@ -438,10 +525,10 @@ Kafka 主要有两大应用场景：
 - 「基于时间」 （默认七天）
 - 「基于 Partition 文件大小」
 
-#### <a name="50">大量使用内存页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="57">大量使用内存页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 mmap （Memory Mapped Files）直接利用操作系统的Page来实现文件到物理内存的映射，完成之后对物理内存的操作会直接同步到硬盘。mmf 通过内存映射的方式大大提高了IO速率，省去了用户空间到内核空间的复制。
 
-#### <a name="51">零拷贝技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="58">零拷贝技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 传统 Read/Write 方式进行网络文件传输，在传输过程中，文件数据实际上是经过了四次 Copy 操作，其具体流程细节如下：
 
 1. 调用 Read 函数，文件数据被 Copy 到内核缓冲区。
@@ -452,12 +539,12 @@ mmap （Memory Mapped Files）直接利用操作系统的Page来实现文件到�
 
 Sendfile 系统调用则提供了一种减少以上多次 Copy，提升文件传输性能的方法。以简化网络上和两个本地文件之间的数据传输。
 
-#### <a name="52">消息压缩、批量发送</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="59">消息压缩、批量发送</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 批量发送：Kafka允许进行批量发送消息，producter发送消息的时候，可以将消息缓存在本地，等到了固定条件发送到 Kafka 。
 数据压缩：，Producer可以通过GZIP或Snappy格式对消息集合进行压缩。压缩的好处就是减少传输的数据量，减轻对网络传输的压力。
 
 
-### <a name="53">Kafka 如何保证消息队列不丢失</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="60">Kafka 如何保证消息队列不丢失</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ACK 机制：Kafka 采用的是至少一次（At least once），消息不会丢，但是可能会重复传输。 acks 的默认值即为1，代表我们的消息被leader副本接收之后就算被成功发送。我们可以配置 acks = all ，代表则所有副本都要接收到该消息之后该消息才算真正成功被发送。
 > 即保证消息不丢失的，设置消息持久化后再返回消息发送成功响应。
@@ -480,7 +567,7 @@ spring.kafka.producer.acks=-1
 设置分区:为了保证 leader 副本能有 follower 副本能同步消息，我们一般会为 topic 设置 replication.factor >= 3。保证每个 分区(Partition) 至少有 3 个副本.
 
 关闭 unclean leader 选举: leader 副本发生故障时， follower 副本与leader副本 同步程度不一致的副本不会加入选举。
-  - `unclean.leader.election.enable = false`
+> `unclean.leader.election.enable = false`
 
 生产者端：
   1. 进行本地buffer，批量发送消息。设置`producer.type=async` 表示消息批量发送。默认为sync
@@ -494,24 +581,25 @@ spring.kafka.consumer.enable-auto-commit=false
 ```
 
 ---
-### <a name="54">kafka 高可用是如何实现?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="61">kafka 高可用是如何实现?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 
-### <a name="55">kafka会存在数据丢失问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="62">kafka会存在数据丢失问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 数据在消息队列是如何持久化(磁盘？数据库？Redis？分布式文件系统？)
-- Kafka会将Partition以消息日志的方式(落磁盘)存储起来，通过 顺序访问IO和缓存(等到一定的量或时间)才真正把数据写到磁盘上，来提高速度。
 
-### <a name="56">想要保证消息（数据）是有序的，怎么做？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- Kafka会将数据写到Partition，单个Partition的写入是有顺序的。如果要保证全局有序，那只能写入一个Partition中。如果要消费也有序，消费者也只能有一个。
+Kafka会将Partition以消息日志的方式(落磁盘)存储起来，通过 顺序访问IO和缓存(等到一定的量或时间)才真正把数据写到磁盘上，来提高速度。
 
-### <a name="57">为什么在消息队列中重复消费了数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- 凡是分布式就无法避免网络抖动/机器宕机等问题的发生，很有可能消费者A读取了数据，还没来得及消费，就挂掉了。Zookeeper发现消费者A挂了，让消费者B去消费原本消费者A的分区，等消费者A重连的时候，发现已经重复消费同一条数据了。(各种各样的情况，消费者超时等等都有可能…)
+### <a name="63">想要保证消息（数据）是有序的，怎么做？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Kafka会将数据写到Partition，单个Partition的写入是有顺序的。如果要保证全局有序，那只能写入一个Partition中。如果要消费也有序，消费者也只能有一个。
+
+### <a name="64">为什么在消息队列中重复消费了数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+凡是分布式就无法避免网络抖动/机器宕机等问题的发生，很有可能消费者A读取了数据，还没来得及消费，就挂掉了。Zookeeper发现消费者A挂了，让消费者B去消费原本消费者A的分区，等消费者A重连的时候，发现已经重复消费同一条数据了。(各种各样的情况，消费者超时等等都有可能…)
   
 如果业务上不允许重复消费的问题，最好消费者那端做业务上的校验（如果已经消费过了，就不消费了）
   
-# <a name="58">RocketMQ</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="65">RocketMQ</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-## <a name="59">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="66">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 消息生产者（Producer）：负责生产消息，一般由业务系统负责生产消息。RocketMQ提供多种发送方式，同步发送、异步发送、顺序发送、单向发送。同步和异步方式均需要Broker返回确认信息，单向发送不需要。
 
 消息消费者（Consumer）：负责消费消息，一般是后台系统负责异步消费。
@@ -533,14 +621,14 @@ spring.kafka.consumer.enable-auto-commit=false
 消费者组（Consumer Group）：同一类Consumer的集合，这类Consumer通常消费同一类消息且消费逻辑一致。消费者组使得在消息消费方面，实现负载均衡和容错的目标变得非常容易。要注意的是，消费者组的消费者实例必须订阅完全相同的Topic。RocketMQ 支持两种消息模式：集群消费和广播消费。
 - 标签（Tag）：为消息设置的标志，用于同一主题下区分不同类型的消息。来自同一业务单元的消息，可以根据不同业务目的在同一主题下设置不同标签。标签能够有效地保持代码的清晰度和连贯性，并优化RocketMQ提供的查询系统。
 
-## <a name="60">基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="67">基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/rocketmqAC.jpg)
 主要包含四部分Producer、Consumer、Broker、NameServer
 
 - Producer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向**提供Topic 服务的Master建立长连接**，且定时向Master发送心跳。
 - Consumer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向**提供Topic服务的Master、Slave建立长连接**，且定时向Master、Slave发送心跳。
 
-## <a name="61">优缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="68">优缺点</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 单机吞吐量：十万级
 - 可用性：非常高，分布式架构
 - 支持10亿级别的消息堆积，不会因为堆积导致性能下降
@@ -552,7 +640,7 @@ spring.kafka.consumer.enable-auto-commit=false
 - 社区活跃度不是特别活跃那种
 - 没有在 mq 核心中去实现JMS等接口，有些系统要迁移需要修改大量代码
 
-## <a name="62">事务实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="69">事务实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 RocketMQ采用了2PC的思想来实现了提交事务消息，同时增加一个补偿逻辑来处理二阶段超时或者失败的消息。
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/middleware/rocketMqTransaction.jpg)
 

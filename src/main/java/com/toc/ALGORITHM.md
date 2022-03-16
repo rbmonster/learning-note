@@ -74,7 +74,8 @@
 &emsp;<a href="#71">15. 滑动窗口</a>  
 &emsp;<a href="#72">16. TODO 二进制应用</a>  
 &emsp;<a href="#73">17. 常用操作</a>  
-&emsp;&emsp;<a href="#74">17.1. Kanade 算法</a>  
+&emsp;&emsp;<a href="#74">17.1. 求余数常见操作</a>  
+&emsp;&emsp;<a href="#75">17.2. Kanade 算法</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -167,9 +168,7 @@ public class Solution{
 
 
 经典问题：
-
-- [剑指 Offer 24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/) 
-> 栈、头插法、递归
+- [剑指 Offer 24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/) :栈、头插法、递归
 - [合并两有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 - [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 
@@ -191,15 +190,11 @@ public class Solution{
 ```
 
 
-
 - [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
-
-
-
 
 ## <a name="6">队列</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-队列是典型的 FIFO 数据结构。
+队列是典型的 FIFO 数据结构：
 - 插入（insert）操作也称作入队（enqueue），新元素始终被添加在队列的末尾。 
 - 删除（delete）操作也被称为出队（dequeue)。 你只能移除第一个元素。
 
@@ -309,7 +304,7 @@ class MaxQueue {
 
 ```
 - [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
-- **[剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+- [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/): review
 
 ## <a name="9">栈</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
@@ -1173,16 +1168,13 @@ public class Soluction {
 3. 迭代的动态规划解法。
 
 动态规划思想流程：
-1. 【状态】和【选择】，明确问题存在哪几种状态；问题场景如何做状态选择，进而转换状态。
+1. 【状态】和【选择】，明确问题存在哪几种状态。问题场景如何做状态选择，进而转换状态。
 2. 确定dp数组以及下标的含义
 3. 根据【选择】的过程，确定递推公式
 4. dp数组如何初始化
 5. 确定遍历顺序
 6. 举例推导dp数组，进行问题模拟
 7. 出错的情况，将dp数组打印出来，保证程序处理流程如设想运行。
-
-
-
 
 如果能写出暴力的递归方法，就回发现在递归过程中，进行了太多重复计算，此时可以使用备忘录的方法进行优化。
 
@@ -1238,7 +1230,7 @@ class Solution {
 
 - [不同路径](https://leetcode-cn.com/problems/unique-paths/)
 - [不同路径 II](https://leetcode-cn.com/problems/unique-paths-ii/)
-- *[整数拆分](https://leetcode-cn.com/problems/integer-break/)
+- [整数拆分](https://leetcode-cn.com/problems/integer-break/) : review
 - [不同的二叉搜索树](https://leetcode-cn.com/problems/unique-binary-search-trees/)
 - [数字翻译字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
 
@@ -1888,7 +1880,7 @@ public class BinarySearchRight {
 计算1的个数
 
 ## <a name="73">常用操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-求余数常见操作
+### <a name="74">求余数常见操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```java
 public class Solution {
   private int getNext(int n) {
@@ -1906,7 +1898,7 @@ public class Solution {
 }
 ```
 
-### <a name="74">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="75">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对于一个给定数组 A，Kadane 算法可以用来找到 A 的最大子段和。
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 ```

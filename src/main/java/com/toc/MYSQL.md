@@ -157,7 +157,7 @@ MySQL可以分为Server层和存储引擎层两部分
 - Server层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。
 - 存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持InnoDB、MyISAM、Memory等多个存储引擎。现在最常用的存储引擎是InnoDB，它从MySQL5.5.5版本开始成为了默认存储引擎
 
-MySQL的一个设计思想：如果内存够用，，就要多利用内存，，尽量减少磁盘访问。
+MySQL的一个设计思想：如果内存够用，就要多利用内存，尽量减少磁盘访问。
 ### <a name="2">Server层基本架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 连接器：登陆数据库的连接验证，完成经典的TCP握手后，连接器就要开始认证你的身份。 
 ```mysql -h$ip -P$port -u$user -p```
@@ -1519,15 +1519,15 @@ INNER JOIN
 
 ### <a name="141">InnoDB 和 MyIsam 数据库引擎的区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 事务处理：MyISAM是非事务安全型的，而InnoDB是事务安全型的（支持事务处理等高级处理）；
-2. 外键支持: mysiam表不支持外键，而InnoDB支持
+2. 外键支持: myisam表不支持外键，而InnoDB支持
 3. 锁机制不同：MyISAM是表级锁，而InnoDB是行级锁；
 4. select查询的区别：
     - count优化： MyISAM只要简单的读出保存好的行数，InnoDB要选择表的索引进而计算行数计算。
     - 缓存区别：InnoDB要缓存数据块，MyISAM只缓存索引，加载索引更快
     - InnoDB要维护MVCC一致
 5. 数据存储方式不同：
-    - MyISAM索引文件和数据文件是分离的（.myi索引文件和.myd数据文件）
-    - InnoDB的数据文件按主键聚集（.idb数据文件）
+    - MyISAM索引文件和数据文件是分离的（`.myi`索引文件和`.myd`数据文件）
+    - InnoDB的数据文件按主键聚集（`.idb`数据文件）
     - 由于数据存储的方式区别，MyISAM主键索引是非聚簇索引，InnoDB主键索引是聚簇索引；
 6. 崩溃恢复，InnoDB特有的redo log 可以保证崩溃安全，
 > - DELETE FROM table时，InnoDB不会重新建立表，而是一行一行的删除。
