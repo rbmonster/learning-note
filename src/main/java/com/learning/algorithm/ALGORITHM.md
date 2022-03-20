@@ -227,6 +227,7 @@ class MaxQueue {
 ```
 - [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
 - [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/): review
+- [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
 
 ## 栈
 - 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
@@ -1182,12 +1183,12 @@ class Solution {
 - [不相交的线](https://leetcode-cn.com/problems/uncrossed-lines/)
 - [判断子序列](https://leetcode-cn.com/problems/is-subsequence/)
 - [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
-- *[不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
-- *[最长递增子序列的个数](https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/)
+- [不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/): review
+- [最长递增子序列的个数](https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/): review
 
 #### 子数组问题
 
-- *[最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
+- [最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/): review
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
 #### 回文问题
