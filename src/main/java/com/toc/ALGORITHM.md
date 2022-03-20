@@ -1244,7 +1244,7 @@ class Solution {
 1. 定义dp：两字符串的动态规划问题，经常的就是以字符串1与字符串2的长度组成二维数组。
 2. 定义下标及含义：dp的含义经常就是求解的结果，下标为从0～i、j的两字符串的子问题
 3. 状态转移公式：主要考虑以下三个的状态转移
-  - `dp[i-1][j-1]`: 匹配条件的，结果顺推
+  - `dp[i-1][j-1]`: 匹配条件的，结果顺推。如子数组匹配问题
   - `dp[i-1][j]`
   - `dp[i][j-1]`
 4. 初始化
@@ -1304,7 +1304,7 @@ class Solution {
 }
 ```
 
-- *[回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+- [回文子串](https://leetcode-cn.com/problems/palindromic-substrings/): review
 - [最长回文子序列](https://leetcode-cn.com/problems/longest-palindromic-subsequence/)
 
 
@@ -1327,7 +1327,7 @@ public class StockTrading {
      * 下标j：第j次交易
      * 下标k：0买入、1卖出
      * 
-     * 2. 初始化，由于dp代表的是第i天所能获取的最大利润，第0天卖出均要初始化成-price[0]
+     * 2. 初始化，由于dp代表的是第i天所能获取的最大利润，第0天卖出均要初始化成-price[0]。(可以理解为与次数不挂钩，仅进行一次交易)
      * 
      * 3. 状态转移：
      *   dp[i][j][0] = Math.max(dp[i-1][j][0], dp[i-1][j][1] + prices[i]);

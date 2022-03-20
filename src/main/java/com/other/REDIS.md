@@ -9,7 +9,7 @@
 ### String 字符串
 使用场景：如博客的文章数量，粉丝数量。
 #### 底层结构
-底层结构为简单动态字符串SDS（simple dynamic String）。\
+底层结构为简单动态字符串SDS（simple dynamic String）。
 1. SDS 中 len 保存这字符串的长度，O(1) 时间复杂度查询字符串长度信息。
 2. 针对缓存频繁修改的情况：SDS分配内存不仅会分配需要的空间，还会分配额外的空间。
     - 小于1MB的SDS每次分配与len属性同样大小的空间
@@ -17,16 +17,16 @@
 3. **使用惰性释放策略**：不立即使用内存重分配来回收缩短后多出来的字节，而是使用free属性，记录字节数量
 
 编码方式：
-- embstr编码：保存的是一个字符串值，且长度<=39，则字符串对象使用的是embstr编码方式保存
-- raw编码： 对embstr字符串执行任何修改命令时，程序会转换编码为raw
+- `embstr`编码：保存的是一个字符串值，且长度<=39，则字符串对象使用的是`embstr`编码方式保存
+- `raw`编码： 对`embstr`字符串执行任何修改命令时，程序会转换编码为raw
 - 中文默认占三个字符。
-> 优先使用embstr编码的原因：embstr方式在内存分配时仅会调用一次内存分配函数，而raw会调用两次。embstr保存在一块连续内存在。
+> 优先使用`embstr`编码的原因：`embstr`方式在内存分配时仅会调用一次内存分配函数，而raw会调用两次。`embstr`保存在一块连续内存。
 #### 相关指令
 相关指令：
- - set 'key' 'value'
- - get 'key'
- - append 'key' 'appendValue' 
- - strlen 'key'  查长度
+ - `set 'key' 'value'`
+ - `get 'key'`
+ - `append 'key' 'appendValue' `
+ - `strlen 'key'`  查长度
 ```
  127.0.0.1:6379> set name 'sdfasdfsdf111111111111111111111111111111111111111111111111111111111'
  OK
@@ -52,37 +52,35 @@
 ### List 列表
 使用场景：比如twitter的关注列表，粉丝列表等都可以用Redis的list结构来实现。
 #### 底层结构
-Redis中的列表list，在版本3.2之前，列表底层的编码是ziplist和linkedlist实现的，但是在版本3.2之后，重新引入 quicklist，列表的底层都由quicklist实现。
+Redis中的列表list，在版本3.2之前，列表底层的编码是`ziplist`和`linkedlist`实现的，但是在版本3.2之后，重新引入 quicklist，列表的底层都由quicklist实现。
 
-quickList是一个ziplist组成的linkedlist双向链表。每个节点使用ziplist来保存数据，它将 linkedlist 按段切分，每一段使用 ziplist 来紧凑存储，多个 ziplist 之间使用双向指针串接起来。
-- ziplist 是一个特殊的双向链表,特殊之处在于没有维护双向指针:prev next；而是存储上一个 entry的长度和 当前entry的长度，通过长度推算下一个元素在什么地方。
-- ziplist使用连续的内存块。
-- linkedList 便于在表的两端进行push和pop操作，在插入节点上复杂度很低，但是它的内存开销比较大。
+quickList是一个`ziplist`组成的`linkedlist`双向链表。每个节点使用`ziplist`来保存数据，它将`linkedlist`按段切分，每一段使用`ziplist`来紧凑存储，多个`ziplist` 之间使用双向指针串接起来。
+- `ziplist`是一个特殊的双向链表,特殊之处在于没有维护双向指针:`prev` `next`。而是存储**上一个entry的长度**和**当前entry的长度**，通过长度推算下一个元素在什么地方。`ziplist`使用**连续的内存块**。
+- `linkedlist`便于在表的两端进行push和pop操作，在插入节点上复杂度很低，但是它的内存开销比较大。
   - 它在每个节点上除了要保存数据之外，还要额外保存两个指针；
   - 其次，双向链表的各个节点是单独的内存块，地址不连续，节点多了容易产生内存碎片。
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/ziplist.jpg)
 
-
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/quicklist.png)
 
 
 > 旧的数据规则\
-> 当满足下面两条件时，使用ziplist。一条不满足即使用linkedlist
+> 当满足下面两条件时，使用`ziplist`。一条不满足即使用`linkedlist`
 > 1. 列表对象保存的所有字符串元素的长度都小于64字节。
 > 2. 列表对象保存的元素数量小于512个。
 
 #### 相关指令
 相关指令：
-- rpush 'key' 'value1' 'value2' ... // 数据推入表尾
-- lpush 'key' 'value1' 'value2' ... // 数据推入表头
-- lpop 'key' //表头弹出数据
-- rpop 'key' // 表尾弹出数据
-- llen 'key' // 查看长度
-- lindex 'key' 0  //定位列表相关元素的值 
-- blpop key1...keyN timeout  // 阻塞弹出，超时返回nil
-- brpop key1...keyN timeout  // 阻塞弹出，超时返回nil
-- brpoplpush llist testlist 10 // 取出最后一个元素，并插入到另外一个列表的头部； 如果列表没有元素阻塞
+- `rpush 'key' 'value1' 'value2' ...` // 数据推入表尾
+- `lpush 'key' 'value1' 'value2' ...` // 数据推入表头
+- `lpop 'key'` //表头弹出数据
+- `rpop 'key'` // 表尾弹出数据
+- `llen 'key'` // 查看长度
+- `lindex 'key' 0`  //定位列表相关元素的值 
+- `blpop key1...keyN timeout`  // 阻塞弹出，超时返回nil
+- `brpop key1...keyN timeout`  // 阻塞弹出，超时返回nil
+- `brpoplpush llist testlist 10` // 取出最后一个元素，并插入到另外一个列表的头部； 如果列表没有元素阻塞
 ```
 127.0.0.1:6379>RPUSH blah "hello" "world" "again"
 
@@ -115,14 +113,13 @@ asdf
 ### Hash 哈希 k-v
 
 #### 底层结构
-哈希对象的编码可以是 ziplist（压缩列表） 或hashtable
-- ziplist会先保存键再保存值，因此键与值总是靠在一起，其中键的方向为压缩列表的表头方向。
+哈希对象的编码可以是 `ziplist`（压缩列表） 或hashtable
+- `ziplist`会先保存键再保存值，因此键与值总是靠在一起，其中键的方向为压缩列表的表头方向。
 - 通过 "数组 + 链表" 的链地址法来解决部分 **哈希冲突**
 
-编码转换：同时以下条件的哈希对象使用ziplist编码，否则使用hashtable
+编码转换：同时以下条件的哈希对象使用`ziplist`编码，否则使用hashtable
 1. 哈希对象保存的所有字符串元素的长度都小于64字节。
 2. 哈希对象保存的元素数量小于512个。
-
 
 #### hash冲突
 Redis 的哈希表使用链地址法解决hash冲突，即冲突的位置上使用单链表的接口连接，解决冲突的问题。
@@ -130,14 +127,14 @@ Redis 的哈希表使用链地址法解决hash冲突，即冲突的位置上使�
 #### rehash与渐进式rehash
 
 哈希表的负载因子：
-> 负载因子 = 哈希表已保存的节点/哈希表大小\
+> 负载因子 = 哈希表已保存的节点/哈希表大小
 
 哈希表的负载因子用来判断是否需要对哈希表进行扩容或者收缩，扩容及收缩操作可以通过rehash实现
 
 **扩容**:
-1. 服务器没有执行BGSAVE或BGREWRITEAOF命令，且哈希表负载因子大于等于1
-2. 服务器执行BGSAVE或BGREWRITEAOF命令，且哈希表负载因子大于等于5
-> 扩容根据执行BGSAVE或BGREWRITEAOF命令是否执行，是因为上述两命令都是开启子线程进行操作，而操作系统正常都使用COW（Copy-On-Write）技术优化子线程效率。避免子线程运行时进行扩容，可以避免不必要的写操作，进而节省内存。
+1. 服务器没有执行`BGSAVE`或`BGREWRITEAOF`命令，且哈希表负载因子大于等于1
+2. 服务器执行`BGSAVE`或`BGREWRITEAOF`命令，且哈希表负载因子大于等于5
+> 扩容根据执行`BGSAVE`或`BGREWRITEAOF`命令是否执行，是因为上述两命令都是开启子线程进行操作，而操作系统正常都使用COW（Copy-On-Write）技术优化子线程效率。避免子线程运行时进行扩容，可以避免不必要的写操作，进而节省内存。
 
 **收缩**：当哈希表负载因子小于0.1时，对哈希表进行收缩操作。
 
@@ -145,16 +142,16 @@ Redis 的哈希表使用链地址法解决hash冲突，即冲突的位置上使�
 1. 系统给「hashtable 1」分配 「hashtable 0」.used*2的大小，取大于等于2的n次方幂的值
 2. 将「hashtable 0 」的数据重新映射拷贝到 「hashtable 1」中；
 3. 释放「hashtable 0」的空间。                                                                                                                                           
-将`hashtable 0 ` 的数据重新映射到 `hashtable 1 `的过程中并不是一次性的，这样会造成 Redis 阻塞，无法提供服务。而是采用了渐进式 rehash，每次处理客户端请求hashtable执行增删改查操作时，顺带将节点rehash到`hashtable 1` 中。
+将`hashtable 0 `的数据重新映射到 `hashtable 1 `的过程中并不是一次性的，这样会造成 Redis 阻塞，无法提供服务。而是采用了渐进式 rehash，每次处理客户端请求hashtable执行增删改查操作时，顺带将节点rehash到`hashtable 1`中。
 
 > rehash进行期间，字典会同时操作`hashtable 0`与`hashtable 1`，如查找就要在两个表中查找，而新增只操作到新表
 #### 相关指令
 相关指令：
-- hset 'hashName' 'key' 'value' // 添加元素
-- hget 'hashName' 'key'
-- hdel 'hashName' 'key'
-- hlen 'hashName'
-- hgetall 'hashName' // 获取所有元素，依次按照k-v的形式展示
+- `hset 'hashName' 'key' 'value'` // 添加元素
+- `hget 'hashName' 'key'`
+- `hdel 'hashName' 'key'`
+- `hlen 'hashName'`
+- `hgetall 'hashName'` // 获取所有元素，依次按照k-v的形式展示
 
 ```
 127.0.0.1:6379> HSET book name "Master C++ in 21 days"
@@ -187,18 +184,18 @@ shit
 ### 集合对象(set)
 使用场景：在博客的设计中，可以非常方便的实现如共同关注、共同喜好、二度好友等功能
 #### 底层结构
-集合对象的编码可以是intset 或者 hashtable
-> intset整数集合作为底层实现，包含的所有元素都被保存在整数集合里面。
+集合对象的编码可以是`intset` 或者 `hashtable`
+> `intset`整数集合作为底层实现，包含的所有元素都被保存在整数集合里面。
 
-编码转换条件：同时满足以下两条件时，对象使用intset编码否则使用hashtable
+编码转换条件：同时满足以下两条件时，对象使用`intset`编码否则使用`hashtable`
 - 集合对象保存的所有元素都是整数值。
 - 集合对象保存的元素数量不超过512个。
 
 #### 相关指令 
 相关指令：
-- sadd 'setName' 'key' 'value1' 'value2' ...
-- scard 'setName'  // 返回长度
-- sismember 'setName' 'key' // 查看元素是否存在
+- `sadd 'setName' 'key' 'value1' 'value2' ...`
+- `scard 'setName'`  // 返回长度
+- `sismember 'setName' 'key'` // 查看元素是否存在
 ```
 127.0.0.1:6379> sadd aset 123 12323 222
 3
@@ -221,25 +218,25 @@ hashtable
 使用场景： 打赏排行榜
 
 #### 底层结构
-有序集合的编码可以是ziplist或者skiplist
-- ziplist按分值从小到大的进行排序，分值小的元素放在靠近表头方向，对象在前值在后，两者紧凑。
-- skiplist编码的有序集合使用zset结构作为底层实现，一个zset结构同时包含一个字典和跳跃表
+有序集合的编码可以是`ziplist`或者`skiplist`
+- `ziplist`按分值从小到大的进行排序，分值小的元素放在靠近表头方向，对象在前值在后，两者紧凑。
+- `skiplist`编码的有序集合使用zset结构作为底层实现，一个zset结构同时包含一个字典和跳跃表
   
-编码转换条件：满足以下两个条件使用ziplist，否则skiplist
+编码转换条件：满足以下两个条件使用`ziplist`，否则`skiplist`
 - 有序集合保存的元素数量小于128个。
 - 有序集合保存的所有元素成员的长度都小于64个字节。
 
-skipList 跳跃表是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的。
+`skiplist` 跳跃表是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的。
 跳表在链表的基础上，增加了多层级索引，通过索引位置的几个跳转，实现数据的快速定位。
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/skiplist.png)
 
 #### 相关指令
 相关指令
-- zadd 'zsetName' 'score' 'key'
-- zcount 'zsetName' 'scoreMin' 'scoreMax'   // 计算范围内的有的值
-- zcard 'zsetName'  // 计算zset元素的数量
-- zrem 'zsetName' 'key'  // 删除zset 里面的key
-- zrangebyscore delay 0  1606996111  // 获取按score 范围内的key
+- `zadd 'zsetName' 'score' 'key'`
+- `zcount 'zsetName' 'scoreMin' 'scoreMax'`   // 计算范围内的有的值
+- `zcard 'zsetName'`  // 计算zset元素的数量
+- `zrem 'zsetName' 'key'`  // 删除zset 里面的key
+- `zrangebyscore delay 0  1606996111`  // 获取按score 范围内的key
 ```
 127.0.0.1:6379> ZADD blah 1.0 www
 1
@@ -294,8 +291,8 @@ skiplist
 - 统计用户每天搜索不同词条的个数
 
 #### 相关指令
-- pfadd 'keyName'  'value1' 'value2' ... // 添加值到某个集合
-- pfcount 'keyName'   // 统计值
+- `pfadd 'keyName'  'value1' 'value2' ...` // 添加值到某个集合
+- `pfcount 'keyName'`   // 统计值
 ```
 127.0.0.1:6379[3]> pfadd countNum '12' 'asdf' '123'
 1
@@ -315,17 +312,17 @@ GeoHash 算法将 二维的经纬度 数据映射到 一维 的整数，这样�
 - 核心思想就是把整个地球看成是一个二维的平面，然后把这个平面不断地等分成一个一个小的方格，每一个 坐标元素都位于其中的 唯一一个方格 中，等分之后的 方格越小，那么坐标也就 越精确。每个表格使用编码表示。
 - 通过上面的思想，能够把任意坐标变成一串二进制的编码
   
-在 Redis 中，经纬度使用 52 位的整数进行编码，放进了 zset 里面，zset 的 value 是元素的 key，score 是 GeoHash 的 52 位整数值。zset 的 score 虽然是浮点数，但是对于 52 位的整数值来说，它可以无损存储。
+在 Redis 中，经纬度使用 52 位的整数进行编码，放进了 `zset` 里面，`zset` 的 value 是元素的 key，score 是 GeoHash 的 52 位整数值。`zset` 的 score 虽然是浮点数，但是对于 52 位的整数值来说，它可以无损存储。
 - 应用场景：附近的人、附近的餐厅、共享单车（周围的车）
 #### 使用注意场景
 > 如果使用 Redis 的 Geo 数据结构，它们将 全部放在一个 zset 集合中。在 Redis 的集群环境中，集合可能会从一个节点迁移到另一个节点，如果单个 key 的数据过大，会对集群的迁移工作造成较大的影响，在集群环境中单个 key 对应的数据量不宜超过 1M，否则会导致集群迁移出现卡顿现象，影响线上服务的正常运行。所以，这里建议 Geo 的数据使用 单独的 Redis 实例部署，不使用集群环境。\
 > 如果数据量过亿甚至更大，就需要对 Geo 数据进行拆分，按国家拆分、按省拆分，按市拆分，在人口特大城市甚至可以按区拆分。这样就可以显著降低单个 zset 集合的大小。
 
 #### 相关指令
-- geoadd 'geoKeyName'  '纬度' '经度' 'key'
-- geodist 'geoKeyName' '地点key1' '地点key2' km(单位)   // 计算两点距离
-- geopos 'geoKeyName' 'key'    // 显示key对应经纬度
-- georadiusbymember  'geoKeyName' 'key' 20 km withdist count 3 asc   // 计算地点 周围20公里最近的三家店显示带距离
+- `geoadd 'geoKeyName'  '纬度' '经度' 'key'`
+- `geodist 'geoKeyName' '地点key1' '地点key2' km(单位)`   // 计算两点距离
+- `geopos 'geoKeyName' 'key'`    // 显示key对应经纬度
+- `georadiusbymember  'geoKeyName' 'key' 20 km withdist count 3 asc `  // 计算地点 周围20公里最近的三家店显示带距离
 ```
 127.0.0.1:6379[3]> geoadd company 116.48105 39.996794 juejin
 1
@@ -370,11 +367,11 @@ juejin
 
 
 #### 相关指令
-- `BF.RESERVE 'bfName' 0.0001 600000`   //自定义参数创建布隆过滤器 `BF.RESERVE {key} {error_rate} {capacity} [EXPANSION {expansion}] [NONSCALING]`
-- `bf.add  'bfName'  'value'`   //添加元素
-- `bf.exists   'bfName'  'value'`   //判断元素是否存在。
-- `bf.madd 'bfName'  'value' 'value'`  //批量添加
-- `bf.mexists 'bfName'  'value' 'value'`  // 批量判断存在
+- `BF.RESERVE 'bfName' 0.0001 600000`  //自定义参数创建布隆过滤器 `BF.RESERVE {key} {error_rate} {capacity} [EXPANSION {expansion}] [NONSCALING]`
+- `bf.add  'bfName'  'value'`  //添加元素
+- `bf.exists   'bfName'  'value'`  //判断元素是否存在。
+- `bf.madd 'bfName'  'value' 'value'` //批量添加
+- `bf.mexists 'bfName'  'value' 'value'` // 批量判断存在
 ```
 127.0.0.1:6379> bf.add codehole user1
 (integer) 1
@@ -405,14 +402,14 @@ juejin
 - [JavaGuide-bloom-filter](https://github.com/Snailclimb/JavaGuide/blob/master/docs/dataStructures-algorithms/data-structure/bloom-filter.md)
 - [Quick Start Guide for RedisBloom ](https://oss.redis.com/redisbloom/Quick_Start/)
 
-### 布谷鸟过滤器 cockooFilter
+### 布谷鸟过滤器 cuckooFilter
 Bloom Filter 可能存在误报，并且无法删除元素，而Cuckoo哈希就是解决这两个问题的。
 
 Cuckoo的哈希函数是成对的（具体的实现可以根据需求设计），每一个元素都是两个，分别映射到两个位置，一个是记录的位置，另一个是备用位置，这个备用位置是处理碰撞时用的。
 如图，使用hashA 和hashB 计算对应key x的位置a和b ：
 1. 当两个哈希位置有一个为空时，则插入该空位置；
 2. 当两个哈希位置均不为空时，随机选择两者之一的位置上key y 踢出，并计算踢出的key y在另一个哈希值对应的位置，若为空直接插入，不为空踢出原元素插入，再对被踢出的元素重新计算，重复该过程，直到有空位置为止。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/cockooFilter.png)
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/cuckooFilter.png)
 > 挤兑循环问题：一般会对踢出操作设一个阈值，超过阈值则认为过滤器容量不足，需要对其进行扩容，解决同一元素不断添加问题。
 
 ### 相关指令
@@ -447,16 +444,16 @@ OK
 
 
 ### 其他命令
-- DEL、EXPIRE、RENAME、TYPE、OBJECT可以对任何键执行
-- 清空数据库的键:FLUSHDB
-- 随机返回数据库中某个键：RANDOMKEY
-- 返回数据库数量：DBSIZE
+- `DEL、EXPIRE、RENAME、TYPE、OBJECT`可以对任何键执行
+- 清空数据库的键：`FLUSHDB`
+- 随机返回数据库中某个键：`RANDOMKEY`
+- 返回数据库数量：`DBSIZE`
 
-- keys 查询所有key，由于redis单线程，查询所有keys会造成阻塞。线上可以用scan指令（增量式迭代）可能会有一定的重复。
-- scan 无阻塞的取出指定模式的key列表，客户端去重，执行时长会比key长。属于增量式迭代的命令，可能迭代过程key被修改。
+- `keys`：查询所有key，由于redis单线程，查询所有keys会造成阻塞。线上可以用scan指令（增量式迭代）可能会有一定的重复。
+- `scan`：无阻塞的取出指定模式的key列表，客户端去重，执行时长会比key长。属于增量式迭代的命令，可能迭代过程key被修改。
 
 ## 事务
-Redis通过MULTI(开启事务)、EXEC（执行指令）、WATCH（乐观锁监控Key）、DISCARD（取消事务）命令来实现事务。
+Redis通过`MULTI`(开启事务)、`EXEC`（执行指令）、`WATCH`（乐观锁监控Key）、`DISCARD`（取消事务）命令来实现事务。
 ```
 >MULTI
 QUEUED
@@ -484,9 +481,9 @@ QUEUED
 事务开始后，若客户端发送的命令为EXEC、DISCARD、WATCH、MULTI四个命令其中一个，服务器会立即执行，否则执行命令入队操作。
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/transaction.png)
 
-- MULTI命令标志着事务的开始
-- EXEC命令会让服务器立即执行事务队列语句。
-- WATCH为一个乐观锁实现，如果事务执行前，key被改动，事务中断。
+- `MULTI`命令标志着事务的开始
+- `EXEC`命令会让服务器立即执行事务队列语句。
+- `WATCH`为一个乐观锁实现，如果事务执行前，key被改动，事务中断。
 
 一个执行失败的例子
 ```
@@ -515,8 +512,8 @@ RDB是对 Redis 中的数据执行周期性的持久化，非常适合做冷备�
 RDB持久化可以手工执行，也可以根据服务器配置选项定期执行，该功能可以将某个时间点上的数据库状态保存在RDB文件中。
 
 #### RDB文件创建与载入
-- SAVE命令，阻塞Redis服务器进程，直到RDB文件创建完毕为止。
-- BGSAVE命令会派生出一个子进程，然后由子进程创建RDB文件，不会阻塞主线程。为保证拷贝的数据一致性，使用了操作系统的COW机制。类似CopyOnWriteList的实现。
+- `SAVE`命令，阻塞Redis服务器进程，直到RDB文件创建完毕为止。
+- `BGSAVE`命令会派生出一个子进程，然后由子进程创建RDB文件，不会阻塞主线程。为保证拷贝的数据一致性，使用了操作系统的COW机制。类似CopyOnWriteList的实现。
 
 ### AOF持久化
 AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF文件中。通过fsync异步将命令写到日志
@@ -524,10 +521,10 @@ AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF�
 持久化的三个过程：命令追加、文件写入、文件同步
 - 命令追加即将执行的命令追加到AOF文件中。
 - 文件写入使用缓存区实现
-- 文件同步分为always、everysec、no三个选项。 安全级别从高到低、效率从低到高
-  - always每次执行均写入安全性高效率低。
-  - everysec每隔一秒子线程对AOF文件进行同步。理论只会丢失一秒数据。
-  - no 何时同步由操作系统控制，写入的速度长，因为累积了数据在缓冲区，效率与上一种类似。
+- 文件同步分为`always`、`everysec`、`no`三个选项。 安全级别从高到低、效率从低到高
+  - `always`每次执行均写入安全性高效率低。
+  - `everysec`每隔一秒子线程对AOF文件进行同步。理论只会丢失一秒数据。
+  - `no`何时同步由操作系统控制，写入的速度长，因为累积了数据在缓冲区，效率与上一种类似。
 
 > AOF重写，指的是对命令进行压缩，将RPUSH、LPOP的类似命令进行压缩，减少AOF文件大小
 
@@ -537,33 +534,33 @@ AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF�
 ## 数据过期清理策略
 
 ### 过期键清理策略
+> Redis使用惰性删除和定期删除结合的方式配合使用。
+
 过期键的删除策略
 - 定时删除，为每个过期键建立一个timer，缺点占用CPU
 - 惰性删除，键获取的时候判断过期再清除，对内存不友好。
-- Redis使用惰性删除和定期删除结合的方式配合使用。
 - 定期删除，即根据设定执行时长和操作频率清理，缺点难以确定。
   > Redis 底层会通过限制删除操作执行的时长和频率来减少删除操作对CPU时间的影响，默认100ms就随机抽一些设置了过期时间的key，不会扫描全部的过期键，因为开销过大。
 
 redis在内存空间不足的时候，为了保证命中率，就会选择一定的数据淘汰策略——**内存淘汰机制（过期键的补充措施）**
 
 ### 内存淘汰机制
-内存淘汰机制：八种大体上可以分为4中，lru（最近最少使用）、lfu（最少使用频率）、random（随机）、ttl（根据生存时间，快过期）。
-1. volatile-lru：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。
-2. volatile-ttl：从已设置过期时间的数据集中挑选将要过期的数据淘汰。
-3. volatile-random：从已设置过期时间的数据集中任意选择数据淘汰。
-4. volatile-lfu：从已设置过期时间的数据集挑选使用频率最低的数据淘汰。
-5. allkeys-lru：从数据集中挑选最近最少使用的数据淘汰
-6. allkeys-lfu：从数据集中挑选使用频率最低的数据淘汰。
-7. allkeys-random：从数据集（server.db[i].dict）中任意选择数据淘汰
-8. no-enviction（驱逐）：禁止驱逐数据，这也是默认策略。意思是当内存不足以容纳新入数据时，新写入操作就会报错，请求可以继续进行，线上任务也不能持续进行，采用no-enviction策略可以保证数据不被丢失。
-
+内存淘汰机制：八种大体上可以分为4中，`lru`（最近最少使用）、`lfu`（最少使用频率）、`random`（随机）、`ttl`（根据生存时间，快过期）。
+1. `volatile-lru`：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。
+2. `volatile-ttl`：从已设置过期时间的数据集中挑选将要过期的数据淘汰。
+3. `volatile-random`：从已设置过期时间的数据集中任意选择数据淘汰。
+4. `volatile-lfu`：从已设置过期时间的数据集挑选使用频率最低的数据淘汰。
+5. `allkeys-lru`：从数据集中挑选最近最少使用的数据淘汰
+6. `allkeys-lfu`：从数据集中挑选使用频率最低的数据淘汰。
+7. `allkeys-random`：从数据集（server.db[i].dict）中任意选择数据淘汰
+8. `no-enviction`（驱逐）：禁止驱逐数据，这也是默认策略。意思是当内存不足以容纳新入数据时，新写入操作就会报错，请求可以继续进行，线上任务也不能持续进行，采用`no-enviction`策略可以保证数据不被丢失。
 
 ### LRU实现
 常规的LRU算法会维护一个双向链表，用来表示访问关系，且需要额外的存储存放 next 和 prev 指针，牺牲比较大的存储空间。
 
 Redis的实现LRU会维护一个全局的LRU时钟，并且每个键中也有一个时钟，每次访问键的时候更新时钟值。
 
-淘汰过程：Redis会基于server.maxmemory_samples配置选取固定数目的key，然后比较它们的lru访问时间，然后淘汰最近最久没有访问的key，maxmemory_samples的值越大，Redis的近似LRU算法就越接近于严格LRU算法，但是相应消耗也变高，对性能有一定影响，样本值默认为5。
+淘汰过程：Redis会基于`server.maxmemory_samples`配置选取固定数目的key，然后比较它们的lru访问时间，然后淘汰最近最久没有访问的key，`maxmemory_samples`的值越大，Redis的近似LRU算法就越接近于严格LRU算法，但是相应消耗也变高，对性能有一定影响，样本值默认为5。
 
 ## 发布订阅模型
 
@@ -620,24 +617,24 @@ Reading messages... (press Ctrl-C to quit)
 
 ## redis实现队列
 ### 异步队列
-list结构做队列，rpush生产消息，lpop消费消息。当lpop无消息的时候，程序sleep一会重试。
-  - 针对sleep改进，使用blpop指令，阻塞弹出消息。
+list结构做队列，`rpush`生产消息，`lpop`消费消息。当`lpop`无消息的时候，程序sleep一会重试。
+> 针对sleep改进，使用blpop指令，阻塞弹出消息。
   
 pub/sub主题订阅者模式，可以实现1：N的消息队列，即生产一个消息，N个通道消费消息
-- 当消费者下线后，消息可能丢失
+> 当消费者下线后，消息可能丢失
   
 ### 延迟队列实现
-使用zSet实现，拿时间戳当score，消息当成key，使用zadd指令生产消息。
-而消费者使用zrangebyscore来获取N秒之前数据进行轮询处理。
+使用`zset`实现，拿时间戳当score，消息当成key，使用`zadd`指令生产消息。
+而消费者使用`zrangebyscore`来获取N秒之前数据进行轮询处理。
 
 
 
 ## 主从结构
-设置主服务器指令： **SLAVEOF 127.0.0.1 6379**
+设置主服务器指令： **`SLAVEOF 127.0.0.1 6379`**
 
-主从复制，主要两个命令SYNC、PSYNC
-- SYNC：主服务器开启BGSAVE生成RDB文件，生成之后发送从服务器，占网络资源。从服务器主进程执行载入，阻塞无法处理命令请求。
-- PSYNC：根据主从维护的复制偏移量，是否存在偏移量之后的数据，如果存在，则进行部分重同步操作。否则执行完整重同步。
+主从复制，主要两个命令`SYNC`、`PSYNC`
+- `SYNC`：主服务器开启`BGSAVE`生成RDB文件，生成之后发送从服务器，占网络资源。从服务器主进程执行载入，阻塞无法处理命令请求。
+- `PSYNC`：根据主从维护的复制偏移量，是否存在偏移量之后的数据，如果存在，则进行部分重同步操作。否则执行完整重同步。
 
 
 ## Sentinel 哨兵
@@ -652,7 +649,7 @@ redis-server /path/to/your/sentinel.conf
 ### Redis 哨兵通信
 哨兵与 master 建立通信，利用 master 提供发布/订阅机制发布自己的信息，比如身高体重、是否单身、IP、端口……
 
-master 有一个 `__sentinel__:hello` 的专用通道，用于哨兵之间发布和订阅消息。这就好比是` __sentinel__:hello` 通信群，哨兵利用 master 建立的群组发布自己的消息，同时关注其他哨兵发布的消息。
+master 有一个 `__sentinel__:hello`的专用通道，用于哨兵之间发布和订阅消息。这就好比是`__sentinel__:hello`通信群，哨兵利用 master 建立的群组发布自己的消息，同时关注其他哨兵发布的消息。
 
 ### 与Slave建立通信
 Sentinel默认每十秒一次的频率，通过命令连接向被监视的主服务器发送INFO命令，通过分析INFO命令的响应，可以获得两方面的信息：
@@ -662,7 +659,7 @@ Sentinel默认每十秒一次的频率，通过命令连接向被监视的主服
 ### Redis 哨兵具备的能力
 1. 监控：持续监控 master 、slave 是否处于预期工作状态。
 2. 自动切换主库：当 Master 运行故障，哨兵启动自动故障恢复流程：从 slave 中选择一台作为新 master。
-3. 通知：让 slave 执行 replicaof ，与新的 master 同步；并且通知客户端与新 master 建立连接。
+3. 通知：让 slave 执行 `replicaof` ，与新的 master 同步；并且通知客户端与新 master 建立连接。
 
 ### Sentinel故障转移操作
 1. 当一个主服务下线时，各个Sentinel会选举一个领头Sentinel执行故障转移。
@@ -734,13 +731,13 @@ OK
 
 #### ASK 错误
 ASK重定向：在线迁移槽（slot）的过程中，客户端向slot发送请求，若键对象不存在，则可能存在于目标节点，这时源节点会回复 ASK重定向异常。\
-格式如下：(error) ASK {slot} {targetIP}:{targetPort}
+格式如下：`(error) ASK {slot} {targetIP}:{targetPort}`
 > 客户端从ASK重定向异常提取出目标节点信息，发送asking命令到目标节点打开客户端连接标识，再执行键命令。如果存在则执行，不存在则返 回不存在信息
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/redis-ask.png)
 
 #### mget批量调用
 hash_tag: 提供不同的键可以具备相同slot的功能，常用于Redis IO优化
-> 例如在集群模式下使用mget等命令优化批量调用时，键列表必须具有相同的slot，否则会报错。这时可以利用hash_tag让不同的键具有相同的slot达到优化的目的。命令如下：
+> 例如在集群模式下使用`mget`等命令优化批量调用时，键列表必须具有相同的slot，否则会报错。这时可以利用hash_tag让不同的键具有相同的slot达到优化的目的。命令如下：
 ```
 127.0.0.1:6379> cluster keyslot key:test:111
 (integer) 10050
@@ -782,7 +779,8 @@ OK
 
 1. 节点数据库和单机数据库在数据库方面的一个区别是，**节点只能使用0号数据库**，而单机Redis服务器则没有这个限制。 
 2. 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
-  - 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
+> 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
+
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/askError.jpg)
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/slotReadd.jpg)
 
@@ -868,8 +866,7 @@ redis 分布式锁：保证集群之间的资源同步。
 
 针对缓存雪崩的处理措施
 - 事前：Redis 高可用，主从+哨兵，Redis cluster，避免全盘崩溃。
-- 事中：本地 ehcache 缓存 + hystrix 限流&降级，避免 MySQL 被打死。
-  - 针对key值大批量过期的情况，可以设置不同的失效时间比如随机设置缓存的失效时间。
+- 事中：本地 ehcache 缓存 + hystrix 限流&降级，避免 MySQL 被打死。 **针对key值大批量过期的情况，可以设置不同的失效时间比如随机设置缓存的失效时间。**
 - 事后：Redis 持久化，一旦重启，自动从磁盘上加载数据，快速恢复缓存数据
  
 本地缓存+hystrix的措施 
@@ -1177,7 +1174,7 @@ Redisson的锁会出现故障未同步而加锁失效问题，为了解决该问
 ### Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        
 RDB是对 Redis 中的数据执行周期性的持久化，非常适合做冷备。有两个严重性能开销：
     1. 频繁生成 RDB 文件写入磁盘，磁盘压力过大。会出现上一个 RDB 还未执行完，下一个又开始生成，陷入死循环。
-    2. fork 出 bgsave 子进程会阻塞主线程，主线程的内存越大，阻塞时间越长。
+    2. `fork` 出 `BGSAVE` 子进程会阻塞主线程，主线程的内存越大，阻塞时间越长。
 AOF持久化保存数据库的方法是将服务器执行的命令保存到AOF文件中，通过fsync异步将命令写到日志。恢复时对一个空的 Redis 实例顺序执行所有的指令，也就是「重放」，来恢复 Redis 当前实例的内存数据结构的状态。因此使用AOF恢复也比较耗时，因为要对一个个指令进行重新执行。
 > Redis 提供的 AOF 配置项appendfsync写回策略直接决定 AOF 持久化功能的效率和安全性。always：同步写回、everysec：每秒写回、no： 操作系统控制
 > AOF 重写机制主要用于对AOF的指令日志进行优化瘦身，将重复的操作进行归集优化，减少AOF的指令日志。
@@ -1188,7 +1185,7 @@ Redis 4.0 为了解决这个问题，带来了一个新的持久化选项——�
 #### 在生成 RDB 期间，Redis 可以同时处理写请求么？
 Redis 使用操作系统的多进程写时复制技术 **COW(Copy On Write)** 来实现快照持久化，保证数据一致性.\
 Redis 在持久化时会调用 glibc 的函数fork产生一个子进程，快照持久化完全交给子进程来处理，父进程继续处理客户端请求。\
-当主线程执行写指令修改数据的时候，这个数据就会复制一份副本， bgsave 子进程读取这个副本数据写到 RDB 文件。
+当主线程执行写指令修改数据的时候，这个数据就会复制一份副本， `BGSAVE` 子进程读取这个副本数据写到 RDB 文件。
 
 ### Redis 主从架构数据同步
 Redis 提供了主从模式，通过主从复制，将数据冗余一份复制到其他 Redis 服务器。
@@ -1200,8 +1197,8 @@ Redis 提供了主从模式，通过主从复制，将数据冗余一份复制�
 3. 主从库间网络断开重连同步。
 
 #### 第一次同步怎么实现？
-1. 建立连接：从库会和主库建立连接，从库执行 replicaof 并发送 psync 命令并告诉主库即将进行同步，主库确认回复后，主从库间就开始同步了。
-2. 主库同步数据给从库：master 执行 bgsave命令生成 RDB 文件，并将文件发送给从库，**同时主库为每一个 slave 开辟一块 replication buffer 缓冲区记录从生成 RDB 文件开始收到的所有写命令**。从库保存 RDB 并清空数据库再加载 RDB 数据到内存中。
+1. 建立连接：从库会和主库建立连接，从库执行 `replicaof` 并发送 `psync` 命令并告诉主库即将进行同步，主库确认回复后，主从库间就开始同步了。
+2. 主库同步数据给从库：master 执行 `BGSAVE`命令生成 RDB 文件，并将文件发送给从库，**同时主库为每一个 slave 开辟一块 replication buffer 缓冲区记录从生成 RDB 文件开始收到的所有写命令**。从库保存 RDB 并清空数据库再加载 RDB 数据到内存中。
 3. 发送 RDB 之后接收到的新写命令到从库：在生成 RDB 文件之后的写操作并没有记录到刚刚的 RDB 文件中，为了保证主从库数据的一致性，所以主库会在内存中使用一个叫 replication buffer 记录 RDB 文件生成后的所有写操作。并将里面的数据发送到 slave。
 
 ![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/master-salve.png)
@@ -1214,7 +1211,7 @@ replication_buffer：对于客户端或从库与redis通信，redis都会分配�
 ###  主从库间网络断开重连同步                                                                                                
 从 Redis 2.8 开始，网络断了之后，主从库会采用增量复制的方式继续同步，只将中断期间主节点执行的写命令发送给从节点，与全量复制相比更加高效。
 
-**repl_backlog_buffer**: 为了解决从库断连后找不到主从差异数据而设立的环形缓冲区，从而避免全量同步带来的性能开销。在redis.conf配置文件中可以设置大小，如果从库断开时间过长，repl_backlog_buffer环形缓冲区会被主库的写命令覆盖，那么从库重连后只能全量同步，所以repl_backlog_size配置尽量大一点可以降低从库连接后全量同步的频率。
+**`repl_backlog_buffer`**: 为了解决从库断连后找不到主从差异数据而设立的环形缓冲区，从而避免全量同步带来的性能开销。在redis.conf配置文件中可以设置大小，如果从库断开时间过长，repl_backlog_buffer环形缓冲区会被主库的写命令覆盖，那么从库重连后只能全量同步，所以repl_backlog_size配置尽量大一点可以降低从库连接后全量同步的频率。
 
 master 使用 `master_repl_offset`记录自己写到的位置偏移量，slave 则使用 `slave_repl_offset`记录已经读取到的偏移量
 
