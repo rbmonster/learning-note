@@ -2,7 +2,11 @@
 缓存基本思想：CPU Cache 缓存的是内存数据用于解决 CPU 处理速度和内存不匹配的问题，内存缓存的是硬盘数据用于解决硬盘访问速度过慢的问题。为了避免用户在请求数据的时候获取速度过于缓慢，所以我们在数据库之上增加了缓存这一层来弥补。
 
 推荐一下一篇很顶的文章：[Redis 面霸篇：从高频问题透视核心原理](https://mp.weixin.qq.com/s/wrrXz4GoILd5hsbrYACTmA)
-> 本文也参考了很多改文章资料
+> 本文也参考了很多该文章资料
+
+- [redis设计与实现压缩列表-压缩列表](https://redisbook.readthedocs.io/en/latest/compress-datastruct/ziplist.html)
+
+
 ## 基本数据结构
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/data-structure.jpg)
 
@@ -14,13 +18,27 @@
 2. 针对缓存频繁修改的情况：SDS分配内存不仅会分配需要的空间，还会分配额外的空间。
     - 小于1MB的SDS每次分配与len属性同样大小的空间
     - 大于1MB的每次分配1MB
-3. **使用惰性释放策略**：不立即使用内存重分配来回收缩短后多出来的字节，而是使用free属性，记录字节数量
+3. **使用惰性释放策略**：不立即使用内存重分配来回收缩短后多出来的字节，而是使用free属性，记录字节数量。空闲出来的空间，可以让str在进行append的时候重新使用。
 
 编码方式：
 - `embstr`编码：保存的是一个字符串值，且长度<=39，则字符串对象使用的是`embstr`编码方式保存
-- `raw`编码： 对`embstr`字符串执行任何修改命令时，程序会转换编码为raw
+- `raw`编码： 对`embstr`字符串执行任何**修改命令**时，程序会转换编码为`raw`
 - 中文默认占三个字符。
-> 优先使用`embstr`编码的原因：`embstr`方式在内存分配时仅会调用一次内存分配函数，而raw会调用两次。`embstr`保存在一块连续内存。
+> 优先使用`embstr`编码的原因：
+> 1. `embstr`方式在内存分配时仅会调用一次内存分配函数，而raw会调用两次。同样的释放内存要调用两次。`embstr`修改的时候，连续的内存就变成多块的内存区间。
+> 2. `embstr`**保存在一块连续内存**，可以更快读取。
+
+```
+struct sdshdr {
+    // 记录SDS所保存的字符串长度
+    int len;
+    // 记录buf数组中未使用字节的数量
+    int free;
+    // 字节数组，用于保存字符串
+    char buf[];
+}
+```
+
 #### 相关指令
 相关指令：
  - `set 'key' 'value'`
@@ -52,18 +70,58 @@
 ### List 列表
 使用场景：比如twitter的关注列表，粉丝列表等都可以用Redis的list结构来实现。
 #### 底层结构
-Redis中的列表list，在版本3.2之前，列表底层的编码是`ziplist`和`linkedlist`实现的，但是在版本3.2之后，重新引入 quicklist，列表的底层都由quicklist实现。
+Redis中的列表list，在版本3.2之前，列表底层的编码是`ziplist`和`linkedlist`实现的，但是在版本3.2之后，重新引入 `quicklist`，列表的底层都由`quicklist`实现。
 
 quickList是一个`ziplist`组成的`linkedlist`双向链表。每个节点使用`ziplist`来保存数据，它将`linkedlist`按段切分，每一段使用`ziplist`来紧凑存储，多个`ziplist` 之间使用双向指针串接起来。
-- `ziplist`是一个特殊的双向链表,特殊之处在于没有维护双向指针:`prev` `next`。而是存储**上一个entry的长度**和**当前entry的长度**，通过长度推算下一个元素在什么地方。`ziplist`使用**连续的内存块**。
-- `linkedlist`便于在表的两端进行push和pop操作，在插入节点上复杂度很低，但是它的内存开销比较大。
-  - 它在每个节点上除了要保存数据之外，还要额外保存两个指针；
-  - 其次，双向链表的各个节点是单独的内存块，地址不连续，节点多了容易产生内存碎片。
-
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/ziplist.jpg)
+> `ziplist`每次变更的时间复杂度都非常高，因为必须要重新生成一个新的`ziplist`来作为更新后的list，如果一个list非常大且更新频繁，那就会给redis带来非常大的负担。\
+> `quicklist`是一种既保留`ziplist`的空间高效性，又能不让其更新复杂度过高的实现。把`ziplist`和普通的双向链表结合起来。每个双链表节点中保存一个`ziplist`，然后每个`ziplist`中存一批list中的数据(具体`ziplist`大小可配置)，这样既可以避免大量链表指针带来的内存消耗，也可以避免`ziplist`更新导致的大量性能损耗，将大的`ziplist`化整为零。
 
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/quicklist.png)
 
+`ziplist`是一个特殊的双向链表,特殊之处在于没有维护双向指针:`prev` `next`。而是存储**上一个entry的长度**和**当前entry的长度**，通过长度推算下一个元素在什么地方。`ziplist`使用**连续的内存块**，以 O(1) 的时间复杂度在列表的两端进行 push 和 pop 操作。查找需要O(n)，是一种时间换空间的方案。
+
+`linkedlist`便于在表的两端进行push和pop操作，在插入节点上复杂度很低O(1)，但是它的内存开销比较大。
+> 在每个节点上除了要保存数据之外，还要额外保存两个指针；其次，双向链表的各个节点是单独的内存块，地址不连续，节点多了容易产生内存碎片。
+
+`ziplist`与`linkedlist`优缺点对比：
+- 双向链表`linkedlist`便于在表的两端进行push和pop操作，在插入节点上复杂度很低，但是它的内存开销比较大。首先，它在每个节点上除了要保存数据之外，还要额外保存两个指针；其次，双向链表的各个节点是单独的内存块，地址不连续，节点多了容易产生内存碎片。
+- `ziplist`存储在一段连续的内存上，所以存储效率很高。但是，它不利于修改操作，插入和删除操作需要频繁的申请和释放内存。特别是当`ziplist`长度很长的时候，一次realloc可能会导致大批量的数据拷贝。
+
+
+`ziplist` **结构及遍历过程**
+![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/ziplist.jpg)
+
+当进行**从前向后**的遍历时，程序从指向节点 e1 的指针p开始，计算节点 e1 的长度（e1-size）， 然后将 p 加上 e1-size ，就将指针后移到了下一个节点 e2 ...如此反覆，直到 p 遇到 `ZIPLIST_ENTRY_END` 为止
+```
+                              p + e1-size + e2-size
+                 p + e1-size     |
+           p          |          |
+           |          |          |
+           V          V          V
++----------+----------+----------+----------+----------+----------+----------+
+| ZIPLIST  |          |          |          |          |          | ZIPLIST  |
+| ENTRY    |    e1    |    e2    |    e3    |    e4    |   ...    | ENTRY    |
+| HEAD     |          |          |          |          |          | END      |
++----------+----------+----------+----------+----------+----------+----------+
+
+           |<-------->|<-------->|
+             e1-size    e2-size
+             
+```
+
+当进行从后往前遍历的时候，程序从指向节点eN的指针p出发，取出eN的pre_entry_length值，然后用p减去pre_entry_length，这就将指针移动到了前一个节点eN-1...，如此反覆，直到p遇到 `ZIPLIST_ENTRY_HEAD` 为止
+```
+                                         p - eN.pre_entry_length
+                                            |
+                                            |          p
+                                            |          |
+                                            V          V
++----------+----------+----------+----------+----------+----------+----------+
+| ZIPLIST  |          |          |          |          |          | ZIPLIST  |
+| ENTRY    |    e1    |    e2    |   ...    |   eN-1   |    eN    | ENTRY    |
+| HEAD     |          |          |          |          |          | END      |
++----------+----------+----------+----------+----------+----------+----------+
+```
 
 > 旧的数据规则\
 > 当满足下面两条件时，使用`ziplist`。一条不满足即使用`linkedlist`
@@ -122,29 +180,31 @@ asdf
 2. 哈希对象保存的元素数量小于512个。
 
 #### hash冲突
-Redis 的哈希表使用链地址法解决hash冲突，即冲突的位置上使用单链表的接口连接，解决冲突的问题。
+Redis 的哈希表使用链地址法解决hash冲突，即冲突的位置上使用单链表的连接，解决冲突的问题。
 
 #### rehash与渐进式rehash
+rehash重新散列：随着hash表的操作不断进行，哈希表保存的键值会逐渐地增多或减少，为了让哈希表的负载因子保持在一个合理的范围。
 
-哈希表的负载因子：
-> 负载因子 = 哈希表已保存的节点/哈希表大小
+渐进式rehash：重新散列过程不是一次性操作，而是在访问节点操作时顺便的把节点的值rehash过去。
+> 渐进式rehash的好处：采取分而治之的方式，将rehash键值对所需的计算工作均摊到字典的每个添加、删除、查找和更新上，从而避免集中式rehash带来的庞大计算量。
 
-哈希表的负载因子用来判断是否需要对哈希表进行扩容或者收缩，扩容及收缩操作可以通过rehash实现
+**哈希表的负载因子 = 哈希表已保存的节点/哈希表大小**
+> 哈希表的负载因子用来判断是否需要对哈希表进行扩容或者收缩，扩容及收缩操作可以通过rehash实现
 
-**扩容**:
+**扩容时机**:
 1. 服务器没有执行`BGSAVE`或`BGREWRITEAOF`命令，且哈希表负载因子大于等于1
 2. 服务器执行`BGSAVE`或`BGREWRITEAOF`命令，且哈希表负载因子大于等于5
 > 扩容根据执行`BGSAVE`或`BGREWRITEAOF`命令是否执行，是因为上述两命令都是开启子线程进行操作，而操作系统正常都使用COW（Copy-On-Write）技术优化子线程效率。避免子线程运行时进行扩容，可以避免不必要的写操作，进而节省内存。
 
-**收缩**：当哈希表负载因子小于0.1时，对哈希表进行收缩操作。
+**收缩时机**：当哈希表负载因子小于0.1时，对哈希表进行收缩操作。
 
 扩容过程：redis的hash使用了两个全局哈希表。开始默认使用「hashtable 0」保存键值对数据，「hashtable 1」 此刻没有分配空间。触发扩容时
-1. 系统给「hashtable 1」分配 「hashtable 0」.used*2的大小，取大于等于2的n次方幂的值
+1. 系统给「hashtable 1」分配的大小为第一个**大于等于** 「hashtable 0」.used*2的 2的n次方幂的值
 2. 将「hashtable 0 」的数据重新映射拷贝到 「hashtable 1」中；
 3. 释放「hashtable 0」的空间。                                                                                                                                           
-将`hashtable 0 `的数据重新映射到 `hashtable 1 `的过程中并不是一次性的，这样会造成 Redis 阻塞，无法提供服务。而是采用了渐进式 rehash，每次处理客户端请求hashtable执行增删改查操作时，顺带将节点rehash到`hashtable 1`中。
+将`hashtable 0 `的数据重新映射到 `hashtable 1 `的过程中并不是一次性的，这样会造成 Redis 阻塞，无法提供服务。而是采用了**渐进式 rehash**，每次处理客户端请求hashtable执行增删改查操作时，顺带将节点rehash到`hashtable 1`中。
 
-> rehash进行期间，字典会同时操作`hashtable 0`与`hashtable 1`，如查找就要在两个表中查找，而新增只操作到新表
+> rehash进行期间，字典会同时操作`hashtable 0`与`hashtable 1`，如查找就要在两个表中查找，而新增只操作到新表。
 #### 相关指令
 相关指令：
 - `hset 'hashName' 'key' 'value'` // 添加元素
@@ -220,22 +280,65 @@ hashtable
 #### 底层结构
 有序集合的编码可以是`ziplist`或者`skiplist`
 - `ziplist`按分值从小到大的进行排序，分值小的元素放在靠近表头方向，对象在前值在后，两者紧凑。
-- `skiplist`编码的有序集合使用zset结构作为底层实现，一个zset结构同时包含一个字典和跳跃表
+- `skiplist`编码的有序集合使用`zset`结构作为底层实现，一个`zset`结构同时包含一个字典和跳跃表
   
 编码转换条件：满足以下两个条件使用`ziplist`，否则`skiplist`
 - 有序集合保存的元素数量小于128个。
 - 有序集合保存的所有元素成员的长度都小于64个字节。
 
-`skiplist` 跳跃表是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的。
+`skiplist` 跳跃表是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的索引指针，从而达到快速访问节点的目的。
 跳表在链表的基础上，增加了多层级索引，通过索引位置的几个跳转，实现数据的快速定位。
+> 跳跃表支持**平均O(logN)，最坏O(N)复杂度**的节点查找。
+
 ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/skiplist.png)
 
+
+```
+typedef struct zskiplist {
+
+    // 表头节点和表尾节点
+    struct zskiplistNode *header, *tail;
+
+    // 表中节点的数量
+    unsigned long length;
+
+    // 表中层数最大的节点的层数
+    int level;
+
+} zskiplist;
+```
+
+```
+typedef struct zskiplistNode {
+
+    // 后退指针
+    struct zskiplistNode *backward;
+
+    // 分值
+    double score;
+
+    // 成员对象
+    robj *obj;
+
+    // 层
+    struct zskiplistLevel {
+
+        // 前进指针
+        struct zskiplistNode *forward;
+
+        // 跨度
+        unsigned int span;
+
+    } level[];
+
+} zskiplistNode;
+```
 #### 相关指令
 相关指令
 - `zadd 'zsetName' 'score' 'key'`
 - `zcount 'zsetName' 'scoreMin' 'scoreMax'`   // 计算范围内的有的值
-- `zcard 'zsetName'`  // 计算zset元素的数量
-- `zrem 'zsetName' 'key'`  // 删除zset 里面的key
+- `zcard 'zsetName'`  // 计算`zset`元素的数量
+- `zrem 'zsetName' 'key'`  // 删除 `zset`里面的key
 - `zrangebyscore delay 0  1606996111`  // 获取按score 范围内的key
 ```
 127.0.0.1:6379> ZADD blah 1.0 www

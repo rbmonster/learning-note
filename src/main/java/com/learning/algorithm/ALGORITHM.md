@@ -1435,8 +1435,8 @@ public class FullPackage {
 
 
 除了上述背包问题的常见解法，还需**区分先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**。
-- 如果求组合数就是外层for循环遍历物品，内层for遍历背包。组合不强调顺序，如(1,5)和(5,1)是同⼀个组合。
-- 如果求排列数就是外层for遍历背包，内层for循环遍历物品。排列强调顺序，如(1,5)和(5,1)是两个不同的排列。
+- 如果**求组合数就是外层for循环遍历物品**，内层for遍历背包。组合不强调顺序，如(1,5)和(5,1)是同⼀个组合。
+- 如果**求排列数就是外层for遍历背包**，内层for循环遍历物品。排列强调顺序，如(1,5)和(5,1)是两个不同的排列。
 
 > 如果把遍历nums（物品）放在外循环，遍历target的作为内循环的话，举⼀个例⼦：计算`dp[4]`的时
 候，结果集只有 {1,3} 这样的集合，不会有{3,1}这样的集合，因为nums遍历放在外层，3只能出现在1后⾯！
@@ -1478,8 +1478,7 @@ for(int i =1; i< 背包.length;i++) {
 
 完全背包：
 - [零钱兑换 II](https://leetcode-cn.com/problems/coin-change-2/)
-- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
-> 求排列问题，**理解先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**！！！
+- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/): 求排列问题，**理解先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**！！！
 - [零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 - [完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 
