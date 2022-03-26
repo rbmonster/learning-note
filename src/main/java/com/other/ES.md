@@ -135,13 +135,13 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 #### 主分片与副本分片交互
 
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/cluster-1.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-1.png)
 >  假设有一个集群由三个节点组成。 它包含一个叫 blogs 的索引，有两个主分片，每个主分片有两个副本分片。相同分片的副本不会放在同一节点
 
 **协调节点**(coordinating node)：可以发送请求到集群中的任一节点。 每个节点都有能力处理任意请求。每个节点都知道集群中任一文档位置，所以可以直接将请求转发到需要的节点上。假如将所有的请求发送到 Node 1 ，我们将其称为**协调节点**。
 
 ##### 新建，索引和删除文档
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/cluster-2.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-2.png)
 
 以下是在主副分片和任何副本分片上面 成功新建，索引和删除文档所需要的步骤顺序：
 1. 客户端向 `Node 1` 发送新建、索引或者删除请求。
@@ -165,7 +165,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 基于ID的查询：
 
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/cluster-3.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-3.png)
 
 以下是从主分片或者副本分片检索文档的步骤顺序：
 1. 客户端向 `Node 1` 发送获取请求。
@@ -178,7 +178,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 ##### 局部更新文档
 
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/update-1.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/update-1.png)
 
 部分更新一个文档的步骤：
 1. 客户端向 `Node 1` 发送更新请求。
@@ -191,7 +191,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 #### 分页查询工作流程
 
 ##### 查询阶段
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/search-1.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/search-1.png)
 > 优先队列: 一个 优先队列 仅仅是一个存有 top-n 匹配文档的有序列表。优先队列的大小取决于分页参数 from 和 size 。例如，如下搜索请求将需要足够大的优先队列来放入100条文档。
 >
 > ```
@@ -211,7 +211,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 
 ##### 取回阶段
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/search-2.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/search-2.png)
 分布式阶段由以下步骤构成：
 1. 协调节点辨别出哪些文档需要被取回并向相关的分片提交多个 GET 请求。
 2. 每个分片加载并 _丰富_ 文档，如果有需要的话，接着返回文档给协调节点。
@@ -264,7 +264,7 @@ the   |   X   |       |  X    | ...
 
 doc写入过程：
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/es-working.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/es-working.png)
 
 1. 新文档先写入**内存索引缓存**
 2. 当间隔一定时间（默认每秒自动刷新），将缓存的数据进行提交，这个过程会创建一个Commit Point，Commit Point包含index segment的信息。
@@ -289,14 +289,14 @@ doc删除和更新
 在Elasticsearch和磁盘之间是文件系统缓存。在内存索引缓冲区中的文档会被写入到一个新的段中。Lucene 允许新段被**写入和打开—使其包含的文档在未进行一次完整提交时便对搜索可见**。 这种方式比进行一次提交代价要小得多，并且在不影响性能的前提下可以被频繁地执行。
 
 ##### 持久化与段合并
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/es-rep-1.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/es-rep-1.png)
 Elasticsearch 增加了一个 translog ，或者叫事务日志，在每一次对 Elasticsearch 进行操作时均进行了日志记录。通过 translog ，整个流程看起来是下面这样：
 1. 一个文档被索引之后，就会被添加到内存缓冲区，并且追加到了`translog`。
 2. 刷新（refresh）使分片处于的`In-memory buffer`被清空但是事务日志不会情况的状态，分片每秒被刷新（`refresh`）一次。
 3. 这个进程继续工作，更多的文档被添加到内存缓冲区和追加到事务日志.
 4. 每隔一段时间，例如`translog` 变得越来越大、索引被刷新（flush）；一个新的 `translog` 被创建，并且一个全量提交被执行
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/es-rep-2.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/es-rep-2.png)
 执行一个提交并且截断 `translog` 的行为在 Elasticsearch 被称作一次 `flush` 。 分片每30分钟被自动刷新（`flush`），或者在 `translog` 太大的时候也会刷新。具体流程：
 1. 所有在内存缓冲区的文档都被写入一个新的段
 2. 缓冲区被清空
@@ -331,7 +331,7 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 
 段合并的时候会将那些**旧的已删除文档从文件系统中清除**。被删除的文档（或被更新文档的旧版本）**不会被拷贝到新的大段**中。
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/segment-merge.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/segment-merge.png)
 进行索引和搜索时会自动进行段合并
 1. 当索引的时候，刷新（refresh）操作会创建新的段并将段打开以供搜索使用。
 2. 合并进程选择一小部分大小相似的段，并且在后台将它们合并到更大的段中。这并不会中断索引和搜索。
@@ -658,7 +658,7 @@ Es设置了 `max_result_window`(最大结果窗口)的参数，默认值是10000
 
 
 请求流程：
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/scroll-1.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/scroll-1.png)
 
 1. search阶段：第一次带查询参数的请求
 ```
@@ -1093,7 +1093,7 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
 ```
 
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/es/ES.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/ES.jpg)
   
 参考资料： [Docker安装部署ELK教程](https://www.cnblogs.com/fbtop/p/11005469.html)
 ### ik分词器安装

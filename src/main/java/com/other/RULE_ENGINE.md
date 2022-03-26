@@ -10,7 +10,7 @@
 - 第四，分离出的业务逻辑必须比原来的易于维护，至少改动这些逻辑，应用程序不用重启！
 
 规则引擎满足以上的需求点，具体体现在如下：
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/ruleEnginExample.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/ruleEnginExample.jpg)
 
 参考资料：[规则引擎的使用场景](https://www.cnblogs.com/rjzheng/p/10996186.html)
 

@@ -115,7 +115,7 @@ typedef struct redisObject{
     //...
 }
 ```
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/encodingCode.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/encodingCode.jpg)
 
 ### 字符串对象(String)
 - 如果字符串保存的是一个字符串值，且长度<=39，则字符串对象使用的是embstr编码方式保存。
@@ -136,7 +136,7 @@ typedef struct redisObject{
 >OBJECT ENCODING msg
 "raw"
 ```
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/stringCommand.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/stringCommand.jpg)
 
 
 ### 列表对象(list)
@@ -156,7 +156,7 @@ typedef struct redisObject{
 >OBJECT ENCODING blah
 "linkedlist"
 ```
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/listCommand.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/listCommand.jpg)
 
 
 ### 哈希对象(hash)
@@ -184,7 +184,7 @@ typedef struct redisObject{
 >OBJECT ENCODING numbers
 "hashtable"
 ```
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/hashCommand.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/hashCommand.jpg)
 
 
 ### 集合对象(set)
@@ -206,7 +206,7 @@ typedef struct redisObject{
 >OBJECT ENCODING numbers
 "hashtable"
 ```
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/setCommand.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/setCommand.jpg)
 
 
 ### 有序集合对象(zset)
@@ -236,7 +236,7 @@ typedef struct redisObject{
 >OBJECT ENCODING blah
 "skiplist"
 ```
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/zsetCommand.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/zsetCommand.jpg)
 
 ### 类型检查与命令多态
 - DEL、EXPIRE、RENAME、TYPE、OBJECT可以对任何键执行
@@ -285,7 +285,7 @@ OK
 - Redis 是一个键值对的数据库服务器。服务器中每个数据库都由一个redisDb结构的dict字典保存数据库中所有键值对，称为键空间。
   - 键空间的键也就是数据库的键，每个键都是字符串对象。
   - 键空间的值也就是数据库的值，每个值可以是五中基本类型对象。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/databaseDict.jpg)  
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/databaseDict.jpg)  
 
 - 清空数据库的键:FLUSHDB
 - 随机返回数据库中某个键：RANDOMKEY
@@ -357,7 +357,7 @@ OK
 - 因为AOF文件的更新频率比RDB文件高，因此如果开启了AOF持久化功能，服务器优先使用AOF文件还原数据。
 - 只有在AOF持久化功能关闭的时候，服务器才会使用RDB恢复数据库。
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/RDBLoad.jpg)  
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/RDBLoad.jpg)  
 
 - 自动保存功能
 ```
@@ -387,7 +387,7 @@ save 60 10000
     - everysec每隔一秒子线程对AOF文件进行同步。理论只会丢失一秒数据。
     - no 何时同步由操作系统控制，写入的速度长，因为累积了数据在缓冲区，效率与上一种类似。
     
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/AOFLoad.jpg)  
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/AOFLoad.jpg)  
  
 - AOF重写，指的是对命令进行压缩，将RPUSH、LPOP的类似命令进行压缩，减少AOF文件大小
 
@@ -399,10 +399,10 @@ save 60 10000
 - Redis的文件事件基于Reactor模式开发（反应器模式）
   - 单线程，I/O多路复用
   - I/O多路复用程序将产生的Socket事件放到队列中，以有序、同步的方式发送。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/fileProcesser.jpg)  
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/fileProcesser.jpg)  
 
 - 客户端与服务器的通信过程
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/client2server.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/client2server.jpg)
 
 - 时间事件（2.8版本的redis只有周期性事件，没有定时事件）
   - 服务器将所有时间事件放在一个无序链表中，每当时间事件执行器运行时，遍历整个链表。
@@ -431,7 +431,7 @@ save 60 10000
   3. 发送ping命令
     - 作用：1）与主服务器建立通信。2）检测主服务是否可正常处理请求
   4. 身份验证。主从服务器是否均配置了masterauth选项。
-    - ![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/masterauth.jpg)
+    - ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/masterauth.jpg)
   5. 发送端口信息。从服务器发送需要从服务器端口信息。
   6. 开始同步
   7. 命令传播
@@ -447,9 +447,9 @@ save 60 10000
   - SYNC：主服务器开启BGSAVE生成RDB文件，生成之后发送从服务器，占网络资源。从服务器主进程执行载入，阻塞无法处理命令请求。
   - PSYNC：根据主从维护的复制偏移量，判断复制积压缓冲区（主服务器存储写命令队列的地方）是否存在偏移量之后的数据，如果存在，则进行部分重同步操作。否则执行完整重同步。
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/slaveCopy.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/slaveCopy.jpg)
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/psync.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/psync.jpg)
 
 ## Sentinel 哨兵
 - Sentinel是Redis的一个高可用的解决方案：由一个或者多个Sentinel实例组成Sentinel系统。
@@ -467,7 +467,7 @@ redis-server /path/to/your/sentinel.conf
     - 从服务器的选择：1)删除下线或断开连接的从服务。2)删除5s无回复从服务。3)按照复制偏移量排名，最大的表示具有最新的数据信息。相同偏移量则按照ID从小到大选取。
   3. Sentinel系统向Server1属下的从服务器发送新的复制指令，让其成为新主服务器的从服务。当复制完成，故障转移完毕。
   4. Sentinel系统继续监视下线的server1，当其重新上线时设置成主服务器的从服务。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/sentinel.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sentinel.jpg)
 
 - Sentinel服务器有其专用的服务器代码
   - 仅支持PING、SENTINEL、INFO、SUBSCRIBE、UNSUBSCRIBE、PSUBSCRIBE和PUNSUBSCRIBE七个操作。
@@ -494,7 +494,7 @@ redis-server /path/to/your/sentinel.conf
 
 127.0.0.1:7000>CLUSTER MEET 127.0.0.1 7002
 ```
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/cluster.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/cluster.jpg)
 
 - 槽指派：Redis集群通过分片的方式保存数据库的键值对。集群的整个数据库被分成16384个槽slot
   - 对数据库的16384个槽进行指派之后，集群就处于上线状态。
@@ -518,8 +518,8 @@ OK
 - 节点数据库和单机数据库在数据库方面的一个区别是，节点只能使用0号数据库，而单机Redis服务器则没有这个限制。 
 - 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
   - 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/askError.jpg)
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/slotReadd.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/askError.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/slotReadd.jpg)
 
 - 复制与故障转移
   - 设置从节点
@@ -587,7 +587,7 @@ QUEUED
   - 事务命令使用队列实现。
   
 - 事务开始后，若客户端发送的命令为EXEC、DISCARD、WATCH、MULTI四个命令其中一个，服务器会立即执行，否则执行命令入队操作。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/transaction.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/transaction.png)
 
 - MULTI命令标志着事务的开始
 - EXEC命令会让服务器立即执行事务队列语句。
@@ -601,7 +601,7 @@ QUEUED
     >EXEC
     (nil)
     ```
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/optiLock.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/optiLock.jpg)
 
 - redis 事务的ACID
   - 原子性：事务的多个操作当成一个整体来执行，要么全部执行，要么都不执行。
@@ -616,8 +616,8 @@ QUEUED
 ```
 
 ## 排序
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/sort.jpg)
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/redis/sort2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sort.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/sort2.jpg)
 - SORT <key> :对一个包含数字值的键key进行排序
 - SORT <key> ALPHA: 使用ALPHA选项可以对字符串值的键进行排序。
 - SORT <key> ASC(DESC) :升序与降序。

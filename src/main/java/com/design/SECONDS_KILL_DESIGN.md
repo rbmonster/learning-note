@@ -1,5 +1,5 @@
 # 秒杀系统
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/secondKill.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/secondKill.jpg)
 
 ## 前端
 秒杀场景入口商城网页、H5、APP、小程序

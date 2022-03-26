@@ -29,11 +29,11 @@
 ## <a name="2">单元测试相关方法论</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 测试金字塔里的单元测试：
 
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/unitTestTower.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/unitTestTower.png)
 
 
 不同测试方法比较：
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/UTCompare.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/UTCompare.png)
 
 ### <a name="3">优缺点分析</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 优点：

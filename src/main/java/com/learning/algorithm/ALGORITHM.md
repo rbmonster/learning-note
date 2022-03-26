@@ -875,7 +875,7 @@ public class Solution {
 ## 回溯
 回溯法⼀般是在集合中递归搜索，集合的⼤⼩构成了树的宽度，递归的深度构成的树的深度。
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/backTracking.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/backTracking.png)
 
 ### 伪代码模版
 ```
@@ -936,7 +936,7 @@ for (选择：本层集合中元素（树中节点孩⼦的数量就是集合的
 组合问题可以抽象为树形结构，那么“使⽤过”在这个树形结构上是有两个维度的，⼀个维度是同⼀树枝上“使⽤过”，⼀个维度是同⼀树层上“使⽤过”。\
 常规使用树层去重，树枝去重会导致过多无谓的查找，而树层去重对于无用的查找可以及时的中断break
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/backTrackingDuplicate.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/backTrackingDuplicate.png)
 
 
 树层去重
@@ -1076,7 +1076,6 @@ public class Soluction {
 - [K次取反后最⼤化的数组和](https://leetcode-cn.com/problems/maximize-sum-of-array-after-k-negations/)
 - [修改一个数成为非递减数组](https://leetcode-cn.com/problems/non-decreasing-array/)
 - [柠檬⽔找零](https://leetcode-cn.com/problems/lemonade-change/)
-
 
 - [买卖股票的最佳时机含⼿续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 - [买卖股票的最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
@@ -1481,7 +1480,6 @@ for(int i =1; i< 背包.length;i++) {
 - [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/): 求排列问题，**理解先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**！！！
 - [零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 - [完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
-
 
 - *[单词拆分](https://leetcode-cn.com/problems/word-break/)
 

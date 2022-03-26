@@ -34,7 +34,7 @@ BFF 解决了什么问题？\
 前端页面时常存在，某个页面需要向 backend A、backend B 以及 backend C...... 发送请求，不同服务的返回值用于渲染页面中不同的 component，即一个页面存在很多请求的场景。
 有了 BFF 这一层时，我们就不需要考虑系统后端的迁移。后端发生的变化都可以在 BFF 层做一些响应的修改。
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/bff.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/bff.png)
 
 - 多端应用: 为不同的设备提供不同的 API，虽然它们可能是实现相同的功能，但因为不同设备的特殊性，它们对服务端的 API 访问也各有其特点，需要区别处理。
 - 服务聚合：BFF 的出现为前端应用提供了一个对业务服务调用的聚合点，它屏蔽了复杂的服务调用链，让前端可以聚焦在所需要的数据上，而不用关注底层提供这些数据的服务。
@@ -68,9 +68,9 @@ BFF 解决了什么问题？\
 
 
 ##### 分层架构
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/structure.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/structure.png)
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/structureIntroduce.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/structureIntroduce.png)
 
 - 应用层（接入层）：通常用来接收前端（展现层）的请求，转发给领域层获取请求结果，再组装结果返回前端。
 - 基础设施层：作为其他层支撑的存在，最通俗的例子就是searchServ，正常的搜索服务都会集成ElasticSearch或者其他搜索功能，searchSearch封装了与基础服务集成的及细节，只暴露了领域需要的接口。
@@ -95,7 +95,7 @@ BFF 解决了什么问题？\
 > 这个根是一个实体，并且它是外部可以访问的唯一的对象。根可以保持对任意聚合对象的引用，并且其他的对象可以持有任意其他的对象，但一个外部对象只能持有根对象的引用。如果边界内有其他的实体，那些实体的标识符是本地化的，只在聚合内有意义。
 
 一个简单的聚合的案例如下图所示。客户是聚合的根，并且其他所有的对象都是内部的。如果需要地址，一个它的拷贝将被传递到外部对象。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/aggreate.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/aggreate.png)
 
 
 ###### 工厂
@@ -120,7 +120,7 @@ BFF 解决了什么问题？\
 [微服务拆分方法论](https://blog.csdn.net/no_game_no_life_/article/details/103390169)
 
 # 中间件设计资料
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/design/systemdesign/disk-memory.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/disk-memory.png)
 
 通常在大部分组件设计时，往往会选择一种主要介质来存储、另一种介质作为辅助使用。就拿 redis 来说，它主要采用内存存储数据，磁盘用来做辅助的持久化。拿 RabbitMQ 举例，它也是主要采用内存存储消息，但也支持将消息持久化到磁盘。而 RocketMQ、Kafka、Pulsar 这种，则是数据主要存储在磁盘，通过内存来主力提升系统的性能。关系型数据库例如 mysql 这种组件也是主要采用磁盘组织数据，合理利用内存提升性能。
 

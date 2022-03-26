@@ -14,19 +14,19 @@ Reactor线程模型分为单线程模型、多线程模型以及主从多线程�
  
 ### 单线程Reactor
 单线程 Reactor 的优点是对系统资源消耗特别小，但是，没办法支撑大量请求的应用场景并且处理请求的时间可能非常慢
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/nettyRefactor.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyRefactor.jpg)
 
 ### 多线程Reactor
 一个线程负责接受请求,一组NIO线程处理IO操作。
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/nettyRefactor2.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyRefactor2.png)
 
 ### 主从多线程Reactor
 一组NIO线程负责接受请求，一组NIO线程处理IO操作。
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/nettyRefactor2.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyRefactor2.jpg)
 
 
 ## Netty的核心组件
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/io/nettyAF.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/io/nettyAF.jpg)
 Channel 为 Netty 网络操作(读写等操作)抽象类，EventLoop 负责处理注册到其上的Channel 处理 I/O 操作，两者配合参与 I/O 操作。
 
 ### Channel

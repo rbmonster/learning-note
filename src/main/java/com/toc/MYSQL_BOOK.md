@@ -84,7 +84,7 @@
 &emsp;&emsp;<a href="#81">7.6. Innodb的内存管理策略LRU</a>  
 # <a name="0">MySql实战45讲</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">mysql整体的架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/mysqlprocess.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/mysqlprocess.jpg)
 - MySQL可以分为Server层和存储引擎层两部分
   - Server层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖MySQL的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。
   - 存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持InnoDB、MyISAM、Memory等多个存储引擎。现在最常用的存储引擎是InnoDB，它从MySQL5.5.5版本开始成为了默认存储引擎
@@ -159,12 +159,12 @@ MySQL里经常说到的WAL技术，WAL的全称是WriteAheadLogging，它的关�
 - 当有一条记录需要更新的时候， InnoDB引擎就会先把记录写到redo log（粉板） 里面， 并更新内存， 这个时候更新就算完成了。 同时， InnoDB引擎会在适当的时候， 将这个操作记录更新到磁盘里面， 而这个更新往往是在系统比较空闲的时候做， 这就像打烊以后掌柜做的事。(由于磁盘连接开销大，)
 - InnoDB的redo log是固定大小的， 比如可以配置为一组4个文件， 每个文件的大小是1GB， 那么这块“粉板”总共就可以记录4GB的操作。 从头开始写， 写到末尾就又回到开头循环写， 如下面这个图所示
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/redologwrite.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/redologwrite.jpg)
 
 redo log buffer ：redo log buffer就是一块内存， 用来先存redo日志的。 在执行事务的时候，如insert、update会先存在buffer中。等事务commit，再一起写入redo log
 
 #### <a name="10">redo log 写入机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/redologwrite.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/redologwrite.png)
 这三种状态分别是：
 1. 存在redo log buffer中， 物理上是在MySQL进程内存中， 就是图中的红色部分；
 2. 写到磁盘(write)， 但是没有持久化（fsync)， 物理上是在文件系统的page cache里面， 也就是图中的黄色部分；
@@ -184,7 +184,7 @@ InnoDB写盘的三种情况：
 MySQL整体来看， 其实就有两块： 一块是Server层， 它主要做的是MySQL功能层面的事情； 还有一块是引擎层， 负责存储相关的具体事宜。 上面我们聊到的粉板redo log是InnoDB引擎特有的日志， 而Server层也有自己的日志， 称为binlog（归档日志） 。
 
 #### <a name="12">bin log写入机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/binlogwrite.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/binlogwrite.jpg)
 每个线程有自己binlog cache， 但是共用同一份binlog文件。
 1. 图中的write， 指的就是指把日志写入到文件系统的page cache， 并没有把数据持久化到磁盘， 所以速度比较快。
 2. 图中的fsync， 才是将数据持久化到磁盘的操作。 一般情况下， 我们认为fsync才占磁盘的IOPS
@@ -206,10 +206,10 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
 4. 事务提交的时候，一次性将事务中的sql语句（一个事物可能对应多个sql语句）按照一定的格式记录到binlog中。这里与redo log很明显的差异就是redo log并不一定是在事务提交的时候刷新到磁盘，redo log是在事务开始之后就开始逐步写入磁盘。
 
 ### <a name="14">一条update语句的执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/updateProcess.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/updateProcess.jpg)
 
 ### <a name="15">两阶段提交</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/twocommit.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/twocommit.jpg)
 两阶段提交：主要用于保证redo log 与binlog 的状态保持逻辑上一致。
 
 图中 两个“commit”的概念：
@@ -240,7 +240,7 @@ bin log 三种数据格式，主要区别于在存储bin log 的格式区别  �
     
     
 #### <a name="16">两阶段提交的实际执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/actualWrite.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/actualWrite.jpg)
 WAL机制主要得益于两个方面：
 1. redo log 和 binlog都是顺序写， 磁盘的顺序写比随机写速度要快；
 2. 组提交机制， 可以大幅度降低磁盘的IOPS消耗。
@@ -254,7 +254,7 @@ WAL机制主要得益于两个方面：
   - 串行化（ serializable ）
   
 ### <a name="18">区分隔离级别（例子）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/transactionProcess.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactionProcess.jpg)
 
 - 若隔离级别是“读未提交”， 则V1的值就是2。 这时候事务B虽然还没有提交， 但是结果已经被A看到了。 因此， V2、 V3也都是2。
 - 若隔离级别是“读提交”， 则V1是1， V2的值是2。 事务B的更新在提交后才能被A看到。 所以，V3的值也是2。
@@ -270,7 +270,7 @@ MySQL的事务启动方式有以下几种：
 ### <a name="20">事务隔离的实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 事务启动的时候会创建一个视图read-view。
 - begin/start transaction 命令并不是一个事务的起点， 在执行到它们之后的第一个操作InnoDB表的语句， 事务才真正启动。 如果你想要马上启动一个事务， 可以使用start transaction with consistent snapshot 这个命令。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/transactiongeli.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli.jpg)
 
 - 在MySQL里， 有两个“视图”的概念：
   1. 一个是view。 它是一个用查询语句定义的虚拟表， 在调用的时候执行查询语句并生成结果。创建视图的语法是create view …， 而它的查询方法与表一样。
@@ -280,7 +280,7 @@ MySQL的事务启动方式有以下几种：
 - 每行数据也都是有多个版本的。 每次事务更新数据的时候， 都会生成一个新的数据版本， 并且把transaction id赋值给这个数据版本的事务ID， 记为row trx_id。 同时， 旧的数据版本要保留，并且在新的数据版本中， 能够有信息可以直接拿到它
 
 - 行状态说明
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/lineState.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/lineState.jpg)
 - 虚线框里是同一行数据的4个版本， 当前最新版本是V4， k的值是22， 它是被transaction id为25的事务更新的， 因此它的row trx_id也是25。而V1、 V2、 V3并不是物理上真实存在的， 而是每次需要的时候根据当前版本和undo log计算出来的。 
 - 图中的三个虚线箭头，就是undo log； 
 
@@ -290,7 +290,7 @@ MySQL的事务启动方式有以下几种：
   - 更新语句以当前的视图版本为准。
 
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/transactiongeli2.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli2.png)
 - 事务A视图版本100，事务B视图版本101，事务C视图版本102
 1. 更新数据都是先读后写的， 而这个读， 只能读当前的值， 称为“当前读”（ current read） 。
 2. 故事务C读到当前值为1，更新为2。事务B读到当前值被C更新为2，再更新为3。
@@ -301,10 +301,10 @@ MySQL的事务启动方式有以下几种：
     mysql> select k from t where id=1 for update;
     ```
 - 所等待的例子，更新结果也为3。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/transactiongeli3.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli3.jpg)
 
 - 读提交事务隔离的例子，事务A读取的结果为2。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/transactiongeli4.png)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/transactiongeli4.png)
 
 ## <a name="22">索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 索引的出现其实就是为了提高数据查询的效率， 就像书的目录一样。 一本500页的书，对于数据库的表而言， 索引其实就是它的“目录”。
@@ -320,7 +320,7 @@ InnoDB里面索引对应一棵B+树
   - 如果语句是select * from T where k=5， 即普通索引查询方式， 则需要先搜索k索引树， 得到ID的值为500， 再到ID索引树搜索一次。 这个过程称为回表。
   - 回到主键索引树搜索的过程， 我们称为回表。
   
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/indexquery.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/indexquery.jpg)
 - 主键长度越小， 普通索引的叶子节点就越小， 普通索引占用的空间也就越小。
   - 所以， 从性能和存储空间方面考量， 自增主键往往是更合理的选择。
 
@@ -354,7 +354,7 @@ change Buffer与redo log 区别
 2. 子节点数：非叶节点的子节点数>1，且<=M ，且M>=2，空树除外（注：M阶代表一个树节点最多有多少个查找路径，M=M路,当M=2则是2叉树,M=3则是3叉）；
 3. 所有叶子节点均在同一层、叶子节点除了包含了关键字和关键字记录的指针外也有指向其子节点的指针只不过其指针地址都为null对应下图最后一层节点的空格子;
 4. 关键字数：枝节点的关键字数量大于等于ceil(m/2)-1个且小于等于M-1个（注：ceil()是个朝正无穷方向取整的函数 如ceil(1.1)结果为2);
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/Btree.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/Btree.jpg)
 
 - B树插入与删除操作：https://zhuanlan.zhihu.com/p/27700617
 
@@ -399,8 +399,8 @@ mysql 5.6 后引入索引下推。
 
 ### <a name="31">索引选错及优化器执行逻辑</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 下面是一个索引走错的例子，图二为慢查询日志的结果，红框内容为实际扫描行数。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/errorIndex1.jpg)
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/errorIndex2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/errorIndex1.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/errorIndex2.jpg)
 ```
 // 设置慢查询日志
 set long_query_time=0;
@@ -423,7 +423,7 @@ select * from t force index(a) where a between 10000 and 20000;/*Q2*/
 - 由于是采样统计， 所以不管N是20还是8， 这个基数都是很容易不准的。
 - analyze table t 命令， 可以用来重新统计索引信息。 
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/errorIndex2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/errorIndex2.jpg)
 使用explain 语句分析SQL的扫描行数信息，rows的结果为根据采样结果预计的扫描行数。
 - 选错索引的根本原因为采样统计信息有误统计成了37116行，而由于查询所有字段，使用索引还需要根据ID回表查询其他信息，经过优化器估算，全表扫描代价低。
 - 优化器的选择方案时，使用普通索引会把回表的代价也算进去。
@@ -502,13 +502,13 @@ MySQL的行锁是在引擎层由各个引擎自己实现的。 MyISAM引擎就�
 InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且该索引不能失效，否则都会从行锁升级为表锁
 
 #### <a name="41">两阶段锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/linelock.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/linelock.jpg)
 - 事务B的update语句会被阻塞， 直到事务A执行commit之后， 事务B才能继续执行
 - 在InnoDB事务中， 行锁是在需要的时候才加上的， 但并不是不需要了就立刻释放， 而是要等到事务结束时才释放。 这个就是两阶段锁协议
 - 如果你的事务中需要锁多个行， 要把最可能造成锁冲突、 最可能影响并发度的锁尽量往后放。
 
 ### <a name="42">死锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/deadlock.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/deadlock.jpg)
 事务A在等待事务B释放id=2的行锁， 而事务B在等待事务A释放id=1的行锁。 事务A和事务B在互相等待对方的资源释放， 就是进入了死锁状态。 
 - 一种策略是， 直接进入等待， 直到超时。 这个超时时间可以通过参数innodb_lock_wait_timeout来设置。在InnoDB中， innodb_lock_wait_timeout的默认值是50s
 - 另一种策略是， 发起死锁检测， 发现死锁后， 主动回滚死锁链条中的某一个事务， 让其他事务得以继续执行。 将参数innodb_deadlock_detect设置为on， 表示开启这个逻辑。
@@ -516,14 +516,14 @@ InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且�
     - 解决方案：1.确定不会出现死锁，关闭死锁检测。2.控制并发度。3.改写mysql源码。
     
 ### <a name="43">幻读(间隙锁)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/phantomRead.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead.jpg)
 - session A里执行了三次查询， 分别是Q1、 Q2和Q3。 它们的SQL语句相同， 都是select * from t where d=5 for update。 表示查所有d=5的行， 而且使用的是当前读， 并且加上写锁。 
 - 其中， Q3读到id=1这一行的现象， 被称为“幻读”。 也就是说， 幻读指的是一个事务在前后两次查询同一个范围的时候， 后一次查询看到了前一次查询没有看到的行
 - 幻读会导致数据一致性的问题。 锁的设计是为了保证数据的一致性。 而这个一致性， 不止是数据库内部数据状态在此刻的一致性， 还包含了数据和日志在逻辑上的一致性。
   1. 在可重复读隔离级别下， 普通的查询是快照读， 是不会看到别的事务插入的数据的。 因此，幻读在“当前读”下才会出现。
   2. 上面session B的修改结果， 被session A之后的select语句用“当前读”看到， 不能称为幻读。幻读仅专指“新插入的行”
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/phantomRead2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead2.jpg)
 - 尝试解决幻读，把所有语句都上锁，查询语句改成select * from t for update。但是仍然无法解决插入新语句出现的幻读现象。
 
 #### <a name="44">如何解决幻读？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -547,12 +547,12 @@ InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且�
 
 #### <a name="46">间隙锁相关实例说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一个next Key Lock 的加锁例子
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/phantomRead3.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead3.jpg)
 1. 开始执行的时候， 要找到第一个id=10的行， 因此本该是next-keylock(5,10]。 根据优化1，主键id上的等值条件， 退化成行锁， 只加了id=10这一行的行锁。
 2. 范围查找就往后继续找， 找到id=15这一行停下来， 因此需要加next-keylock(10,15]。所以， session A这时候锁的范围就是主键索引上， 行锁id=10和next-keylock(10,15]。
 
 - 死锁案例（间隙锁不互斥导致）
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/phantomRead4.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/phantomRead4.jpg)
 1. session A 启动事务后执行查询语句加lock in share mode， 在索引c上加了next-key lock(5,10] 和间隙锁(10,15)；
 2. session B 的update语句也要在索引c上加next-keylock(5,10] ， 进入锁等待；
 3. 然后session A要再插入(8,8,8)这一行， 被session B的间隙锁锁住。 由于出现了死锁， InnoDB让session B回滚
@@ -598,7 +598,7 @@ select id from t where c in(5,20,10) order by c desc for update;
     c=20， 然后c=10， 最后是c=5
     
 - 锁范围增长
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/nextKeyLockExtend.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/nextKeyLockExtend.jpg)
 - 由于session A并没有锁住c=10这个记录， 所以session B删除id=10这一行是可以的。 但是之后， session B再想insert id=10这一行回去就不行了
 - 由于delete操作把id=10这一行删掉了， 原来的两个间隙(5,10)、 (10,15）变成了一个(5,15)
 
@@ -640,9 +640,9 @@ KEY `city` (`city`)
 
 select city,name,age from t where city='杭州' order by name limit 1000 ;
 ```
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/orderby1.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby1.jpg)
 Extra这个字段中的“Using filesort”表示的就是需要排序， MySQL会给每个线程分配一块内存用于排序， 称为sort_buffer。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/orderby2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby2.jpg)
 这个语句执行流程如下所示 ：
   1. 初始化sort_buffer， 确定放入name、 city、 age这三个字段；
   2. 从索引city找到第一个满足city='杭州’条件的主键id， 也就是图中的ID_X；
@@ -666,7 +666,7 @@ optimizer_trace 是一个跟踪功能，跟踪执行的语句的解析优化执�
 
 #### <a name="52">rowId排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 max_length_for_sort_data :是MySQL中专门控制用于排序的行数据的长度的一个参数。 它的意思是， 如果单行的长度超过这个值， MySQL就认为单行太大， 要换一个算法。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/orderby3.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/orderby3.jpg)
 - 主要体现在内存排序完毕之后要多一次查询。
 
 对于InnoDB表来说， 执行全字段排序会减少磁盘访问， 因此会被优先选择。
@@ -727,7 +727,7 @@ Batched Key Access （BAK）
 ```
 (select 1000 as f) union (select id from t1 order by id desc limit 2);
 ```
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/union.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/union.jpg)
 
 执行流程是这样的：
 1. 创建一个内存临时表， 这个临时表只有一个整型字段f， 并且f是主键字段。
@@ -776,7 +776,7 @@ select SQL_BIG_RESULT id%100 as m, count(*) as c from t1 group by m;
 - 当内存数据页跟磁盘数据页内容不一致的时候， 我们称这个内存页为“脏页”。 
 - 在内存数据写入到磁盘后， 内存和磁盘上的数据页的内容就一致了， 称为“干净页”。
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/redologFlush.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/redologFlush.jpg)
 Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（flush）的方法
 - 第一种：对应的就是InnoDB的redo log写满了。 这时候系统会停止所有更新操作， 把checkpoint往前推进， redo log留出空间可以继续写。
 - 第二种：系统的内存需要新的内存页，这时候需要淘汰一些内存也。这如果是脏页，就会把脏页刷到内存中，然后淘汰脏页。
@@ -802,7 +802,7 @@ Mysql 数据库抖动可能就是在刷“脏页”。两种触发刷脏页（fl
   - 参数innodb_max_dirty_pages_pct是脏页比例上限， 默认值是75%。 InnoDB会根据当前的脏页比例（假设为M） ，算出一个范围在0到100之间的数字F(M)
   - InnoDB每次写入的日志都有一个序号， 当前写入的序号跟checkpoint对应的序号之间的差值，我们假设为N，计算出F(N)。 
   - 上述算得的F1(M)和F2(N)两个值， 取其中较大的值记为R， 之后引擎就可以按 照innodb_io_capacity定义的能力乘以R%来控制刷脏页的速度。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/memoryflash.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/memoryflash.jpg)
 
 
 ### <a name="68">数据库表数据删除</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -816,7 +816,7 @@ delete命令其实只是把记录的位置， 或者数据页标记为了“可�
 删除数据会造成空洞， 插入数据也会。主要体现在插入数据出现页分裂，那么分裂完成的页势必存在空洞位置。
 
 #### <a name="69">重建表消除数据空洞</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/rebuildTable.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/rebuildTable.jpg)
 ```
 alter table A engine=InnoDB
 ```
@@ -872,7 +872,7 @@ mysql> select * from tradelog where CAST(tradid AS signed int) = 110717;
     flush tables with read lock;
     ```
   - 两个flush table的语句
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/longquery.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/longquery.jpg)
 
 ##### <a name="77">等行锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
@@ -886,9 +886,9 @@ mysql> select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'`\G
 ```
 
 #### <a name="78">查询慢</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/slowquery1.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/slowquery1.jpg)
 
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/slowquery2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/slowquery2.jpg)
 ```
 //session A
 select * from t where id=1
@@ -916,7 +916,7 @@ QPS突增
  3. 如果这个新增的功能跟主体功能是部署在一起的， 那么我们只能通过处理语句来限制。可能造成“误伤”。
  
 ### <a name="80">主从同步流程图</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/masterSlave.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/masterSlave.jpg)
 一个事务日志同步的完整过程是这样的：
 1. 在备库B上通过change master命令， 设置主库A的IP、 端口、 用户名、 密码， 以及要从哪个位置开始请求binlog， 这个位置包含文件名和日志偏移量。
 2. 在备库B上执行start slave命令， 这时候备库会启动两个线程， 就是图中的io_thread和sql_thread。 其中io_thread负责与主库建立连接。
@@ -927,14 +927,14 @@ QPS突增
 
 
 ### <a name="81">Innodb的内存管理策略LRU</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/LRU1.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/LRU1.jpg)
 InnoDB管理Buffer Pool的LRU算法， 是用链表来实现的。
 1. 在图中的状态1里， 链表头部是P1， 表示P1是最近刚刚被访问过的数据页。
 2. 状态2 表示刚访问过P3，移到表头
 3. 若有新数据则添加到表头，若内存已满，移除表尾的数据。
 
 innoDB对LRU改进，防止大数据量查询导致，内存的数据命中率突然下降过快。
-![image](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/mysql/LRU2.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mysql/LRU2.jpg)
 在InnoDB实现上， 按照5:3的比例把整个LRU链表分成了young区域和old区域。 图中LRU_old指向的就是old区域的第一个位置， 是整个链表的5/8处。 也就是说， 靠近链表头部的5/8是young区域， 靠近链表尾部的3/8是old区域。
 
 young区域的数据和之前的算法一致，而针对新数据都是插入到old区域，因此young区域的数据不受影响，保证了业务的数据命中率。

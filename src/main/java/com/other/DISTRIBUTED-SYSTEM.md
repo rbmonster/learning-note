@@ -36,7 +36,7 @@
 2PC和3PC都是一种在分布式环境中仍追求强一致性的事务处理方案，对于多节点而且互相调用彼此服务的场合（典型的就是现在的微服务系统）是极不合适的，今天它几乎只实际应用于单服务多数据源的场合中
 
 #### 两阶段提交 2PC(phase-commit)
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/2pc.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/2pc.png)
 
 在两阶段提交中，主要涉及到两个角色，分别是协调者和参与者。
 1. 第一阶段：当要执行一个分布式事务的时候，事务发起者首先向协调者发起事务请求，然后协调者会给所有参与者发送 prepare 请求（其中包括事务内容）告诉参与者需要执行事务。如果能执行发送的事务内容那么就先执行但不提交，执行后回复。\
@@ -54,7 +54,7 @@
    - 脑裂问题。如果分布式节点出现网络分区，某些参与者未收到commit提交命令，就会出现一部分提交数据，而另一部分未提交数据的不一致问题。
 
 #### 三阶段提交 3PC(phase-commit)
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/learning/basic/3PC.jpg)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/3PC.jpg)
 
 三阶段提交的流程如下：
 1. CanCommit阶段：协调者向所有参与者发送 CanCommit 请求，参与者收到请求后会根据自身情况查看是否能执行事务，如果可以则返回 YES 响应并进入预备状态，否则返回 NO 。
@@ -80,7 +80,7 @@ BASE 是Basically Available（基本可用） 、Soft-state（软状态，柔性
 #### 可靠事件队列(最大努力交付)
 定义：靠着持续重试来保证可靠性的分布式事务最终一致性解决方案\
 缺点：过程无隔离性，缺乏隔离性会带来的一个显而易见的问题便是“超售”：完全有可能两个客户在短时间内都成功购买了同一件商品，而且他们各自购买的数量都不超过目前的库存，但他们购买的数量之和却超过了库存。
-![avatar](https://gitee.com/rbmon/file-storage/raw/main/learning-note/other/basicTimingDiagram.png)
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/basicTimingDiagram.png)
 
 在系统中建立一个消息服务，定时轮询消息表，将状态是“进行中”的消息同时发送到库存和商家服务节点中去。这时候可能产生以下几种情况。
 1. 商家和仓库服务都成功完成了收款和出库工作，向用户账号服务器返回执行结果，用户账号服务把消息状态从“进行中”更新为“已完成”。整个事务宣告顺利结束，达到最终一致性的状态。
