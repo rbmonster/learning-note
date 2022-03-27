@@ -74,8 +74,9 @@
 &emsp;<a href="#71">15. 滑动窗口</a>  
 &emsp;<a href="#72">16. TODO 二进制应用</a>  
 &emsp;<a href="#73">17. 常用操作</a>  
-&emsp;&emsp;<a href="#74">17.1. 求余数常见操作</a>  
-&emsp;&emsp;<a href="#75">17.2. Kanade 算法</a>  
+&emsp;&emsp;<a href="#74">17.1. 前缀和</a>  
+&emsp;&emsp;<a href="#75">17.2. 求余数常见操作</a>  
+&emsp;&emsp;<a href="#76">17.3. Kanade 算法</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">哈希表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -1155,7 +1156,6 @@ public class Soluction {
 - [修改一个数成为非递减数组](https://leetcode-cn.com/problems/non-decreasing-array/)
 - [柠檬⽔找零](https://leetcode-cn.com/problems/lemonade-change/)
 
-
 - [买卖股票的最佳时机含⼿续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 - [买卖股票的最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
 
@@ -1513,8 +1513,8 @@ public class FullPackage {
 
 
 除了上述背包问题的常见解法，还需**区分先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**。
-- 如果求组合数就是外层for循环遍历物品，内层for遍历背包。组合不强调顺序，如(1,5)和(5,1)是同⼀个组合。
-- 如果求排列数就是外层for遍历背包，内层for循环遍历物品。排列强调顺序，如(1,5)和(5,1)是两个不同的排列。
+- 如果**求组合数就是外层for循环遍历物品**，内层for遍历背包。组合不强调顺序，如(1,5)和(5,1)是同⼀个组合。
+- 如果**求排列数就是外层for遍历背包**，内层for循环遍历物品。排列强调顺序，如(1,5)和(5,1)是两个不同的排列。
 
 > 如果把遍历nums（物品）放在外循环，遍历target的作为内循环的话，举⼀个例⼦：计算`dp[4]`的时
 候，结果集只有 {1,3} 这样的集合，不会有{3,1}这样的集合，因为nums遍历放在外层，3只能出现在1后⾯！
@@ -1556,11 +1556,9 @@ for(int i =1; i< 背包.length;i++) {
 
 完全背包：
 - [零钱兑换 II](https://leetcode-cn.com/problems/coin-change-2/)
-- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/)
-> 求排列问题，**理解先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**！！！
+- [组合总和 Ⅳ](https://leetcode-cn.com/problems/combination-sum-iv/): 求排列问题，**理解先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**！！！
 - [零钱兑换](https://leetcode-cn.com/problems/coin-change/)
 - [完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
-
 
 - *[单词拆分](https://leetcode-cn.com/problems/word-break/)
 
@@ -1839,6 +1837,12 @@ public class BinarySearchRight {
 ```
 
 ### <a name="68">经典问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+二分查找问题
+1. 确定target目标，如果题目无target，需自己确定。如山峰问题的`num[mid]<nums[mid+1]`
+2. 确定判断搜索区间。根据target进行查找。
+
+
 - [搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
 - [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 - [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/): 通过左右边界确定序列是否为递增
@@ -1858,7 +1862,7 @@ public class BinarySearchRight {
 - [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
 - [寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
 - [山脉数组的峰顶索引](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/)
-
+- [剑指 Offer II 073. 狒狒吃香蕉](https://leetcode-cn.com/problems/nZZqjQ/)
 
 ## <a name="69">位运算与运算转换</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
@@ -1875,13 +1879,15 @@ public class BinarySearchRight {
 - [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
 
 
-
-
 ## <a name="72">TODO 二进制应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 计算1的个数
 
 ## <a name="73">常用操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="74">求余数常见操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="74">前缀和</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+前缀和是一种重要的预处理，能大大降低查询的时间复杂度。两个位置的前缀和差值，能快速确定这段区间的`sumup`
+> 相关关键词：**连续子数组**
+
+### <a name="75">求余数常见操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```java
 public class Solution {
   private int getNext(int n) {
@@ -1899,7 +1905,7 @@ public class Solution {
 }
 ```
 
-### <a name="75">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="76">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对于一个给定数组 A，Kadane 算法可以用来找到 A 的最大子段和。
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 ```

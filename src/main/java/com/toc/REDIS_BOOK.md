@@ -37,7 +37,6 @@
 &emsp;<a href="#34">16. 二进制位数据</a>  
 &emsp;<a href="#35">17. 慢查询日志</a>  
 # <a name="0">Redis 设计与实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-[toc]
 
 ## <a name="1">Redis底层数据结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="2">简单动态字符串SDS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
