@@ -1758,6 +1758,12 @@ public class BinarySearchRight {
 ```
 
 ### 经典问题
+
+二分查找问题
+1. 确定target目标，如果题目无target，需自己确定。如山峰问题的`num[mid]<nums[mid+1]`
+2. 确定判断搜索区间。根据target进行查找。
+
+
 - [搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
 - [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 - [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/): 通过左右边界确定序列是否为递增
@@ -1777,7 +1783,7 @@ public class BinarySearchRight {
 - [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
 - [寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
 - [山脉数组的峰顶索引](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/)
-
+- [剑指 Offer II 073. 狒狒吃香蕉](https://leetcode-cn.com/problems/nZZqjQ/)
 
 ## 位运算与运算转换
 [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
@@ -1794,12 +1800,14 @@ public class BinarySearchRight {
 - [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
 
 
-
-
 ## TODO 二进制应用
 计算1的个数
 
 ## 常用操作
+### 前缀和
+前缀和是一种重要的预处理，能大大降低查询的时间复杂度。两个位置的前缀和差值，能快速确定这段区间的`sumup`
+> 相关关键词：**连续子数组**
+
 ### 求余数常见操作
 ```java
 public class Solution {

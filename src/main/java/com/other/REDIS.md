@@ -288,6 +288,7 @@ hashtable
 ```
 ### 有序集合zset
 使用场景：打赏排行榜
+> 面对需要展示最新列表、排行榜等场景时，数据更新频繁或者需要分页显示，优先考虑使用 Sorted Set。
 
 #### 底层结构
 有序集合的编码可以是`ziplist`或者`skiplist`
@@ -383,6 +384,47 @@ skiplist
 #### 保存固定行数的lua
 [Redis + Lua 实现 sorted set 集合保证固定数量的数据，并保留新数据剔除旧数据](https://blog.csdn.net/cainiao1412/article/details/107483286)
   
+### Bitmap
+Bitmap 的底层数据结构用的是 String 类型的 SDS 数据结构来保存位数组，Redis 把每个字节数组的 8 个 bit 位利用起来，每个 bit 位 表示一个元素的二值状态(不是 0 就是 1)。
+
+![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/bitmap.png)
+
+#### 应用场景
+参考资料：[Redis 实战篇：巧用 Bitmap 实现亿级海量数据统计](https://mp.weixin.qq.com/s/js_H86SNjY5lPSN1_6v00w)
+
+**用 Bitmap 来判断海量用户中某个用户是否在线**
+
+key = login_status 表示存储用户登陆状态集合数据， **将用户 ID 作为 offset**，在线就设置为 1，下线设置 0。
+```
+SETBIT <key> <offset> <value> // 设置用户是否已登陆
+GETBIT <key> <offset>       // 获取用户是否在线
+```
+
+**用户每个月的签到情况**
+
+key 可以设计成 `uid:sign:{userId}:{yyyyMM}`，月份的每一天的值 - 1 可以作为 offset（因为 offset 从 0 开始，所以 offset = 日期 - 1）。
+```
+SETBIT uid:sign:89757:202105 15 1  // 表示记录用户在 2021 年 5 月 16 号打卡
+GETBIT uid:sign:89757:202105 15    // 编号 89757 用户在 2021 年 5 月 16 号是否打卡。
+BITCOUNT uid:sign:89757:202105     // 统计该用户在 5 月份的打卡次数，使用 BITCOUNT 指令
+BITPOS uid:sign:89757:202105 1     // 获取 userID = 89757 在 2021 年 5 月份首次打卡日期
+```
+
+**连续签到用户总数**
+> 在记录了一个亿的用户连续 7 天的打卡数据，如何统计出这连续 7 天连续打卡用户总数呢？
+
+我们把每天的日期作为 Bitmap 的 key，userId 作为 offset，若是打卡则将 offset 位置的 bit 设置成 1。key 对应的集合的每个 bit 位的数据则是一个用户在该日期的打卡记录。 一共有 7 个这样的 Bitmap，如果我们能对这 7 个 Bitmap 的对应的 bit 位做 **『与』运算**。
+
+Redis 提供了 `BITOP operation destkey key [key ...]`这个指令用于对一个或者多个 键 = key 的 Bitmap 进行位元操作。
+`opration` 可以是 `and、OR、NOT、XOR`。当 `BITOP` 处理不同长度的字符串时，较短的那个字符串所缺少的部分会被看作 0 。空的 key 也被看作是包含 0 的字符串序列。
+```
+// 与操作
+BITOP AND destmap bitmap:01 bitmap:02 bitmap:03
+// 统计 bit 位 =  1 的个数
+BITCOUNT destmap
+```
+> 简单计算下 一个一亿个位的 Bitmap占用的内存开销，大约占 12 MB 的内存（10^8/8/1024/1024），7 天的 Bitmap 的内存开销约为 84 MB。同时我们最好给 Bitmap 设置过期时间，让 Redis 删除过期的打卡数据，节省内存。
+
 ### HyperLogLog 
 是做基数统计的redis对象，故不是集合，不会保存元数据，只记录数量而不是数值。
 #### 基数计数的演进
@@ -627,7 +669,7 @@ RDB持久化可以手工执行，也可以根据服务器配置选项定期执�
 
 #### RDB文件创建与载入
 - `SAVE`命令，阻塞Redis服务器进程，直到RDB文件创建完毕为止。
-- `BGSAVE`命令会派生出一个子进程，然后由子进程创建RDB文件，不会阻塞主线程。为保证拷贝的数据一致性，使用了操作系统的COW机制。类似CopyOnWriteList的实现。
+- `BGSAVE`命令会派生出一个子进程，然后由子进程创建RDB文件，不会阻塞主线程。为保证拷贝的数据一致性，使用了**操作系统的COW机制**。类似CopyOnWriteList的实现。
 
 ### AOF持久化
 AOF持久化保存数据库的方法是将`服务器执行的命令`保存到AOF文件中。通过fsync异步将命令写到日志
@@ -815,7 +857,7 @@ Redis集群是Redis提供的分布式数据库方案，集群通过分片实现�
 
 
 ### 哈希槽与槽指派
-**哈希槽**：Redis 集群并没有直接使用一致性哈希，而是使用了哈希槽 （slot） 的概念。没有使用Hash算法，而是使用了crc16校验算法。槽位其实就是一个个的空间的单位。
+**哈希槽**：Redis 集群并没有直接使用一致性哈希，而是使用了**哈希槽**(slot)的概念。没有使用Hash算法，而是使用了crc16校验算法。槽位其实就是一个个的空间的单位。
 > 每个key经过crc16校验算法计算，会落在对应的哈希槽上，便可以定位到节点的redis\
 > Cluster 还允许用户强制某个 key 挂在特定槽位上，通过在 key 字符串里面嵌入 `tag` 标记，这就可以强制 key 所挂在的槽位等于 `tag` 所在的槽位。手动指定`tag`保证了大数据量的缓存不会落到同一个集群节点上。
 
@@ -846,7 +888,7 @@ OK
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/slotReadd.jpg)
 
 
-### 一致性哈希
+#### 一致性哈希概念
 一致性哈希解决问题：定位节点用传统的`key%节点数`取模，会导致每次在新增和删除节点的时候，都要根据key的定位做大量的数据迁移。
 
 查询如何定位到对应的服务器位置？
@@ -869,7 +911,24 @@ OK
 
 相关文章：[分布式系统中一致性哈希算法](https://www.cnblogs.com/jajian/p/10896624.html)
 
+#### 哈希槽相关问题
+redis cluster为什么没有使用一致性hash算法，而是使用了哈希槽预分片？
+1. 当发生扩容时候，哈希槽采用灵活的可配置映射表，可以随意组织映射到新增server上面的slot数，比一致性hash的算法更灵活方便；同时也给开发人员手工配置更大的简洁性。
+2. 在数据迁移时，一致性hash 需要算哪些key是落在新增服务节点的数据，然后迁移这部分数据，哈希槽则直接将一个slot对应的数据全部迁移，算法明确以及实现更简单。
+
+redis的hash槽为什么是16384(2^14)个卡槽，而不是65536(2^16)个？
+1. 如果槽位为65536，发送心跳信息的消息头达8k，发送的心跳包过于庞大。8k的由来(集群节点发送PONG信息的时候，该消息包含了一个`myslots`的char数组，长度为`16383/8`，占用大小为`16384÷8÷1024=2kb`，若槽指定为65536则需要的大小则为8k)
+2. redis的集群主节点数量基本不可能超过1000个。集群节点越多，心跳包的消息体内携带的数据越多。如果节点过1000个，也会导致网络拥堵。因此redis作者，不建议redis cluster节点数量超过1000个。 那么，对于节点数在1000以内的redis cluster集群，16384个槽位够用了。没有必要拓展到65536个。
+3. 槽位越小，节点少的情况下，压缩率高。
+> Redis主节点的配置信息中，它所负责的哈希槽是通过一张bitmap的形式来保存的，在传输过程中，会对bitmap进行压缩，但是如果bitmap的填充率`slots/N`很高的话(N表示节点数)，bitmap的压缩率就很低。
+
+参考文章: [Redis 如何路由数据](https://juejin.cn/post/6959080907948949512)
+
 ### 集群下与客户端交互
+Redis Cluster 属于服务端分片的方式。Redis 实例会把自己的哈希槽信息发给和它相连接的其它实例，来完成哈希槽分配信息的扩散。当实例之间相互连接后，每个实例就有所有哈希槽的映射关系了
+1. 客户端收到哈希槽信息后，会把**哈希槽信息缓存在本地**。当客户端请求键值对时，会先计算键所对应的哈希槽，然后就可以给相应的实例发送请求了。
+2. 当 Cluster 有实例增减或者负载均衡之后。实例可以通过互相传递消息来获得最新的哈希槽分配信息。而客户端需要通过 Redis Cluster 的「重定向机制」来重新获取新实例的访问地址。
+
 #### MOVED错误
 
 键命令执行步骤主要分两步：
@@ -877,8 +936,10 @@ OK
 2. **槽节点查找**。Redis计算得到键对应的槽后，需要查找槽所对应的节点。集群内通过消息交换每个节点都会知道所有节点的槽信息，内部保存在`clusterState`结构中。
 **若节点的槽不是当前节点，返回MOVED重定向错误。**
 
-MOVED重定向: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redis-move.jpg)
+MOVED重定向（**负载均衡，数据已经迁移到其他实例上**）: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
+> **客户端还会更新本地缓存，将该 slot 与 Redis 实例对应关系更新正确。**
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/other/redis/cluster-move.png)
 
 ```
 // 连接redis集群 计算集群定位的值
@@ -911,8 +972,10 @@ OK
 #### ASK 错误
 ASK重定向：在线迁移槽（slot）的过程中，客户端向slot发送请求，若键对象不存在，则可能存在于目标节点，这时源节点会回复 ASK重定向异常。\
 格式如下：`(error) ASK {slot} {targetIP}:{targetPort}`
-> 客户端从ASK重定向异常提取出目标节点信息，发送asking命令到目标节点打开客户端连接标识，再执行键命令。如果存在则执行，不存在则返 回不存在信息
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/redis-ask.png)
+> 客户端从ASK重定向异常提取出目标节点信息，发送asking命令到目标节点打开客户端连接标识，再执行键命令。如果存在则执行，不存在则返 回不存在信息\
+> **ASK 错误指令并不会更新客户端缓存的哈希槽分配信息。**
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/redis-ask.png)
 
 #### mget批量调用
 hash_tag: 提供不同的键可以具备相同slot的功能，常用于Redis IO优化
@@ -1273,6 +1336,51 @@ Redisson的锁会出现故障未同步而加锁失效问题，为了解决该问
 参考文章：
 - [Distributed locks with Redis(官网英文版解释)](https://redis.io/topics/distlock)
 - [Redisson 实现RedLock详解](https://juejin.cn/post/6927204732704391175)
+
+## Redis集合类型数据的统计模式
+参考资料：[Redis集合类型数据的统计模式](https://blog.csdn.net/ggh0314/article/details/116941724)
+
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/counting-summary.png)
+
+### 聚合统计
+聚合统计指统计多个集合元素的聚合结果，包括：交集统计、差集统计、并集统计。做聚合统计主要使用 Set 类型
+
+> 统计手机App每天的新增用户数和第二天的留存用户数，可以用一个集合记录所有登录过 App 的用户 ID，用另一个集合记录每一天登录过 App 的用户 ID。再对这两个集合做聚合统计。\
+> 在统计每天的新增用户时，只用计算每日用户 Set 和累计用户 Set 的差集就行。
+
+Set 的差集、并集和交集的计算复杂度较高，在数据量较大的情况下，如果直接执行这些计算，会导致 Redis 实例阻塞。所以，小建议是：可以从主从集群中选择一个从库，让它专门负责聚合计算，或者是把数据读取到客户端，在客户端来完成聚合统 计，这样就可以规避阻塞主库实例和其他从库实例的风险了。
+
+### 排序统计
+在 Redis 常用的 4 个集合类型中（List、Hash、Set、Sorted Set），**List 和 Sorted Set 就属于有序集合。**\
+List 是按照元素进入 List 的顺序进行排序的，Sorted Set 可以根据元素的权重来排序，可以自己来决定每个元素的权重值。
+> 比如说可以根据元素插入 Sorted Set 的时间确定权重值，先插入的元素权重小，后插入的元素权重大。
+
+使用list进行排序统计的时候，如果遇到分页的场景，在分页的过程中，又有新的元素`lpush`，那么会出现分页不准确的情况。
+> list 分页使用命令： `LRANGE product1 3 5`
+
+Sorted Set 它是根据元素的实际权重来排序和获取数据的，只要分页的时候使用固定权重进行记录获取就不会出现问题。
+> `ZRANGEBYSCORE comments N-9 N`
+
+### 值状态统计
+二值状态统计，二值状态就是指集合元素的取值就只有 0 和 1 两种。
+> 在签到打卡的场景中，只用记录签到（1）或未签到（0）是非常典型的二值状态，在签到统计时，每个用户一天的签到用 1 个 bit 位就能表示，一个月（假设是 31 天）的签到情况用 31 个 bit 位就可以，而一年的签到也只需要用 365 个 bit 位，根本不用太复杂的集合类型。可以选择 Bitmap。这是 Redis 提供的扩展数据类型。
+
+统计 1 亿个用户连续 10 天的签到情况，可以把每天的日期作为 key，每个 key 对应一个 1 亿位的 Bitmap，每一个 bit 对应一个用户当天的签到情况。对 10 个 Bitmap 做“与”操作，得到的结果也是一个 Bitmap。只有 10 天都签到的用户对应的 bit 位上的值才会是 1。可以用 `BITCOUNT` 统计下 Bitmap 中的 1 的个数，这就是**连续签到 10 天的用户总数**了。
+> 每天使用 1 个 1 亿位的 Bitmap，大约占 12MB 的内存（10^8/8/1024/1024），10 天的 Bitmap 的内存开销约为 120MB，内存压力不算太大。在实际应用时，最好对 Bitmap 设置过期时间，让 Redis 自动删除不再需要的签到记录，以节省内存开销。
+
+
+### 基数统计
+基数统计指统计一个集合中不重复的元素个数（统计网页的 UV）。
+
+HyperLogLog 是一种用于统计基数的数据集合类型，它的最大优势就在于，当集合元素数量非常多时，它计算基数所需的空间总是固定的，而且还很小。
+
+统计 UV 时，用 `PFADD` 命令把访问页面的每个用户都添加到 HyperLogLog 中。
+> `PFADD page1:uv user1 user2 user3 user4 user5`
+
+用 `PFCOUNT` 命令直接获得 page1 的 UV 值了，返回 HyperLogLog 的统计结果。
+> `PFCOUNT page1:uv`
+
+HyperLogLog 的统计规则是基于概率完成的，给出的统计结果是有一定误差的，标准误算率是 0.81%。使用HyperLogLog 统计的 UV 是 100 万，但实际的 UV 可能是 101 万。虽然误差率不算大， 但是如果需要精确统计结果的话，最好还是继续用 Set 或 Hash 类型。
 
 ## 面试题
 ### Redis 为什么这么快？
