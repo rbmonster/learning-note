@@ -1,42 +1,8 @@
-# 算法
+A# 算法
 
 ## 哈希表
 哈希表的关键思想是使用哈希函数将键映射到存储桶。
 
-
-HashMap常见操作
-```java
-
-public class Solution{
-    
-    public static void main(String[] args ) {
-
-      Map<Integer, Integer> hashmap = new HashMap<>();
-      // 2. insert a new (key, value) pair 
-      //putIfAbsent()保存数据的时候，如果该链表中保存的有相同key的值，那么就不会对我们当前的value进行保存
-      hashmap.putIfAbsent(0, 0);
-      hashmap.putIfAbsent(2, 3);
-      hashmap.putIfAbsent(1,4);
-      hashmap.putIfAbsent(2,4);
-      int mer = hashmap.merge(1,6,(v1, v2) -> v1+v2);
-      //output 1 ->8 
-      int value  =12;
-      int key2 = map.computeIfAbsent(2,k -> value);
-      int key3 = map.computeIfAbsent(3,k -> value);
-      // output key2 = 4, key3 = 12
-      int res = map.computeIfPresent(3,(key, oldVal) -> oldVal-1);
-      //output res = 11
-      int result1 = map.compute(3,(key, oldValue) -> oldValue-10);
-      //output 10
-      int result = map.compute(4,(key, oldValue) -> oldValue-10);
-      //cause error nullPoint,key 4 not exist
-
-
-      map.put(1, count.getOrDefault(1, 0) + 1);
-      // 取1的值，如果存在则取value 否则默认为0、
-    }
-}
-```
 哈希接口判断元素存在：
 - [字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 
@@ -1784,6 +1750,8 @@ public class BinarySearchRight {
 - [寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
 - [山脉数组的峰顶索引](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/)
 - [剑指 Offer II 073. 狒狒吃香蕉](https://leetcode-cn.com/problems/nZZqjQ/)
+
+- [寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/): 二分区间判定，结果值获取
 
 ## 位运算与运算转换
 [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
