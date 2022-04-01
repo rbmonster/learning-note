@@ -78,6 +78,8 @@
 &emsp;<a href="#75">6. spring 集成</a>  
 &emsp;<a href="#76">7. 面试题</a>  
 &emsp;&emsp;<a href="#77">7.1. ES 的分布式架构原理</a>  
+&emsp;&emsp;<a href="#78">7.2. ES 生产集群的部署架构是什么？每个索引的数据量大概有多少？每个索引大概有多少个分片？</a>  
+&emsp;&emsp;<a href="#79">7.3. ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？</a>  
 # <a name="0">elasticsearch </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 elasticsearch，基于lucene，隐藏复杂性，提供简单易用的restful api接口、java api接口（还有其他语言的api接口）。
 Elasticsearch 是分布式的**文档**存储。它能存储和检索复杂的数据结构——以**实时**的方式。 换句话说，一旦一个文档被存储在 Elasticsearch 中，它就是可以被集群中的任意节点检索到。
@@ -875,6 +877,7 @@ GET twitter/_search
 ```
 
 #### <a name="37">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+> 深度分页色Scroll与search_after都不允许不能随意跳到任何一页的场景，只能一页一页往后翻，往前跳页的查询方式不支持如120页、往前查10页。
 - `from + size`:灵活性好，实现简单 深度分页问题 数据量比较小，能容忍深度分页问题
 - `scroll`: 解决了深度分页问题 无法反应数据的实时性(快照版本)维护成本高，需要维护一个 scroll_id 海量数据的导出需要查询海量结果集的数据
 - `search_after` : 性能最好不存在深度分页问题能够反映数据的实时变更 实现复杂，需要有一个全局唯一的字段连续分页的实现会比较复杂，因为每一次查询都需要上次查询的结果，它不适用于大幅度跳页查询 海量数据的分页
@@ -892,7 +895,7 @@ GET twitter/_search
 3. 至少需要制定一个唯一的不重复字段来排序。
 4. 它不适用于大幅度跳页查询，或者全量导出，对第N页的跳转查询相当于对es不断重复的执行N次search after，而全量导出则是在短时间内执行大量的重复查询。
 
-SEARCH_AFTER不是自由跳转到任意页面的解决方案，而是并行滚动多个查询的解决方案。
+SEARCH_AFTER不是**自由跳转到任意页面的**解决方案，而是并行滚动多个查询的解决方案。
 
 #### <a name="38">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [Elasticsearch 5.x 源码分析（3）from size, scroll 和 search after](https://www.jianshu.com/p/91d03b16af77)
@@ -1721,4 +1724,16 @@ ES 中存储数据的**基本单位是索引**，索引创建的时候需要指�
 > ES 集群多个节点，会自动选举一个节点为 master 节点，这个 master 节点其实就是干一些管理的工作的，比如维护索引元数据、负责切换 primary shard 和 replica shard 身份等。要是 master 节点宕机了，那么会重新选举一个节点为 master 节点。\
 > 如果是非 master 节点宕机了，那么会由 master 节点，让那个宕机节点上的 primary shard 的身份转移到其他机器上的 replica shard。接着你要是修复了那个宕机机器，重启了之后，master 节点会控制将缺失的 replica shard 分配过去，同步后续修改的数据之类的，让集群恢复正常。
 
+### <a name="78">ES 生产集群的部署架构是什么？每个索引的数据量大概有多少？每个索引大概有多少个分片？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+部署了几台机器？有多少个索引？每个索引有多大数据量？每个索引给了多少个分片？
 
+基本的版本，待改造。
+- es 生产集群我们部署了 5 台机器，每台机器是 6 核 64G 的，集群总内存是 320G。
+- 我们 es 集群的日增量数据大概是 2000 万条，每天日增量数据大概是 500MB，每月增量数据大概是 6 亿，15G。目前系统已经运行了几个月，现在 es 集群里数据总量大概是 100G 左右。
+- 目前线上有 5 个索引（这个结合你们自己业务来，看看自己有哪些数据可以放 es 的），每个索引的数据量大概是 20G，所以这个数据量之内，我们每个索引分配的是 8 个 shard，比默认的 5 个 shard 多了 3 个 shard。
+
+### <a name="79">ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+es 的搜索引擎严重依赖于底层的 filesystem cache ，你如果给 filesystem cache 更多的内存，尽量让内存可以容纳所有的 idx segment file 索引数据文件，那么你搜索的时候就基本都是走内存的，性能会非常高。
+
+[advanced-java ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？](https://github.com/doocs/advanced-java/blob/main/docs/high-concurrency/es-optimizing-query-performance.md)

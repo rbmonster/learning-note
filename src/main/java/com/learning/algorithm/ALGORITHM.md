@@ -332,60 +332,6 @@ BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相�
 > 判断方法很特别，通过节点染色
 
 
-### 拓扑排序
-- [课程表](https://leetcode-cn.com/problems/course-schedule/)
-- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
-
-
-### 并查集
-```java
-class UnionFindSet {
-        int[] rank;
-        int[] parent;
-
-        public UnionFindSet(int n) {
-            rank = new int[n];
-            parent = new int[n];
-        }
-
-       public int find(int x) {
-           if (parent[x] == 0) return x;
-           return parent[x] = find(parent[x]); // Path compression by halving.
-       }
-
-        public boolean union(int x, int y) {
-           int rootX = find(x);
-           int rootY = find(y);
-           if(rootX == rootY) return true;
-           if(rank[rootX]>rank[rootY]) {
-               parent[rootY] = rootX;
-           } else if(rank[rootX]<rank[rootY]) {
-               parent[rootX] = rootY;
-           } else {
-               parent[rootX] = rootY;
-               rank[rootY]++;
-           }
-           return false;
-       }
-    }
-```
-
-- [冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
-- [除法求值](https://leetcode-cn.com/problems/evaluate-division/)
-
-
-```
-「力扣」第 1319 题：连通网络的操作次数（中等）；
-「力扣」第 1631 题：最小体力消耗路径（中等）；
-「力扣」第 959 题：由斜杠划分区域（中等）；
-「力扣」第 1202 题：交换字符串中的元素（中等）；
-「力扣」第 947 题：移除最多的同行或同列石头（中等）；
-「力扣」第 721 题：账户合并（中等）；
-「力扣」第 803 题：打砖块（困难）；
-「力扣」第 1579 题：保证图可完全遍历（困难）;
-「力扣」第 778 题：水位上升的泳池中游泳（困难）。
-```
-
 ## 递归
 ### 递归三要素
 每次写递归，都按照这三要素思考：
@@ -1753,8 +1699,11 @@ public class BinarySearchRight {
 
 - [寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/): 二分区间判定，结果值获取
 
-## 位运算与运算转换
-[Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
+
+## 滑动窗口
+- [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+
 
 
 ## 前缀树
@@ -1764,12 +1713,70 @@ public class BinarySearchRight {
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
 
-## 滑动窗口
-- [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+## 拓扑排序
+- [课程表](https://leetcode-cn.com/problems/course-schedule/)
+- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
 
 
-## TODO 二进制应用
+## 并查集
+```java
+class UnionFindSet {
+        int[] rank;
+        int[] parent;
+
+        public UnionFindSet(int n) {
+            rank = new int[n];
+            parent = new int[n];
+        }
+
+       public int find(int x) {
+           if (parent[x] == 0) return x;
+           return parent[x] = find(parent[x]); // Path compression by halving.
+       }
+
+        public boolean union(int x, int y) {
+           int rootX = find(x);
+           int rootY = find(y);
+           if(rootX == rootY) return true;
+           if(rank[rootX]>rank[rootY]) {
+               parent[rootY] = rootX;
+           } else if(rank[rootX]<rank[rootY]) {
+               parent[rootX] = rootY;
+           } else {
+               parent[rootX] = rootY;
+               rank[rootY]++;
+           }
+           return false;
+       }
+    }
+```
+
+- [冗余连接](https://leetcode-cn.com/problems/redundant-connection/)
+- [除法求值](https://leetcode-cn.com/problems/evaluate-division/)
+
+
+```
+「力扣」第 1319 题：连通网络的操作次数（中等）；
+「力扣」第 1631 题：最小体力消耗路径（中等）；
+「力扣」第 959 题：由斜杠划分区域（中等）；
+「力扣」第 1202 题：交换字符串中的元素（中等）；
+「力扣」第 947 题：移除最多的同行或同列石头（中等）；
+「力扣」第 721 题：账户合并（中等）；
+「力扣」第 803 题：打砖块（困难）；
+「力扣」第 1579 题：保证图可完全遍历（困难）;
+「力扣」第 778 题：水位上升的泳池中游泳（困难）。
+```
+
+
+
+## 二进制应用
 计算1的个数
+
+
+### 位运算与运算转换
+[Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
+
 
 ## 常用操作
 ### 前缀和
