@@ -89,6 +89,23 @@ quickList是一个`ziplist`组成的`linkedlist`双向链表，是 `ziplist` 和
 - 双向链表`linkedlist`便于在表的两端进行push和pop操作，在插入节点上复杂度很低，但是它的内存开销比较大。首先，它在每个节点上除了要保存数据之外，还要额外保存两个指针；其次，双向链表的各个节点是单独的内存块，地址不连续，节点多了容易产生内存碎片。
 - `ziplist`存储在一段连续的内存上，所以存储效率很高。但是，它不利于修改操作，插入和删除操作需要频繁的申请和释放内存。特别是当`ziplist`长度很长的时候，一次realloc可能会导致大批量的数据拷贝。
 
+> 字节上节省空间
+```
+typedef struct listNode {
+    struct listNode *prev; // 前置节点
+    struct listNode *next; // 后置节点
+    void *value; // 节点的值
+} listNode;
+// listNode:24字节
+typedef struct entry{
+    previous_entry_length:1,5字节(前⼀个entrylen,常为1字节)
+    encoding：1,2,5(编码格式,常为1字节)
+    content：保存实际数据。
+}
+// entry⼤概10字节
+```
+
+
 `ziplist` **结构及遍历过程**
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/ziplist.jpg)
 
@@ -963,8 +980,8 @@ Redis Cluster 属于服务端分片的方式。Redis 实例会把自己的哈希
 
 MOVED重定向（**负载均衡，数据已经迁移到其他实例上**）: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
 > **客户端还会更新本地缓存，将该 slot 与 Redis 实例对应关系更新正确。**
-
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/other/redis/cluster-move.png)
+https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/redis-move.jpg
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/cluster-move.png)
 
 ```
 // 连接redis集群 计算集群定位的值
@@ -985,7 +1002,7 @@ cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 c
 
 > 使用redis-cli命令时，可以加入-c参数支持自动重定向，简化手动发起重定向操作，如下所示：\
 > redis-cli自动帮我们连接到正确的节点执行命令，这个过程是在redis-cli内部维护，实质上是client端接到MOVED信息之后再次发起请 求，并不在Redis节点中完成请求转发，如下图所示
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/other/redis/redisClient-move.jpg)
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/redis/redisClient-move.jpg)
 
 ```
 #redis-cli -p 6379 -c

@@ -18,16 +18,13 @@ A# 算法
 
 ## 数组与字符串
 ### 数组
-- 针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
-- [搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
+针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
 - [寻找数组的中心索引](https://leetcode-cn.com/problems/find-pivot-index/)
 - [对角线遍历](https://leetcode-cn.com/problems/diagonal-traverse/)
 
-
 ### 字符串
 公共前缀问题
-- [最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/)
-> 分治法、二分法
+- [最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/) : 分治法、二分法
   
 回文问题（包含子串与子序列问题）
 - [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
@@ -1783,6 +1780,7 @@ class UnionFindSet {
 前缀和是一种重要的预处理，能大大降低查询的时间复杂度。两个位置的前缀和差值，能快速确定这段区间的`sumup`
 > 相关关键词：**连续子数组**
 
+- [寻找数组的中心下标](https://leetcode-cn.com/problems/find-pivot-index/)
 ### 求余数常见操作
 ```java
 public class Solution {

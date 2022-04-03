@@ -80,9 +80,9 @@ String 被声明为 final，因此它不可被继承
 4. 线程安全
 
 关于String使用new创建的问题：
-> new String("abc")创建两String对象。(前提是String Pool 中还没有 "abc" 字符串对象)\
-> 使用new关键字创建的字符串对象存储在堆的普通内存部分。\
-> java 8 字符串常量池放置于方法区中\
+> new String("abc")创建两String对象。(前提是String Pool 中还没有 "abc" 字符串对象)
+> 1. 使用new关键字创建的字符串对象存储在堆的普通内存部分。
+> 2. java 8 字符串常量池放置于堆中\
 > 参考资料：[字符串常量池String Constant Pool](https://www.cnblogs.com/LinQingYang/p/12524949.html#importantPointsToRememberLabel)
 
 ### String, StringBuffer and StringBuilder
@@ -325,17 +325,17 @@ synchronized void test() throws InterruptedException {
 - 执行在此对象上进行同步的 synchronized 语句的方法
 - 对于 Class 类型的对象，执行该类的同步静态方法
 
-## 继承
+## 封装与继承
 
 Java 中有三个访问权限修饰符：private、protected 以及 public，
 - 如果不加访问修饰符，表示包级可见。
 - protected 用于修饰成员，表示在继承体系中成员对于子类可见，但是这个访问修饰符对于类没有意义。
 - private 仅自己可见
 - public 所有均可见
+> private 和 protected 不能修饰类。
 
-private 和 protected 不能修饰类。
 1. 设计良好的模块会隐藏所有的实现细节，把它的 API 与它的实现清晰地隔离开来。模块之间只通过它们的 API 进行通信。
-2. 如果子类的方法重写了父类的方法，那么子类中该方法的访问级别不允许低于父类的访问级别。这是为了确保可以使用父类实例的地方都可以使用子类实例去代替，也就是确保满足里氏替换原则。
+2. 如果子类的方法重写了父类的方法，那么子类中该方法的**访问级别不允许低于父类的访问级别**。这是为了确保可以使用父类实例的地方都可以使用子类实例去代替，也就是确保满足里氏替换原则。
 
 ## 抽象类与接口
 
