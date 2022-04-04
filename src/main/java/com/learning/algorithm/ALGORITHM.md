@@ -1,43 +1,4 @@
-A# 算法
-
-## 哈希表
-哈希表的关键思想是使用哈希函数将键映射到存储桶。
-
-哈希接口判断元素存在：
-- [字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
-
-使用哈希映射的场景：
-- [同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
-- [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
-- [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
-- [寻找重复的子树（hash表与树的结合）](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
-    
-利用哈希表O(1)特性查找：
-- [两数之和](https://leetcode-cn.com/problems/two-sum/)
-- [最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
-
-## 数组与字符串
-### 数组
-针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
-- [寻找数组的中心索引](https://leetcode-cn.com/problems/find-pivot-index/)
-- [对角线遍历](https://leetcode-cn.com/problems/diagonal-traverse/)
-
-### 字符串
-公共前缀问题
-- [最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/) : 分治法、二分法
-  
-回文问题（包含子串与子序列问题）
-- [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
-
-双指针问题
-- [反转字符串](https://leetcode-cn.com/problems/reverse-string/)
-- [两数之和 II - 输入有序数组（最基础问题） ](https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/)
-
-快慢指针：
-- 移除数组
-- 移动零
-
-- [反转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
+# 算法
 
 ## 链表
 链表双指针：
@@ -56,8 +17,8 @@ A# 算法
 - [剑指 Offer 24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/) :栈、头插法、递归
 - [合并两有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 - [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+- [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
 
-  
 反转链表递归写法:
 ```java
 public class Solution{
@@ -73,275 +34,6 @@ public class Solution{
   }
 }
 ```
-
-
-- [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
-
-## 队列
-
-队列是典型的 FIFO 数据结构：
-- 插入（insert）操作也称作入队（enqueue），新元素始终被添加在队列的末尾。 
-- 删除（delete）操作也被称为出队（dequeue)。 你只能移除第一个元素。
-
-- [用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/)
-- [剑指 Offer 09. 用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
-
-
-### 广度优先搜索(BFS)
-广度优先搜索（BFS）的一个常见应用是找出从根结点到目标结点的最短路径。
-注意点：
-1. 初始入队列。
-2. 是否需要层级访问。
-3. 记录已访问节点的信息防止重复访问。
-
-
-树的遍历代码模版：
-```java
-
-class Solution {
-  public List<List<Integer>> levelOrder(TreeNode root) {
-    Queue<TreeNode> queue =new LinkedList<>();
-    queue.add(root);
-    while(!queue.isEmpty()) {
-      int size = queue.size();
-      for(int i = 0;i<size;i++) {
-        TreeNode node = queue.poll();
-        if(node.left!= null) {
-          queue.add(node.left);
-        }
-      }
-    }
-  }
-}
-```
-
-
-图遍历代码模板：
-```java
-public class Solution {
-  int BFS2(Node root, Node target) {
-    Queue<Node> queue = new LinkedList<>();  // store all nodes which are waiting to be processed
-    Set<Node> used = new HashSet<>();     // store all the used nodes
-    int step = 0;       // number of steps neeeded from root to current node
-    // initialize
-    queue.add(root);
-    used.add(root);
-    // BFS
-    while (!queue.isEmpty()) {
-      step = step + 1;
-      // iterate the nodes which are already in the queue
-      int size = queue.size();
-      for (int i = 0; i < size; ++i) {
-        Node cur = queue.poll();
-        if (cur == target) {
-          return step;
-        }
-        for (Node next : cur.neighbors) {
-          if (!used.contains(next)) {
-            queue.add(root);
-            used.add(root);
-          }
-        }
-      }
-    }
-    return -1;          // there is no path from root to target
-  }
-}
-```
-
-
-### 单调队列
-
-单调队列，即单调递减或单调递增的队列。
-需要使用 双向队列 ，假设队列已经有若干元素：
-- 当执行入队 push_back() 时： 若入队一个比队列某些元素更大的数字 xx ，则为了保持此列表递减，需要将双向队列 尾部所有小于 xx 的元素 弹出。
-- 当执行出队 pop_front() 时： 若出队的元素是最大元素，则 双向队列 需要同时 将首元素出队 ，以保持队列和双向队列的元素一致性。
-
-
-```java
-class MaxQueue {
-    Queue<Integer> queue;
-    Deque<Integer> deque;
-    public MaxQueue() {
-        queue = new LinkedList<>();
-        deque = new LinkedList<>();
-    }
-    public int max_value() {
-        return deque.isEmpty() ? -1 : deque.peekFirst();
-    }
-    public void push_back(int value) {
-        queue.offer(value);
-        // 元素入队逻辑，队尾小元素处队。新的大元素入队尾
-        while(!deque.isEmpty() && deque.peekLast() < value) {
-            deque.pollLast();
-        }
-        deque.offerLast(value);
-    }
-    public int pop_front() {
-        if(queue.isEmpty()) return -1;
-        // 元素出队逻辑，出队元素为队头则需要出队。
-        if(queue.peek().equals(deque.peekFirst())){
-            deque.pollFirst();
-        }
-        return queue.poll();
-    }
-}
-
-```
-- [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
-- [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/): review
-- [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
-
-## 栈
-- 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
-
-- [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
-- [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/ )
-- *[最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
-- *[字符串解码](https://leetcode-cn.com/problems/decode-string/)
-- [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
-- [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
-
-
-### 深度优先搜索(DFS)
-深度优先搜索（DFS）是用于 在树/图中遍历/搜索 的另一种重要算法。也可以在更抽象的场景中使用。\
-正如树的遍历中所提到的，我们可以用 DFS 进行 前序遍历，中序遍历 和 后序遍历。在这三个遍历顺序中有一个共同的特性：除非我们到达最深的结点，否则我们永远不会回溯 。\
-这也是 DFS 和 BFS 之间最大的区别，BFS永远不会深入探索，除非它已经在当前层级访问了所有结点。\
-通常，我们使用递归实现 DFS。栈在递归中起着重要的作用。
-
-
-递归遍历：
-当我们递归地实现 DFS 时，似乎不需要使用任何栈。但实际上，我们使用的是由系统提供的**隐式栈**，也称为调用栈（Call Stack）。
-```java
-
-public class Solution {
-  /*
-   * Return true if there is a path from cur to target.
-   */
-  boolean DFS(Node cur, Node target, Set<Node> visited) {
-    if(cur == target) {
-      return true;
-    }
-    for (Node each : cur.neighbor){
-      if (!visited.contains(each)){
-        visted.add(each);
-        boolean result = DFS(next, target, visited);
-        if(result) {
-            return true;
-        }
-      }
-    }
-    return false;
-  }
-}
-```
-
-
-
-对于图论，若使用DFS递归搜索时，在遇到数据量过大的情况。则要注意堆栈溢出的情况。因为递归使用的是系统的**隐式栈**.\
-此时就可以使用栈来模拟系统**隐式栈**的调用过程，避免出现堆栈溢出。
-```java
-
-public class Solution {
-
-
-  /*
-   * Return true if there is a path from cur to target.
-   */
-  boolean DFS(Node root, int target) {
-    Set<Node> visited;
-    Stack<Node> s;
-    s.push(root);
-    while (!s.isEmpty()) {
-      Node cur = s.pop();
-      if(cur == target) {  
-          return true;
-      }
-      for (Node next : cur.neighbors) {
-        if (!visited.contains(next)) {
-            s.add(next);
-            visited.add(next);
-        }
-      }
-    }
-    return false;
-  }
-    
-}
-```
-
-
-### 单调栈
-单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
-```java
-class Solution {
-  public int[] dailyTemperatures(int[] T) {
-    Deque<Integer> stack = new LinkedList<>();
-    int len = T.length;
-    int[] res = new int[len];
-    // 从尾到头遍历
-    for (int i = len - 1; i >= 0; i--) {
-      while (!stack.isEmpty() && T[stack.peek()] <= T[i]) {
-        stack.pop();
-      }
-      // 判断位置差值
-      res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
-      stack.push(i);
-    }
-    return res;
-  }
-}
-```
-
-- [最小栈](https://leetcode-cn.com/problems/min-stack/)
-- [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
-- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
-- [最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
-> 单调栈类似思想
-
-
-- *[接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
-> 单调栈解法，递减栈，每次计算增量
-
-- *[柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
-- [最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)
-> 最大矩形计算，获取索引i的左右小于`height[i]`的最高点索引
-
-
-
-## BFS 与 DFS
-BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
-
-- [剑指 Offer 13. 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
-- [岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/)
-- [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
-- [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
-- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
-- [省份数量](https://leetcode-cn.com/problems/number-of-provinces/)
-- [岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
-- [打开转盘锁（经典问题）](https://leetcode-cn.com/problems/open-the-lock/)
-- [太平洋大西洋水流问题](https://leetcode-cn.com/problems/pacific-atlantic-water-flow/)
-- [二进制矩阵中的最短路径](https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/)
-- [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
-- [钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
-
-- *[判断二分图](https://leetcode-cn.com/problems/is-graph-bipartite/)
-> 判断方法很特别，通过节点染色
-
-
-## 递归
-### 递归三要素
-每次写递归，都按照这三要素思考：
-1. 确定递归函数的参数和返回值\
-确定哪些参数是递归的过程中需要处理的，那么就在递归函数里加上这个参数， 并且还要明确每次递归的返回值是什么进而确定递归函数的返回类型。
-2. 确定终止条件：\
-写完了递归算法,  运行的时候，经常会遇到栈溢出的错误，就是没写终止条件或者终止条件写的不对，操作系统也是用一个栈的结构来保存每一层递归的信息，如果递归没有终止，操作系统的内存栈必然就会溢出。
-3. 确定单层递归的逻辑：\
-确定每一层递归需要处理的信息。在这里也就会重复调用自己来实现递归的过程。
-
-### 递归的思想
-- 自顶而下：通过全局变量传递递归值
-- 自底而上：带返回值的递归，依次叠加
 
 
 ## 树
@@ -651,7 +343,7 @@ next:
 #### 公共祖先问题
 公共祖先问题，如何判断一个节点是公共祖先，如果该节点的左子树及右子树均找到要寻找的节点，那么该节点为公共祖先。\
 [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
- 
+
 ### 二叉搜索树
 二叉搜索树相关问题核心思想：
 1. **中序遍历**（利用其二叉搜索树的结构）
@@ -702,7 +394,7 @@ public class Solution {
   }
 }
 ```
-    
+
 二叉搜索树的最近公共祖先(与树的公共祖先有区别) ：使用了二叉搜索树的特点\
 [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 
@@ -778,6 +470,638 @@ public class Solution {
 #### 公共祖先问题
 - [二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
 - [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+
+
+## 哈希表
+哈希表的关键思想是使用哈希函数将键映射到存储桶。
+
+哈希接口判断元素存在：
+- [字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+
+使用哈希映射的场景：
+- [同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
+- [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
+- [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+- [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/): 树与Hash表结合
+    
+利用哈希表O(1)特性查找：
+- [两数之和](https://leetcode-cn.com/problems/two-sum/)
+- [最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+## 数组与字符串
+### 数组
+针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
+- [寻找数组的中心索引](https://leetcode-cn.com/problems/find-pivot-index/)
+- [对角线遍历](https://leetcode-cn.com/problems/diagonal-traverse/)
+
+### 字符串
+公共前缀问题
+- [最长公共前缀](https://leetcode-cn.com/problems/longest-common-prefix/) : 分治法、二分法
+  
+回文问题（包含子串与子序列问题）
+- [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
+
+
+## 双指针问题
+
+### 快慢指针
+
+1. 判断链表有环
+```java
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        if (head == null) {
+            return false;
+        }
+        ListNode slow = head, fast = head.next;
+        while (fast != null && fast.next != null) {
+            if (slow == fast) {
+                return true;
+            }
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        return false;
+    }
+}
+```
+2. 查找环形链表起点
+```java
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        if(head == null) {
+            return null;
+        }
+        ListNode fast = head, slow = head;
+        while(fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if(slow == fast) {
+                ListNode p1 = head;
+                while(p1 != fast) {
+                    p1 = p1.next;
+                    fast = fast.next;
+                }
+                return p1;
+            }
+        }
+        return null;        
+    }
+}
+```
+3. 寻找链表的中点
+```java
+public class Solution {
+    public ListNode findMid(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) { 
+            fast = fast.next.next; 
+            slow = slow.next; 
+        }// slow 就在中间位置 return slow;
+        return slow;
+    }
+}
+```
+
+相关问题：
+- [移除元素](https://leetcode-cn.com/problems/remove-element/) : 类似于快排的变种
+- [移动零](https://leetcode-cn.com/problems/move-zeroes/)
+- [删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+### 二分法
+[一道可以考察「二分」本质的面试题](https://mp.weixin.qq.com/s/RW20ob2oO4Bfd-PcukTVJA)
+> 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
+
+#### 代码模版
+
+##### 常见模版
+```java
+public class Solution {
+
+    /**
+     * 闭区间
+     * int left = 0, right = nums.length - 1; 且 left <= right
+     * 通用的二分法模板
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            if (nums[mid] == target) return mid;
+            if (nums[mid] < target)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        return -1;
+    }
+
+    /**
+     * 开区间变形
+     *  int left = 0, right = nums.length; 且 left < right
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search2(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int left = 0, right = nums.length;
+        while (left < right) {
+            int mid = (left + right) >>> 1;
+            if (nums[mid] == target) return mid;
+            if (nums[mid] < target)
+                left = mid + 1;
+            else
+                right = mid;
+        }
+        return -1;
+    }
+
+}
+```
+
+##### 左边界问题
+```java
+public class BinarySearchLeft {
+
+    /**
+     * left <= right 且 int left = 0, right = nums.length - 1;
+     * 寻找第一个等于或大于的target左边界
+     *
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> left: 0 第一个大于的数   result:-1
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> left: 1 第一个相等      result:1
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> left: 8 越界           result:-1
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> left: 7 第一个大于的数  result:-1
+     *
+     * <p>
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int left_bound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1; // 搜索区间为 [left, right]
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < target) {
+                // 搜索区间变为 [mid+1, right]
+                left = mid + 1;
+            } else if (nums[mid] > target) { // 搜索区间变为 [left, mid-1]
+                right = mid - 1;
+            } else if (nums[mid] == target) {
+                // 收缩右侧边界
+                right = mid - 1;
+            }
+        }
+        System.out.print("left ->" + left + " ");
+        /**
+         * 出界检查: 若搜索区间无目标元素 会出现越界情况 如{1,2,2,4,4,5,5,7} target:8
+         * 使用left判断的原因： 若存在目标元素往左收缩，最后跳出循坏的结果肯定是：{x, x, right, left, x, x}
+         */
+        if (left != nums.length && nums[left] == target) {
+            return left;
+        }
+        return -1;
+    }
+
+
+    /**
+     * 查找第一个等于或者小于key的元素
+     *
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> right: -1  越界        result:-1
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> right: 0   第一个小于   result:0
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> right: 7   第一个小于    result:7
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> right: 6   第一个小于   result:6
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int findFirstSmaller(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] == target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            }
+        }
+        System.out.print("right ->" + right + " ");
+        if (right < 0) {
+            return -1;
+        }
+        return right;
+    }
+}
+```
+
+##### 右边界问题
+```java
+
+public class BinarySearchRight {
+
+    /**
+     * left <= right 且 int left = 0, right = nums.length - 1;
+     * 寻找等于或小于 的target右边界的二分
+     *  注意：结果左侧越界
+     *
+     * <p>
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> right: -1  越界           result:-1
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> right: 2   最后一个相等    result:2
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> right: 7   第一个小于      result:7
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> right: 6   第一个小于      result:8
+     *
+     * <p>
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int right_bound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                left = mid + 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            }
+        }
+        System.out.print("right ->" + right + " ");
+        // 为啥用right判断? 若存在重复target元素，循坏跳出的条件肯定是想右收缩过程中 left+1 导致的break
+        if (right < 0) {
+            return -1;
+        }
+        return right;
+    }
+
+
+    /**
+     * 查找第一个等于或大于key的元素
+     *  注意：结果右侧越界
+     *
+     * <p>
+     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> left: 0  第一个大于  result:0
+     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> left: 3  第一个大于  result:3
+     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> left: 8  越界       result:-1
+     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> left: 7  第一个大于  result:7
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int findFirstLarger(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] == target) {
+                left = mid + 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            }
+        }
+        System.out.print("left ->" + left + " ");
+        // 为什么用left，因为left是循环跳出的地方默认在right的右边
+        if (left >= nums.length) {
+            return -1;
+        }
+        return left;
+    }
+}
+```
+
+#### 经典问题
+
+二分查找问题
+1. 确定target目标，如果题目无target，需自己确定。如山峰问题的`num[mid]<nums[mid+1]`
+2. 确定判断搜索区间。根据target进行查找。
+
+
+- [搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
+- [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+- [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/): 通过左右边界确定序列是否为递增
+- [搜索旋转排序数组 II](https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii/)
+
+- [猜数字大小](https://leetcode-cn.com/problems/guess-number-higher-or-lower/)
+- [有序矩阵中第 K 小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/): 猜数字
+
+平方根问题
+- [x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
+- [有效的完全平方数](https://leetcode-cn.com/problems/valid-perfect-square/)
+- [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/): 注意精度问题
+
+非模版二分问题：
+> 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
+- [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/): 以右边界为目标点，寻找左边界，与常规的边界问题不同。
+- [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
+- [寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
+- [山脉数组的峰顶索引](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/)
+- [剑指 Offer II 073. 狒狒吃香蕉](https://leetcode-cn.com/problems/nZZqjQ/)
+
+- [寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/): 二分区间判定，结果值获取
+
+### 左右指针
+
+双指针问题
+- [反转字符串](https://leetcode-cn.com/problems/reverse-string/)
+- [两数之和 II - 输入有序数组](https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/): 双指针基础问题
+- [三数之和](https://leetcode-cn.com/problems/3sum/): 难点在于转换为双指针的变换
+- [最接近的三数之和](https://leetcode-cn.com/problems/3sum-closest/)
+- [四数之和](https://leetcode-cn.com/problems/4sum/)
+- [盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/):
+
+
+- [反转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
+
+
+### 滑动窗口
+- [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+
+
+
+## 队列
+队列是典型的 FIFO 数据结构：
+- 插入（insert）操作也称作入队（enqueue），新元素始终被添加在队列的末尾。 
+- 删除（delete）操作也被称为出队（dequeue)。 你只能移除第一个元素。
+
+- [用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/)
+- [剑指 Offer 09. 用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
+
+
+### 广度优先搜索(BFS)
+广度优先搜索（BFS）的一个常见应用是找出从根结点到目标结点的最短路径。
+注意点：
+1. 初始入队列。
+2. 是否需要层级访问。
+3. 记录已访问节点的信息防止重复访问。
+
+
+树的遍历代码模版：
+```java
+
+class Solution {
+  public List<List<Integer>> levelOrder(TreeNode root) {
+    Queue<TreeNode> queue =new LinkedList<>();
+    queue.add(root);
+    while(!queue.isEmpty()) {
+      int size = queue.size();
+      for(int i = 0;i<size;i++) {
+        TreeNode node = queue.poll();
+        if(node.left!= null) {
+          queue.add(node.left);
+        }
+      }
+    }
+  }
+}
+```
+
+
+图遍历代码模板：
+```java
+public class Solution {
+  int BFS2(Node root, Node target) {
+    Queue<Node> queue = new LinkedList<>();  // store all nodes which are waiting to be processed
+    Set<Node> used = new HashSet<>();     // store all the used nodes
+    int step = 0;       // number of steps neeeded from root to current node
+    // initialize
+    queue.add(root);
+    used.add(root);
+    // BFS
+    while (!queue.isEmpty()) {
+      step = step + 1;
+      // iterate the nodes which are already in the queue
+      int size = queue.size();
+      for (int i = 0; i < size; ++i) {
+        Node cur = queue.poll();
+        if (cur == target) {
+          return step;
+        }
+        for (Node next : cur.neighbors) {
+          if (!used.contains(next)) {
+            queue.add(root);
+            used.add(root);
+          }
+        }
+      }
+    }
+    return -1;          // there is no path from root to target
+  }
+}
+```
+
+
+### 单调队列
+
+单调队列，即单调递减或单调递增的队列。
+需要使用 双向队列 ，假设队列已经有若干元素：
+- 当执行入队 push_back() 时： 若入队一个比队列某些元素更大的数字 xx ，则为了保持此列表递减，需要将双向队列 尾部所有小于 xx 的元素 弹出。
+- 当执行出队 pop_front() 时： 若出队的元素是最大元素，则 双向队列 需要同时 将首元素出队 ，以保持队列和双向队列的元素一致性。
+
+
+```java
+class MaxQueue {
+    Queue<Integer> queue;
+    Deque<Integer> deque;
+    public MaxQueue() {
+        queue = new LinkedList<>();
+        deque = new LinkedList<>();
+    }
+    public int max_value() {
+        return deque.isEmpty() ? -1 : deque.peekFirst();
+    }
+    public void push_back(int value) {
+        queue.offer(value);
+        // 元素入队逻辑，队尾小元素处队。新的大元素入队尾
+        while(!deque.isEmpty() && deque.peekLast() < value) {
+            deque.pollLast();
+        }
+        deque.offerLast(value);
+    }
+    public int pop_front() {
+        if(queue.isEmpty()) return -1;
+        // 元素出队逻辑，出队元素为队头则需要出队。
+        if(queue.peek().equals(deque.peekFirst())){
+            deque.pollFirst();
+        }
+        return queue.poll();
+    }
+}
+
+```
+- [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
+- [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/): review
+- [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
+
+## 栈
+- 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
+
+- [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
+- [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/ )
+- *[最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
+- *[字符串解码](https://leetcode-cn.com/problems/decode-string/)
+- [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+- [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+
+
+### 深度优先搜索(DFS)
+深度优先搜索（DFS）是用于 在树/图中遍历/搜索 的另一种重要算法。也可以在更抽象的场景中使用。\
+正如树的遍历中所提到的，我们可以用 DFS 进行 前序遍历，中序遍历 和 后序遍历。在这三个遍历顺序中有一个共同的特性：除非我们到达最深的结点，否则我们永远不会回溯 。\
+这也是 DFS 和 BFS 之间最大的区别，BFS永远不会深入探索，除非它已经在当前层级访问了所有结点。\
+通常，我们使用递归实现 DFS。栈在递归中起着重要的作用。
+
+
+递归遍历：
+当我们递归地实现 DFS 时，似乎不需要使用任何栈。但实际上，我们使用的是由系统提供的**隐式栈**，也称为调用栈（Call Stack）。
+```java
+
+public class Solution {
+  /*
+   * Return true if there is a path from cur to target.
+   */
+  boolean DFS(Node cur, Node target, Set<Node> visited) {
+    if(cur == target) {
+      return true;
+    }
+    for (Node each : cur.neighbor){
+      if (!visited.contains(each)){
+        visted.add(each);
+        boolean result = DFS(next, target, visited);
+        if(result) {
+            return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+```
+
+
+
+对于图论，若使用DFS递归搜索时，在遇到数据量过大的情况。则要注意堆栈溢出的情况。因为递归使用的是系统的**隐式栈**.\
+此时就可以使用栈来模拟系统**隐式栈**的调用过程，避免出现堆栈溢出。
+```java
+
+public class Solution {
+
+
+  /*
+   * Return true if there is a path from cur to target.
+   */
+  boolean DFS(Node root, int target) {
+    Set<Node> visited;
+    Stack<Node> s;
+    s.push(root);
+    while (!s.isEmpty()) {
+      Node cur = s.pop();
+      if(cur == target) {  
+          return true;
+      }
+      for (Node next : cur.neighbors) {
+        if (!visited.contains(next)) {
+            s.add(next);
+            visited.add(next);
+        }
+      }
+    }
+    return false;
+  }
+    
+}
+```
+
+
+### 单调栈
+单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
+```java
+class Solution {
+  public int[] dailyTemperatures(int[] T) {
+    Deque<Integer> stack = new LinkedList<>();
+    int len = T.length;
+    int[] res = new int[len];
+    // 从尾到头遍历
+    for (int i = len - 1; i >= 0; i--) {
+      while (!stack.isEmpty() && T[stack.peek()] <= T[i]) {
+        stack.pop();
+      }
+      // 判断位置差值
+      res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
+      stack.push(i);
+    }
+    return res;
+  }
+}
+```
+
+- [最小栈](https://leetcode-cn.com/problems/min-stack/)
+- [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
+- [最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+> 单调栈类似思想
+
+
+- *[接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+> 单调栈解法，递减栈，每次计算增量
+
+- *[柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+- [最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)
+> 最大矩形计算，获取索引i的左右小于`height[i]`的最高点索引
+
+
+
+## BFS 与 DFS
+BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
+
+- [剑指 Offer 13. 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
+- [岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/)
+- [01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
+- [朋友圈](https://leetcode-cn.com/problems/friend-circles/)
+- [岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+- [省份数量](https://leetcode-cn.com/problems/number-of-provinces/)
+- [岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
+- [打开转盘锁（经典问题）](https://leetcode-cn.com/problems/open-the-lock/)
+- [太平洋大西洋水流问题](https://leetcode-cn.com/problems/pacific-atlantic-water-flow/)
+- [二进制矩阵中的最短路径](https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/)
+- [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+- [钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
+- [判断二分图](https://leetcode-cn.com/problems/is-graph-bipartite/): 判断方法很特别，通过节点染色
+
+
+## 递归
+### 递归三要素
+每次写递归，都按照这三要素思考：
+1. 确定递归函数的参数和返回值\
+确定哪些参数是递归的过程中需要处理的，那么就在递归函数里加上这个参数， 并且还要明确每次递归的返回值是什么进而确定递归函数的返回类型。
+2. 确定终止条件：\
+写完了递归算法,  运行的时候，经常会遇到栈溢出的错误，就是没写终止条件或者终止条件写的不对，操作系统也是用一个栈的结构来保存每一层递归的信息，如果递归没有终止，操作系统的内存栈必然就会溢出。
+3. 确定单层递归的逻辑：\
+确定每一层递归需要处理的信息。在这里也就会重复调用自己来实现递归的过程。
+
+### 递归的思想
+- 自顶而下：通过全局变量传递递归值
+- 自底而上：带返回值的递归，依次叠加
 
 
 
@@ -1445,262 +1769,6 @@ class Solution {
 
 
 
-## 二分法
-[一道可以考察「二分」本质的面试题](https://mp.weixin.qq.com/s/RW20ob2oO4Bfd-PcukTVJA)
-> 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
-
-### 代码模版
-
-#### 常见模版
-```java
-public class Solution {
-
-    /**
-     * 闭区间
-     * int left = 0, right = nums.length - 1; 且 left <= right
-     * 通用的二分法模板
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public int search(int[] nums, int target) {
-        if (nums == null || nums.length == 0) {
-            return -1;
-        }
-        int left = 0, right = nums.length - 1;
-        while (left <= right) {
-            int mid = (left + right) >>> 1;
-            if (nums[mid] == target) return mid;
-            if (nums[mid] < target)
-                left = mid + 1;
-            else
-                right = mid - 1;
-        }
-        return -1;
-    }
-
-    /**
-     * 开区间变形
-     *  int left = 0, right = nums.length; 且 left < right
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public int search2(int[] nums, int target) {
-        if (nums == null || nums.length == 0) {
-            return -1;
-        }
-        int left = 0, right = nums.length;
-        while (left < right) {
-            int mid = (left + right) >>> 1;
-            if (nums[mid] == target) return mid;
-            if (nums[mid] < target)
-                left = mid + 1;
-            else
-                right = mid;
-        }
-        return -1;
-    }
-
-}
-```
-
-#### 左边界问题
-```java
-public class BinarySearchLeft {
-
-    /**
-     * left <= right 且 int left = 0, right = nums.length - 1;
-     * 寻找第一个等于或大于的target左边界
-     *
-     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> left: 0 第一个大于的数   result:-1
-     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> left: 1 第一个相等      result:1
-     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> left: 8 越界           result:-1
-     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> left: 7 第一个大于的数  result:-1
-     *
-     * <p>
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public static int left_bound(int[] nums, int target) {
-        int left = 0, right = nums.length - 1; // 搜索区间为 [left, right]
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (nums[mid] < target) {
-                // 搜索区间变为 [mid+1, right]
-                left = mid + 1;
-            } else if (nums[mid] > target) { // 搜索区间变为 [left, mid-1]
-                right = mid - 1;
-            } else if (nums[mid] == target) {
-                // 收缩右侧边界
-                right = mid - 1;
-            }
-        }
-        System.out.print("left ->" + left + " ");
-        /**
-         * 出界检查: 若搜索区间无目标元素 会出现越界情况 如{1,2,2,4,4,5,5,7} target:8
-         * 使用left判断的原因： 若存在目标元素往左收缩，最后跳出循坏的结果肯定是：{x, x, right, left, x, x}
-         */
-        if (left != nums.length && nums[left] == target) {
-            return left;
-        }
-        return -1;
-    }
-
-
-    /**
-     * 查找第一个等于或者小于key的元素
-     *
-     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> right: -1  越界        result:-1
-     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> right: 0   第一个小于   result:0
-     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> right: 7   第一个小于    result:7
-     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> right: 6   第一个小于   result:6
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public static int findFirstSmaller(int[] nums, int target) {
-        int left = 0;
-        int right = nums.length - 1;
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (nums[mid] > target) {
-                right = mid - 1;
-            } else if (nums[mid] == target) {
-                right = mid - 1;
-            } else if (nums[mid] < target) {
-                left = mid + 1;
-            }
-        }
-        System.out.print("right ->" + right + " ");
-        if (right < 0) {
-            return -1;
-        }
-        return right;
-    }
-}
-```
-
-#### 右边界问题
-```java
-
-public class BinarySearchRight {
-
-    /**
-     * left <= right 且 int left = 0, right = nums.length - 1;
-     * 寻找等于或小于 的target右边界的二分
-     *  注意：结果左侧越界
-     *
-     * <p>
-     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> right: -1  越界           result:-1
-     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> right: 2   最后一个相等    result:2
-     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> right: 7   第一个小于      result:7
-     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> right: 6   第一个小于      result:8
-     *
-     * <p>
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public static int right_bound(int[] nums, int target) {
-        int left = 0, right = nums.length - 1;
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (nums[mid] == target) {
-                left = mid + 1;
-            } else if (nums[mid] < target) {
-                left = mid + 1;
-            } else if (nums[mid] > target) {
-                right = mid - 1;
-            }
-        }
-        System.out.print("right ->" + right + " ");
-        // 为啥用right判断? 若存在重复target元素，循坏跳出的条件肯定是想右收缩过程中 left+1 导致的break
-        if (right < 0) {
-            return -1;
-        }
-        return right;
-    }
-
-
-    /**
-     * 查找第一个等于或大于key的元素
-     *  注意：结果右侧越界
-     *
-     * <p>
-     * {1,2,2,3,4,5,5,7}  寻找0(左越界)          -> left: 0  第一个大于  result:0
-     * {1,2,2,3,4,5,5,7}  寻找2(存在)            -> left: 3  第一个大于  result:3
-     * {1,2,2,3,4,5,5,7}  寻找8(右越界)          -> left: 8  越界       result:-1
-     * {1,2,2,3,4,5,5,7}  寻找6(范围内但值不存在)  -> left: 7  第一个大于  result:7
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public static int findFirstLarger(int[] nums, int target) {
-        int left = 0;
-        int right = nums.length - 1;
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            if (nums[mid] > target) {
-                right = mid - 1;
-            } else if (nums[mid] == target) {
-                left = mid + 1;
-            } else if (nums[mid] < target) {
-                left = mid + 1;
-            }
-        }
-        System.out.print("left ->" + left + " ");
-        // 为什么用left，因为left是循环跳出的地方默认在right的右边
-        if (left >= nums.length) {
-            return -1;
-        }
-        return left;
-    }
-}
-```
-
-### 经典问题
-
-二分查找问题
-1. 确定target目标，如果题目无target，需自己确定。如山峰问题的`num[mid]<nums[mid+1]`
-2. 确定判断搜索区间。根据target进行查找。
-
-
-- [搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
-- [在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
-- [搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/): 通过左右边界确定序列是否为递增
-- [搜索旋转排序数组 II](https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii/)
-
-- [猜数字大小](https://leetcode-cn.com/problems/guess-number-higher-or-lower/)
-- [有序矩阵中第 K 小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/): 猜数字
-
-平方根问题
-- [x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
-- [有效的完全平方数](https://leetcode-cn.com/problems/valid-perfect-square/)
-- [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/): 注意精度问题
-
-非模版二分问题：
-> 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
-- [寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/): 以右边界为目标点，寻找左边界，与常规的边界问题不同。
-- [寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
-- [寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
-- [山脉数组的峰顶索引](https://leetcode-cn.com/problems/peak-index-in-a-mountain-array/)
-- [剑指 Offer II 073. 狒狒吃香蕉](https://leetcode-cn.com/problems/nZZqjQ/)
-
-- [寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/): 二分区间判定，结果值获取
-
-
-## 滑动窗口
-- [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
-
-
 
 
 ## 前缀树
@@ -1767,12 +1835,12 @@ class UnionFindSet {
 
 
 
-## 二进制应用
+## 二进制
 计算1的个数
 
 
-### 位运算与运算转换
-[Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) 快速幂
+位运算与运算转换: \
+[Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) :快速幂
 
 
 ## 常用操作

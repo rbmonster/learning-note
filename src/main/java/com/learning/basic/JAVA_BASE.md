@@ -374,7 +374,7 @@ Java 中有三个访问权限修饰符：private、protected 以及 public，
 
 ## 重写与重载
 
-### 重写（Override）：
+### 重写（Override）
 
 重写：存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。
 
@@ -466,17 +466,16 @@ try语句return问题：**如果try语句里有return，返回的是try语句块
 
 ## 泛型
 
-泛型的本质是参数化类型，也就是所操作的数据类型被指定为一个参数。
-- 在集合中存储对象并在使用前进行类型转换是不方便的。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
-- 使用T, E or K,V等被广泛认可的类型占位符。
+泛型的本质是参数化类型，也就是所操作的数据类型被指定为一个参数。\
+在集合中存储对象并在使用前进行类型转换是不方便的。泛型防止了那种情况的发生。它提供了编译期的类型安全，确保你只能把正确类型的对象放入集合中，避免了在运行时出现ClassCastException。
+> 使用`T, E or K,V`等被广泛认可的类型占位符。
 
 泛型有三种常用的使用方式：泛型类，泛型接口和泛型方法。
 
 限定通配符和非限定通配符
-1. 非限定通配符：另一方面<?>表示了非限定通配符，因为<?>可以用任意类型来替代。
-2. 一种是`<? extends T>`它通过确保类型必须是T的子类来设定类型的上界
-3. 另一种是`<? super T>`它通过确保类型必须是T的父类来设定类型的下界
-4. 泛型类型必须用限定内的类型来进行初始化，否则会导致编译错误。
+1. 非限定通配符：`<?>`表示了非限定通配符，因为`<?>`可以用任意类型来替代。
+2. 限定通配符：一种是`<? extends T>`它通过确保类型必须是T的子类来设定类型的上界 ，另一种是`<? super T>`它通过确保类型必须是T的父类来设定类型的下界
+3. 泛型类型必须用限定内的类型来进行初始化，否则会导致编译错误。
 
 ### 类型擦除
 
@@ -527,7 +526,7 @@ public class Box<T> {
 }
 ```
 
-Java不能实现真正的泛型，只能使用类型擦除来实现伪泛型，这样虽然不会有类型膨胀问题，但是也引起来许多新问题
+Java不能实现真正的泛型，只能使用**类型擦除来实现伪泛型**，这样虽然不会有类型膨胀问题，但是也引起来许多新问题
 
 ## 注解
 
@@ -536,20 +535,20 @@ Java不能实现真正的泛型，只能使用类型擦除来实现伪泛型，�
 Java 定义了一套注解，共有 7 个，3 个在 java.lang 中，剩下 4 个在 java.lang.annotation 中。
 
 作用在代码的注解: 
-- `@Override` - 检查该方法是否是重写方法。如果发现其父类，或者是引用的接口中并没有该方法时，会报编译错误。
-- `@Deprecated` - 标记过时方法。如果使用该方法，会报编译警告。
-- `@SuppressWarnings` - 指示编译器去忽略注解中声明的警告。
+- `@Override`: 检查该方法是否是重写方法。如果发现其父类，或者是引用的接口中并没有该方法时，会报编译错误。
+- `@Deprecated`: 标记过时方法。如果使用该方法，会报编译警告。
+- `@SuppressWarnings`: 指示编译器去忽略注解中声明的警告。
 
-作用在其他注解的注解(或者说元注解)是:
-- `@Retention` - 标识这个注解怎么保存，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问。
-- `@Documented` - 标记这些注解是否包含在用户文档中。
-- `@Target` - 标记这个注解应该是哪种 Java 成员。
-- @Inherited - 标记这个注解是继承于哪个注解类(默认 注解并没有继承于任何子类)
+作用在其他注解的注解(或者说**元注解**)是:
+- `@Retention` : 标识这个注解怎么保存，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问。
+- `@Documented`: 标记这些注解是否包含在用户文档中。
+- `@Target`: 标记这个注解应该是哪种 Java 成员。
+- `@Inherited`: 标记这个注解是继承于哪个注解类(默认 注解并没有继承于任何子类)
 
 从 Java 7 开始，额外添加了 3 个注解:
-- `@SafeVarargs` - Java 7 开始支持，忽略任何使用参数为泛型变量的方法或构造函数调用产生的警告。
-- `@FunctionalInterface` - Java 8 开始支持，标识一个匿名函数或函数式接口。
-- `@Repeatable` - Java 8 开始支持，标识某注解可以在同一个声明上使用多次。
+- `@SafeVarargs`: Java 7 开始支持，忽略任何使用参数为泛型变量的方法或构造函数调用产生的警告。
+- `@FunctionalInterface`: Java 8 开始支持，标识一个匿名函数或函数式接口。
+- `@Repeatable`: Java 8 开始支持，标识某注解可以在同一个声明上使用多次。
 
 ### 元注解
 
@@ -557,7 +556,7 @@ java.lang.annotation 提供了四种元注解，专门注解其他的注解（�
 
 1. `@Documented`：注解是否将包含在JavaDoc中
 2. `@Retention`：什么时候使用该注解
-    - `RetentionPolicy.SOURCE` : 在编译阶段丢弃。这些注解在编译结束之后就不再有任何意义，所以它们不会写入字节码。@Override, @SuppressWarnings都属于这类注解。
+    - `RetentionPolicy.SOURCE` : 在编译阶段丢弃。这些注解在编译结束之后就不再有任何意义，所以它们不会写入字节码。`@Override`, `@SuppressWarnings`都属于这类注解。
     - `RetentionPolicy.CLASS` : 在类加载的时候丢弃。在字节码文件的处理中有用。注解默认使用这种方式
     - `RetentionPolicy.RUNTIME` : 始终不会丢弃，运行期也保留该注解，因此可以使用反射机制读取该注解的信息。我们自定义的注解通常使用这种方式。
 3. `@Target`：注解用于什么地方
@@ -573,9 +572,9 @@ java.lang.annotation 提供了四种元注解，专门注解其他的注解（�
       将被用于该class 的子类
 
 编写注解的规则
-1. Annotation 型定义为`@interface。`
+1. `Annotation`类型定义为`@interface`
 2. 参数成员只能用public 或默认(default) 这两个访问权修饰
-3. 参数成员只能用基本类型byte、short、char、int、long、float、double、boolean八种基本数据类型和String、Enum、Class、annotations等数据类型，以及这一些类型的数组。
+3. 参数成员只能用基本类型`byte、short、char、int、long、float、double、boolean`八种基本数据类型和`String、Enum、Class、annotations`等数据类型，以及这一些类型的数组。
 4. 要获取类方法和字段的注解信息，必须通过Java的反射技术来获取 Annotation 对象
 
 ```
@@ -595,19 +594,22 @@ public @interface FruitName {
 1. 新建（NEW）：创建后尚未启动。
 2. 可运行（RUNABLE）：正在 Java
    虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。
-3. 阻塞（BLOCKED）：请求获取 monitor lock 从而进入 synchronized 函数或者代码块，但是其它线程已经占用了该 monitor lock，所以出于阻塞状态。要结束该状态进入从而 RUNABLE
-   需要其他线程释放 monitor lock。
+3. 阻塞（BLOCKED）：请求获取 monitor lock 从而进入 synchronized 函数或者代码块，但是其它线程已经占用了该 monitor lock，所以出于阻塞状态。要结束该状态进入从而 RUNABLE 需要其他线程释放 monitor lock。
 4. 无限期等待（WAITING）：等待其它线程显式地唤醒。
+5. 限期等待（TIMED_WAITING）：无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
+6. 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
-> 阻塞和等待的区别在于，阻塞是被动的，它是在等待获取 monitor lock。而等待是主动的，通过调用 Object.wait() 等方法进入。
+**阻塞BLOCK和等待WAITING的区别**：阻塞是被动的，它是在等待获取 monitor lock。而等待是主动的，通过调用 Object.wait() 等方法进入。
+
+**WAITING状态进入和退出方法**：
 
 | 进入方法 | 退出方法 |
 | --- | --- |
 | 没有设置 Timeout 参数的 Object.wait() 方法 | Object.notify() / Object.notifyAll() |
 | 没有设置 Timeout 参数的 Thread.join() 方法 | 被调用的线程执行完毕 |
-| LockSupport.park() 方法 | LockSupport.unpark(Thread) |
+| `LockSupport.park()` 方法 | `LockSupport.unpark(Thread)` |
 
-5. 限期等待（TIMED_WAITING）：无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
+**TIMED_WAITING 状态进入和退出方法**：
 > 调用 Thread.sleep() 方法使线程进入限期等待状态时，常常用“使一个线程睡眠”进行描述。调用 Object.wait() 方法使线程进入限期等待或者无限期等待时，常常用“挂起一个线程”进行描述。睡眠和挂起是用来描述行为，而阻塞和等待用来描述状态。
 
 | 进入方法 | 退出方法 |
@@ -615,21 +617,20 @@ public @interface FruitName {
 | Thread.sleep() 方法 | 时间结束 |
 | 设置了 Timeout 参数的 Object.wait() 方法 | 时间结束 / Object.notify() / Object.notifyAll()  |
 | 设置了 Timeout 参数的 Thread.join() 方法 | 时间结束 / 被调用的线程执行完毕 |
-| LockSupport.parkNanos() 方法 | LockSupport.unpark(Thread) |
-| LockSupport.parkUntil() 方法 | LockSupport.unpark(Thread) |
+| `LockSupport.parkNanos()` 方法 | `LockSupport.unpark(Thread)` |
+| `LockSupport.parkUntil()` 方法 | `LockSupport.unpark(Thread)` |
 
-6. 死亡（TERMINATED）：可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
 ### 创建一个线程的开销
 
 JVM 在背后帮我们做了哪些事情：
-1. 它为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧
-2. 每一栈帧由一个局部变量数组、返回值、操作数堆栈和常量池组成
-3. 一些支持本机方法的 jvm 也会分配一个本机堆栈
-4. 每个线程获得一个程序计数器，告诉它当前处理器执行的指令是什么
+1. 内存分配：JVM为一个线程栈分配内存，该栈为每个线程方法调用保存一个栈帧。
+2. 虚拟机栈：每一栈帧由一个局部变量数组、返回值、操作数堆栈和常量池组成
+3. 本地方法栈：一些支持本机方法的 jvm 也会分配一个本机堆栈
+4. 程序计数器：每个线程获得一个程序计数器，告诉它当前处理器执行的指令是什么
 5. 系统创建一个与Java线程对应的本机线程
 6. 将与线程相关的描述符添加到JVM内部数据结构中
-7. 线程共享堆和方法区域
+7. 设置线程共享堆和方法区域
 
 ## 枚举类
 
@@ -759,8 +760,7 @@ String s = input.readLine();
 
 ### Arrays.asList()
 
-Arrays.asList(): 返回的并不是 java.util.ArrayList ，而是 java.util.Arrays 的一个内部类,这个内部类并没有实现集合的add()、remove()、clear()
-会抛出异常unSupportedOperationException。
+Arrays.asList(): 返回的并不是 java.util.ArrayList ，而是 java.util.Arrays 的一个内部类,这个内部类并没有实现集合的`add()`、`remove()`、`clear()`会抛出异常unSupportedOperationException。
 
 ### java复制
 
