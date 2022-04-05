@@ -1,8 +1,7 @@
 # learning-note
-> Motivation、Passion、Evolution
+> repository相关的markdown的目录，在`com`目录下使用命令`python TOC-new.py all`生成，`toc`文件夹为带目录的MD文件
 
-推荐[在线阅读网站](https://rbmon.gitee.io/learning-note/#/)
-（TOP标签会出现失效的情况，使用侧边栏进行导航）
+[在线阅读网站](https://rbmon.gitee.io/learning-note/#/): TOP标签会出现失效的情况，使用侧边栏进行导航
 
 一个技术点，面试官常见的三连问：
 1. xxx是什么？
@@ -48,6 +47,7 @@
 
 ## 计算机基础
 - [计算机网络](/src/main/java/com/toc/NETWORK.md)
+- [操作系统](/src/main/java/com/toc/OPERATING_SYSTEM.md)
 - [Linux相关](/src/main/java/com/toc/LINUX.md)
 
 ## 系统设计

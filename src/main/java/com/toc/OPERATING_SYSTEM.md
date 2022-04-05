@@ -1,6 +1,11 @@
-# 操作系统
+<a name="index">**Index**</a>
 
-## 基本概念
+<a href="#0">操作系统</a>  
+&emsp;<a href="#1">1. 基本概念</a>  
+&emsp;&emsp;<a href="#2">1.1. 核心态与用户态</a>  
+# <a name="0">操作系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 计算机的硬件(或称为冯-诺伊曼模型)组成：
 - 主机部分：运算器、存储器、控制器
@@ -38,7 +43,7 @@
 4. 文件管理
 5. 用户接口
 
-### 核心态与用户态
+### <a name="2">核心态与用户态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 为了避免操作系统及其关键数据(如PCB等)收到用户程序有意或无意的破坏，通常将处理器的执行状态分为两种：核心态和用户态。
 
 - 核心态(管态、系统态)：是操作系统管理程序执行时机器所处的状态。具有较高的权限，能执行包括特权指令等一切的指令，能访问所有寄存器和存储区。

@@ -8,6 +8,8 @@
 - [剑指 Offer 22. 链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
 - [旋转链表](https://leetcode-cn.com/problems/rotate-list/)
 - [奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+- [重排链表](https://leetcode-cn.com/problems/reorder-list/)
+- [排序链表](https://leetcode-cn.com/problems/sort-list/): 链表相关题目的大部分知识点，都在这个题目上了。
 
 虚拟节点：
 - [移除链表元素](https://leetcode-cn.com/problems/remove-linked-list-elements/)
@@ -568,7 +570,7 @@ public class Solution {
 - [移除元素](https://leetcode-cn.com/problems/remove-element/) : 类似于快排的变种
 - [移动零](https://leetcode-cn.com/problems/move-zeroes/)
 - [删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
-
+- [下一个排列](https://leetcode-cn.com/problems/next-permutation/): 查找的方法比较巧妙，递减区间的利用及
 ### 二分法
 [一道可以考察「二分」本质的面试题](https://mp.weixin.qq.com/s/RW20ob2oO4Bfd-PcukTVJA)
 > 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
@@ -823,14 +825,15 @@ public class BinarySearchRight {
 ### 左右指针
 
 双指针问题
+- [验证回文串](https://leetcode-cn.com/problems/valid-palindrome/)
 - [反转字符串](https://leetcode-cn.com/problems/reverse-string/)
 - [两数之和 II - 输入有序数组](https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/): 双指针基础问题
 - [三数之和](https://leetcode-cn.com/problems/3sum/): 难点在于转换为双指针的变换
 - [最接近的三数之和](https://leetcode-cn.com/problems/3sum-closest/)
 - [四数之和](https://leetcode-cn.com/problems/4sum/)
 - [盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/):
-
-
+- [接雨水](https://leetcode-cn.com/problems/trapping-rain-water/): 典型困难问题
+- [颜色分类](https://leetcode-cn.com/problems/sort-colors/): 三路快排变种问题
 - [反转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)
 
 
