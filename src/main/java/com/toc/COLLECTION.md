@@ -47,11 +47,11 @@
 - CopyOnWriteArrayList：使用了读写分离的思想，在写数据的时候上ReentrantLock锁并新建一个数组，读数据仍从旧数组中读取，而新数据在新增或删除完成之后直接替换旧数组。虽然线程安全，对于频繁写数据的场景效率很低。
 - ListIterator： 更强大的Iterator的子类，用于各种List类的访问，并支持双向移动。
 - LinkedList：双向链表(JDK1.6 之前为循环链表，JDK1.7 取消了循环)
-  - getFirst() 和element() 完全一样，都返回第一个元素。如果为空，抛NoSuchElementException.
-  - peek() 方法与上诉类似，只时列表为空返回null
-  - removeFirst() 和 remove() 类似，移除并返回列表的头，只是列表为空抛出NoSuchElementException。
-  - poll() 同样移除并返回列表头，只是列表为空返回Null
-- Stack：pop()、push()、 peek()方法，其中peek()返回栈顶元素，而不将其移除。
+  - `getFirst()` 和`element()` 完全一样，都返回第一个元素。如果为空，抛NoSuchElementException.
+  - `peek()` 方法与上诉类似，只时列表为空返回null
+  -` removeFirst()` 和 `remove()` 类似，移除并返回列表的头，只是列表为空抛出NoSuchElementException。
+  - `poll()` 同样移除并返回列表头，只是列表为空返回Null
+- Stack：`pop()`、`push()`、 `peek()`方法，其中`peek()`返回栈顶元素，而不将其移除。
 
 ### <a name="2">ArrayList 部分源码</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 #### <a name="3">Object[]数组</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -61,8 +61,8 @@
 
 #### <a name="4"> 扩容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 添加元素时使用 ensureCapacityInternal() 方法来保证容量足够，如果不够时，需要使用 grow() 方法进行扩容，新容量的大小为 oldCapacity + (oldCapacity >> 1)，也就是旧容量的 1.5 倍。
-> - 主要一个超精度负数判断，如果经度过长，则默认使用当前长度
-> - 数据复制使用Arrays.copyOf(elementData, newCapacity);
+> - 扩容操作中主要的是一个超精度负数判断，如果经度过长，则默认使用当前长度
+> - **数据复制**使用Arrays.copyOf(elementData, newCapacity);
 
 因为是一步操作，所以用于快速失败的modCount+1
 ```java
@@ -109,12 +109,12 @@ private void grow(int minCapacity) {
 **思考：arrayList 为啥1.5倍扩容？**
 
 #### <a name="5">删除元素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-调用 System.arraycopy() 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为 O(N)，可以看到 ArrayList 删除元素的代价是非常高的。
+调用 `System.arraycopy()` 将 index+1 后面的元素都复制到 index 位置上，该操作的时间复杂度为`O(N)`，可以看到 ArrayList 删除元素的代价是非常高的。
 > `System.arraycopy(elementData, index+1, elementData, index, numMoved);`
 
 #### <a name="6">快速失败</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-快速失败(fail-fast) 是 Java 集合的一种错误检测机制。在使用迭代器对集合进行遍历的时候，我们在多线程下操作非安全失败(fail-safe)的集合类可能就会触发 fail-fast 机制，导致抛出 ConcurrentModificationException 异常。
-> 另外，在单线程下，如果在遍历过程中对集合对象的内容进行了修改的话也会触发 fail-fast 机制。
+快速失败(fail-fast) 是 Java 集合的一种错误检测机制。在使用迭代器对集合进行遍历的时候，我们在多线程下操作非安全失败(fail-safe)的集合类可能就会触发 fail-fast 机制，导致抛出 `ConcurrentModificationException` 异常。
+> 在单线程下，如果在遍历过程中对集合对象的内容进行了修改的话也会触发 fail-fast 机制。
 
 modCount 用来记录 ArrayList 结构发生变化的次数。结构发生变化是指添加或者删除至少一个元素的所有操作，或者是调整内部数组的大小，仅仅只是设置元素的值不算结构发生变化。
 > 使用迭代器遍历时默认会传入当前的数组的modCount，每次操作进行检测
@@ -142,47 +142,47 @@ CopyOnWriteArrayList读写分离list
 
 适用于读多写少的场景
 ```
-    public boolean add(E e) {
-        final ReentrantLock lock = this.lock;
-        lock.lock();
-        try {
-            Object[] elements = getArray();
-            int len = elements.length;
-            Object[] newElements = Arrays.copyOf(elements, len + 1);
-            newElements[len] = e;
-            setArray(newElements);
-            return true;
-        } finally {
-            lock.unlock();
-        }
+public boolean add(E e) {
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        Object[] elements = getArray();
+        int len = elements.length;
+        Object[] newElements = Arrays.copyOf(elements, len + 1);
+        newElements[len] = e;
+        setArray(newElements);
+        return true;
+    } finally {
+        lock.unlock();
     }
+}
 
-    @SuppressWarnings("unchecked")
-    private E get(Object[] a, int index) {
-        return (E) a[index];
-    }
+@SuppressWarnings("unchecked")
+private E get(Object[] a, int index) {
+    return (E) a[index];
+}
 ```
 
 ### <a name="9">LinkedList</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 LinkedList定义了一个内部的Node 节点，基于双向链表实现，使用 Node 存储链表节点信息。
 
 相关操作：
-- getFirst() 和element() 完全一样，都返回第一个元素。如果为空，抛NoSuchElementException.
-- peek() 方法与上诉类似，只时列表为空返回null
-- removeFirst() 和 remove() 类似，移除并返回列表的头，只是列表为空抛出NoSuchElementException。
-- poll() 同样移除并返回列表头，只是列表为空返回Null
+- `getFirst()` 和`element()` 完全一样，都返回第一个元素。如果为空，抛NoSuchElementException.
+- `peek()` 方法与上诉类似，只时列表为空返回null
+- `removeFirst()` 和 `remove()` 类似，移除并返回列表的头，只是列表为空抛出NoSuchElementException。
+- `poll()` 同样移除并返回列表头，只是列表为空返回Null
 ```
- private static class Node<E> {
-        E item;
-        Node<E> next;
-        Node<E> prev;
+private static class Node<E> {
+    E item;
+    Node<E> next;
+    Node<E> prev;
 
-        Node(Node<E> prev, E element, Node<E> next) {
-            this.item = element;
-            this.next = next;
-            this.prev = prev;
-        }
+    Node(Node<E> prev, E element, Node<E> next) {
+        this.item = element;
+        this.next = next;
+        this.prev = prev;
     }
+}
 ```
 
 
@@ -202,14 +202,14 @@ LinkedList定义了一个内部的Node 节点，基于双向链表实现，使�
 数据结构：基础的数据节点Node 继承Map.Entry 接口实现的key-value的数据节点。
 基本的存储的结构为`Key Value`的Node节点的数组 `transient Node<K,V>[] table;`
 
-threshold：临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
+相关参数：
+- **threshold**：临界值，当实际大小(容量*填充因子)超过临界值时，会进行扩容
+- **UNTREEIFY_THRESHOLD**：树变成链表的阀值6。
+- **MIN_TREEIFY_CAPACITY**：hashMap进行树化的最低条件table的大小达到64，否则只是进行扩容。
+- **TREEIFY_THRESHOLD**：树化的最小长度8。
+    > 为啥设定为8，TreeNodes占用空间是普通Nodes的两倍，建立树是需要时间及空间成本的。因此此处基于时间与空间的权衡定位8，具体可以看源码。
 
-TREEIFY_THRESHOLD：树化的最小长度8。
-> 为啥设定为8，TreeNodes占用空间是普通Nodes的两倍，建立树是需要时间及空间成本的。因此此处基于时间与空间的权衡定位8，具体可以看源码。
 
-UNTREEIFY_THRESHOLD：树变成链表的阀值6。
-
-MIN_TREEIFY_CAPACITY：hashMap进行树化的最低条件table的大小达到64，否则只是进行扩容。
 
 Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 ```
@@ -222,8 +222,8 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 ```
 
 负载因子：hashMap的负载因子默认为0.75，当hashMap中的元素达到 3/4就进行元素的扩容。
-> 负载因子大小的关系，若负载因子为1，那么在出现大量的hash膨胀的情况下，元素会较密集，并且都是用链表或者红黑树的方式连接，导致查询效率较低。
-> 若负载因子为0.5 那么就会造成空间的浪费，元素分布较为稀疏。
+> 负载因子与大小的关系？\
+> 负载因子大小的关系，若负载因子为1，那么在出现大量的hash膨胀的情况下，元素会较密集，并且都是用链表或者红黑树的方式连接，导致查询效率较低。 若负载因子为0.5 那么就会造成空间的浪费，元素分布较为稀疏。
 
 #### <a name="13">put 操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 首先判断table是否需要扩容，若需要进行扩容操作
@@ -241,8 +241,7 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 3. 出现哈希冲突的情况，由于每次扩容的大小默认为2的n次方，因此重散列的位置只会为当前位置或者当前位置+旧数组大小两个位置。
 4. 如果节点存在哈希冲突，则根据位运算计算最新的位置是否为0，为0表示无需移动节点。为1表示移动到oldCap+j的位置。
 5. 针对出现红黑树的哈希冲突，同理。此处针对红黑树冲突的需要判断重散列的节点是否需要重新建立红黑树。
-
-- 如果初始化容量大小不为2的幂次方，那么在初始化的时候，会计算threshold为大于初始化数的最近2的幂次方数，在实际使用的时候声明为table的大小。
+> 如果初始化容量大小不为2的幂次方，那么在初始化的时候，会计算threshold为大于初始化数的最近2的幂次方数，在实际使用的时候声明为table的大小。
 
 
 #### <a name="15">HashMap红黑树查找</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -293,15 +292,15 @@ Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 针对建立红黑树或者添加树节点，若使用equal及class的compare 均无法确定添加节点的方向。
 则使用对象的类名进行判断，若类名依然相同，则使用System根据对象地址换算的hashcode编码判断添加方向。
 ```
-  static int tieBreakOrder(Object a, Object b) {
-        int d;
-        if (a == null || b == null ||
-            (d = a.getClass().getName().
-             compareTo(b.getClass().getName())) == 0)
-            d = (System.identityHashCode(a) <= System.identityHashCode(b) ?
-                 -1 : 1);
-        return d;
-    }
+static int tieBreakOrder(Object a, Object b) {
+    int d;
+    if (a == null || b == null ||
+        (d = a.getClass().getName().
+         compareTo(b.getClass().getName())) == 0)
+        d = (System.identityHashCode(a) <= System.identityHashCode(b) ?
+             -1 : 1);
+    return d;
+}
 ```
 
 #### <a name="16">hash 方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -315,9 +314,10 @@ static final int hash(Object key) {
 }
 ```
 
-问题：为什么采用hashcode的高16位和低16位异或能降低hash碰撞？hash函数能不能直接用key的hashcode？
-1. 上述解释的点，低位与高位混合，加大hash的随机性。
-2. key的hashcode可能被重写，重写的hash函数冲突的概率无法保证。因此hashMap需要在此基础使用自己的hash加大随机性。
+> 问题：为什么采用hashcode的高16位和低16位异或能降低hash碰撞？hash函数能不能直接用key的hashcode？
+> 1. 上述解释的点，低位与高位混合，加大hash的随机性。
+> 2. key的hashcode可能被重写，重写的hash函数冲突的概率无法保证。因此hashMap需要在此基础使用自己的hash加大随机性。
+
 #### <a name="17">Java1.7并发下循环链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Java1.7 中HashMap扩容是使用类似**头插法**的方式把旧节点转移到新的数组上。假设节点出现哈希冲突以链表的方式连接，且头节点1和节点2 扩容的位置仍然不变。
 1. 当线程1与线程2新建完新数组，并且执行到上述链表节点的扩容，执行旧数组的头结点3。举个例子链表为 3->7
@@ -326,35 +326,34 @@ Java1.7 中HashMap扩容是使用类似**头插法**的方式把旧节点转移�
 4. 当前数组节点的链表顺序为 7->3，重新进行节点3的头插，就会导致一个循环链表的现象
 
 ```
- 1 void transfer(Entry[] newTable) {
- 2     Entry[] src = table;                   //src引用了旧的Entry数组
- 3     int newCapacity = newTable.length;
- 4     for (int j = 0; j < src.length; j++) { //遍历旧的Entry数组
- 5         Entry<K,V> e = src[j];             //取得旧Entry数组的每个元素
- 6         if (e != null) {
- 7             src[j] = null;//释放旧Entry数组的对象引用（for循环后，旧的Entry数组不再引用任何对象）
- 8             do {
- 9                 Entry<K,V> next = e.next;
-10                 int i = indexFor(e.hash, newCapacity); //！！重新计算每个元素在数组中的位置
-11                 e.next = newTable[i]; //标记[1]
-12                 newTable[i] = e;      //将元素放在数组上
-13                 e = next;             //访问下一个Entry链上的元素
-14             } while (e != null);
-15         }
-16     }
-17 } 
+void transfer(Entry[] newTable) {
+    Entry[] src = table;                   //src引用了旧的Entry数组
+    int newCapacity = newTable.length;
+    for (int j = 0; j < src.length; j++) { //遍历旧的Entry数组
+        Entry<K,V> e = src[j];             //取得旧Entry数组的每个元素
+        if (e != null) {
+            src[j] = null;//释放旧Entry数组的对象引用（for循环后，旧的Entry数组不再引用任何对象）
+            do {
+                Entry<K,V> next = e.next;
+                int i = indexFor(e.hash, newCapacity); //！！重新计算每个元素在数组中的位置
+                e.next = newTable[i]; //标记[1]
+                newTable[i] = e;      //将元素放在数组上
+                e = next;             //访问下一个Entry链上的元素
+             } while (e != null);
+        }
+    }
+} 
 ```
 
 [美团关于HashMap的讲解](https://tech.meituan.com/2016/06/24/java-hashmap.html)
 
 
 #### <a name="18">Java 1.7与1.8区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-1.8还有三点主要的优化：
-
-- 数组+链表改成了数组+链表或红黑树；
-- 链表的插入方式从头插法改成了尾插法，简单说就是插入时，如果数组位置上已经有元素，1.7将新元素放到数组中，原始节点作为新节点的后继节点，1.8遍历链表，将元素放置到链表的最后；
-- 扩容的时候1.7需要对原数组中的元素进行重新hash定位在新数组的位置，1.8采用更简单的判断逻辑，位置不变或索引+旧容量大小；
-- 在插入时，1.7先判断是否需要扩容，再插入，1.8先进行插入，插入完成再判断是否需要扩容；
+java1.8主要的优化：
+1. 数组+链表改成了数组+链表或红黑树；
+2. 链表的插入方式从头插法改成了尾插法，简单说就是插入时，如果数组位置上已经有元素，1.7将新元素放到数组中，原始节点作为新节点的后继节点，1.8遍历链表，将元素放置到链表的最后；
+3. 扩容的时候1.7需要对原数组中的元素进行重新hash定位在新数组的位置，1.8采用更简单的判断逻辑，位置不变或索引+旧容量大小；
+4. 在插入时，1.7先判断是否需要扩容，再插入，1.8先进行插入，插入完成再判断是否需要扩容；
 
 好处：
 - 防止发生hash冲突，链表长度过长，将时间复杂度由O(n)降为O(logn);
@@ -410,7 +409,7 @@ public V get(Object key) {
   ```
   - 将新增的元素或访问后的元素，移到队尾
   ```
-  void afterNodeAccess(Node<K,V> e) {}
+  void afterNodeAccess(Node<K,V> e) {
   ```
 
 因此固定大小的LRU可以像这样构建：

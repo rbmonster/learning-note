@@ -570,7 +570,9 @@ public class Solution {
 - [移除元素](https://leetcode-cn.com/problems/remove-element/) : 类似于快排的变种
 - [移动零](https://leetcode-cn.com/problems/move-zeroes/)
 - [删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
-- [下一个排列](https://leetcode-cn.com/problems/next-permutation/): 查找的方法比较巧妙，递减区间的利用及
+- [下一个排列](https://leetcode-cn.com/problems/next-permutation/): 查找的方法比较巧妙，递减区间的利用
+- [删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/): 快慢指针，慢指针为确定的区间 
+
 ### 二分法
 [一道可以考察「二分」本质的面试题](https://mp.weixin.qq.com/s/RW20ob2oO4Bfd-PcukTVJA)
 > 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
@@ -838,9 +840,58 @@ public class BinarySearchRight {
 
 
 ### 滑动窗口
+#### 指针移动缩小窗口
+
+参考资料：[我写了套框架，把滑动窗口算法变成了默写题](https://mp.weixin.qq.com/s/ioKXTMZufDECBUwRRp3zaA)
+
+常规算法模版：
+```
+/* 滑动窗口算法框架 */
+void slidingWindow(string s, string t) {
+    unordered_map<char, int> need, window;
+    for (char c : t) need[c]++;
+
+    int left = 0, right = 0;
+    int valid = 0; 
+    while (right < s.size()) {
+        // c 是将移入窗口的字符
+        char c = s[right];
+        // 右移窗口
+        right++;
+        // 进行窗口内数据的一系列更新
+        ...
+
+        /*** debug 输出的位置 ***/
+        printf("window: [%d, %d)\n", left, right);
+        /********************/
+
+        // 判断左侧窗口是否要收缩
+        while (window needs shrink) {
+            // d 是将移出窗口的字符
+            char d = s[left];
+            // 左移窗口
+            left++;
+            // 进行窗口内数据的一系列更新
+            ...
+        }
+    }
+}
+```
+
+
+- [无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/): 快慢指针+hash表结合
+- [最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
 - [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+- [长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
 
 
+#### 指针不动窗口平滑
+滑动窗口的一种变种为，窗口保持在一定的size。
+1. 第一种为size是题目要求的，如k长的窗口最大值
+2. 第二种为size是当前满足的最优接。left位置不匹配，则平滑窗口。result即为`right-left`
+
+- [替换后的最长重复字符](https://leetcode-cn.com/problems/longest-repeating-character-replacement/)
+- [滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
 
 ## 队列
@@ -956,6 +1007,7 @@ class MaxQueue {
 - [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
 - [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/): review
 - [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
+- [滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
 ## 栈
 - 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
@@ -1845,6 +1897,8 @@ class UnionFindSet {
 位运算与运算转换: \
 [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) :快速幂
 
+## KMP
+[实现 strStr()](https://leetcode-cn.com/problems/implement-strstr/)
 
 ## 常用操作
 ### 前缀和
