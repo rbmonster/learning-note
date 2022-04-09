@@ -404,13 +404,13 @@ public V get(Object key) {
 ```
 
 一个基本的LRU队列需要两点：
-  - 添加元素添加在队头，
+  - 删除过期元素
   ``` 
   void afterNodeInsertion(boolean evict) {}
   ```
-  - 访问元素后，元素移到队尾
+  - 将新增的元素或访问后的元素，移到队尾
   ```
-  void afterNodeAccess(Node<K,V> e) {
+  void afterNodeAccess(Node<K,V> e) {}
   ```
 
 因此固定大小的LRU可以像这样构建：
