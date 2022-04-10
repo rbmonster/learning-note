@@ -890,6 +890,7 @@ void slidingWindow(string s, string t) {
 1. 第一种为size是题目要求的，如k长的窗口最大值
 2. 第二种为size是当前满足的最优接。left位置不匹配，则平滑窗口。result即为`right-left`
 
+- [字符串的排列](https://leetcode-cn.com/problems/permutation-in-string/)
 - [替换后的最长重复字符](https://leetcode-cn.com/problems/longest-repeating-character-replacement/)
 - [滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
