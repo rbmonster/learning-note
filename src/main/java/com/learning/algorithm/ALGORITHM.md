@@ -969,7 +969,7 @@ public class Solution {
 
 ### 单调队列
 
-单调队列，即单调递减或单调递增的队列。
+单调队列，即单调递减或单调递增的队列。\
 需要使用 双向队列 ，假设队列已经有若干元素：
 - 当执行入队 push_back() 时： 若入队一个比队列某些元素更大的数字 xx ，则为了保持此列表递减，需要将双向队列 尾部所有小于 xx 的元素 弹出。
 - 当执行出队 pop_front() 时： 若出队的元素是最大元素，则 双向队列 需要同时 将首元素出队 ，以保持队列和双向队列的元素一致性。
@@ -1007,16 +1007,17 @@ class MaxQueue {
 ```
 - [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
 - [剑指 Offer 59 - I. 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/): review
-- [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
 - [滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+- [绝对差不超过限制的最长连续子数组](https://leetcode-cn.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/)
+- [跳跃游戏 VI](https://leetcode-cn.com/problems/jump-game-vi/)
 
 ## 栈
-- 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
+栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
 
 - [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 - [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/ )
-- *[最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
-- *[字符串解码](https://leetcode-cn.com/problems/decode-string/)
+- [最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/): review
+- [字符串解码](https://leetcode-cn.com/problems/decode-string/): review
 - [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 - [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 
@@ -1090,40 +1091,60 @@ public class Solution {
 
 
 ### 单调栈
-单调栈： 单调栈实际上就是栈， 只是利⽤了⼀些巧妙的逻辑， 使得每次新元素⼊栈后， 栈内的元素都保持有序（单调递增或单调递减） 。
+单调栈：单调栈实际上就是栈，只是利⽤了⼀些巧妙的逻辑，使得每次新元素⼊栈后，栈内的元素都保持有序(单调递增或单调递减)。
+> 单调栈相关问题tag，_获取下一个_、_求最近最大或最小的值、下标_
 ```java
 class Solution {
-  public int[] dailyTemperatures(int[] T) {
-    Deque<Integer> stack = new LinkedList<>();
-    int len = T.length;
-    int[] res = new int[len];
-    // 从尾到头遍历
-    for (int i = len - 1; i >= 0; i--) {
-      while (!stack.isEmpty() && T[stack.peek()] <= T[i]) {
-        stack.pop();
-      }
-      // 判断位置差值
-      res[i] = stack.isEmpty() ? 0 : stack.peek() - i;
-      stack.push(i);
+    public int[] template(int[] T) {
+        // 单调递增栈
+        Deque<Integer> minStack = new LinkedList<>();
+        int len = T.length;
+        int[] res = new int[len];
+        // 从头到尾遍历或从尾到头遍历
+        for (int i = len - 1; i >= 0; i--) {
+          while (!minStack.isEmpty() && T[minStack.peek()] <= T[i]) {
+            // 判断是否对pop元素进行处理
+            // i为 pop元素 最近小于i的位置
+            minStack.pop();
+          }
+        // 当前stack.peek()元素为小于i对最近的位置，是否进行处理
+        minStack.push(i);
+        }
+        return res;
     }
-    return res;
-  }
+
+    public int[] template2(int[] T) {
+        // 单调递增栈
+        Deque<Integer> maxStack = new LinkedList<>();
+        int len = T.length;
+        int[] res = new int[len];
+        // 从头到尾遍历或从尾到头遍历
+        for (int i = len - 1; i >= 0; i--) {
+            while (!maxStack.isEmpty() && T[maxStack.peek()] >= T[i]) {
+                // 判断是否对pop元素进行处理
+                // i为 pop元素 最近大于的位置
+                maxStack.pop();
+            }
+            // 当前stack.peek()元素为 大于i对最近的位置，是否进行处理
+            maxStack.push(i);
+        }
+        return res;
+    }
 }
 ```
 
 - [最小栈](https://leetcode-cn.com/problems/min-stack/)
 - [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
-- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
-- [最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
-> 单调栈类似思想
+- [下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/): hash与单调栈结合
+- [下一个更大元素 II](https://leetcode-cn.com/problems/next-greater-element-ii/)
+- [最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/): 单调栈类似思想
+- [去除重复字母](https://leetcode-cn.com/problems/remove-duplicate-letters/)
+- [移掉 K 位数字](https://leetcode-cn.com/problems/remove-k-digits/)
 
-
-- *[接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
-> 单调栈解法，递减栈，每次计算增量
-
-- *[柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
-- [最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)
-> 最大矩形计算，获取索引i的左右小于`height[i]`的最高点索引
+以下三个为类似问题：
+- [接雨水](https://leetcode-cn.com/problems/trapping-rain-water/): 单调栈解法，递减栈，每次计算增量
+- [柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/): review
+- [最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/): **理解为主**，如何转化问题，变成最大矩形计算。获取索引i的左右小于`height[i]`的最高点索引
 
 
 

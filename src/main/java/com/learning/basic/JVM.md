@@ -266,7 +266,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 - 缺点：难以解决对象之间互相循环引用的问题。
 
 可达性分析算法：
-- 定义：通过一系列成为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”。弱某对象到GC Roots间没有任何引用链相连，证明此对象是不可能再被使用的。
+- 定义：通过一系列成为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”。若某对象到GC Roots间没有任何引用链相连，证明此对象是不可能再被使用的。
 - GC Roots的对象分为以下几种：
      1. 虚拟机栈中的引用对象，入线程调用方法堆栈的参数、局部变量、临时变量等。 
      2. 在方法区中类静态属性引用的对象。如Java类的引用类型静态变量。
@@ -379,7 +379,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 
 #### Parallel Old收集器
 定义：Parallel Scavenge收集器的老年版本，支持多线程并发收集，基于标记-整理算法。
-- 与Parallel Scavenge搭配作为“吞吐量优先”的收集器搭配组合
+> 与Parallel Scavenge搭配作为“吞吐量优先”的收集器搭配组合
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/parallel.jpg)
 
@@ -418,9 +418,9 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 
 
 特点：
-1. 对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此若核心数量在4个以上，占用CPU不超过25%。若核心数量小于4，则占用内存过大。
+1. 对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此若核心数量在4个以上，占用CPU不超过25%。若核心数量小于4，则占用CPU过大。
 2. 无法处理“浮动垃圾”，有可能出现并发模式失败进而导致一次Full GC。浮动垃圾为出现在标记过程结束之后产生的对象。因为CMS要支持收集过程中与用户线程并存，因此不能在老年代几乎被填满时再运行，需要预留一部分空间供并发收集的程序运行。
-    > JDK5中设置CMS在老年代使用了68%便会激活，JDK6默认的设置提高到92%。当运行预留的内存无法满足程序分配新对象的需要，就会出现一次“并发失败”。后备预案为冻结用户线程，启用Serial Old进行老年代的垃圾收集。\
+ > JDK5中设置CMS在老年代使用了68%便会激活，JDK6默认的设置提高到92%。当运行预留的内存无法满足程序分配新对象的需要，就会出现一次“并发失败”。后备预案为冻结用户线程，启用Serial Old进行老年代的垃圾收集。\
 > 并发收集失败：收集过程中，老年代被填满；收集完成后，收集的空间仍然无法满足被使用；浮动垃圾
 - 参数-XX:CMSFullGCsBeforeCompaction：作用是要求CMS收集器在执行过若干次不整理的Full GC之后，下一次先进行碎片整理
 
@@ -436,6 +436,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 [CMS官网说明](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/cms.html#concurrent_mode_failure)
 
 #### Garbage First 收集器
+G1是一种兼顾吞吐量和停顿时间的GC实现。\
 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中还有一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
 
 
