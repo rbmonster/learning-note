@@ -1092,7 +1092,7 @@ public class Solution {
 
 ### 单调栈
 单调栈：单调栈实际上就是栈，只是利⽤了⼀些巧妙的逻辑，使得每次新元素⼊栈后，栈内的元素都保持有序(单调递增或单调递减)。
-> 单调栈相关问题tag，_获取下一个_、_求最近最大或最小的值、下标_
+> 单调栈相关问题tag，_获取下一个_、_求最近最大或最小的值_、下标
 ```java
 class Solution {
     public int[] template(int[] T) {
@@ -1146,7 +1146,7 @@ class Solution {
 - [柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/): review
 - [最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/): **理解为主**，如何转化问题，变成最大矩形计算。获取索引i的左右小于`height[i]`的最高点索引
 
-
+- [最多能完成排序的块](https://leetcode-cn.com/problems/max-chunks-to-make-sorted/): 单调栈的变形
 
 ## BFS 与 DFS
 BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
