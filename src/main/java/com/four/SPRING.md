@@ -2,7 +2,8 @@
 
 ## Spring IOC & AOP
 ### Spring IOC
-IOC 理解
+
+IOC(Inversion of Control) 理解
 1. 控制反转：原来在程序中手动创建对象，现在需要什么对象由IOC提供，一个好处就是对象统一管理。
 2. 依赖注入：将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。简化开发及对象的创建。
   

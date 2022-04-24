@@ -21,8 +21,8 @@ public class ListTestMax {
     public static void main(String[] args) throws ExecutionException, InterruptedException, TimeoutException {
         new ListTestMax().testThreadLocal();
 
-        Thread thread = new Thread(()-> System.out.println("123"));
-        thread.wait();
+//        Thread thread = new Thread(()-> System.out.println("123"));
+//        thread.wait();
     }
 
 
