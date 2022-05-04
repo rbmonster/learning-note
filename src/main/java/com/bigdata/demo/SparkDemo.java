@@ -1,12 +1,10 @@
 package com.bigdata.demo;
 
-import org.apache.commons.lang.CharSet;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**

@@ -9,6 +9,10 @@
 &emsp;&emsp;<a href="#6">2.2. 线程</a>  
 &emsp;&emsp;<a href="#7">2.3. 线程与进程比较</a>  
 &emsp;&emsp;<a href="#8">2.4. 处理器调度</a>  
+&emsp;&emsp;<a href="#9">2.5. 经典同步问题</a>  
+&emsp;&emsp;&emsp;<a href="#10">2.5.1. 生产者-消费者问题</a>  
+&emsp;&emsp;&emsp;<a href="#11">2.5.2. 读者-写者问题</a>  
+<a href="#12">中间件设计资料</a>  
 # <a name="0">操作系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -168,3 +172,34 @@
 
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/operatingsystem/multiple-queue-call.png)
 
+
+### <a name="9">经典同步问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+#### <a name="10">生产者-消费者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+生产者-消费者问题(Producer-consumer problem)，也称有限缓冲问题(Bounded-buffer problem)，是一个多线程同步问题的经典案例。该问题描述了共享固定大小缓冲区的两个线程——即所谓的“生产者”和“消费者”——在实际运行时会发生的问题。生产者的主要作用是生成一定量的数据放到缓冲区中，然后重复此过程。与此同时，消费者也在缓冲区消耗这些数据。该问题的关键就是要保证生产者不会在缓冲区满时加入数据，消费者也不会在缓冲区中空时消耗数据。
+
+相关问题点：
+- 在缓冲区为空时，消费者不能再进行消费
+- 在缓冲区为满时，生产者不能再进行生产
+- 在一个线程进行生产或消费时，其余线程不能再进行生产或消费等操作，即保持线程间的同步
+- 注意条件变量与互斥锁的顺序
+
+#### <a name="11">读者-写者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+
+
+# <a name="12">中间件设计资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/disk-memory.png)
+
+通常在大部分组件设计时，往往会选择一种主要介质来存储、另一种介质作为辅助使用。就拿 redis 来说，它主要采用内存存储数据，磁盘用来做辅助的持久化。拿 RabbitMQ 举例，它也是主要采用内存存储消息，但也支持将消息持久化到磁盘。而 RocketMQ、Kafka、Pulsar 这种，则是数据主要存储在磁盘，通过内存来主力提升系统的性能。关系型数据库例如 mysql 这种组件也是主要采用磁盘组织数据，合理利用内存提升性能。
+
+针对采用内存存储数据的方案而言，难点一方面在于如何在不降低访问效率的情况下，充分利用有限的内存空间来存储尽可能多的数据，这个过程中少不了对数据结构的选型、优化；另一方面在于如何保证数据尽可能少的丢失，我们可以看到针对此问题的解决方案通常是快照+广泛意义的 wal 文件来解决。此类典型的代表就是 redis 啦。
+
+针对采用磁盘存储数据的方案而言，难点一方面在于如何根据系统所要解决的特点场景进行合理的对磁盘布局。读多写少情况下采用 b+树方式存储数据；写多读少情况下采用 lsm tree 这类方案处理。另一方面在于如何尽可能减少对磁盘的频繁访问，一些做法是采用 mmap 进行内存映射，提升读性能；还有一些则是采用缓存机制缓存频繁访问的数据。还有一些则是采用巧妙的数据结构布局，充分利用磁盘预读特性保证系统性能。
+
+**总的来说，针对写磁盘的优化，要不采用顺序写提升性能、要不采用异步写磁盘提升性能(异步写磁盘时需要结合 wal 保证数据的持久化，事实上 wal 也主要采用顺序写的特性)；针对读磁盘的优化，一方面是缓存、另一方面是 mmap 内存映射加速读。**
+
+上述这些存储方案上权衡的选择在 kafka、RocketMQ、Pulsar 中都可以看到。其实抛开消息队列而言，这些存储方案的选择上无论是关系型数据库还是 kv 型组件都是通用的。
+
+[消息队列背后的设计思想](https://mp.weixin.qq.com/s/k8sA6XPrp80JiNbuwKaVfg)

@@ -1913,16 +1913,62 @@ class UnionFindSet {
 
 
 ## 二进制
-计算1的个数
+
+常用操作：
+
+**判断负数**，快速的判断又避免精度溢出问题
+```
+private static void assertNumberMinus() {
+    int num1 = 1231;
+    int num2 = -12;
+    System.out.println("(1231 ^ -12) < 0 :" + ((num1 ^ num2) < 0));
+}
+```
+
+**数字字符处理操作**: 统一转小写、统一转大写、大小写交换
+```
+统一转小写
+('A' | ' ') = 'a';
+('a' | ' ') = 'a';
+
+统一转大写
+('b' & '_') = 'B'
+('B' & '_') = 'B'
+
+大小写交换
+('d' ^ ' ') = 'D'
+('D' ^ ' ') = 'd'
+```
+
+**消除数字 n 的⼆进制表⽰中的最后⼀个1**：`n&(n-1)`
+- 计算一个数字转二进制后1的个数
+- 判断一个数是否为2的指数
+```
+private static void countBit() {
+    int res = 0;
+    int num = 1002930;
+    int n = num;
+    while (n != 0) {
+        n = n & (n - 1);
+        res++;
+    }
+    System.out.println("num:" + num + ",count one number:" + res);
+}
+
+private static boolean isPowerOfTwo(int n) {
+    if (n <= 0) return false;
+    return (n & (n - 1)) == 0;
+}
+```
 
 
-位运算与运算转换: \
-[Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) :快速幂
-
+- [位1的个数](https://leetcode-cn.com/problems/number-of-1-bits/)
+- [Pow(x, n)](https://leetcode-cn.com/problems/powx-n/) :快速幂，位运算与运算转换
+- [剑指 Offer 56 - I. 数组中数字出现的次数](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/)
 ## KMP
 [实现 strStr()](https://leetcode-cn.com/problems/implement-strstr/)
 
-## 常用操作
+## 其他
 ### 前缀和
 前缀和是一种重要的预处理，能大大降低查询的时间复杂度。两个位置的前缀和差值，能快速确定这段区间的`sumup`
 > 相关关键词：**连续子数组**
@@ -1961,3 +2007,21 @@ class Solution {
     }
 }
 ```
+
+### 约瑟夫环问题
+以**找出游戏的获胜者**该题为例：
+
+我们第一轮会删掉第`k`个人，问题就变为对`n−1`个人进行这个游戏。\
+假设我们知道`f(n−1,k)`最终剩下的人的编号,
+由于我们删了第`k`个人，`n-1`个人的游戏是从原来第`k+1`个人开始的，\
+**也就是说原来的编号和新的编号有一个偏差k**。\
+以坐标从0到`n-1`来看的话(去掉1的偏差减少计算量,最终加一次1即可)，有公式:
+`f(n,k) = (f(n - 1, k) + k) % n`
+
+当只剩一个人时，他必然活下来，
+即`f(1,k) = 0`
+我们从`f(1,k)`推出`f(2,k)`一直到`f(n,k)`即可。
+
+
+相关问题：
+- [找出游戏的获胜者](https://leetcode-cn.com/problems/find-the-winner-of-the-circular-game/)

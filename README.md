@@ -52,9 +52,10 @@
 
 ## 系统设计
 ### 设计思想及概念
-- [设计及架构思想](/src/main/java/com/toc/SYSTEM-DESIGN.md)
+- [设计及架构思想](/src/main/java/com/toc/SYSTEM_DESIGN.md)
 - [设计模式](/src/main/java/com/toc/CODEDESIGN_BOOK.md)
-- [分布式基本概念](/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
+- [分布式基本概念](/src/main/java/com/toc/DISTRIBUTED_SYSTEM.md)
+- [领域驱动设计(DDD)](/src/main/java/com/toc/DDD.md)
 
 ### 设计案例
 - [Java接口设计](/src/main/java/com/toc/INTERFACE_DESIGN.md)
@@ -115,6 +116,7 @@
 | --- | --- |
 | [fucking-algorithm](https://github.com/labuladong/fucking-algorithm) | labuladong刷算法套路，提供算法题的工具方法思想 |
 | [leetcode-master](https://github.com/youngyangyang04/leetcode-master) | 代码随想录LeetCode 刷题攻略：配思维导图 |
+| [LogicStack-LeetCode](https://github.com/SharingSource/LogicStack-LeetCode) | 「宫水三叶的刷题日记」刷穿 LeetCode 系列文章源码 |
 
 
 系统设计及大数据：
