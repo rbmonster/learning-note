@@ -57,7 +57,7 @@ public class QuickSort {
      * @param right
      */
     public static void sort(int[] arr, int left, int right) {
-        if (left > right) return;
+        if (left >= right) return;
         int pos = partition(arr, left, right);
         sort(arr, left, pos - 1);
         sort(arr, pos + 1, right);
@@ -72,7 +72,13 @@ public class QuickSort {
             if(i>=j) break;
             swap(arr, i, j);
         }
-        swap(arr, i, left);
+        //先判断要交换的节点是否比基节点大
+        if (arr[left] > arr[i]) {
+            swap(arr, left, i);
+        } else if (i - 1 >= 0) {
+            swap(arr, left, i - 1);
+            i--;
+        }
         return i;
     }
 
