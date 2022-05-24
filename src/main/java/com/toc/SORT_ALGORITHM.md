@@ -137,7 +137,14 @@ public static int partition(int[] arr, int left, int right) {
         while (i < j && arr[j] >= tmp) j--;
         swap(arr, i, j);
     }
-    swap(arr, i, left);
+    
+    //先判断要交换的节点是否比基节点大
+    if (arr[left] > arr[i]) {
+        swap(arr, left, i);
+    } else if (i - 1 >=0) {
+        swap(arr, left, i - 1);
+        i--;
+    }
     return i;
 }
 ```
