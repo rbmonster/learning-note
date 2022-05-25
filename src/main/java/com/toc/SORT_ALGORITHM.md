@@ -74,7 +74,7 @@
 > 主要的区别在于最后**执行基点与指针交换的操作**。基点定于左侧，若先从左边开始查找，可能会导致找到一个大于的数且指针相遇了，此时与基点位置坐交换会把一个大于基点的数交换至左侧。导致区间的数存在问题。
 ```
     private static void sort1(int[] nums, int left, int right) {
-        if (left > right) {
+        if (left >= right) {
             return;
         }
         int i = left;
@@ -123,7 +123,7 @@ public void quickSort(int[] arr, int start, int end) {
  * @param right
  */
 public static void sort(int[] arr, int left, int right) {
-    if (left > right) return;
+    if (left >= right) return;
     int pos = partition(arr, left, right);
     sort(arr, left, pos - 1);
     sort(arr, pos + 1, right);
@@ -137,7 +137,14 @@ public static int partition(int[] arr, int left, int right) {
         while (i < j && arr[j] >= tmp) j--;
         swap(arr, i, j);
     }
-    swap(arr, i, left);
+    
+    //先判断要交换的节点是否比基节点大
+    if (arr[left] > arr[i]) {
+        swap(arr, left, i);
+    } else if (i - 1 >=0) {
+        swap(arr, left, i - 1);
+        i--;
+    }
     return i;
 }
 ```
