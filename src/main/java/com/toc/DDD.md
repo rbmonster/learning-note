@@ -254,8 +254,91 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 ## <a name="28">代码实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
+**用户接口层**\
+用户接口层的核心职能：协议转换和适配、鉴权、参数校验和异常处理。
+```
+interfaces
+├── controller                             //面向视图模型&资源
+│   ├── ResultController.java
+│   ├── assembler                         // 装配器，将VO转换为DTO
+│   │   └── ResultAssembler.java
+│   └── vo                                // VO(View Object)对象
+│       ├── EnterResultRequest.java
+│       └── ResponseVO.java
+├── facade(provider)                       // 面向服务行为
+├── subscriber                             // 面向事件
+└── task                                   // 面向策略(定时任务)
+    └── TotalResultTask.java
+```
+
+**应用层(application)**\
+应用层的核心职能：编排领域服务、事务管理、发布应用事件
+
+```
+├── application
+│   ├── assembler                              // 装配器，将DTO转换为DO
+│   │   ├── ResultAssembler.java
+│   │   └── TotalResultAssembler.java
+│   ├── pojo                                   // DTO(Data Transfer Object)对象
+│   │   ├── reqeust                           // 请求相关的DTO
+│   │   ├── event                             // 应用事件相关的DTO对象, subscriber负责接收
+│   │   └── qry                               // 查询相关的DTO对象
+│   └── service                                // 应用服务
+│       ├── ResultApplicationService.java
+│       ├── impl                               // service实现           
+│       ├── event                              // 应用事件，用于发布
+│       └── adapter                            // 防腐层适配器接口
+```
+
+**领域层(domain)**：代码组织以聚合为基本单元。
+
+**领域防腐层anticorruption**: 是当前领域需要获知其他领域或者外部信息时，对其他领域二方包的封装。
+> 防腐层从代码层面来看，可以避免调用外部客户端时，在领域内部进行复杂的参数拼装和结果的转换。
+
+```
+├── domain                                 // 领域层聚合
+│   ├── anticorruption                    //  领域防腐层
+│   │   └── service                       
+│   ├── factory                           //  工厂类 解决了复杂聚合的初始化问题
+│   ├── entity                             // 成绩聚合内的实体
+│   │   ├── vo                            // 领域返回对应的VO
+│   │   └── Result.java                    // 领域对象
+│   ├── service                           // 领域服务
+│   │   ├── ResultDomainService.java
+│   │   ├── event                         // 领域事件
+│   │   └── repository                    // 资源库
+│   │       └── ResultRepository.java
+│   └── valueobject                        // 成绩聚合的值对象
+│       ├── GPA.java
+│       ├── SchoolYear.java
+│       └── Semester.java
+```
+
+**基础设施实现层**: 该层主要提供领域层接口（资源库、防腐层接口）和应用层接口（防腐层接口）的实现。\
+代码组织基本以聚合为基本单元。对于应用层的防腐层接口，则直接以 application 作为包名组织。
+```
+├── application                                  // 应用层相关实现
+│   └── adapter                                 // 防腐层适配器接口实现
+│       ├── facade                              // 外观接口
+│       └── translator                          // 转换器，DO -> DTO
+├── result                                      // 成绩聚合相关实现
+│   ├── adapter
+│   │   ├── facade
+│   │   └── translator
+│   └── repository                              // 成绩聚合资源库接口实现
+│       └── ResultRepositoryImpl.java
+└── totalresult                                  // 总成绩聚合相关实现
+    ├── adapter
+    │   ├── CourseAdapterImpl.java
+    │   ├── facade
+    │   └── translator
+    └── repository
+        └── TotalResultRepositoryImpl.java
+
+```
 
 ## <a name="29">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [领域驱动设计(DDD)](https://www.wolai.com/sSuS9PurVF2jVuj2RU9G3D)
 - [万字长文助你上手软件领域驱动设计 DDD](https://mp.weixin.qq.com/s/BIYp9DNd_9sw5O2daiHmlA)
 - [领域驱动编程，代码怎么写？](https://mp.weixin.qq.com/s/W9xT9hNQjjIfjGxbePqDJw)
+- [Alibaba-cola](https://github.com/alibaba/COLA)

@@ -2,37 +2,37 @@
 
 <a href="#0">elasticsearch </a>  
 &emsp;<a href="#1">1. Elasticsearch 相关概念</a>  
-&emsp;&emsp;<a href="#2">1.1. 文档</a>  
-&emsp;&emsp;&emsp;<a href="#3">1.1.1. 更新文档</a>  
-&emsp;&emsp;&emsp;<a href="#4">1.1.2. 乐观并发控制</a>  
-&emsp;&emsp;<a href="#5">1.2. 集群</a>  
-&emsp;&emsp;<a href="#6">1.3. 分片</a>  
-&emsp;&emsp;&emsp;<a href="#7">1.3.1. 路由过程</a>  
-&emsp;&emsp;&emsp;<a href="#8">1.3.2. 主分片与副本分片交互</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#9">1.3.2.1. 新建，索引和删除文档</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#10">1.3.2.2. 查询请求交互</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#11">1.3.2.3. 局部更新文档</a>  
-&emsp;&emsp;&emsp;<a href="#12">1.3.3. 分页查询工作流程</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#13">1.3.3.1. 查询阶段</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#14">1.3.3.2. 取回阶段</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#15">1.3.3.3. 搜索选项</a>  
-&emsp;&emsp;&emsp;<a href="#16">1.3.4. 分片内部原理</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#17">1.3.4.1. 不变性</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#18">1.3.4.2. 动态更新索引</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#19">1.3.4.3. 持久化与段合并</a>  
-&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#20">1.3.4.3.1. translog</a>  
-&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#21">1.3.4.3.2. 段合并</a>  
-&emsp;&emsp;<a href="#22">1.4. 搜索</a>  
-&emsp;&emsp;&emsp;<a href="#23">1.4.1. 搜索相关的优化</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#24">1.4.1.1. 查询语句权重改变</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#25">1.4.1.2. 最佳字段查询调优</a>  
-&emsp;&emsp;<a href="#26">1.5. 索引</a>  
-&emsp;&emsp;&emsp;<a href="#27">1.5.1. 索引设置</a>  
-&emsp;&emsp;&emsp;<a href="#28">1.5.2. 分析器</a>  
-&emsp;&emsp;&emsp;<a href="#29">1.5.3. 根对象</a>  
-&emsp;&emsp;&emsp;<a href="#30">1.5.4. 动态映射</a>  
-&emsp;&emsp;&emsp;<a href="#31">1.5.5. 重新索引数据、修改Mapping的方式</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#32">1.5.5.1. 索引别名与零停机</a>  
+&emsp;&emsp;<a href="#2">1.1. 索引</a>  
+&emsp;&emsp;&emsp;<a href="#3">1.1.1. 索引设置</a>  
+&emsp;&emsp;&emsp;<a href="#4">1.1.2. 分析器</a>  
+&emsp;&emsp;&emsp;<a href="#5">1.1.3. 根对象</a>  
+&emsp;&emsp;&emsp;<a href="#6">1.1.4. 动态映射</a>  
+&emsp;&emsp;&emsp;<a href="#7">1.1.5. 重新索引数据、修改Mapping的方式</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#8">1.1.5.1. 索引别名与零停机</a>  
+&emsp;&emsp;<a href="#9">1.2. 文档</a>  
+&emsp;&emsp;&emsp;<a href="#10">1.2.1. 更新文档</a>  
+&emsp;&emsp;&emsp;<a href="#11">1.2.2. 乐观并发控制</a>  
+&emsp;&emsp;<a href="#12">1.3. 集群</a>  
+&emsp;&emsp;<a href="#13">1.4. 分片</a>  
+&emsp;&emsp;&emsp;<a href="#14">1.4.1. 路由过程</a>  
+&emsp;&emsp;&emsp;<a href="#15">1.4.2. 主分片与副本分片交互</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#16">1.4.2.1. 新建，索引和删除文档</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#17">1.4.2.2. 查询请求交互</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#18">1.4.2.3. 局部更新文档</a>  
+&emsp;&emsp;&emsp;<a href="#19">1.4.3. 分页查询工作流程</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#20">1.4.3.1. 查询阶段</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#21">1.4.3.2. 取回阶段</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#22">1.4.3.3. 搜索选项</a>  
+&emsp;&emsp;&emsp;<a href="#23">1.4.4. 分片内部原理</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#24">1.4.4.1. 不变性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#25">1.4.4.2. 动态更新索引</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#26">1.4.4.3. 持久化与段合并</a>  
+&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#27">1.4.4.3.1. translog</a>  
+&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#28">1.4.4.3.2. 段合并</a>  
+&emsp;&emsp;<a href="#29">1.5. 搜索</a>  
+&emsp;&emsp;&emsp;<a href="#30">1.5.1. 搜索相关的优化</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#31">1.5.1.1. 查询语句权重改变</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#32">1.5.1.2. 最佳字段查询调优</a>  
 &emsp;&emsp;<a href="#33">1.6. 排序</a>  
 &emsp;&emsp;<a href="#34">1.7. 深度分页</a>  
 &emsp;&emsp;&emsp;<a href="#35">1.7.1. 游标查询Scroll</a>  
@@ -111,7 +111,180 @@ Elasticsearch 是分布式的**文档**存储。它能存储和检索复杂的�
 | `Select * from table` | `Get http://` |
 | `Update table set` | `Put http://` |
 
-### <a name="2">文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+### <a name="2">索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+创建索引的方式分为两种
+1. 通过索引文档的方式直接创建一个新的索引，新的字段通过动态映射的方式被添加到类型映射中。
+2. 手动创建索引
+
+```
+索引文档：
+PUT /website/blog/123
+{
+  "title": "My first blog entry",
+  "text":  "Just trying this out...",
+  "date":  "2014/01/01"
+}
+
+reponse：
+{
+  "_index" : "website",
+  "_type" : "blog",
+  "_id" : "123",
+  "_version" : 1,
+  "result" : "created",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 0,
+  "_primary_term" : 1
+}
+
+创建索引：
+PUT /my_index
+{
+    "settings": { ... any settings ... },
+    "mappings": {
+        "type_one": { ... any mappings ... },
+        "type_two": { ... any mappings ... },
+        ...
+    }
+}
+```
+
+#### <a name="3">索引设置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- `number_of_shards`： 每个索引的主分片数，默认值是 5 。这个配置在**索引创建后不能修改**。
+- `number_of_replicas`： 每个主分片的副本数，默认值是 1 。对于活动的索引库，这个**配置可以随时修改**。
+
+```
+PUT /my_temp_index
+{
+    "settings": {
+        "number_of_shards" :   1,
+        "number_of_replicas" : 0
+    }
+}
+
+PUT /my_temp_index/_settings
+{
+    "number_of_replicas": 1
+}
+```
+
+`analysis` 部分，用来配置已存在的分析器或针对你的索引创建新的自定义分析器。
+
+
+`standard` 分析器是用于**全文字段的默认分析器**，对于大部分西方语系来说是一个不错的选择。 它包括了以下几点：
+- `standard` 分词器，通过单词边界分割输入的文本。
+- `standard` 语汇单元过滤器，目的是整理分词器触发的语汇单元（但是目前什么都没做）。
+- `lowercase` 语汇单元过滤器，转换所有的语汇单元为小写。
+- `stop` 语汇单元过滤器，删除停用词—对搜索相关性影响不大的常用词，如 `a , the , and , is `。
+
+
+```
+PUT /spanish_docs
+{
+    "settings": {
+        "analysis": {
+            "analyzer": {
+                "es_std": {
+                    "type":      "standard",
+                    "stopwords": "_spanish_"
+                }
+            }
+        }
+    }
+}
+```
+
+
+#### <a name="4">分析器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+一个 分析器 就是在一个包里面组合了三种函数的一个包装器， 三种函数按照顺序被执行:
+- 字符过滤器： 用来 _整理_ 一个尚未被分词的字符串。例如，如果我们的文本是HTML格式的，它会包含像 `<p>` 或者 `<div>` 这样的HTML标签。
+- 分词器： 一个分析器**必须**有一个**唯一的分词器**。 分词器把字符串分解成单个词条或者词汇单元。
+- 词单元过滤器：经过分词，作为结果的 词单元流 会按照指定的顺序通过指定的词单元过滤器 。词单元过滤器可以修改、添加或者移除词单元。如移除变音符、部分匹配或者自动补全的词单元。
+> ES 还支持自定义分析器
+
+
+#### <a name="5">根对象</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+映射的最高一层被称为 根对象 ，它可能包含下面几项：
+- 一个 `properties` 节点，列出了文档中可能包含的每个字段的映射
+- 各种元数据字段，它们都以一个下划线开头，例如 `_type` 、 `_id` 和 `_source`
+- 设置项，控制如何动态处理新的字段，例如 `analyzer` 、 `dynamic_date_formats` 和 `dynamic_templates`
+- 其他设置，可以同时应用在根对象和其他 `object` 类型的字段上，例如 `enabled` 、 `dynamic` 和 `include_in_all`
+
+
+**元数据:_source字段**
+
+默认地，Elasticsearch 在 `_source` 字段存储代表文档体的JSON字符串。和所有被存储的字段一样， `_source` 字段在被写入磁盘之前先会被压缩。
+- 搜索结果包括了整个可用的文档——不需要额外的从另一个的数据仓库来取文档。
+- 调试查询语句更加简单，因为你可以直接看到每个文档包括什么，而不是从一列id猜测它们的内容。
+
+#### <a name="6">动态映射</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+当 Elasticsearch 遇到文档中以前 未遇到的字段，它用 dynamic mapping 来确定字段的数据类型并自动把新的字段添加到类型映射。
+> 如果Elasticsearch是作为重要的数据存储，可能就会期望遇到新字段就会抛出异常，这样能及时发现问题。 可以用 dynamic 配置来控制这种行为。true：动态添加新的字段—缺省，false：忽略新的字段，strict：如果遇到新字段抛出异常
+
+#### <a name="7">重新索引数据、修改Mapping的方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+尽管可以增加新的类型到索引中，或者增加新的字段到类型中，但是不能添加**新的分析器或者对现有的字段做改动**。
+
+使用`_reindex`的原因：
+1. 是一个字段的类型进行修改之后，ES会重新建立对这个字段的索引信息，ElasticsSearch的底层是Lucene库，字段类型修改会涉及到分词方式，相关度，TF/IDF等倒排的生成，所以是没办法修改的了。
+2. 当数据量过大，而索引最初创建的分片数量不足，导致数据入库较慢的情况，此时需要扩大分片的数量，此时可以尝试使用Reindex。
+> 可以通过请求`POST _tasks?detailed=true&actions=*reindex` 查看`_reIndex`进度
+- [Index Aliases](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/indices-aliases.html)
+- [Elasticsearch如何修改Mapping结构并实现业务零停机](https://juejin.im/post/5e2d32c95188254d9032a7dd)
+
+
+
+reindex的核心是跨索引、跨集群的数据迁移。 如果出现`reindex`慢的原因及优化思路无非包括：
+1. 批量大小值可能太小。需要结合堆内存、线程池调整大小；默认情况下，_reindex使用1000进行批量操作。
+2. 临时调整副本数为0。一个创建请求，在主分片创建了文档后，会转发请求到副本所在到节点，待副本创建成功后，才返回给客户端。
+3. reindex的底层是scroll实现，借助scroll并行优化方式，提升效率；
+4. 跨索引、跨集群的核心是写入数据，考虑写入优化角度提升效率。
+
+##### <a name="8">索引别名与零停机</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+重建索引的问题是必须更新应用中的索引名称。 索引别名就是用来解决这个问题的。**索引别名**就像一个快捷方式或软连接，可以指向一个或多个索引，也可以给任何一个需要索引名的API来使用。
+
+**步骤1: 建立新索引**
+```
+PUT sw_test.trade_contract_v2
+```
+
+**步骤2: 复制数据**
+```
+POST _reindex
+{
+    "source": {
+        "index": "sw_test.trade_contract_v1"
+    },
+    "dest": {
+        "index": "sw_test.trade_contract_v2"
+    }
+}
+```
+
+**步骤3: 修改别名关联**
+```
+POST /_aliases
+{
+    "actions": [
+        { "remove": { "index": " sw_test.trade_contract_v1", "alias": " sw_test.trade_contract" }},
+        { "add":    { "index": " sw_test.trade_contract_v2", "alias": " sw_test.trade_contract" }}
+    ]
+}
+
+```
+
+**步骤4: 删除旧索引**
+```
+DELETE  sw_test.trade_contract_v1
+```
+
+
+### <a name="9">文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Elasticsearch 是分布式的 文档 存储。它能存储和检索复杂的数据结构—序列化成为JSON文档—以 实时 的方式。
 > 一个 **对象** 是基于特定语言的内存的数据结构。为了通过网络发送或者存储它，我们需要将它表示成某种标准的格式。 JSON 是一种以人可读的文本表示对象的方法。
 
@@ -133,7 +306,7 @@ Elasticsearch 是分布式的 文档 存储。它能存储和检索复杂的数�
 }
 ```
 
-#### <a name="3">更新文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="10">更新文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ElasticSearch的文档写入是以不可修改的形式写入的，一条文档记录一旦被写入其本身就不能被修改了。如果想要更新现有的文档，需要**重建索引**或者**进行替换**。
 
 重新索引方式：
@@ -184,10 +357,10 @@ POST test/_doc/12374/_update
 
 
 
-#### <a name="4">乐观并发控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="11">乐观并发控制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 利用 `_version` 号来确保 应用中相互冲突的变更不会导致数据丢失。我们通过指定想要修改文档的 `version` 号来达到这个目的。 如果该版本不是当前版本号，我们的请求将会失败。
 
-### <a name="5">集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 当一个节点被选举成为 **主节点**时， 它将负责管理集群范围内的所有变更，例如增加、删除索引，或者增加、删除节点等。 \
 而**主节点并不需要涉及到文档级别的变更和搜索**等操作，所以当集群只拥有一个主节点的情况下，即使流量的增加它也不会成为瓶颈。 任何节点都可以成为主节点。
 
@@ -198,7 +371,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 - **master节点**：主要职责是和集群操作相关的内容，如创建或删除索引，跟踪哪些节点是群集的一部分，并决定哪些分片分配给相关的节点。
 - **data节点**(主分片、副本分片)：这个节点作为一个数据节点，数据节点主要是存储索引数据的节点，主要对文档进行增删改查操作，聚合操作等。数据节点对cpu，内存，io要求较高， 在优化的时候需要监控数据节点的状态，当资源不够的时候，需要在集群中添加新的节点。**节点启动后，默认就是数据节点**。
 - **协调节点**：处理请求的节点，负责路由请求到正确的节点，如创建索引的请求需要路由到 Master 节点。**所有节点默认都是** Coordinating Node；
-
+- **ingest节点**：可以看作是数据前置处理转换的节点，支持 pipeline管道 设置，可以使用 ingest 对数据进行过滤、转换等操作，类似于 logstash 中 filter 的作用，功能相当强大。 可以把Ingest节点的功能抽象为：大数据处理环节的“ETL”——抽取、转换、加载。
 
 | 节点类型	|配置参数	| 默认值 |
 | ---           | ---| ---|
@@ -207,22 +380,22 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 |ingest	          | node.ingest | true|
 |coordinating only |	无 |	设置上面三个参数全部为false|
 
-### <a name="6">分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="13">分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="7">路由过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="14">路由过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 当索引一个文档的时候，文档会被存储到一个主分片中。确定路由的分片由以下公式确定：
 `shard = hash(routing) % number_of_primary_shards`
 > `routing` 是一个可变值，默认是文档的 `_id` ，也可以设置成一个自定义的值。 routing 通过 hash 函数生成一个数字，然后这个数字再除以 `number_of_primary_shards` （主分片的数量）后得到 余数 。这个分布在 0 到 `number_of_primary_shards-1` 之间的余数，就是我们所寻求的文档所在分片的位置。\
 > 这就解释了为什么我们要在创建索引的时候就确定好主分片的数量 并且永远不会改变这个数量：因为如果数量变化了，那么所有之前路由的值都会无效，文档也再也找不到了。
 
-#### <a name="8">主分片与副本分片交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="15">主分片与副本分片交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-1.png)
 >  假设有一个集群由三个节点组成。 它包含一个叫 blogs 的索引，有两个主分片，每个主分片有两个副本分片。相同分片的副本不会放在同一节点
 
 **协调节点**(coordinating node)：可以发送请求到集群中的任一节点。 每个节点都有能力处理任意请求。每个节点都知道集群中任一文档位置，所以可以直接将请求转发到需要的节点上。假如将所有的请求发送到 Node 1 ，我们将其称为**协调节点**。
 
-##### <a name="9">新建，索引和删除文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="16">新建，索引和删除文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-2.png)
 
 以下是在主副分片和任何副本分片上面 成功新建，索引和删除文档所需要的步骤顺序：
@@ -233,17 +406,17 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 **相关参数设置**：
 > 有一些可选的请求参数允许影响整个写过程，可能以数据安全为代价提升性能。
 
-`consistency`：在默认设置下，即使仅仅是在试图执行一个写操作之前，主分片都会要求 必须要有 _大多数(规定数量)_ 的分片副本处于活跃可用状态，才会去执行写操作。这是为了避免在发生网络分区故障（network partition）的时候进行 _写_ 操作，进而导致数据不一致。\
+`consistency`：在默认设置下，即使仅仅是在试图执行一个写操作之前，主分片都会要求 必须要有 _大多数(规定数量)_ 的分片副本处于活跃可用状态，才会去执行写操作。这是为了避免在发生网络分区故障（network partition）的时候进行 _写_ 操作，进而导致数据不一致。
 > 规定数量：`int( (primary + number_of_replicas) / 2 ) + 1` \
 > `number_of_replicas`指的是在索引设置中的设定副本分片数，而不是指当前处理活动状态的副本分片数。
 - 设置为`one`: 只要主分片状态 ok 就允许执行 _写_ 操作
 - 设置为`all`: 必须要主分片和所有副本分片的状态没问题才允许执行 _写_ 操作
-- 默认值为 quorum , 即大多数的分片副本状态没问题就允许执行 _写_ 操作。
+- 默认值为 `quorum` , 即大多数的分片副本状态没问题就允许执行 _写_ 操作。
 
 `timeout`：如果没有足够的副本分片， Elasticsearch会等待，希望更多的分片出现。默认情况下，它最多等待1分钟。
 >新索引默认有 1 个副本分片，这意味着为满足 **规定数量** 应该需要两个活动的分片副本。 但是，这些默认的设置会阻止我们在单一节点上做任何事情。为了避免这个问题，要求只有当 `number_of_replicas` 大于1的时候，规定数量才会执行。
 
-##### <a name="10">查询请求交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="17">查询请求交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 基于ID的查询：
 
@@ -258,7 +431,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 
 
-##### <a name="11">局部更新文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="18">局部更新文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/update-1.png)
 
@@ -270,9 +443,9 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 当主分片把更改转发到副本分片时， 它不会转发更新请求。 相反，它转发完整文档的新版本。请记住，这些更改将会异步转发到副本分片，并且不能保证它们以发送它们相同的顺序到达。 如果Elasticsearch仅转发更改请求，则可能以错误的顺序应用更改，导致得到损坏的文档。
 
 
-#### <a name="12">分页查询工作流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">分页查询工作流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-##### <a name="13">查询阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="20">查询阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/search-1.png)
 > 优先队列: 一个 优先队列 仅仅是一个存有 top-n 匹配文档的有序列表。优先队列的大小取决于分页参数 from 和 size 。例如，如下搜索请求将需要足够大的优先队列来放入100条文档。
 >
@@ -292,8 +465,9 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 分片返回一个轻量级的结果列表到协调节点，它仅包含文档 ID 集合以及任何排序需要用到的值，例如 `_score` 。
 
 
-##### <a name="14">取回阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="21">取回阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/search-2.png)
+
 分布式阶段由以下步骤构成：
 1. 协调节点辨别出哪些文档需要被取回并向相关的分片提交多个 GET 请求。
 2. 每个分片加载并 _丰富_ 文档，如果有需要的话，接着返回文档给协调节点。
@@ -301,7 +475,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 协调节点给持有相关文档的每个分片创建一个 multi-get request ，并发送请求给同样处理查询阶段的分片副本。
 
 
-##### <a name="15">搜索选项</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="22">搜索选项</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **偏好 preference**：允许用来控制由哪些分片或节点来处理搜索请求。 它接受像` _primary, _primary_first, _local, _only_node:xyz, _prefer_node:xyz, _shards:2,3` 这样的值
 > `Bouncing Results`：每次用户刷新页面，搜索结果表现是不同的顺序。主要指定的排序字段在不同分片上可能不一致，如`timestamp`。可以指定`preference`为用户会话Id解决该问题。
 
@@ -311,7 +485,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 这个技术在设计大规模搜索系统时就会派上用场
 
 
-#### <a name="16">分片内部原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">分片内部原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 传统的数据库每个字段存储单个值，但这对全文检索并不够。文本字段中的每个单词需要被搜索，对数据库意味着需要单个字段有索引多值(这里指单词)的能力。
 > 最好的支持 一个字段多个值 需求的数据结构 是倒排索引。倒排索引包含一个有序列表，列表包含所有文档出现过的不重复个体，或称为 词项 ，对于每一个词项，包含了它所有曾出现过文档的列表。
 
@@ -334,14 +508,14 @@ the   |   X   |       |  X    | ...
 ```
 
 
-##### <a name="17">不变性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="24">不变性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 倒排索引写入磁盘后就是不可变的，这样有几个好处：
 1. 不需要锁，如果不更新索引，不用担心锁的问题，可以支持较高的并发能力
 2. 如果cache内存足够，不更新索引的话，索引可以一直保存在os cache中，可以提升IO性能。
 3. 如果数据不变，filter cache 会一直驻留在内存。
 4. 索引数据可以压缩，节省 cpu 和 io 开销。
 
-##### <a name="18">动态更新索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="25">动态更新索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 倒排索引是基于不可变模式设计的，但实际Elasticsearch源源不断地有新数据进来。ES通过增加**新的补充索引来接收新的文档和修改的文档**，而不是直接用删除重建的方式重写整个索引。
 
 doc写入过程：
@@ -370,7 +544,7 @@ doc删除和更新
 实时搜索的支持：
 在Elasticsearch和磁盘之间是文件系统缓存。在内存索引缓冲区中的文档会被写入到一个新的段中。Lucene 允许新段被**写入和打开—使其包含的文档在未进行一次完整提交时便对搜索可见**。 这种方式比进行一次提交代价要小得多，并且在不影响性能的前提下可以被频繁地执行。
 
-##### <a name="19">持久化与段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="26">持久化与段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/es-rep-1.png)
 Elasticsearch 增加了一个 translog ，或者叫事务日志，在每一次对 Elasticsearch 进行操作时均进行了日志记录。通过 translog ，整个流程看起来是下面这样：
 1. 一个文档被索引之后，就会被添加到内存缓冲区，并且追加到了`translog`。
@@ -387,7 +561,7 @@ Elasticsearch 增加了一个 translog ，或者叫事务日志，在每一次�
 5. 老的 `translog` 被删除
 
 
-###### <a name="20">translog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+###### <a name="27">translog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **相关流程**：\
 `translog` 提供所有还没有被刷到磁盘的操作的一个持久化纪录。当 Elasticsearch 启动的时候， 它会从磁盘中使用最后一个提交点去恢复已知的段，并且会重放 `translog` 中所有在最后一次提交后发生的变更操作。\
 `translog` 也被用来提供实时 CRUD 。当你试着通过ID查询、更新、删除一个文档，它会在尝试从相应的段中检索之前， 首先检查 `translog` 任何最近的变更。这意味着它总是能够实时地获取到文档的最新版本。
@@ -406,7 +580,7 @@ PUT /my_index/_settings
 }
 ```
 
-###### <a name="21">段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+###### <a name="28">段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 背景：由于自动刷新流程每秒会创建一个新的段 ，这样会导致短时间内的段数量暴增。而段数目太多会带来较大的麻烦。 每一个段都会消耗文件句柄、内存和cpu运行周期。更重要的是，每个搜索请求都必须轮流检查每个段；所以段越多，搜索也就越慢。
 
 Elasticsearch通过在后台进行段合并来解决这个问题。小的段被合并到大的段，然后这些大的段再被合并到更大的段。
@@ -414,13 +588,14 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 段合并的时候会将那些**旧的已删除文档从文件系统中清除**。被删除的文档（或被更新文档的旧版本）**不会被拷贝到新的大段**中。
 
 ![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/segment-merge.png)
+
 进行索引和搜索时会自动进行段合并
 1. 当索引的时候，刷新（refresh）操作会创建新的段并将段打开以供搜索使用。
 2. 合并进程选择一小部分大小相似的段，并且在后台将它们合并到更大的段中。这并不会中断索引和搜索。
 3. 新的段被刷新（flush）到了磁盘， 写入一个包含新段且排除旧的和较小的段的新提交点。 然后新的段被打开用来搜索。最终老的段被删除。
 > 合并大的段需要消耗大量的I/O和CPU资源，如果任其发展会影响搜索性能。Elasticsearch在默认情况下会对合并流程进行资源限制，所以搜索仍然 有足够的资源很好地执行。
 
-### <a name="22">搜索</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">搜索</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一个查询中常见的字段：
 ```
 {
@@ -460,8 +635,8 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 - `/gb,us/user,tweet/_search`：在 gb 和 us 索引中搜索 user 和 tweet 类型
 
 
-#### <a name="23">搜索相关的优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-##### <a name="24">查询语句权重改变</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="30">搜索相关的优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="31">查询语句权重改变</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 `boost` 参数被用来提升一个语句的相对权重（ `boost` 值大于 1 ）或降低相对权重（ `boost` 值处于 0 到 1 之间）
 
 ```
@@ -496,181 +671,10 @@ GET /_search
 }
 ```
 
-##### <a name="25">最佳字段查询调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="32">最佳字段查询调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 指定 `tie_breaker` 这个参数将其他匹配语句的评分也考虑其中。
 - [最佳字段查询调优](https://www.elastic.co/guide/cn/elasticsearch/guide/2.x/_tuning_best_fields_queries.html)
 
-
-
-### <a name="26">索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-创建索引的方式分为两种
-1. 通过索引文档的方式直接创建一个新的索引，新的字段通过动态映射的方式被添加到类型映射中。
-2. 手动创建索引
-
-```
-索引文档：
-PUT /website/blog/123
-{
-  "title": "My first blog entry",
-  "text":  "Just trying this out...",
-  "date":  "2014/01/01"
-}
-
-reponse：
-{
-  "_index" : "website",
-  "_type" : "blog",
-  "_id" : "123",
-  "_version" : 1,
-  "result" : "created",
-  "_shards" : {
-    "total" : 2,
-    "successful" : 1,
-    "failed" : 0
-  },
-  "_seq_no" : 0,
-  "_primary_term" : 1
-}
-
-创建索引：
-PUT /my_index
-{
-    "settings": { ... any settings ... },
-    "mappings": {
-        "type_one": { ... any mappings ... },
-        "type_two": { ... any mappings ... },
-        ...
-    }
-}
-```
-
-#### <a name="27">索引设置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-- `number_of_shards`： 每个索引的主分片数，默认值是 5 。这个配置在**索引创建后不能修改**。
-- `number_of_replicas`： 每个主分片的副本数，默认值是 1 。对于活动的索引库，这个**配置可以随时修改**。
-
-```
-PUT /my_temp_index
-{
-    "settings": {
-        "number_of_shards" :   1,
-        "number_of_replicas" : 0
-    }
-}
-
-PUT /my_temp_index/_settings
-{
-    "number_of_replicas": 1
-}
-```
-
-`analysis` 部分，用来配置已存在的分析器或针对你的索引创建新的自定义分析器。
-
-
-`standard` 分析器是用于**全文字段的默认分析器**，对于大部分西方语系来说是一个不错的选择。 它包括了以下几点：
-- `standard` 分词器，通过单词边界分割输入的文本。
-- `standard` 语汇单元过滤器，目的是整理分词器触发的语汇单元（但是目前什么都没做）。
-- `lowercase` 语汇单元过滤器，转换所有的语汇单元为小写。
-- `stop` 语汇单元过滤器，删除停用词—对搜索相关性影响不大的常用词，如 `a , the , and , is `。
-
-
-```
-PUT /spanish_docs
-{
-    "settings": {
-        "analysis": {
-            "analyzer": {
-                "es_std": {
-                    "type":      "standard",
-                    "stopwords": "_spanish_"
-                }
-            }
-        }
-    }
-}
-```
-
-
-#### <a name="28">分析器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-一个 分析器 就是在一个包里面组合了三种函数的一个包装器， 三种函数按照顺序被执行:
-- 字符过滤器： 用来 _整理_ 一个尚未被分词的字符串。例如，如果我们的文本是HTML格式的，它会包含像 `<p>` 或者 `<div>` 这样的HTML标签。
-- 分词器： 一个分析器**必须**有一个**唯一的分词器**。 分词器把字符串分解成单个词条或者词汇单元。
-- 词单元过滤器：经过分词，作为结果的 词单元流 会按照指定的顺序通过指定的词单元过滤器 。词单元过滤器可以修改、添加或者移除词单元。如移除变音符、部分匹配或者自动补全的词单元。
-> ES 还支持自定义分析器
-
-
-#### <a name="29">根对象</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-映射的最高一层被称为 根对象 ，它可能包含下面几项：
-- 一个 `properties` 节点，列出了文档中可能包含的每个字段的映射
-- 各种元数据字段，它们都以一个下划线开头，例如 `_type` 、 `_id` 和 `_source`
-- 设置项，控制如何动态处理新的字段，例如 `analyzer` 、 `dynamic_date_formats` 和 `dynamic_templates`
-- 其他设置，可以同时应用在根对象和其他 `object` 类型的字段上，例如 `enabled` 、 `dynamic` 和 `include_in_all`
-
-
-**元数据:_source字段**
-
-默认地，Elasticsearch 在 `_source` 字段存储代表文档体的JSON字符串。和所有被存储的字段一样， `_source` 字段在被写入磁盘之前先会被压缩。
-- 搜索结果包括了整个可用的文档——不需要额外的从另一个的数据仓库来取文档。
-- 调试查询语句更加简单，因为你可以直接看到每个文档包括什么，而不是从一列id猜测它们的内容。
-
-#### <a name="30">动态映射</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-当 Elasticsearch 遇到文档中以前 未遇到的字段，它用 dynamic mapping 来确定字段的数据类型并自动把新的字段添加到类型映射。
-> 如果Elasticsearch是作为重要的数据存储，可能就会期望遇到新字段就会抛出异常，这样能及时发现问题。 可以用 dynamic 配置来控制这种行为。true：动态添加新的字段—缺省，false：忽略新的字段，strict：如果遇到新字段抛出异常
-
-#### <a name="31">重新索引数据、修改Mapping的方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-尽管可以增加新的类型到索引中，或者增加新的字段到类型中，但是不能添加**新的分析器或者对现有的字段做改动**。
-
-使用`_reindex`的原因： 
-1. 是一个字段的类型进行修改之后，ES会重新建立对这个字段的索引信息，ElasticsSearch的底层是Lucene库，字段类型修改会涉及到分词方式，相关度，TF/IDF等倒排的生成，所以是没办法修改的了。
-2. 当数据量过大，而索引最初创建的分片数量不足，导致数据入库较慢的情况，此时需要扩大分片的数量，此时可以尝试使用Reindex。
-> 可以通过请求`POST _tasks?detailed=true&actions=*reindex` 查看`_reIndex`进度
-- [Index Aliases](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/indices-aliases.html)
-- [Elasticsearch如何修改Mapping结构并实现业务零停机](https://juejin.im/post/5e2d32c95188254d9032a7dd)
-
-
-
-reindex的核心是跨索引、跨集群的数据迁移。 如果出现`reindex`慢的原因及优化思路无非包括：
-1. 批量大小值可能太小。需要结合堆内存、线程池调整大小；默认情况下，_reindex使用1000进行批量操作。
-2. 临时调整副本数为0。一个创建请求，在主分片创建了文档后，会转发请求到副本所在到节点，待副本创建成功后，才返回给客户端。
-3. reindex的底层是scroll实现，借助scroll并行优化方式，提升效率；
-4. 跨索引、跨集群的核心是写入数据，考虑写入优化角度提升效率。
-
-##### <a name="32">索引别名与零停机</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-重建索引的问题是必须更新应用中的索引名称。 索引别名就是用来解决这个问题的。**索引别名**就像一个快捷方式或软连接，可以指向一个或多个索引，也可以给任何一个需要索引名的API来使用。
-
-**步骤1: 建立新索引**
-```
-PUT sw_test.trade_contract_v2
-```
-
-**步骤2: 复制数据**
-```
-POST _reindex
-{
-    "source": {
-        "index": "sw_test.trade_contract_v1"
-    },
-    "dest": {
-        "index": "sw_test.trade_contract_v2"
-    }
-}
-```
-
-**步骤3: 修改别名关联**
-```
-POST /_aliases
-{
-    "actions": [
-        { "remove": { "index": " sw_test.trade_contract_v1", "alias": " sw_test.trade_contract" }},
-        { "add":    { "index": " sw_test.trade_contract_v2", "alias": " sw_test.trade_contract" }}
-    ]
-}
-
-```
-
-**步骤4: 删除旧索引**
-```
-DELETE  sw_test.trade_contract_v1
-```
 
 
 ### <a name="33">排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -714,7 +718,7 @@ GET /_search
 
 
 ### <a name="34">深度分页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-理解为什么深度分页是有问题的？\
+理解为什么深度分页是有问题的？
 > 我们可以假设在一个有 5 个主分片的索引中搜索。 当我们请求结果的第一页（结果从 1 到 10 ），每一个分片产生前 10 的结果，并且返回给 协调节点 ，协调节点对 50 个结果排序得到全部结果的前 10 个。\
 > 现在假设我们请求第 1000 页—结果从 10001 到 10010 。所有都以相同的方式工作除了每个分片不得不产生前10010个结果以外。 然后协调节点对全部 50050 个结果排序最后丢弃掉这些结果中的 50040 个结果。\
 > 可以看到，在分布式系统中，对结果排序的成本随分页的深度成指数上升。这就是 web 搜索引擎对任何查询都不要返回超过 1000 个结果的原因。

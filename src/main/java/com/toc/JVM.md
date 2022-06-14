@@ -163,17 +163,7 @@ java多线程切换时，每个线程独立的程序计数器，各条线程之�
 
 
 > 在 Java 7 之前，JVM 将 Java String Pool 放置在 永久代空间（java7方法区的实现）中，该空间具有固定大小——它不能在运行时扩展并且不符合垃圾收集条件。\
-在永久代（而不是堆）中使用字符串的风险是，如果我们
-
-
-
-
-
-
-
-
-
-建太多字符串，我们可能会从 JVM 中得到 OutOfMemory 错误。\
+在永久代（而不是堆）中使用字符串的风险是，如果我们创建太多字符串，我们可能会从 JVM 中得到 OutOfMemory 错误。\
 从 Java 7 开始，Java String Pool 存储在 **Heap 空间**中，由 JVM 进行垃圾回收。 这种方法的优点是降低了 OutOfMemory 错误的风险，因为未引用的字符串将从池中删除，从而释放内存。
 
 ### <a name="9">HotSpot 的后台线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
