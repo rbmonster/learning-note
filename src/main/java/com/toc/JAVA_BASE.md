@@ -636,7 +636,7 @@ public @interface FruitName {
 
 ### <a name="34">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadState.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadState.jpg)
 1. 新建（NEW）：创建后尚未启动。
 2. 可运行（RUNABLE）：正在 Java
    虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。

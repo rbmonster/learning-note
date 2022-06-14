@@ -24,7 +24,7 @@
 &emsp;&emsp;<a href="#21">11.1. 性能对比</a>  
 # <a name="0">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadState.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadState.jpg)
 
 - 新建（NEW）：创建后尚未启动。
 - 可运行（RUNABLE）：正在 Java 虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度（例如处理器资源），资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。
@@ -67,11 +67,11 @@
 > java -XX:+UnlockDiagnosticVMOptions -XX:NativeMemoryTracking=summary -XX:+PrintNMTStatistics -version
 - 用 Java8 的测试结果，19个线程，预留和提交的大概都是19000+KB，平均每个线程大概需要 1M 左右的大小
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadState2.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadState2.jpg)
 ## <a name="3">线程池</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="4">线程池状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 线程池的5种状态：Running、ShutDown、Stop、Tidying、Terminated。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadPool.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadPool.jpg)
 
 - RUNNING
   1. 状态说明：线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
@@ -123,7 +123,7 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
   - ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
   - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadPoolProcess.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadPoolProcess.jpg)
 
 
 ### <a name="6">阿里开发规范</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -175,7 +175,7 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 
 > 增加服务器核心数，与线程间的关系
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/concurrent/threadPoolProcess.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadPoolProcess.jpg)
 
 > 假设： 1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。
 

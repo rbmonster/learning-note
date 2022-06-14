@@ -61,7 +61,7 @@ ZooKeeper 是 Hadoop 生态系统的一员；
 - ZooKeeper 数据模型采用层次化的多叉树形结构，每个节点上都可以存储数据（数字、字符串或者是二级制序列）。每个节点还可以拥有 N 个子节点，最上层是根节点以“/”来代表。每个数据节点在 ZooKeeper 中被称为 znode，它是 ZooKeeper 中数据的最小单元。并且，每个 znode 都一个唯一的路径标识。
 - **ZooKeeper 主要是用来协调服务的，而不是用来存储业务数据的，所以不要放比较大的数据在 znode 上，ZooKeeper 给出的上限是每个结点的数据大小最大是 1M。**
 - zookeeper 节点表示：
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/znode.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/znode.png)
 
 ### <a name="7">znode（数据节点）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 每个数据节点在 ZooKeeper 中被称为 znode，它是 ZooKeeper 中数据的最小单元。
@@ -116,7 +116,7 @@ ZooKeeper 采用 ACL（AccessControlLists）策略来进行权限控制，类似
 ### <a name="10">Watcher（事件监听器）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ZooKeeper 允许用户在指定节点上注册一些 Watcher，并且在一些特定事件触发的时候，ZooKeeper 服务端会将事件通知到感兴趣的客户端上去，该机制是 **ZooKeeper 实现分布式协调服务的重要特性**。
 > 特定事件如：监听Znode节点的数据变化、监听子节点的增减变化
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/zookeeperWatcher.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/zookeeperWatcher.png)
 
 ### <a name="11">会话</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Session 可以看作是 ZooKeeper 服务器与客户端的之间的一个 TCP 长连接。通过session
@@ -131,7 +131,7 @@ Session 可以看作是 ZooKeeper 服务器与客户端的之间的一个 TCP �
 ## <a name="12">ZooKeeper集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 为了保证高可用，最好是以集群形态来部署 ZooKeeper，这样只要集群中大部分机器是可用的（能够容忍一定的机器故障）。通常 3 台服务器就可以构成一个 ZooKeeper 集群了
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/zookeeperCluster.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/zookeeperCluster.jpg)
 
 Server为ZooKeeper服务器，集群间通过 ZAB 协议（ZooKeeper Atomic Broadcast）来保持数据的一致性。
 - 最典型集群模式： Master/Slave 模式（主备模式）。在这种模式中，通常 Master 服务器作为主服务器提供写服务，其他的 Slave 服务器从服务器通过异步复制的方式获取 Master 服务器最新的数据提供读服务。
@@ -163,7 +163,7 @@ ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服�
 - 崩溃恢复 ：当整个服务框架在运行过程中，当 Leader 服务器出现异常情况时，ZAB 协议就会进入恢复模式并选举产生新的Leader服务器。新Leader产生，集群其他机器就要与该服务器进行状态同步，保持数据一致。当过半服务器完成状态同步就退出恢复模式。
 
 #### <a name="17">消息广播</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/zabSend.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/zabSend.jpg)
 - 使用节点队列，保证follower和observer的顺序性。同时针对每个节点server也建立来了一个消息队列，使用TCP传输，保证消息的顺序性，避免消息因网络原因而导致处理顺序不一致，进而避免数据不一致问题。
 - 在 ZAB 中还定义了一个 全局单调递增的事务ID ZXID，同样也是为了保证顺序性。每个消息在leader中通过其 ZXID 来进行排序 ，才能得到处理。
 
@@ -208,7 +208,7 @@ zookeeper 是通过 树形结构 来存储数据节点的，那也就是说，�
 4. 当服务提供者的某台服务器宕机或下线时，相应的地址会从服务提供者地址列表中移除。同时，注册中心会将新的服务地址列表发送给服务消费者的机器并缓存在消费者本机。
   - Eureka 注册中心会先试错，然后再更新
   
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/middleware/ZooKeeperConfiguration.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/ZooKeeperConfiguration.png)
 
 
 ### <a name="25">配置中心</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

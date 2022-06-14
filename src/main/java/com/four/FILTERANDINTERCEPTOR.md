@@ -1,6 +1,6 @@
 # MVC 拦截器与过滤器
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/filter2intercept.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//four/filter2intercept.jpg)
 ## 过滤器 servlet
 filter（过滤器）作用于在interceptor(拦截器)之前，不像interceptor一样依赖于springmvc框架，只需要依赖于serverlet。
 - 比较原始的一种方法是定义一个类实现javax.servlet.Filter接口

@@ -1,9 +1,9 @@
 # Spring boot 
 
 ## Spring boot start
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/springBootLoadother.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//four/springBootLoadother.png)
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/spingLoad.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//four/spingLoad.jpg)
 
 ## spring 构造方法
 ```
@@ -219,7 +219,7 @@ public void refresh() throws BeansException, IllegalStateException {
 ---
 
 ## spring boot相关知识
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/four/BootStrapLoad.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//four/BootStrapLoad.png)
 Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application,
 - application 配置文件这个容易理解，主要用于 Spring Boot 项目的自动化配置。
 - bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。

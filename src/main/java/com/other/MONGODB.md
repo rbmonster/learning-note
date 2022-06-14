@@ -59,7 +59,7 @@ TODO
 
 ## 索引介绍
 插入10000条测试数据
-```
+```text
 for(i=0;i<10000;i++) {
     db.helloworld.insert(
         {
@@ -85,7 +85,7 @@ for(i=0;i<10000;i++) {
 隐式索引：针对复合索引，索引具有最左前缀的特，同mysql
 
 索引失效：$nin、$ne 等取反的查询，会影响使用索引 与 mysql类似
-```
+```text
 db.learning.find({
 	"username" : { "$nin" : ["username110"]}
 })
@@ -96,7 +96,7 @@ db.learning.find({
 ```
 
 唯一索引： null也是一个唯一索引的值，不可重复
-```
+```text
 db.helloworld.ensureIndex({
     "username": 
     1
@@ -107,7 +107,7 @@ db.helloworld.ensureIndex({
 ```
 
 稀疏索引： 与唯一索引一起使用可以解决null值可为重复的，但是如果字段有值则必须为唯一。
-```
+```text
 db.helloworld.ensureIndex({
     "username": 
     1
@@ -117,7 +117,7 @@ db.helloworld.ensureIndex({
 });
 ```
 
-```
+```text
 db.helloworld.dropIndex("username_1")
 ```
 
@@ -130,7 +130,7 @@ db.helloworld.dropIndex("username_1")
   > 缺点：数据更新需要遍历所有文档进行更新，更新过程存在部分数据为旧值的情况
 - 问题：数据是否频繁更新？
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mongodb/mongodbCompare.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/mongodb/mongodbCompare.png)
 
 
 ### MySQL VS MongoDB
@@ -138,15 +138,15 @@ db.helloworld.dropIndex("username_1")
 2. MongoDB文档自然地映射我们的Model，而Mysql通常需要多表关联进行数据映射。
 3. 横向拓展能力MongoDB可以通过原生分片完善支持，而Mysql只能通过数据分区或者应用侵入式的访问实现分区
 4. Mongodb的文档字段可以是动态的，而Mysql新增字段则需要写sql进行添加
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mongodb/mongodbvs.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/mongodb/mongodbvs.png)
 
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mongodb/mongodbSummary.png)
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mongodb/mongodbFunction.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/mongodb/mongodbSummary.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/mongodb/mongodbFunction.png)
 
 
 ### 应用场景
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mongodb/mongodbApplication.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/mongodb/mongodbApplication.png)
 除了上述场景，还有:
 1. 元数据（配置）管理：比如常见的Java Spring中经常需要配置数据，而随着相同类型的数据越来越多，就适合转移到MongoDB中。该类型数据变化快，且经常以点查为主。
 2. 内容管理：对于营销的邮件短信，通常为存在占位符的大文本。该类型的数据也适合存储在MongoDB中。
@@ -154,11 +154,11 @@ db.helloworld.dropIndex("username_1")
 
 
 ### 压测结果
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mongodb/mongodbPresure.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/mongodb/mongodbPresure.png)
 
 
 ### 常见架构
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/mongodb/mongodbdesign.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/mongodb/mongodbdesign.png)
 
 
 ## 其他

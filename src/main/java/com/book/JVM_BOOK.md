@@ -1,6 +1,6 @@
 # Java虚拟机
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/heap-detail.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/heap-detail.jpg)
 
 ## 一、虚拟机数据区说明
 1、程序计数器
@@ -21,7 +21,7 @@
  - 定义:是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。
  - 参数-Xmx和-Xms 最大堆内存和最小堆内存
  
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/hotstop-heap.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/hotstop-heap.jpg)
 
 5、方法区
  - 定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。
@@ -111,7 +111,7 @@
 
 5. 经典的垃圾收集器
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/garbage-collector.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/garbage-collector.jpg)
 
 5.1 Serial收集器
 - 定义:一个单线程的垃圾收集器，在垃圾收集时必须暂停其他所有工作线程，直到收集结束。
@@ -125,7 +125,7 @@
 - 定义：使用标记-整理算法。
 - 用途：可以Parallel Scavenge收集器搭配使用，另一种是作为CMS收集器发生失败的后背方案。
   
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/serial-1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/serial-1.jpg)
 
 5.4 ParNew收集器
 - 定义：Serial收集器的多线程并行版本。
@@ -134,7 +134,7 @@
 - 新生代：标记复制。老年代：标记-整理
 - 常使用参数：-XX:SurvivorRatio、-XX:PretenureSizeThreshold、-XX:HandlePromotionFailure
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/parNew-1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/parNew-1.jpg)
 
 5.5 Parallel Scavenge 收集器
 - 定义：新生代收集器，同样基于标记-复制算法，能够并行收集的多线程收集器。特点是达到一个可控制的吞吐量。
@@ -151,7 +151,7 @@
 - 定义：Parallel Scavenge收集器的老年版本，支持多线程并发收集，基于标记-整理算法。
 - 与Parallel Scavenge搭配作为“吞吐量优先”的收集器搭配组合
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/parallel.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/parallel.jpg)
 
 5.7 CMS(Concurrent Mark Sweep)收集器
 - 定义：一种以获取最短回收停顿时间为目标的收集器，工作于老年代。
@@ -167,7 +167,7 @@
     - -XX:CMSInitiatingOccupancyFraction 可以设置触发CMS收集的百分比。
   - 参数-XX:CMSFullGCsBeforeCompaction：作用是要求CMS收集器在执行过若干次不整理的Full GC之后，下一次先进行碎片整理(默认值为0，表示每次FullGC都进行碎片整理) 
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/cms-1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/cms-1.jpg)
 
 5.8 Garbage First 收集器
 - 定义：面向服务端应用的垃圾收集器，基于Region的堆内存布局进行垃圾收集，每一个Region都可以根据需要扮演新生代的Eden空间、Survivor空间和老年代空间。Region中海油一类特殊的Humongous区域，专门用来存储大对象，G1认为只要超过了一个Region一半的对象即可认为是大对象。对于Humongous区域，正常当做老年代一部分。
@@ -187,8 +187,8 @@
   5. 可靠停顿预测模型的建立：根据每个Region的回收成本，分析出收集的平均值、标准偏差、置信度等统计信息。
 - 缺点：内存占用过高，在小内存应用上CMS的表现大于G1。
   
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1.jpg)
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-memory.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1-memory.jpg)
 
 5.9 其他的垃圾收集器
 - Shenandoah 收集器：仅存在OpenJdk，区别G1的特点为支持并发整理，使用转发指针和读屏障实现。
@@ -327,7 +327,7 @@
   - 工作内存 -> 虚拟机栈
   - 从更基础层次上，主内存直接对应物理硬件的内存。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/java-memory.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/java-memory.jpg)
 
 #### 12.3. 内存交互的操作
 - 相关动作
@@ -393,7 +393,7 @@ public class Singleton{
 - 用户线程：完全建立在用户控件的线程库，优势不需要内核支持，劣势没有内核支援，需要自己定义线程操作。
 - 混合实现：轻量级进程上支持多个用户线程。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/lwp.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/lwp.jpg)
 
 java线程调度
 - 抢占式调度。
@@ -431,7 +431,7 @@ java线程调度
 - 轻量级锁：
   - 定义：jdk6引入的新型锁机制，减少传统重量级锁使用操作系统互斥量产生的性能消耗。
   - Hotspot的对象头存储对象自身的运行时数据，如HashCode、GC分带年龄等。官方成为Mark Word
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/object-head.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/object-head.jpg)
   - 步骤：
     1. 判断对象没有被锁定，锁标志位为01
     2. 在当前线程的栈帧创建一个锁记录(Lock Record)的空间，用于存储所对象目前的Mark Word的拷贝。
@@ -456,5 +456,5 @@ java线程调度
       - 如果不再需要这个锁对象，那么将锁对象设置为无锁状态，重新进行偏向锁竞争。
    - 例外：当对象被调用Object.hash()方法后，自动升级为轻量级锁。
 - 锁膨胀： synchronize 偏向锁->轻量级锁-> 重量级锁  膨胀方向不可逆。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/lock-transfer.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/lock-transfer.jpg)
           

@@ -122,7 +122,7 @@
 - 介绍一下 CMS,G1 收集器。
 - Minor Gc 和 Full GC 有什么不同呢？
   
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/heap-detail.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/heap-detail.jpg)
 
 ## <a name="2">虚拟机内存区域</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -146,7 +146,7 @@ java多线程切换时，每个线程独立的程序计数器，各条线程之�
 ### <a name="6">Java堆</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义:是虚拟机所管理的内存中最大的一块。Java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。
 - 参数-Xmx和-Xms 最大堆内存和最小堆内存
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/hotstop-heap.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/hotstop-heap.jpg)
 
 ### <a name="7">方法区</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：是被各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息(类名、方法描述、字段描述)、常量、静态变量、即时编译器编译后的代码缓存等数据。
@@ -167,7 +167,7 @@ java多线程切换时，每个线程独立的程序计数器，各条线程之�
 从 Java 7 开始，Java String Pool 存储在 **Heap 空间**中，由 JVM 进行垃圾回收。 这种方法的优点是降低了 OutOfMemory 错误的风险，因为未引用的字符串将从池中删除，从而释放内存。
 
 ### <a name="9">HotSpot 的后台线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/hotspotThread.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/hotspotThread.jpg)
 
 
 ### <a name="10">内存区域溢出分析</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -428,7 +428,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 灰色：本对象已经被访问过（被GCRoot扫描过），且本对象中的属性没有被GCRoot扫描，该对象就是为灰色对象；如果该对象的属性被扫描的情况下，从灰色变为黑色。\
 黑色：本对象已经被访问过（被GCRoot扫描过），且本对象中的属性已经被GCRoot扫描过，该对象就是为黑色对象。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/color-mark.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/color-mark.png)
 
 >三色标记算法缺陷：在并发标记阶段的时候，因为用户线程与GC线程同时运行，有可能会产生多标或者漏标；\
 多标--多标记（浮动垃圾）\
@@ -440,7 +440,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 
 **漏标问题**
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/mark-problem.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/mark-problem.png)
 1. 用户线程先执行C的E属性=null；GC线程的GcRoot就扫描不到E。GC就认为E对象就是为垃圾对象，不可达对象。
 2. 用户线程执行B.E属性=E；E对象就是应该是为可达对象。
 因为GCRoot是从C开始，不会从黑色的B开始，就会导致漏标的情况发生。
@@ -479,7 +479,7 @@ G1收集器解决漏标问题：原始快照方式。
 > 然后，清空 Eden 和 survivor From 中的对象；
 3. survivor To 和 survivor From 互换
 > 最后， survivor To 和 survivor From 互换，原 survivor To 成为下一次 GC 时的 survivor From区。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/edenGc.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/edenGc.jpg)
 
 
 **相关问题**
@@ -497,7 +497,7 @@ G1收集器解决漏标问题：原始快照方式。
 
 ### <a name="25">经典的垃圾收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/garbage-collector.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/garbage-collector.jpg)
 
 #### <a name="26">Serial收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 定义:一个单线程的垃圾收集器，在垃圾收集时必须暂停其他所有工作线程，直到收集结束。
@@ -511,7 +511,7 @@ G1收集器解决漏标问题：原始快照方式。
 - 定义：使用标记-整理算法。
 - 用途：可以Parallel Scavenge收集器搭配使用，另一种是作为CMS收集器发生失败的后背方案。
   
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/serial-1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/serial-1.jpg)
 
 #### <a name="28">ParNew收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 定义：Serial收集器的多线程并行版本。
@@ -520,7 +520,7 @@ G1收集器解决漏标问题：原始快照方式。
 - 新生代：标记复制。老年代：标记-整理
 - 常使用参数：-XX:SurvivorRatio、-XX:PretenureSizeThreshold、-XX:HandlePromotionFailure
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/parNew-1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/parNew-1.jpg)
 
 #### <a name="29">Parallel Scavenge 收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：新生代收集器，同样基于标记-复制算法，能够并行收集的多线程收集器。特点是达到一个可控制的吞吐量。
@@ -538,7 +538,7 @@ G1收集器解决漏标问题：原始快照方式。
 定义：Parallel Scavenge收集器的老年版本，支持多线程并发收集，基于标记-整理算法。
 > 与Parallel Scavenge搭配作为“吞吐量优先”的收集器搭配组合
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/parallel.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/parallel.jpg)
 
 #### <a name="31">CMS(Concurrent Mark Sweep)收集器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：一种以获取最短回收停顿时间为目标的收集器，工作于老年代。
@@ -552,7 +552,7 @@ G1收集器解决漏标问题：原始快照方式。
 3. 重新标记：因用户程序继续运行而导致标记产生变动的那部分对象的标记记录，通常比初始标记长远比并发标记段。
 4. 并发清除：清理删除掉标记阶段判断的已经死亡的对象，由于不需要移动对象，因此可以与用户线程共同执行。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/cms-1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/cms-1.jpg)
 
 ---
 **实战Java虚拟机中流程说明：**
@@ -568,7 +568,7 @@ G1收集器解决漏标问题：原始快照方式。
 预清理：预清理是并发的，除了为正式清理做准备和检查以外，与清理还会尝试控制一次停顿时间。由于重新标记是独占CPU的，**如果新声代GC后，立即触发一次重新标记，那么一次停顿时间可能很长**。为了避免这种情况，预清理时，会可以等待一次新声代GC的发生，然后根据历史性能数据预测下一次新生代GC可能发生的时间，在当前时间和预测时间的中间时刻进行重新标记。最大程度上避免新生代GC和重新标记重合，尽可能减少一次停顿时间。
 > 开关`-XX:-CMSPrecleaningEnabled` 用来开关预清理
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/cms-process.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/cms-process.png)
 
 
 --- 
@@ -610,8 +610,8 @@ G1是一种兼顾吞吐量和停顿时间的GC实现。\
 
 G1整体是基于标记-整理算法实现的收集器，但从局部优势基于标记-复制算法实现。在执行标记整理的时候，还进行了压缩的工作，这是之前的垃圾收集器都没有的。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1.jpg)
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-memory.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1-memory.jpg)
 
 ---
 **实战Java虚拟机中流程说明：**
@@ -633,21 +633,21 @@ G1整体是基于标记-整理算法实现的收集器，但从局部优势基�
 5. 独占清理: 这个阶段是会引起停顿的，它将计算各个区域的存活对象和GC回收比例并进行排序，识别可供混合回收的区域 在这个阶段，还会更新记忆集(Remembered Set), 该阶段给出了需要被混合回收的区域并进行了标记，在混合回收阶段，需要这些信息。
 6. 井发清理阶段: 这里会识别并清理完全空闲的区域 它是井发的清理，不会引起停顿。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-concurrent-process.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1-concurrent-process.png)
 
 由于并发标记周期包含一次新生代GC，故新生代会被整理。但由于并发标记周期执行时，应用程序依然在运行。因此，并发标记周期结束后，又会有新的Eden空间被使用。并发标记周期执行前后最大的不同是在该阶段后，系统增加了一些标记为G的区域。这些区域被标记，是因为它们内部的垃圾比例较高，因此希望在后续的混合GC中进行收集（注意在并发标记周期中并未正式收集这些区域〉。
 
 **并发回收阶段前后的可能情况**
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-concurrent-alloc.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1-concurrent-alloc.png)
 
 **混合回收**
 
 定义：在并发标记周期中，虽然有部分对象被回收，但是总体上说，回收的比例是相当低的。但是在并发标记周期后，己经明确知道哪些区域含有比较多的垃圾对象，在混合回收阶段，就可以专门针对这些区域进行回收。当然G1会优先回收垃圾比例较高的区域，因为回收这些区域的性价比也比较高。这个阶段叫作混合回收。
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-alloc.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1-alloc.png)
 
 混合GC会执行多次，直到回收了足够多的内存空间，然后，它会触发一次新生代GC。新生代GC后，又可能会发生一次并发标记周期的处理。最后，又会起混合GC的执行。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/g1-MixedGC.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/g1-MixedGC.png)
 
 **必要时的Full GC**
 
@@ -855,10 +855,10 @@ JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看
 
 ### <a name="44">类文件结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/synchronizeMethod.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/synchronizeMethod.jpg)
 
 方法体对应的访问范围
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/classArea.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/classArea.jpg)
 
 ### <a name="45">双亲委派模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 站在虚拟机角度，只存在两种不同的类加载器：
@@ -1074,7 +1074,7 @@ public static final int v = 8080;
 
 ## <a name="58">对象创建及使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/objcreate.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/objcreate.jpg)
 
 对象的创建
 1. 类加载检查：虚拟机遇到new命令，先检查是否能在常量池定位到一个类的引用，检查这个符号代表的类是否已被加载、解析和初始化过。
@@ -1094,7 +1094,7 @@ public static final int v = 8080;
 
 
 ### <a name="60">对象内存分布</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/object-head.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/object-head.jpg)
 对象在堆内存中的存储布局可以分为三部分：对象头、实例数据（对象有效信息）和对齐填充（仅起占位符作用）\
 
 Hotspot的对象头包括两部分信息：
@@ -1271,7 +1271,7 @@ java对象分配流程
 5. 将对象存储在新声代`Eden`中，`EDEN_TOP`指针移位。若新声代无法存储对象，执行`Young GC`，并尝试重新分配对象。
 6. `Young GC` 后重新分配对象，若仍然无法分配。对象直接进入老年代。
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/jvm/object-alloc.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/jvm/object-alloc.png)
 
 
 - [JVM About Object Distribution In Pile, Stack, TLAB](https://programmerall.com/article/46551700936/)
@@ -1346,7 +1346,7 @@ java -Xmx3550m -Xms3550m -Xmn2g -Xss128k -XX:ParallelGCThreads=20 -XX:+UseConcMa
 
 ### <a name="73">young区域(年轻代)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 对象首先分配到Eden，分配满了触发Young Gc(Minor Gc)，基于复制交换算法，晋升对象年龄+1。
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/edenGc.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/edenGc.jpg)
 2. 年龄到达老年代门槛的晋升老年代。
     - 动态对象年龄判断：如果在 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到 -XX:MaxTenuringThreshold 中要求的年龄。
     - 晋升失败触发FULL GC的两种场景：
@@ -1395,8 +1395,8 @@ CMS 在Background回收的过程中，STW 的阶段主要是 Init Mark 和 Final
 
 ## <a name="79">Java虚拟机内存调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 jdk1.8前的参数设置
- ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/jvmParameter.jpg)
- ![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/jvmGCType.jpg)
+ ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/jvmParameter.jpg)
+ ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/jvmGCType.jpg)
 
 
 ### <a name="80">基本概念重述</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -1468,9 +1468,9 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 ### <a name="88">案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 #### <a name="89">美团技术案例（基于CMS JDK1.8）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/gcProcess.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/gcProcess.jpg)
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/localIssue.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/localIssue.png)
 
 
 ##### <a name="90">场景一：动态扩容引起的空间震荡</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

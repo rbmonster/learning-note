@@ -3,13 +3,13 @@
 数据库的读写分离，首先要把spring 中的自动加载的类排除掉，因为我们配置文件配置了多数据源，并且希望自己主导sql语句执行的数据库。
 
 ## 启动类排除自动配置
-```
+```text
 @SpringBootApplication(
         exclude = {DataSourceAutoConfiguration.class})
 ```
 
 ## 循环引用问题
-```
+```text
 ┌─────┐
 |  dataSource defined in class path resource [com/design/readwritedb/config/DataSourceConfig.class]
 ↑     ↓
@@ -37,7 +37,7 @@ spring的循环引用的解决使用三级缓存，但是针对于循环引用�
 - @EnableConfigurationProperties 注解用于加载配置文件中`spring.datasource`相关配置，会验证关键配置
 - @Import方法借助两个Configuration生成数据库对象
 `DataSourcePoolMetadataProvidersConfiguration.class, DataSourceInitializationConfiguration.class`
-```
+```text
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @EnableConfigurationProperties(DataSourceProperties.class)
@@ -52,7 +52,7 @@ DataSourcePoolMetadataProvidersConfiguration 注册 DataSourcePoolMetadataProvid
 
 #### DataSourceInitializationConfiguration 
 DataSourceInitializationConfiguration 用于初始化数据源主要通过@Import调用自动配置加载DataSource
-```
+```text
 @Configuration(proxyBeanMethods = false)
 @Import({ DataSourceInitializerInvoker.class, DataSourceInitializationConfiguration.Registrar.class })
 class DataSourceInitializationConfiguration {
@@ -67,7 +67,7 @@ DataSourceInitializerInvoker 是spring 上下文的事件驱动模型的监听�
 - 监听DataSourceSchemaCreatedEvent事件
 - 继承InitializingBean接口，执行数据库初始化的操作  （ 目前主要通过这个触发）
 
-```
+```text
 @Override
 public void afterPropertiesSet() {
     DataSourceInitializer initializer = getDataSourceInitializer();
@@ -89,7 +89,7 @@ private DataSourceInitializer getDataSourceInitializer() {
 
 ### DruidDataSourceAutoConfigure 阿里数据库
 可以看出DruidDataSource的自动配置很简单，通过@AutoConfigureBefore在DataSource自动配置加载数据库前加载好数据库
-```
+```text
 @Configuration
 @ConditionalOnClass({DruidDataSource.class})
 @AutoConfigureBefore({DataSourceAutoConfiguration.class})
@@ -109,7 +109,7 @@ public class DruidDataSourceAutoConfigure {
 AbstractRoutingDataSource 为DataSource接口的一个子类，提供了路由数据库的相关抽象功能，也是数据库读写分离的主要实现。
 
 提供如下抽象方法，让继承子类返回需要执行的datasource Key
-```
+```text
 @Nullable
 protected abstract Object determineCurrentLookupKey();
 ```
@@ -123,7 +123,7 @@ protected abstract Object determineCurrentLookupKey();
 因为自己配置数据源，所以需要在@Configuration中初始化对应的bean对象。
 
 - 这里使用阿里的Druid数据源，可以结合@ConfigurationProperties与DuridBuilder生成数据源配置
-```
+```text
 @Bean(name = "dbMaster")
 @ConfigurationProperties(prefix = "spring.datasource.druid.master")
 public DataSource dbMaster() {
@@ -141,7 +141,7 @@ public DataSource dbSlave() {
 
 
 配置文件配置
-```
+```yml
 spring:
   application:
     name: test
@@ -193,7 +193,7 @@ spring:
 > 需要DataSource对象的类，如常见的JdbcTemplate以及数据库事务PlatformTransactionManager。对应的数据库配置类DataSourceTransactionManagerAutoConfiguration、JdbcTemplateConfiguration
 
 自定义实现类：
-```
+```java
 public class DynamicDataSourceRouter extends AbstractRoutingDataSource {
 
     @Override
@@ -207,7 +207,7 @@ public class DynamicDataSourceRouter extends AbstractRoutingDataSource {
 ```
 
 初始化dynamicDataSourceRouter数据源：
-```
+```text
 @Primary
 @Bean(name = "dataSource") // 对应Bean: DataSource
 public DataSource dynamicDataSource(@Qualifier("dbMaster") DataSource master, @Qualifier("dbSlave") DataSource slave) {
@@ -232,8 +232,10 @@ public DataSource dynamicDataSource(@Qualifier("dbMaster") DataSource master, @Q
 本文主要使用aop结合注解的方式实现。
 
 #### Aop 实现
-- 声明切面，获取注解上的数据库key
-```
+
+声明切面，获取注解上的数据库key
+
+```text
 @Pointcut("@annotation(DS)")
 public void dbAspect(){
     log.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~this is logProcess!");
@@ -251,7 +253,7 @@ public void changeDB(JoinPoint joinPoint){
 ```
 
 #### 方法
-```
+```text
 @DS(name = DataSourceEnum.SLAVE)
 @GetMapping("/readwriteByAnnotation")
 public Map<String, Object> getFromDb1(){
@@ -262,5 +264,5 @@ public Map<String, Object> getFromDb1(){
 ```
 
 ## 相关资料
-mybatis相关插件：https://mybatis.plus/guide/dynamic-datasource.html
+[mybatis相关插件](https://mybatis.plus/guide/dynamic-datasource.html)
 

@@ -53,7 +53,7 @@ BFF 解决了什么问题？\
 前端页面时常存在，某个页面需要向 backend A、backend B 以及 backend C...... 发送请求，不同服务的返回值用于渲染页面中不同的 component，即一个页面存在很多请求的场景。
 有了 BFF 这一层时，我们就不需要考虑系统后端的迁移。后端发生的变化都可以在 BFF 层做一些响应的修改。
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/design/systemdesign/bff.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/systemdesign/bff.png)
 
 - 多端应用: 为不同的设备提供不同的 API，虽然它们可能是实现相同的功能，但因为不同设备的特殊性，它们对服务端的 API 访问也各有其特点，需要区别处理。
 - 服务聚合：BFF 的出现为前端应用提供了一个对业务服务调用的聚合点，它屏蔽了复杂的服务调用链，让前端可以聚焦在所需要的数据上，而不用关注底层提供这些数据的服务。

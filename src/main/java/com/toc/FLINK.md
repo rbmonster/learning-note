@@ -15,7 +15,7 @@
 &emsp;<a href="#12">2. 参考资料</a>  
 # <a name="0">Apache Flink</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/flink/architecture.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/flink/architecture.png)
 
 ## <a name="1">概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Apache Flink 是一个框架和分布式处理引擎，用于在**无边界和有边界数据流**上进行**有状态**的计算。Flink 能在所有常见集群环境中运行，并能以内存速度和任意规模进行计算。
@@ -39,7 +39,7 @@ Apache Flink 是一个框架和分布式处理引擎，用于在**无边界和�
 2. 计数窗口(CountWindows)：按照指定的条数来进行聚合，比如每来了10条数据处理一次。
 
 ### <a name="3">有状态与无状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/flink/func-state.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/flink/func-state.png)
 
 状态：只有在每一个单独的事件上进行转换操作的应用才不需要状态，换言之，每一个具有一定复杂度的流处理应用都是有状态的。任何运行基本业务逻辑的流处理应用都需要在**一定时间内存储所接收的事件或中间结果**，以供后续的某个时间点（例如收到下一个事件或者经过一段特定时间）进行访问并进行后续处理。
 > 无状态：每次的执行都**不依赖**上一次或上N次的执行结果，每次的执行都是**独立**的。
@@ -99,7 +99,7 @@ Flink的水位线`waterMarks`：存在网络延迟等情况导致数据接收不
 1. 事件驱动型应用无须查询远程数据库，本地数据访问使得它具有更高的吞吐和更低的延迟。
 2. 传统分层架构下，通常多个应用会共享同一个数据库，因而任何对数据库自身的更改都需要谨慎协调。反观事件驱动型应用，由于只需考虑自身数据，因此在更改数据表示或服务扩容时所需的协调工作将大大减少。
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/flink/usecases-eventdrivenapps.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/flink/usecases-eventdrivenapps.png)
 
 #### <a name="10">数据分析应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 数据分析任务需要从原始数据中提取有价值的信息和指标。
@@ -110,14 +110,14 @@ Flink的水位线`waterMarks`：存在网络延迟等情况导致数据接收不
 优点：
 1. 流式分析省掉了周期性的数据导入和查询过程，因此从事件中获取指标的延迟更低
 2. 导入数据的处理。批量查询必须处理那些由定期导入和输入有界性导致的人工数据边界，而流式查询则无须考虑该问题。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/flink/usecases-analytics.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/flink/usecases-analytics.png)
 
 #### <a name="11">数据管道应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 提取-转换-加载（ETL）是一种在存储系统之间进行数据转换和迁移的常用方法。ETL 作业通常会周期性地触发，将数据从事务型数据库拷贝到分析型数据库或数据仓库。
 数据管道和 ETL 作业的用途相似，都可以转换、丰富数据，并将其从某个存储系统移动到另一个。但数据管道是以持续流模式运行，而非周期性触发。因此它支持从一个**不断生成数据的源头**读取记录，并将它们以低延迟移动到终点。
 
 优点：和周期性 ETL 作业相比，持续数据管道可以明显降低将数据移动到目的端的延迟。此外，由于它能够持续消费和发送数据，因此用途更广，支持用例更多。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/flink/usecases-datapipelines.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/flink/usecases-datapipelines.png)
 
 相关组件：Flink-CDC
 ## <a name="12">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

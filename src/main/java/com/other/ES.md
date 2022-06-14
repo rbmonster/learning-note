@@ -308,13 +308,13 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 #### 主分片与副本分片交互
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-1.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/cluster-1.png)
 >  假设有一个集群由三个节点组成。 它包含一个叫 blogs 的索引，有两个主分片，每个主分片有两个副本分片。相同分片的副本不会放在同一节点
 
 **协调节点**(coordinating node)：可以发送请求到集群中的任一节点。 每个节点都有能力处理任意请求。每个节点都知道集群中任一文档位置，所以可以直接将请求转发到需要的节点上。假如将所有的请求发送到 Node 1 ，我们将其称为**协调节点**。
 
 ##### 新建，索引和删除文档
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-2.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/cluster-2.png)
 
 以下是在主副分片和任何副本分片上面 成功新建，索引和删除文档所需要的步骤顺序：
 1. 客户端向 `Node 1` 发送新建、索引或者删除请求。
@@ -338,7 +338,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 基于ID的查询：
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/cluster-3.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/cluster-3.png)
 
 以下是从主分片或者副本分片检索文档的步骤顺序：
 1. 客户端向 `Node 1` 发送获取请求。
@@ -351,7 +351,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 ##### 局部更新文档
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/update-1.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/update-1.png)
 
 部分更新一个文档的步骤：
 1. 客户端向 `Node 1` 发送更新请求。
@@ -364,7 +364,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 #### 分页查询工作流程
 
 ##### 查询阶段
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/search-1.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/search-1.png)
 > 优先队列: 一个 优先队列 仅仅是一个存有 top-n 匹配文档的有序列表。优先队列的大小取决于分页参数 from 和 size 。例如，如下搜索请求将需要足够大的优先队列来放入100条文档。
 >
 > ```
@@ -384,7 +384,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 
 ##### 取回阶段
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/search-2.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/search-2.png)
 
 分布式阶段由以下步骤构成：
 1. 协调节点辨别出哪些文档需要被取回并向相关的分片提交多个 GET 请求。
@@ -438,7 +438,7 @@ the   |   X   |       |  X    | ...
 
 doc写入过程：
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/es-working.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/es-working.png)
 
 1. 新文档先写入**内存索引缓存**
 2. 当间隔一定时间（默认每秒自动刷新），将缓存的数据进行提交，这个过程会创建一个Commit Point，Commit Point包含index segment的信息。
@@ -463,14 +463,14 @@ doc删除和更新
 在Elasticsearch和磁盘之间是文件系统缓存。在内存索引缓冲区中的文档会被写入到一个新的段中。Lucene 允许新段被**写入和打开—使其包含的文档在未进行一次完整提交时便对搜索可见**。 这种方式比进行一次提交代价要小得多，并且在不影响性能的前提下可以被频繁地执行。
 
 ##### 持久化与段合并
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/es-rep-1.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/es-rep-1.png)
 Elasticsearch 增加了一个 translog ，或者叫事务日志，在每一次对 Elasticsearch 进行操作时均进行了日志记录。通过 translog ，整个流程看起来是下面这样：
 1. 一个文档被索引之后，就会被添加到内存缓冲区，并且追加到了`translog`。
 2. 刷新（refresh）使分片处于的`In-memory buffer`被清空但是事务日志不会情况的状态，分片每秒被刷新（`refresh`）一次。
 3. 这个进程继续工作，更多的文档被添加到内存缓冲区和追加到事务日志.
 4. 每隔一段时间，例如`translog` 变得越来越大、索引被刷新（flush）；一个新的 `translog` 被创建，并且一个全量提交被执行
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/es-rep-2.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/es-rep-2.png)
 执行一个提交并且截断 `translog` 的行为在 Elasticsearch 被称作一次 `flush` 。 分片每30分钟被自动刷新（`flush`），或者在 `translog` 太大的时候也会刷新。具体流程：
 1. 所有在内存缓冲区的文档都被写入一个新的段
 2. 缓冲区被清空
@@ -505,7 +505,7 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 
 段合并的时候会将那些**旧的已删除文档从文件系统中清除**。被删除的文档（或被更新文档的旧版本）**不会被拷贝到新的大段**中。
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/segment-merge.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/segment-merge.png)
 
 进行索引和搜索时会自动进行段合并
 1. 当索引的时候，刷新（refresh）操作会创建新的段并将段打开以供搜索使用。
@@ -515,7 +515,7 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 
 ### 搜索
 一个查询中常见的字段：
-```
+```json
 {
 	"took": 2,
 	"timed_out": false,
@@ -534,12 +534,13 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 			"_id": "12374",
 			"_score": null,
 			"_source": {
-			    .....
+			    
 			}
 		}]
 	}
 }
 ```
+
 - `his`: 在 hits 数组中每个结果包含文档的 `_index` 、 `_type` 、 `_id` ，加上 `_source` 字段。这意味着我们可以直接从返回的搜索结果中使用整个文档。
 - `took` 值告诉我们执行整个搜索请求耗费了多少毫秒。
 - `timed_out` 值告诉我们查询是否超时。默认情况下，搜索请求不会超时。该值可以手工指定。
@@ -557,7 +558,7 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 ##### 查询语句权重改变
 `boost` 参数被用来提升一个语句的相对权重（ `boost` 值大于 1 ）或降低相对权重（ `boost` 值处于 0 到 1 之间）
 
-```
+```text
 GET /_search
 {
     "query": {
@@ -600,7 +601,7 @@ GET /_search
 
 
 执行一条关于**日期排序**的查询，结果如下：
-```
+```text
 GET /_search
 {
     "query" : {
@@ -662,10 +663,10 @@ Es设置了 `max_result_window`(最大结果窗口)的参数，默认值是10000
 
 
 请求流程：
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/scroll-1.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/scroll-1.png)
 
 1. search阶段：第一次带查询参数的请求
-```
+```text
 // scroll=1m 保持游标查询窗口一分钟。
 GET /old_index/_search?scroll=1m 
 {
@@ -697,7 +698,7 @@ result:
 
 2. scroll阶段：第二次带scrollId的请求
 > 第二阶段Scroll请求则大大简化，Search中的许多流程都不要再次进行，仅需要执行query、fetch、response三个阶段。而完整的search请求包含rewrite、can_match、dfs、query、fetch、dfs_query、expand、response等复杂的流程
-```
+```text
 GET /_search/scroll
 {
     "scroll": "1m", 
@@ -738,7 +739,7 @@ Search接口另一种翻页方式是SearchAfter，时间复杂度O(n)，空间�
 > PIT会创建一个轻量级的视图，保证了查询的时候不会因为refresh导致分页数据不一致的情况。
 
 
-```
+```text
 POST twitter/_search 
 { 
     "size": 10, 
@@ -781,7 +782,8 @@ response:
 ```
 
 第二次查询：
-```
+
+```text
 GET twitter/_search 
 { 
     "size": 10, 
@@ -829,7 +831,8 @@ SEARCH_AFTER不是**自由跳转到任意页面的**解决方案，而是并行�
 
 聚合相关操作：
 > 汽车经销商可能会想知道哪个颜色的汽车销量最好，用聚合可以轻易得到结果，用 terms 桶操作
-```
+
+```text
 GET /cars/transactions/_search
 {
     "size" : 0,
@@ -890,7 +893,8 @@ Elasticsearch 的相似度算法被定义为检索词频率/反向文档频率�
 - 字段长度准则：字段的长度是多少。长度越长，相关性越低。 检索词出现在一个短的 title 要比同样的词出现在一个长的 content 字段权重更大。
 
 **评分的标准可以通过`_explain`进行进一步了解**
-```
+
+```text
 GET /_search?explain 
 {
    "query"   : { "match" : { "tweet" : "honeymoon" }}
@@ -1098,13 +1102,13 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
 ```
 
-![avatar](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/es/ES.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/es/ES.jpg)
   
 参考资料： [Docker安装部署ELK教程](https://www.cnblogs.com/fbtop/p/11005469.html)
 ### ik分词器安装
 
 #### 在线安装
-```
+```text
 // 进入容器
 docker exec -it elasticsearch /bin/bash
 
@@ -1114,7 +1118,7 @@ docker exec -it elasticsearch /bin/bash
 
 #### 离线安装
 
-```
+```text
 wget https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.13.1/elasticsearch-analysis-ik-7.13.1.zip
 
 docker exec -it elasticsearch /bin/bash
@@ -1140,7 +1144,7 @@ docker restart elasticsearch
 ```
 
 #### 分词器测试
-```
+```text
 POST _analyze 
 {
   "analyzer": "ik_smart",
@@ -1186,7 +1190,7 @@ result:
 参考资料：[docker 安装ElasticSearch的中文分词器IK](https://blog.csdn.net/weixin_34015566/article/details/93554240)
 ## linux http基本操作命令
 ### 基本操作
-```
+```shell
 [root@VM-0-10-centos ~]# curl -X GET 'http://localhost:9200/_cat/indices?v'
 
 [root@VM-0-10-centos ~]# curl -X PUT 'localhost:9200/accounts'
@@ -1196,7 +1200,7 @@ result:
 ```
 
 ### 索引创建与新增元素
-```
+```shell
 [root@VM-0-10-centos ~]# curl -H 'content-Type:application/json'  -X PUT 'localhost:9200/test' -d '
 
   {
@@ -1241,7 +1245,7 @@ result:
 
 
 ### 查询
-```
+```shell
 [root@VM-0-10-centos ~]# curl -X GET 'http://localhost:9200/test/_search'
 {"took":391,"timed_out":false,"_shards":{"total":3,"successful":3,"skipped":0,"failed":0},"hits":{"total":{"value":3,"relation":"eq"},"max_score":1.0,"hits":[{"_index":"test","_type":"_doc","_id":"UPmoeXYBI1Dq1Op9wJWu","_score":1.0,"_source":
 {
@@ -1293,7 +1297,7 @@ result:
 ## kibana 命令行操作
 
 ### 创建索引
-```
+```text
 PUT sw_test.trade_contract_v1
 {
   "settings": {
@@ -1413,7 +1417,7 @@ analysis-ik分两种模式：ik_max_word和ik_smart模式
 ```
 
 ### 手动插入数据
-```
+```text
 POST sw_test.trade_contract/_doc
 {
     "amount":3344.00,
@@ -1437,7 +1441,7 @@ POST sw_test.trade_contract/_doc
 ```
 
 ### 查询
-```
+```text
 POST sw_test.trade_contract/_search
 {
    "query": { 
@@ -1501,7 +1505,7 @@ Basically, filter = must but without scoring.
 
 ### 索引新增字段
 
-```
+```text
 POST sw_test.trade_contract_v1/_mapping
 {
   "properties": {
@@ -1515,7 +1519,7 @@ POST sw_test.trade_contract_v1/_mapping
 创建 mapping 时，可以为keyword指定ignore_above ，用来限定字符长度。\
 超过 ignore_above 的字符会被存储，但不会被全文索引。
 
-```
+```text
 PUT /sw_test.trade_contract_v1/_mapping/
 {
   "properties": {
@@ -1539,7 +1543,7 @@ PUT /sw_test.trade_contract_v1/_mapping/
 
 ## shard & replica
 
-```
+```text
 PUT sw_test.trade_contract_v1
 {
   "settings": {
@@ -1562,7 +1566,7 @@ If you don't specify a number it will have the default number of shards: 5 prima
 
 It means that elasticsearch will create 5 primary shards that will contain your data:
 
-```
+```text
  ____    ____    ____    ____    ____
 | 1  |  | 2  |  | 3  |  | 4  |  | 5  |
 |____|  |____|  |____|  |____|  |____|
@@ -1574,7 +1578,7 @@ but the whole point is that if we start another elasticsearch instance on the sa
 
 Node 1 will then hold for example only three shards:
 
-```
+```text
  ____    ____    ____ 
 | 1  |  | 2  |  | 3  |
 |____|  |____|  |____|
@@ -1582,7 +1586,7 @@ Node 1 will then hold for example only three shards:
 
 Since the remaining two shards have been moved to the newly started node:
 
-```
+```text
  ____    ____
 | 4  |  | 5  |
 |____|  |____|
@@ -1607,7 +1611,7 @@ Back to our example, with 1 replica we'll have the whole index on each node,
 since 2 replica shards will be allocated on the first node, and they will contain exactly the same data as the primary shards on the second node:
 
 `Node1`
-```
+```text
  ____    ____    ____    ____    ____
 | 1  |  | 2  |  | 3  |  | 4R |  | 5R |
 |____|  |____|  |____|  |____|  |____|
@@ -1617,7 +1621,7 @@ Same for the second node, which will contain a copy of the primary shards on the
 
 
 `Node2`
-```
+```text
  ____    ____    ____    ____    ____
 | 1R |  | 2R |  | 3R |  | 4  |  | 5  |
 |____|  |____|  |____|  |____|  |____|
@@ -1626,7 +1630,7 @@ Same for the second node, which will contain a copy of the primary shards on the
 With a setup like this, if a node `goes down`, you still have the whole index.
 The replica shards will automatically become primaries, and the cluster will work properly despite the node failure, as follows:
 
-```
+```text
  ____    ____    ____    ____    ____
 | 1  |  | 2  |  | 3  |  | 4  |  | 5  |
 |____|  |____|  |____|  |____|  |____|

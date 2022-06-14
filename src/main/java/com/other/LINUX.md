@@ -6,7 +6,8 @@
 标准输⼊就是编程语⾔中诸如 scanf 或者 readline 这种命令； ⽽参数是指程序的 main 函数传⼊的 args 字符数组。
 
 以cat命令为例，cat命令的功能是从命令行给出的文件中读取数据，并将这些数据直接送到标准输出。若使用如下命令：
-```
+
+```shell
 $ cat file 
 Hello world
 Hello world
@@ -22,7 +23,8 @@ Bye
 
 命令wc统计指定文件包含的行数、单词数和字符数
 > 直接输入wc，wc将等待用户告诉它统计什么，这时shell就好象死了一样，从键盘键入的所有文本都出现在屏幕上，但并没有什么结果，直至按下ctrl+d，wc才将命令结果写在屏幕上。
-```
+
+```shell
 [root@VM-0-16-centos ~]# wc
 dsf
 sadf123
@@ -44,19 +46,17 @@ qwe
 ### 输出重定向
 输出重定向是指把命令（或可执行程序）的标准输出或标准错误输出重新定向到指定文件中。这样，该命令的输出就不显示在屏幕上，而是写入到指定文件中。
 
-```
+```shell
 [root@VM-0-16-centos ~]# echo "sdfadf" > file
-
-
 ```
 
 错误重定向： 和程序的标准输出重定向一样，程序的错误输出也可以重新定向。使用符号2>（或追加符号2>>）表示对错误输出设备重定向。例如下面的命令：
-```
+```shell
 $ ls /usr/tmp 2> err.file
 ```
 
 标准输入输出均重定向：可以使用另一个输出重定向操作符（&>）将标准输出和错误输出同时送到同一文件中。例如：
-```
+```shell
 $ ls /usr/tmp &> output.file
 ```
 
@@ -66,7 +66,7 @@ $ ls /usr/tmp &> output.file
 
 管道可以把一系列命令连接起来，这意味着第一个命令的输出会作为第二个命令的输入通过管道传给第二个命令，第二个命令的输出又会作为第三个命令的输入，以此类推。显示在屏幕上的是管道行中最后一个命令的输出,通过使用管道符“|”来建立一个管道行。
 
-```
+```shell
 [root@VM-0-16-centos ~]# cat file|grep adf
 sdfadf
 [root@VM-0-16-centos ~]# cat file|grep adf|wc -l
@@ -83,27 +83,28 @@ sdfadf
 
 挂载点：那个进入点的目录我们称为『挂载点』。 
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxFolder.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxFolder.jpg)
 
 ### 权限修改 —— chown、chmod
 - chgrp ：改变文件所属群组
 - chown ：改变文件拥有者
 - chmod ：改变文件的权限, SUID, SGID, SBIT 等等的特性
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxfile.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxfile.jpg)
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxfile1.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxfile1.jpg)
 
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/learning/basic/linuxfile2.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxfile2.jpg)
 ## 其他资料
 
 ### 单引号与双引号
 1. 单引号、双引号用于用户把带有空格的字符串赋值给变量的分界符。
-```
+2. 
+```shell
 [root@VM-0-16-centos ~] str="sdf111 sdf"
 [root@VM-0-16-centos ~] echo $str
 sdf111 sdf
-// 如果没有单引号或双引号，shell会把空格后的字符串解释为命令。
+// 如果没有单引号或双引号,shell会把空格后的字符串解释为命令
 [root@localhost sh] str=Today is Monday
 bash: is: command not found
 ```
@@ -113,7 +114,8 @@ bash: is: command not found
 
 3. 反引号 (```) 位于键盘的Tab键的上方，1键的左方。注意与单引号(')位于Enter键的左方的区别。在Linux中起着命令替换的作用。命令替换是指shell能够将一个命令的标准输出插在一个命令行中任何位置。
 > 如，shell会执行反引号中的date命令，把结果插入到echo命令显示的内容中。
-```
+
+```shell
 [root@localhost sh] echo The date is `date`
 The date is 2011年 03月 14日 星期一 21:15:43 CST
 ```
@@ -127,14 +129,15 @@ The date is 2011年 03月 14日 星期一 21:15:43 CST
 
 
 ### 指令组合 ||,&&
-```
+```text
 范例三：我不清楚 /tmp/abc 是否存在，但就是要建立 /tmp/abc/hehe 文件
 [dmtsai@study ~]$ ls /tmp/abc || mkdir /tmp/abc && touch /tmp/abc/hehe
 ```
 
 ## 管道命令
 ### cut 指令
-```
+
+```text
 选项与参数：
 -d ：后面接分隔字符。与 -f 一起使用；
 -f ：依据 -d 的分隔字符将一段讯息分区成为数段，用 -f 取出第几段的意思；
@@ -154,7 +157,8 @@ r/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
 
 ### grep指令
 #### 选项及参数
-```
+
+```text
 选项与参数：
 -a ：将 binary 文件以 text 文件的方式搜寻数据
 -i ：忽略大小写的不同，所以大小写视为相同
@@ -179,7 +183,8 @@ r/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
 
 #### 指令实例
 -c指令说明
-```
+
+```shell
 [root@VM-0-16-centos ~] last |cut -f 1 -d " "
 root
 root
@@ -212,7 +217,8 @@ wtmp
 ```
 
 -v反向匹配过滤
-```
+
+```shell
 [root@VM-0-16-centos ~] last |cut -f 1 -d " "|grep -v "root"
 reboot
 
@@ -221,7 +227,8 @@ wtmp
 
 
 grep "匹配内容" filename 
-```
+
+```shell
 [root@VM-0-16-centos ~] last -n 5 |cut -f 1 -d " "|grep root --color -n
 1:root
 2:root
@@ -232,7 +239,8 @@ grep "匹配内容" filename
 ```
 
 -r递归查找
-```
+
+```shell
 [root@VM-0-16-centos ~] grep -r 23000 ./test
 ./test/temp:VBird 23000 24000 25000
 ./test/temp:DMTsai 21000 20000 23000
@@ -247,7 +255,8 @@ grep "匹配内容" filename
 ```
 
 -l 与 -L 输出文件名
-```
+
+```shell
 [root@VM-0-16-centos test] ls ./*
 ./file  ./temp
 
@@ -266,7 +275,8 @@ record
 ```
 
 -h匹配不显示文件名-H匹配显示文件名
-```
+
+```shell
 [root@VM-0-16-centos test] grep -r 23000 ./ -h
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
@@ -279,7 +289,8 @@ temp:DMTsai 21000 20000 23000
 ```
 
 -A -B -C 行数显示说明
-```
+
+```shell
 [root@VM-0-16-centos test] grep "20000" temp -C 1
 VBird 23000 24000 25000
 DMTsai 21000 20000 23000
@@ -291,8 +302,9 @@ Bird2 43000 42000 41000
 
 ```
 
--w 整字匹配
-```
+`-w` 整字匹配
+
+```shell
 [root@VM-0-16-centos test] grep "VB" temp 
 VBird 23000 24000 25000
 [root@VM-0-16-centos test] grep -w "VB" temp 
@@ -300,7 +312,8 @@ VBird 23000 24000 25000
 
 ### sort    
 #### 选项与参数说明
-```
+
+```text
 [dmtsai@study ~]$ sort [-fbMnrtuk] [file or stdin]
 选项与参数：
 -f ：忽略大小写的差异，例如 A 与 a 视为编码相同；
@@ -314,8 +327,9 @@ VBird 23000 24000 25000
 ```
 
 #### 实例
-```
-// 内容是以 : 来分隔的，以第三栏来排序
+
+```shell
+// 内容是以 : 来分隔的,以第三栏来排序
 [root@VM-0-16-centos ~] cat /etc/passwd |sort -t ":" -k 3
 root:x:0:0:root:/root:/bin/bash
 operator:x:11:0:operator:/root:/sbin/nologin
@@ -342,7 +356,8 @@ xargs 可以读入 stdin 的数据，并且以空格符或断行字符作为分�
 
 
 #### 实例
-```
+
+```shell
 [root@VM-0-16-centos ~] find /usr/sbin -perm /7000 | xargs ls -l
 -rwxr-sr-x 1 root root 11224 Apr  1  2020 /usr/sbin/netreport
 -rwsr-xr-x 1 root root 11232 Apr  1  2020 /usr/sbin/pam_timestamp_check
@@ -352,7 +367,8 @@ xargs 可以读入 stdin 的数据，并且以空格符或断行字符作为分�
 ```
 
 单行与多行的变换-n 
-```
+
+```shell
 [root@VM-0-16-centos ~] cat test 
 a b c d e f g
 h i j k l m n
@@ -372,8 +388,9 @@ u v w x
 y z
 ```
 
--t 输出执行参数
-```
+`-t` 输出执行参数
+
+```shell
 [root@VM-0-16-centos ~] ls  |grep lsroot| xargs -t 
 echo lsrootaa lsrootab lsrootac 
 lsrootaa lsrootab lsrootac
@@ -383,7 +400,8 @@ rm -rf lsrootaa lsrootab lsrootac
 ```
 
 -p 执行时进行询问
-```
+
+```text
 [root@VM-0-16-centos ~] cat test |xargs -p -n4
 echo a b c d ?...y
 a b c d
@@ -399,8 +417,8 @@ echo u v w x ?...y
 u v w x
 echo y z ?...y
 y z
-
 ```
+
 ### 其他
 #### uniq
 定义：仅列出一个显示
@@ -410,7 +428,7 @@ y z
 - -c ：进行计数
 
 
-```
+```text
 范例一：使用 last 将账号列出，仅取出账号栏，进行排序后仅取出一位；
 [root@VM-0-16-centos ~] last | cut -d ' ' -f1 | sort | uniq
 
@@ -435,7 +453,7 @@ wtmp
 - -w ：仅列出多少字(英文单字)；
 - -m ：多少字符
 
-```
+```text
 [root@VM-0-16-centos ~] last |wc
      30     288    2194
 //输出的三个数字中，分别代表：『行、字数、字符数』
@@ -448,7 +466,7 @@ wtmp
 #### tee
 定义：tee 会同时将数据流分送到文件去与屏幕 (screen)；而输出到屏幕的，其实就是 stdout 
 
-```
+```text
 [dmtsai@study ~]$ last | tee last.list | cut -d " " -f1
 //这个范例可以让我们将 last 的输出存一份到 last.list 文件中
 ```
@@ -459,7 +477,7 @@ wtmp
 - -l ：以行数来进行分区。
 - PREFIX ：代表前导符的意思，可作为分区文件的前导文字。
 
-```
+```text
 // 按1k 分割文件
 [root@VM-0-16-centos ~] split -b 1k lsrootaa
 
@@ -469,9 +487,11 @@ wtmp
 // 使用 ls -al / 输出的信息中，每十行记录成一个文件
 [root@VM-0-16-centos ~] ls -al / | split -l 10 - lsroot
 ```
+
 ## sed
 ### 选项与参数说明
-```
+
+```text
 [dmtsai@study ~]$ sed [-nefr] [动作]
 选项与参数：
 -n ：使用安静(silent)模式。在一般 sed 的用法中，所有来自 STDIN 的数据一般都会被列出到屏幕上。但如果加上 -n 参数后，则只有经过 sed 特殊处理的那一行(或者动作)才会被列出来。
@@ -497,7 +517,8 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
 
 ### 实例
 - `function：d` demo
-```
+
+```shell
 [root@VM-0-16-centos ~] nl file 
      1	sdfadf
      2	123
@@ -534,7 +555,8 @@ s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可
 ```
 
 `function：a` 新增demo 会新增到下一行
-```
+
+```shell
 [root@VM-0-16-centos ~] nl file |sed '2a|sadf'
      1	sdfadf
      2	123
@@ -585,8 +607,9 @@ dsfasdf
 
 ```
 
-- `function：c` 行替换例子
-```
+`function：c` 行替换例子
+
+```shell
 [root@VM-0-16-centos ~] nl file|sed '2,6c go down town'
      1	sdfadf
 go down town
@@ -606,7 +629,8 @@ go down town
 
 - `function：p` 打印修改行数  
 > `-n` 输出sed修改的行数
-```
+
+```shell
 [root@VM-0-16-centos ~] nl file | sed -n '2,10p' 
      2	123
      3	123
@@ -622,7 +646,8 @@ go down town
 
 - `function：s` 替换内容 `sed 's/要被取代的字符串/新的字符串/g'`
 > 被取代的字符串部分可以使用正则表达式
-```
+
+```shell
 [root@VM-0-16-centos ~] nl file 
      1	sdfadf
      2	123
@@ -666,7 +691,8 @@ go down town
 - `sed -i ` 修改文件内容
 
 - sed 在每行头部或者尾部添加固定字符
-```
+
+```text
 [root@VM-0-16-centos ~] cat file |sed 's/^/yep/g'
 yepsdfadf
 yep123
@@ -708,7 +734,8 @@ qwweqwe12~yep
 ```
 
 -i忽略大小写匹配
-```
+
+```text
 [root@VM-0-16-centos test] cat temp 
 Name 1st 2nd 3th
 VBird 23000 24000 25000
@@ -733,7 +760,7 @@ Name 1st 2nd 3th
 awk 主要是处理『每一行的字段内的数据』，而默认的『字段的分隔符为 "空格键" 或 "[tab]键" 』！
 
 ### 选项与参数说明
-```
+```text
 选项参数：
 -F ： 指定输入文件的分隔符
 -v： 赋值一个用户自定义遍历
@@ -742,7 +769,8 @@ awk 主要是处理『每一行的字段内的数据』，而默认的『字段�
 ```
 
 -F选项例子： 当未指定分割符号的情况，默认使用空格或者tab作为分割
-```
+
+```shell
 [root@VM-0-16-centos ~] cat /etc/passwd
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/bin:/sbin/nologin
@@ -752,7 +780,7 @@ lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
 sync:x:5:0:sync:/sbin:/bin/sync
 shutdown:x:6:0:shutdown:/sbin:/sbin/shutdow
 
-// 按 ： 分割 输出1, 2 字段
+// 按 : 分割 输出1, 2 字段
 [root@VM-0-16-centos ~] cat /etc/passwd | awk -F ":" '{print $1 "|" $2}'
 root|x
 bin|x
@@ -783,8 +811,9 @@ Wed	wtmp
 
 ```
 
--v：自定义变量
-```
+`-v`：自定义变量
+
+```shell
 [root@VM-0-16-centos ~] last -n 5 |awk -v bk=aisibi  '{print $3"\t"$1"\t"bk}'
 140.206.51.97	root	aisibi
 59.61.69.209	root	aisibi
@@ -798,7 +827,8 @@ Wed	wtmp	aisibi
 
 ### awk 动作说明
 awk 后面接两个单引号并加上大括号 {} 来设定想要对数据进行的处理动作。 awk 可以处理后续接的文件，也可以读取来自前个指令的 standard output 。 
-```
+
+```shell
 [dmtsai@study ~]$ awk '条件类型 1{动作 1} 条件类型 2{动作 2} ...' filename
 ```
 
@@ -816,7 +846,8 @@ awk 后面接两个单引号并加上大括号 {} 来设定想要对数据进行
 BEGIN：用来预先设定 awk 的变量。`BEGIN{ 这里面放的是执行前的语句 }`如果未使用预设，可能会导致第一行数据处理未生效的情况。
 END：END {这里面放的是处理完所有的行后要执行的语句 }
 print：打印指定输出内容
-```
+
+```shell
 [root@VM-0-16-centos ~] last -n 5
 root     pts/1        140.206.51.97    Sun Jan 31 12:22   still logged in   
 root     pts/1        59.61.69.209     Tue Jan 12 10:09 - 17:34  (07:25)    
@@ -847,7 +878,7 @@ wtmp	 lines: 7	 columns: 7
 ```
 
 
-```
+```shell
 [root@VM-0-16-centos ~] cat /etc/passwd
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/bin:/sbin/nologin
@@ -888,14 +919,14 @@ mail	8
 
 ### 实例说明
 汇总求值：
-```
+```shell
 $ ls -l *.txt | awk '{sum+=$5} END {print sum}' 
 --------------------------------------------------
 666581
 ```
 
 字段最后拼接：首行特殊处理，其他行最后拼接字符串
-```
+```shell
 [root@VM-0-16-centos ~] cat temp 
 Name 1st 2nd 3th
 VBird 23000 24000 25000
@@ -920,7 +951,7 @@ to-file ：一个档名，作为目的比对文件的档名；
 - -B ：忽略空白行的差异。
 - -i ：忽略大小写的不同
 
-```
+```shell
 [root@VM-0-16-centos ~] cp test test-bk
 [root@VM-0-16-centos ~] diff test test-bk 
 [root@VM-0-16-centos ~] vi test-bk 
@@ -942,7 +973,7 @@ Linux comm 命令用于比较两个已排过序的文件。这项指令会一列
 - -3 不显示只在第 1 和第 2 个文件里出现过的列。
 
 
-```
+```text
 [root@VM-0-16-centos ~] comm -12 test test-bk 
 a b c d e f g
 h i j k l m n
@@ -995,11 +1026,11 @@ more 命令类似 cat ，不过会以一页一页的形式显示，更方便使�
 
 tail 命令可用于查看文件的内容，有一个常用的参数 -f 常用于查阅正在改变的日志文件。
 
-- -f 循环读取
-- -n<行数> 显示文件的尾部 n 行内容
-- -c<数目> 显示的字节数
+- `-f` 循环读取
+- `-n`<行数> 显示文件的尾部 n 行内容
+- `-c`<数目> 显示的字节数
 
-```
+```shell
 
 [root@VM-0-16-centos logs] tail -200f zookeeper-root-server-VM-0-16-centos.out 
 
@@ -1038,7 +1069,7 @@ vi 共分为三种模式，分别是
 
 
 按键说明：
-```
+```text
 
 [Ctrl] + [f] 屏幕『向下』移动一页，相当于 [Page Down]按键 (常用)
 [Ctrl] + [b] 屏幕『向上』移动一页，相当于 [Page Up] 按键 (常用)
@@ -1082,7 +1113,7 @@ TODO
 
 #### 查询
 
-```
+```text
 -q ：仅查询，后面接的软件名称是否有安装；
 -qa ：列出所有的，已经安装在本机 Linux 系统上面的所有软件名称；
 -qi ：列出该软件的详细信息 (information)，包含开发商、版本与说明等；
@@ -1095,7 +1126,8 @@ TODO
 ```
 
 - 查询是否安装，列出详细信息
-```
+
+```shell
 [root@VM-0-16-centos logs] rpm -qa kernel
 kernel-3.10.0-1127.19.1.el7.x86_64
 
@@ -1130,7 +1162,7 @@ input and output, etc.
 
 `rpm -e xxx`
 
-```
+```shell
 [root@study ~] rpm -qa | grep pam
 fprintd-pam-0.5.0-4.0.el7_0.x86_64
 pam-1.1.8-12.el7.x86_64
@@ -1142,10 +1174,10 @@ pam_krb5-2.4.8-4.el7.x86_64
 error: Failed dependencies: <==这里提到的是相依性的问题
 libpam.so.0()(64bit) is needed by (installed) systemd-libs-208-20.el7.x86_64
 libpam.so.0()(64bit) is needed by (installed) libpwquality-1.2.3-4.el7.x86_64
-....(以下省略)....
+// ....以下省略....
 
-//若仅移除 pam-devel 这个之前范例安装上的软件呢？
-[root@study ~] rpm -e pam-devel <==不会出现任何讯息！
+//若仅移除 pam-devel 这个之前范例安装上的软件呢
+[root@study ~] rpm -e pam-devel <==不会出现任何讯息
 [root@study ~] rpm -q pam-devel
 package pam-devel is not installed
 ```
@@ -1166,7 +1198,8 @@ package pam-devel is not installed
 更新： `yum upgrate xxx`
 
 清除旧数据：
-```
+
+```text
 [root@study ~] yum clean [packages|headers|all]选项与参数：
 packages：将已下载的软件文件删除
 headers ：将下载的软件文件头删除
@@ -1181,7 +1214,8 @@ all ：将所有软件库数据都删除！
 
 ### alias
 设置别名命名，如`alias lm='ls -al | more'`
-```
+
+```shell
 [root@VM-0-16-centos logs] alias
 alias cp='cp -i'
 alias egrep='egrep --color=auto'
@@ -1232,9 +1266,9 @@ sudo mkdir -p /var/log/mongodb
 零拷贝是指数据直接从磁盘文件复制到网卡设备，而无需经过应用程序，减少了内核和用户模式之间的上下文切换。
 
 下面这个过程是不采用零拷贝技术时，从磁盘中读取文件然后通过网卡发送出去的流程，可以看到：经历了 4 次拷贝，4 次上下文切换。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/linux/zero-copy1.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/linux/zero-copy1.png)
 如果采用零拷贝技术（底层通过 sendfile 方法实现），流程将变成下面这样。可以看到：只需 3 次拷贝以及 2 次上下文切换，显然性能更高。
-![image](https://github.com/rbmonster/file-storage/blob/main/learning-note/other/linux/zero-copy2.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/linux/zero-copy2.png)
 
 
 传统 Read/Write 方式进行网络文件传输，在传输过程中，文件数据实际上是经过了四次 Copy 操作，其具体流程细节如下：
