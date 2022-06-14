@@ -39,6 +39,7 @@
 
 * 计算机基础
   * [计算机网络](/src/main/java/com/toc/NETWORK.md)
+  * [操作系统](/src/main/java/com/toc/OPERATING_SYSTEM.md)
   * [Linux相关](/src/main/java/com/toc/LINUX.md)
 
 * 系统设计
@@ -46,6 +47,7 @@
     * [设计及架构思想](/src/main/java/com/toc/SYSTEM-DESIGN.md)
     * [设计模式](/src/main/java/com/toc/CODEDESIGN_BOOK.md)
     * [分布式基本概念](/src/main/java/com/toc/DISTRIBUTED-SYSTEM.md)
+    * [领域驱动设计(DDD)](/src/main/java/com/toc/DDD.md)
 
   * 设计案例
     * [Java接口设计](/src/main/java/com/toc/INTERFACE_DESIGN.md)
@@ -64,6 +66,8 @@
     * [JWT、MFA及相关应用](/src/main/java/com/toc/JWT_APPLICATION.md)
     * [OAUTH2、CAS、SSO](/src/main/java/com/toc/OAUTH2_CAS_SSO.md)
     * [RPC框架介绍与设计](/src/main/java/com/toc/RPC_DESIGN.md)
+    * [pvuv设计](/src/main/java/com/toc/PVUV_DESIGN.md)
+    * [基于Feed流系统设计](/src/main/java/com/toc/PVUV_DESIGN.md)
 
 * 分布式与微服务
   * [Spring Cloud相关知识](/src/main/java/com/toc/SPRING-CLOUD.md)
