@@ -1058,10 +1058,33 @@ Doc values 的存在是因为倒排索引只对某些操作是高效的。 倒�
 压缩式存储：序列化的存储方式非常便于压缩，特别是数字类型。这样可以**减少磁盘空间并且提高访问速度**。现代 CPU 的处理速度要比磁盘快几个数量级，减少直接存磁盘读取数据的大小，额外消耗 CPU 运算用来进行解压。
 > 存储的策略是通过借用CPU的处理速度，来提高整体的存取效率。CPU压缩，减少存储磁盘空间。磁盘空间小读取的速度变快，CPU进行解压。。
 
+
+## 脑裂问题
+如果由于网络或其他原因导致集群中选举出多个 Master 节点，使得数据更新时出现不一致，这种现象称之为脑裂，即集群中不同的节点对于 Master 的选择出现了分歧，出现了多个 Master 竞争。
+
+“脑裂”问题可能有以下几个原因造成：
+
+- **网络问题**： 集群间的网络延迟导致一些节点访问不到 Master，认为 Master 挂掉了从而选举出新的 Master，并对 Master 上的分片和副本标红，分配新的主分片。
+- **节点负载**： 主节点的角色既为 Master 又为 Data，访问量较大时可能会导致 ES 停止响应（假死状态）造成大面积延迟，此时其他节点得不到主节点的响应认为主节点挂掉了，会重新选取主节点。
+- **内存回收**： 主节点的角色既为 Master 又为 Data，当 Data 节点上的 ES 进程占用的内存较大，引发 JVM 的大规模内存回收，造成 ES 进程失去响应。
+
+脑裂问题解决方案：
+
+1. **减少误判**：`discovery.zen.ping_timeout`节点状态的响应时间，默认为3s。\
+可以适当调大，如果master在该响应时间的范围内没有做出响应应答，判断该节点已经挂掉了。调大参数（如6s，`discovery.zen.ping_timeout`:6），可适当减少误判。
+2. **选举触发参数**：`discovery.zen.minimum_master_nodes:1`\
+该参数是用于控制选举行为发生的最小集群主节点数量。 当备选主节点的个数大于等于该参数的值，且备选主节点中有该参数个节点认为主节点挂了，进行选举。官方建议为（n/2）+1，n为候选主节点个数（即有资格成为主节点的节点个数）\
+例如：增大该参数，当master的数量为3，我们可以设置该值为2。这样挂掉一台，其他两台都认为主节点挂掉了，才进行主节点选举。
+3. **角色分离**：即master节点与data节点分离，限制角色。
+主节点配置为： `node.master: true node.data: false`
+从节点配置为： `node.master: false node.data: true`
+
+
+
 ## docker 安装
 
 ### elasticsearch 安装
-```
+```shell
 
 [root@VM-0-16-centos ~]# docker pull elasticsearch:7.13.1
 [root@VM-0-16-centos ~]# docker images
@@ -1069,7 +1092,7 @@ Doc values 的存在是因为倒排索引只对某些操作是高效的。 倒�
 [root@VM-0-16-centos ~]# docker pull kibana:7.13.1
 [root@VM-0-16-centos ~]# docker images
 
-// 创建自定义的网络(用于连接到连接到同一网络的其他服务(例如Kibana))
+// 创建自定义的网络 用于连接到连接到同一网络的其他服务 例如Kibana
 [root@VM-0-16-centos ~]# docker network create elknetwork
 ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
@@ -1663,3 +1686,6 @@ ES 中存储数据的**基本单位是索引**，索引创建的时候需要指�
 es 的搜索引擎严重依赖于底层的 filesystem cache ，你如果给 filesystem cache 更多的内存，尽量让内存可以容纳所有的 idx segment file 索引数据文件，那么你搜索的时候就基本都是走内存的，性能会非常高。
 
 [advanced-java ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？](https://github.com/doocs/advanced-java/blob/main/docs/high-concurrency/es-optimizing-query-performance.md)
+
+## 参考资料
+- [ES脑裂问题分析及优化](https://blog.csdn.net/kakaluoteyy/article/details/81068387)
