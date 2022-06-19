@@ -116,7 +116,7 @@
 
 
 ## <a name="1">基本数据结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/data-structure.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/data-structure.jpg)
 
 ### <a name="2">String 字符串</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 使用场景：如博客的文章数量，粉丝数量。
@@ -184,7 +184,7 @@ Redis中的列表list，在版本3.2之前，列表底层的编码是`ziplist`�
 quickList是一个`ziplist`组成的`linkedlist`双向链表，是 `ziplist` 和 `linkedlist` 的混合体。它将`linkedlist`按段切分，每一段使用`ziplist`来紧凑存储，多个`ziplist` 之间使用双向指针串接起来。
 > `quicklist`是一种既保留`ziplist`的空间高效性，又能不让其更新复杂度过高的实现。把`ziplist`和普通的双向链表结合起来。每个双链表节点中保存一个`ziplist`，然后每个`ziplist`中存一批list中的数据(具体`ziplist`大小可配置)，这样既可以避免大量链表指针带来的内存消耗，也可以避免`ziplist`更新导致的大量性能损耗，将大的`ziplist`化整为零。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/quicklist.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/quicklist.png)
 
 `ziplist`是Redis节省内存而开发的数据结构。在list底层的`ziplist`是一个特殊的双向链表,特殊之处在于没有维护双向指针:`prev` `next`。而是存储**上一个entry的长度**和**当前entry的长度**，通过长度推算下一个元素在什么地方。`ziplist`使用**连续的内存块**，以 O(1) 的时间复杂度在列表的两端进行 push 和 pop 操作。查找需要O(n)，是一种时间换空间的方案。
 > `ziplist`每次变更的时间复杂度都非常高，因为必须要重新生成一个新的`ziplist`来作为更新后的list，如果一个list非常大且更新频繁，那就会给redis带来非常大的负担。\
@@ -215,7 +215,7 @@ typedef struct entry{
 
 
 `ziplist` **结构及遍历过程**
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/ziplist.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/ziplist.jpg)
 
 当进行**从前向后**的遍历时，程序从指向节点 e1 的指针p开始，计算节点 e1 的长度（e1-size）， 然后将 p 加上 e1-size ，就将指针后移到了下一个节点 e2 ...如此反覆，直到 p 遇到 `ZIPLIST_ENTRY_END` 为止
 ```
@@ -427,7 +427,7 @@ hashtable
 `skiplist` 跳跃表是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的索引指针，从而达到快速访问节点的目的。 **跳表在链表的基础上，增加了多层级索引**，通过索引位置的几个跳转，实现数据的快速定位。
 > 跳跃表支持**平均O(logN)，最坏O(N)复杂度**的节点查找。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/skiplist.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/skiplist.png)
 
 
 ```
@@ -514,7 +514,7 @@ Bitmap 通过一个 bit 数组来存储特定数据的一种数据结构，每�
 
 Bitmap 的底层数据结构用的是 String 类型的 SDS 数据结构来保存位数组，Redis 把每个字节数组的 8 个 bit 位利用起来，每个 bit 位 表示一个元素的二值状态(不是 0 就是 1)。
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/bitmap.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/bitmap.png)
 
 #### <a name="21">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 参考资料：[Redis 实战篇：巧用 Bitmap 实现亿级海量数据统计](https://mp.weixin.qq.com/s/js_H86SNjY5lPSN1_6v00w)
@@ -635,7 +635,7 @@ juejin
 - 向布隆过滤器中添加数据时，会使用多个 hash 函数对 key 进行运算，然后对位数组长度进行取模运算得到一个位置，每个 hash 函数都会算得一个不同的位置。再把位数组的这几个位置都置为 1 就完成了 add 操作。
 - 判断数据是否存在时，同样使用多个hash函数计算key，只要有一个位为 0，说明key不存在。但是都是1，并不能说明key必定存在，可能位置都是其他元素添加导致的，因此说存在一定的误判率。
 - 布隆过滤器有两关键的参数，一个是元素大小，一个是误差率。当误差率设置越小，布隆过滤器需要的空间越大。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/bloomFilter.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/bloomFilter.png)
   
 数据结构：**bitmap比特位的集合**。bitmap是一个以比特为基本单位的数组，如一个int类型32个比特，那我们使用比特来应用就可以节省很大的空间。
 
@@ -655,7 +655,7 @@ juejin
 > 布隆过滤器有一个可以预判误判率的公式，查询缓存可能误判的名单存在，进行正常的查询。
 
 应用介绍：在查询缓存的前面加一层布隆过滤器的过滤判断，布隆过滤器添加所有查询的key， 判断缓存是否存在。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/cacheQueryBloomFilter.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/cacheQueryBloomFilter.jpg)
 
 
 #### <a name="31">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -701,7 +701,7 @@ Cuckoo的哈希函数是成对的（具体的实现可以根据需求设计）�
 如图，使用hashA 和hashB 计算对应key x的位置a和b ：
 1. 当两个哈希位置有一个为空时，则插入该空位置；
 2. 当两个哈希位置均不为空时，随机选择两者之一的位置上key y 踢出，并计算踢出的key y在另一个哈希值对应的位置，若为空直接插入，不为空踢出原元素插入，再对被踢出的元素重新计算，重复该过程，直到有空位置为止。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/cuckooFilter.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/cuckooFilter.png)
 > 挤兑循环问题：一般会对踢出操作设一个阈值，超过阈值则认为过滤器容量不足，需要对其进行扩容，解决同一元素不断添加问题。
 
 ### <a name="34">相关指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -772,7 +772,7 @@ QUEUED
 ```
   
 事务命令优先执行：事务开始后，若客户端发送的命令为EXEC、DISCARD、WATCH、MULTI四个命令其中一个，服务器会立即执行，否则执行命令入队操作。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/transaction.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/transaction.png)
 
 - `MULTI`命令标志着事务的开始
 - `EXEC`命令会让服务器立即执行事务队列语句。
@@ -787,7 +787,7 @@ QUEUED
 >EXEC
 (nil)
 ```
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/optiLock.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/optiLock.jpg)
 
 ### <a name="38">redis 事务的ACID</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -942,7 +942,7 @@ pub/sub主题订阅者模式，可以实现`1:N`的消息队列，即生产一�
 2. 主库同步数据给从库：master 执行 `BGSAVE`命令生成 RDB 文件，并将文件发送给从库，**同时主库为每一个 slave 开辟一块 replication buffer 缓冲区记录从生成 RDB 文件开始收到的所有写命令**。从库保存 RDB 并清空数据库再加载 RDB 数据到内存中。
 3. 发送 RDB 之后接收到的新写命令到从库：在生成 RDB 文件之后的写操作并没有记录到刚刚的 RDB 文件中，为了保证主从库数据的一致性，所以主库会在内存中使用一个叫 replication buffer 记录 RDB 文件生成后的所有写操作。并将里面的数据发送到 slave。
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/master-salve.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/master-salve.png)
 
 
 ## <a name="54">Sentinel 哨兵</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -981,7 +981,7 @@ Sentinel默认每十秒一次的频率，通过命令连接向被监视的主服
     3. 按照复制偏移量排名，最大的表示具有最新的数据信息。相同偏移量则按照ID从小到大选取。
 3. Sentinel系统向Server1属下的从服务器发送新的复制指令，让其成为新主服务器的从服务。当复制完成，故障转移完毕。
 4. Sentinel系统继续监视下线的server1，当其重新上线时设置成主服务器的从服务。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/sentinel.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/sentinel.jpg)
 
 
 ## <a name="59">Cluster 集群</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -1000,7 +1000,7 @@ Redis集群是Redis提供的分布式数据库方案，集群通过分片实现�
 
 127.0.0.1:7000>CLUSTER MEET 127.0.0.1 7002
 ```
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/cluster.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/cluster.jpg)
 
 
 ### <a name="60">哈希槽与槽指派</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -1031,14 +1031,14 @@ OK
 2. 重新分片：在重新分片的过程中，集群不需要下线，并且源节点和目标节点都可以继续处理命令请求。
 > 迁移过程中获取键可能会出现ASK错误（重新分片的一种临时措施）
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/askError.jpg)
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/slotReadd.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/askError.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/slotReadd.jpg)
 
 
 #### <a name="61">一致性哈希概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一致性哈希解决问题：定位节点用传统的`key%节点数`取模，会导致每次在新增和删除节点的时候，都要根据key的定位做大量的数据迁移。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/constant-hash.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/constant-hash.png)
 
 
 查询如何定位到对应的服务器位置？
@@ -1088,8 +1088,8 @@ Redis Cluster 属于服务端分片的方式。Redis 实例会把自己的哈希
 
 MOVED重定向（**负载均衡，数据已经迁移到其他实例上**）: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
 > **客户端还会更新本地缓存，将该 slot 与 Redis 实例对应关系更新正确。**
-https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/redis-move.jpg
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/cluster-move.png)
+https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/redis-move.jpg
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/cluster-move.png)
 
 ```
 // 连接redis集群 计算集群定位的值
@@ -1110,7 +1110,7 @@ cfb28ef1deee4e0fa78da86abe5d24566744411e 127.0.0.1:6379 myself,master - 0 0 10 c
 
 > 使用redis-cli命令时，可以加入-c参数支持自动重定向，简化手动发起重定向操作，如下所示：\
 > redis-cli自动帮我们连接到正确的节点执行命令，这个过程是在redis-cli内部维护，实质上是client端接到MOVED信息之后再次发起请 求，并不在Redis节点中完成请求转发，如下图所示
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/redisClient-move.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/redisClient-move.jpg)
 
 ```
 #redis-cli -p 6379 -c
@@ -1125,7 +1125,7 @@ ASK重定向：在线迁移槽（slot）的过程中，客户端向slot发送请
 > 客户端从ASK重定向异常提取出目标节点信息，发送asking命令到目标节点打开客户端连接标识，再执行键命令。如果存在则执行，不存在则返 回不存在信息\
 > **ASK 错误指令并不会更新客户端缓存的哈希槽分配信息。**
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/redis-ask.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/redis-ask.png)
 
 #### <a name="66">mget批量调用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 hash_tag: 提供不同的键可以具备相同slot的功能，常用于Redis IO优化
@@ -1520,7 +1520,7 @@ Redisson的锁会出现故障未同步而加锁失效问题，为了解决该问
 ## <a name="89">Redis集合类型数据的统计模式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 参考资料：[Redis集合类型数据的统计模式](https://blog.csdn.net/ggh0314/article/details/116941724)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/counting-summary.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/counting-summary.png)
 
 ### <a name="90">聚合统计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 聚合统计指统计多个集合元素的聚合结果，包括：交集统计、差集统计、并集统计。做聚合统计主要使用 Set 类型
@@ -1578,9 +1578,9 @@ HyperLogLog 的统计规则是基于概率完成的，给出的统计结果是�
 5. Redis 全局 `hash` 字典，Redis 整体就是一个哈希表来保存所有的键值对。当我们在 Redis 中创建一个键值对时，至少创建两个对象，一个对象是用做键值对的键对象，另一个是键值对的值对象。而哈希表的时间复杂度是 O(1)，只需要计算每个键的哈希值，便知道对应的Value。
     > Hash 冲突: Redis 通过链式哈希解决冲突：也就是同一个hashtable的index里面的元素使用链表保存。                                                                                                                                                                                                                                                                                                                                    
      渐进式 rehash: Redis 为了追求快，使用了两个全局哈希表。开始默认使用 「hash 表 1 」保存键值对数据，「hash 表 2」 此刻没有分配空间。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/readwrite.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/readwrite.png)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/globalHash.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/globalHash.jpg)
                                                                                                                                      
 ### <a name="96">Redis 如何实现持久化？宕机后如何恢复数据？                                                                                                                        </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 RDB是对 Redis 中的数据执行周期性的持久化，非常适合做冷备。有两个严重性能开销：
@@ -1624,8 +1624,8 @@ master 使用 `master_repl_offset`记录自己写到的位置偏移量，slave �
 当主从断开重连后，slave 会先发送 `psync` 命令给 master，同时将自己的 runID，`slave_repl_offset`发送给 master。
 
 master 只需要把 master_repl_offset与 slave_repl_offset之间的命令同步给从库即可。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/master-salve-offline.png)
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/redis/master-salve-offline-copy.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/master-salve-offline.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/master-salve-offline-copy.png)
      
 ### <a name="103">Redis热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 热点Key：某一件商品被数万次点击、购买时，会形成一个较大的需求量，这种情况下就会产生一个单一的Key，这样就会引起一个热点；同理，当被大量刊发、浏览的热点新闻，热点评论等也会产生热点；另外，在服务端读数据进行访问时，往往会对数据进行分片切分，此类过程中会在某一主机Server上对相应的Key进行访问，当访问超过主机Server极限时，就会导致热点Key问题的产生。

@@ -34,7 +34,7 @@
 
 基本元素：分层架构、实体、值对象、服务、模块、聚合、工厂、资源库
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/structure.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/structure.png)
 
 ## <a name="1">使用DDD场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -47,17 +47,17 @@
 **协同方式转变**：\
 DDD 通过解锁新角色”领域专家"以及模型驱动设计，**有效地降低产品和研发的认知差异**。领域专家是具有丰富行业经验和领域知识储备的人，他们能够在易变的、定制化的需求中提炼出清晰的边界，稳定的、可复用的领域概念和业务规则，并携手产品和研发共同构建出领域模型。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/cooperate.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/cooperate.png)
 
 
 ### <a name="3">领域驱动设计统一过程（DDDRUP）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/dddrup.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/dddrup.png)
 
 ## <a name="4">分层架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/structureIntroduce.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/structureIntroduce.png)
 - 应用层(接入层)：通常用来接收前端(展现层)的请求，转发给领域层获取请求结果，再组装结果返回前端。
 - 基础设施层：作为其他层支撑的存在，最通俗的例子就是searchServ，正常的搜索服务都会集成ElasticSearch或者其他搜索功能，searchSearch封装了与基础服务集成的及细节，只暴露了领域需要的接口。
 > 将一个复杂的程序划分成多个层。为每一个层开发一个内聚的设计，让每个层仅依赖于它底下的那些层。遵照标准的架构模式实现与其上面的那些层的低耦合。将领域模型相关的代码集中到一个层中，把它从用户界面、应用和基础设施代码中隔离开来。领域对象不必再承担显示自己、保存自己、管理应用任务的职责，而是专注于**表达领域模型**。
@@ -67,7 +67,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 用户想要预定一个飞行路线，请求一个位于应用层中的应用服务来做这件事情。应用层从基础设施层中取得相关的领域对象，然后调用它们的相关方法，例如检查与其他已经被预定的飞行线路的安全界限(security margins)。当领域对象执行完所有的检查并将它们的状态修改为“已决定”(decided)之后，应用服务将对象持久化到基础设施中。
 
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/ddd-core.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/ddd-core.png)
 
 ## <a name="5">战略建模</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -90,7 +90,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 在特定的场景下，共享内核不见得不是一种合理的方式。**任何软件设计决策都要考量成本与收益，只有收益高于成本，决策才是合理的**。一般对于一些领域通用的值对象是相对稳定的，这些类型通常属于通用子领域，会被系统中几乎所有的限界上下文复用，那么这些领域模型就适合使用共享内核的方式。共享内核的收益不言而喻，而面临的风险则是共享的领域模型可能产生的变化。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/share-core.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/share-core.png)
 
 ##### <a name="10">客户-供应商(Customer-Supplier)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 当一个限界上下文单向地为另一个限界上下文提供服务时，它们对应的团队就形成了客户方/供应方模式。这是最为常见的团队协作模式，客户方作为下游团队，供应方作为上游团队，二者协作的主要内容包括：
@@ -136,7 +136,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 > 可以将服务实现为一个 Facade。除了这一点，防崩溃层最有可能还需要一个适配器（Adapter）。适配器可以使你将一个类的接口转换成客户端能够理解的另一个接口。
 > 适配器将外部系统的行为包装起来。我们还需要对象和数据转换（object and data conversion），可以使用一个转换器（translator）来完成这个任务。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/anticorruption.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/anticorruption.png)
 
 
 #### <a name="15">大泥球</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -227,7 +227,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 > 例如：一个订单(聚合根)一般会有订单明细(实体)和送货地址(值对象)。这些元素里可以有对聚合根的引用，但是不能相互引用。任何对其它元素的操作都必须通过聚合根来进行。聚合根里的标识是全局的，聚合根里的实体标识是聚合里唯一的本地标识，因为对它的访问都是通过聚合根来操作的。聚合根拥有自己独立的生命周期，其实体的生命周期从属于其所属的聚合，值对象因为只是值而已，并没有生命周期。
 
 一个简单的聚合的案例如下图所示。客户是聚合的根，并且其他所有的对象都是内部的。如果需要地址，一个它的拷贝将被传递到外部对象。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/aggregation.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/aggregation.png)
 
 
 ### <a name="25">工厂(factory)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -244,7 +244,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 提供基于某种条件选择对象的方法，返回属性值符合条件的完全实例化的对象或者一组对象，继而封装实际的存储和查询技术。仅对真正需要直接访问的聚合根提供资源库。让客户程序保持对模型的关注，把所有的对象存储和访问细节委托给资源库。\
 数据驱动强调的是数据结构，也就是通过分析需求，来确定整体数据结构，根据表之间的关系划分服务。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/ddd/repository.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/repository.png)
 
 ## <a name="27">四种模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 失血模型：模型仅仅包含数据的定义和getter/setter方法，业务逻辑和应用逻辑都放到服务层中。这种类在Java中叫POJO，在.NET中叫POCO。

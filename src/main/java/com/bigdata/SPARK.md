@@ -38,11 +38,11 @@ scala>
 ```
 
 - master
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/sparkMaster.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/sparkMaster.jpg)
 
 
 - submit job
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/sparkWoker.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/sparkWoker.jpg)
 
 
 

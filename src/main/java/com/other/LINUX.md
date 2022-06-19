@@ -83,18 +83,18 @@ sdfadf
 
 挂载点：那个进入点的目录我们称为『挂载点』。 
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxFolder.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/linuxFolder.jpg)
 
 ### 权限修改 —— chown、chmod
 - chgrp ：改变文件所属群组
 - chown ：改变文件拥有者
 - chmod ：改变文件的权限, SUID, SGID, SBIT 等等的特性
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxfile.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/linuxfile.jpg)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxfile1.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/linuxfile1.jpg)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/linuxfile2.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/linuxfile2.jpg)
 ## 其他资料
 
 ### 单引号与双引号
@@ -1266,9 +1266,9 @@ sudo mkdir -p /var/log/mongodb
 零拷贝是指数据直接从磁盘文件复制到网卡设备，而无需经过应用程序，减少了内核和用户模式之间的上下文切换。
 
 下面这个过程是不采用零拷贝技术时，从磁盘中读取文件然后通过网卡发送出去的流程，可以看到：经历了 4 次拷贝，4 次上下文切换。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/linux/zero-copy1.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/linux/zero-copy1.png)
 如果采用零拷贝技术（底层通过 sendfile 方法实现），流程将变成下面这样。可以看到：只需 3 次拷贝以及 2 次上下文切换，显然性能更高。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/linux/zero-copy2.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/linux/zero-copy2.png)
 
 
 传统 Read/Write 方式进行网络文件传输，在传输过程中，文件数据实际上是经过了四次 Copy 操作，其具体流程细节如下：

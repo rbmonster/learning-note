@@ -21,7 +21,7 @@
 - 主机部分：运算器、存储器、控制器
 - 外设部分：输入设备、输出设备
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/operatingsystem/nuoyiman.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/nuoyiman.png)
 
 没有配置软件的计算机成为**裸机**，裸机仅仅构成了计算机系统的硬件基础。\
 计算机硬件、软件以及软件的各个部分是一种层次关系。硬件在最底层，其上层是操作系统。通过操作系统供的资源管理功能和方便用户使用的各种功能，把裸机改造成功能更加强大、使用更方便的机器(通常称为虚拟机)。
@@ -33,7 +33,7 @@
 - **有效的控制和管理计算机系统中的中硬件和软件资源**，使之得到更有效的利用。
 - 合理地**组织计算机系统的工作流程**，以改善系统性能。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/operatingsystem/os-level.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/os-level.png)
 
 操作系统的特征：
 1. 并发性：
@@ -73,7 +73,7 @@
 
 系统调用(System call):系统调用把用户程序的请求传到内核，调用相应的内核函数完成所需的处理，并将处理结果返回给对应的应用程序。
 > 操作系统提供的系统调用通常包括：进程管理、文件系统控制(文件读写操作和文件系统操作)、系统控制、内存管理、网络控制、socket控制、用户管理及进程间通信(信号、消息、管道、信号量和共享内存)
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/operatingsystem/core-change.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/core-change.png)
 
 
 ### <a name="3">体系结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -109,7 +109,7 @@
 
 
 进程状态：就绪状态、执行状态、阻塞状态、创建状态、结束状态
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/operatingsystem/process-state.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/process-state.png)
 
 
 ### <a name="6">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -170,7 +170,7 @@
 > 适用于作业调度的算法：先来先服务调度算法、短作业优先调度算法、优先级调度算法、高响应比优先算法
 > 适用于进程调度的算法：先来先服务调度算法、短作业优先调度算法、优先级调度算法、时间片轮转调度算法、多级队列调度算法、多级反馈队列调度算法
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/operatingsystem/multiple-queue-call.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/multiple-queue-call.png)
 
 
 ### <a name="9">经典同步问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -190,7 +190,7 @@
 
 
 # <a name="12">中间件设计资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/systemdesign/disk-memory.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/disk-memory.png)
 
 通常在大部分组件设计时，往往会选择一种主要介质来存储、另一种介质作为辅助使用。就拿 redis 来说，它主要采用内存存储数据，磁盘用来做辅助的持久化。拿 RabbitMQ 举例，它也是主要采用内存存储消息，但也支持将消息持久化到磁盘。而 RocketMQ、Kafka、Pulsar 这种，则是数据主要存储在磁盘，通过内存来主力提升系统的性能。关系型数据库例如 mysql 这种组件也是主要采用磁盘组织数据，合理利用内存提升性能。
 

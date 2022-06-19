@@ -33,7 +33,7 @@
 # <a name="0">java 并发线程相关</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">线程状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadState.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/concurrent/threadState.jpg)
 
 - 新建(NEW): 创建后尚未启动。
 - 可运行(RUNABLE): 正在 Java 虚拟机中运行。但是在操作系统层面，它可能处于运行状态，也可能等待资源调度(例如处理器资源)，资源调度完成就进入运行状态。所以该状态的可运行是指可以被运行，具体有没有运行要看底层操作系统的资源调度。
@@ -60,7 +60,7 @@
 
 - 死亡(TERMINATED): 可以是线程结束任务之后自己结束，或者产生了异常而结束。
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/threadstate.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/threadstate.png)
 
 ### <a name="2">线程方法与状态切换</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -100,7 +100,7 @@ JVM 在背后帮我们做了哪些事情:
 > java -XX:+UnlockDiagnosticVMOptions -XX:NativeMemoryTracking=summary -XX:+PrintNMTStatistics -version
 - 用 Java8 的测试结果，19个线程，预留和提交的大概都是19000+KB，平均每个线程大概需要 1M 左右的大小
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadState2.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/concurrent/threadState2.jpg)
 
 
 ## <a name="4">创建线程的方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -204,7 +204,7 @@ private final ReentrantLock mainLock = new ReentrantLock();
 
 ### <a name="10">线程池状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 线程池的5种状态: Running、ShutDown、Stop、Tidying、Terminated。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadPool.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/concurrent/threadPool.png)
 
  RUNNING
   1. 状态说明: 线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
@@ -251,7 +251,7 @@ corePoolSize: 核心线程数量，当有新任务在`execute()`方法提交时�
 5. 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
 
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/concurrent/threadPoolProcess.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/concurrent/threadPoolProcess.png)
 
 线程池拒绝策略
 1. `ThreadPoolExecutor.AbortPolicy`: 抛出 RejectedExecutionException来拒绝新任务的处理。
@@ -319,7 +319,7 @@ IO密集型，即该任务需要大量的IO，即大量的阻塞。在单线程�
 CPU利用率: `(CPU耗时)/ (I/O耗时 + CPU耗时)`
 
 目前所有方案: 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/threadpoolsetSolution.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/threadpoolsetSolution.jpg)
 
 问题1：
 > 假设要求一个系统的TPS(Transaction Per Second 或者 Task Per Second)至少为20，然后假设每个Transaction由一个线程完成，继续假设平均每个线程处理一个Transaction的时间为4s\
@@ -338,7 +338,7 @@ CPU利用率: `(CPU耗时)/ (I/O耗时 + CPU耗时)`
 
 **增加服务器核心数，与线程间的关系**
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/threadpool1.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/threadpool1.jpg)
 
 > 假设:  1-p=5%  而n趋近于无穷大，实际起作用的最大线程数为20。\
 > 临界区都是串行的，非临界区都是并行的，用单线程执行 临界区的时间/用单线程执行(临界区+非临界区)的时间 就是串行百分比

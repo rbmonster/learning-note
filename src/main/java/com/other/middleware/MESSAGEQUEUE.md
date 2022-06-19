@@ -20,18 +20,18 @@
 
 ## 异步、削峰、解耦
 ### 异步
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/async.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/async.png)
 例子中我们把暂存快递的快递柜比作暂存数据的消息队列。当有了快递柜后，对于快递员而言，每次需要送快递时，只需要将快递投掷到快递柜，然后再通过短信或者电话通知收货人具体的快递信息即可。他就可以继续去派送下一单。而对于收获人而言，也可以根据具体方便的时间来取件。这样一来，二者完全异步了，不用相互等待了。
 > 主要体现的消息队列的消息暂存的功能，使上下游的消息调用可以异步进行。
 
 ### 削峰
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/cut-off.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/cut-off.png)
 
 对于大流量的请求，可以将请求放在消息队列。消息队列可以设置消息的效率频率，匹配服务器的服务能力，解决大流量请求发送服务器导致的服务器宕机问题。\
 如常见的双11等活动，高峰值期间产生的订单消息等数据首先送入到消息队列中暂存，然后供下游系统根据自己的消费能力来逐步处理。同时**这类消息往往对时延的要求不是很高，比较适合采用消息队列暂存**。
 
 ### 解耦
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/divorce.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/divorce.png)
 
 上图最主流的推荐系统中内容的流转过程。在推荐系统中当创作者发布了一条内容后，该内容会首先经过安全部分的相关审核，通过审核后的内容，通常需要进行内容入库存储、送入模型进行特征的计算和生成。\
 假如后期我们想提升推荐的效果，需要单独构建一份冷启动的推荐池，此时也需要用到这部分内容，那问题来了，在没有使用消息队列时，对于上游服务而言，需要通过扩展新的逻辑来实现该功能。在该场景里，会存在依赖三个下游服务，如果其中一个下游服务失败后，该如何处理，是重试还是返回失败等这些细节的处理。如果后期这部分数据还想在其他渠道分发，那又该如何对接。明显这种场景下面临着**系统紧耦合**的问题。\
@@ -133,7 +133,7 @@ public void createOrder() {
 
 此方案的核心是将需要分布式处理的任务通过消息日志的方式来异步执行。消息日志可以存储到本地文本、数据库或消息队列，再通过业务规则自动或人工发起重试。人工重试更多的是应用于支付场景，通过对账系统对事后问题的处理。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/local-message-table.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/local-message-table.png)
 
 本地消息表实现：
 1. 在发送端建立一张用于发送消息专用的数据库表，在必须要发送事务的场景下，更新数据同时插入本地消息表，保证事务的一致性。
@@ -150,7 +150,7 @@ public void createOrder() {
 ## 消息队列选型
 目前主要的消息队列有 ActiveMQ、RabbitMq、Kafka、RocketMq，用的比较多的是Kafka和RocketMq两个，主要这两个都支持10万级的高吞吐量，而且相应的开发社区活跃，遇到源码问题便于维护。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/compare.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/compare.png)
 
 1. ActiveMQ 和 RabbitMQ 二者属于同一量级，在吞吐量上比后面三者差一个量级；
 2. 支持强一致性的有 RocketMQ 和 Pulsar，在对消息一致性要求比较高的场景可以采用这些产品。同时 kafka 虽然会有数据丢失的风险，但其吞吐量比较高同时社区非常活跃，在大数据的绝大部分场景里，都可以采用 kafka
@@ -159,7 +159,7 @@ public void createOrder() {
 
 ## 消息队列背后的设计思想
 ### 消息队列核心模型
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/mq-structure.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/mq-structure.png)
 
 对于一个消息队列而言，从数据流向的维度，可以拆解为三大部分：**生产者、消息队列集群、消费者**，数据是从生产者流向消息队列集群，最终再从消息队列集群流向消费者
 
@@ -180,19 +180,19 @@ public void createOrder() {
 1. 等待推送数据
 2. 主动拉取数据
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/push-pull.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/push-pull.png)
 
 ### 消息队列模型
 消息队列有两种模型：队列模型和发布/订阅模型。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/queue-core.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/queue-core.png)
 
 #### 队列模型
 消费者之间是竞争关系，即每条消息只能被一个消费者消费。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/queueModel.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/queueModel.jpg)
 
 #### 发布订阅模型
 解决一条消息能被多个消费者消费的问题，消息发往一个Topic主题中，所有订阅了这个 Topic 的订阅者都能消费这条消息。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/queueModel2.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/queueModel2.jpg)
 
 消费者模型其实是一个`1:N:M` 的关系，一份数据被N个消费者组独立使用，每个消费者组中有M个消费者进行分摊消费\
 其实这种模型也称为发布订阅模型，对于一条消息而言，**组间广播**、**组内单播**。一条消息只能被一个消费者组中的一个消费者使用。在消费者组内部也存在一些负载均衡的策略。常用的有：轮询、随机、hash、一致性 hash等方案。
@@ -251,7 +251,7 @@ RocketMq中支持导出死信消息以及在控制台上重新发送死信消息
 # Kafka
 ## 基本概念
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/kafka-structure.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/kafka-structure.png)
 
 1. 生产者`Producer`：生产者，负责创建消息，然后投递到 Kafka 集群中，投递时需要指定消息所属的 Topic，同时确定好发往哪个 Partition。
 2. 消费者`Consumer`：消费者，会根据它所订阅的 Topic 以及所属的消费组，决定从哪些 Partition 中拉取消息。
@@ -265,7 +265,7 @@ RocketMq中支持导出死信消息以及在控制台上重新发送死信消息
 7. 消费组`Consumer Group`：一群消费者的集合，向Topic订阅消费消息的单位是Consumers。
 
 ## Kafka 高性能设计技术
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/kafka-advantage.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/kafka-advantage.png)
 
 ### Producer发送端
 1. 批量发送消息。Kafka 采用了批量发送消息的方式，通过将多条消息按照分区进行分组，然后每次发送一个消息集合，从而大大减少了网络传输的`overhead`。
@@ -274,12 +274,12 @@ RocketMq中支持导出死信消息以及在控制台上重新发送死信消息
 3. 高效序列化。支持自定义类型，只需要提供相应的序列化和反序列化器。用户可以根据实际情况选用快速且紧凑的序列化方式（比如 ProtoBuf、Avro）来减少实际的网络传输量以及磁盘存储量，进一步提高吞吐量。
 4. 内存池复用。
     > Producer 一上来就会占用一个固定大小的内存块，比如 64MB，然后将 64 MB 划分成 M 个小内存块（比如一个小内存块大小是 16KB）。当需要创建一个新的 Batch 时，直接从内存池中取出一个 16 KB 的内存块即可，然后往里面不断写入消息，但最大写入量就是 16 KB，接着将 Batch 发送给 Broker ，此时该内存块就可以还回到缓冲池中继续复用了，根本不涉及垃圾回收。
-   ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/kafka-producer.png)
+   ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/kafka-producer.png)
 
 ### Broker存储消息
 1. IO多路复用: kafka采用`Reactor`网络通信模型。
     > `Acceptor`线程，负责监听新的连接。`Processor`线程都有自己的`selector`，负责从`socket`中读写数据。`KafkaRequestHandler`业务处理线程，进行业务处理，然后生成`response`，再交由给`Processor`线程。
-      ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/kafka-broker-connect.png)
+      ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/kafka-broker-connect.png)
 2. 磁盘顺序写。快速的存储消息。kafka本质上就是一个队列，是先进先出的，而且消息一旦生产了就不可变。这种有序性和不可变性使得Kafka完全可以「**顺序写**」日志文件。
     > 对于普通的机械磁盘，如果是随机写入，性能确实极差，也就是随便找到文件的某个位置来写数据。但如果是顺序写入，因为可大大节省磁盘寻道和盘片旋转的时间，因此性能提升了 3 个数量级。
 3. `Page Cache`技术。利用了操作系统本身的缓存技术，在读写磁盘日志文件时，其实操作的都是内存，然后由操作系统决定什么时候将`Page Cache`里的数据真正刷入磁盘。
@@ -332,7 +332,7 @@ ACK 机制：Kafka 采用的是至少一次`At least once`，消息不会丢，�
 | 数据一致性 | 丢失数据风险最高、基本没有一致性 | 丢失数据风险较高 | 丢失数据的风险最低。极端情况(ISR列表为空)时也有丢失数据的风险 |
 
 ### 故障转移过程
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/kafka-collapse.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/kafka-collapse.png)
 > LEO：每个副本最大的 offset。\
   HW：消费者能见到的最大的 offset，ISR 队列中最小的 LEO。
 
@@ -372,7 +372,7 @@ Kafka有两种分配策略，一个是RoundRobin，一个是Range，默认为ran
    > 3. 若消费者数等于`partiton`数，那么每个消费者都会均等分配到一个分区的消息；
    > 4. 若消费者数大于`partiton`数，则将会出现部分消费者得不到消息分区，出现空闲的情况；
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/kafka-partition-consumer.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/kafka-partition-consumer.png)
 
 ### offset
 `offset`(消费进度):表示消费者的消费进度，offset在broker以内部`topic(__consumer_offsets)`的方式来保存起来。
@@ -380,7 +380,7 @@ Kafka有两种分配策略，一个是RoundRobin，一个是Range，默认为ran
 
 ## 分布式的kafka解决节点宕机或者抖动问题
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/kafkaStructure.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/kafkaStructure.jpg)
 - 红色块的Partition代表的是主分区，紫色的Partition块代表的是备份分区。生产者往topic丢数据，是与主分区交互，消费者消费topic的数据，也是与主分区交互。
 - 备份分区仅仅用作于备份，不做读写。如果某个Broker挂了，那就会选举出其他Broker的Partition来作为主分区，这就实现了高可用。
 
@@ -550,7 +550,7 @@ Kafka会将数据写到Partition，单个Partition的写入是有顺序的。如
 - 标签（Tag）：为消息设置的标志，用于同一主题下区分不同类型的消息。来自同一业务单元的消息，可以根据不同业务目的在同一主题下设置不同标签。标签能够有效地保持代码的清晰度和连贯性，并优化RocketMQ提供的查询系统。
 
 ## 基本架构
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/rocketmqAC.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/rocketmqAC.jpg)
 主要包含四部分Producer、Consumer、Broker、NameServer
 
 - Producer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向**提供Topic 服务的Master建立长连接**，且定时向Master发送心跳。
@@ -570,7 +570,7 @@ Kafka会将数据写到Partition，单个Partition的写入是有顺序的。如
 
 ## 事务实现
 RocketMQ采用了2PC的思想来实现了提交事务消息，同时增加一个补偿逻辑来处理二阶段超时或者失败的消息。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/middleware/rocketMqTransaction.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/rocketMqTransaction.jpg)
 
 2pc主要缺点，协调者故障、阻塞、宕机，导致commit消息未全部发送完毕，参与者预提交事务消息请求阻塞。rocketmq引入参与者的回查补偿机制，解决该问题。
 

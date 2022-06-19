@@ -22,7 +22,7 @@
 
 ### 接入网
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/connetNet.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/connetNet.png)
 
 **家庭接入**：数字用户线(Digital Subscriber Line, DSL)和电缆
 > 住户从提供本地电话接入的电话公司获得DSL因特网接入。当使用DSL时，用户的本地电话公司是它的ISP。
@@ -57,7 +57,7 @@
 
 分组交换：从源端系统向目的地端系统发送一个报文，源将长报文划分为较小的数据块。在源和目的地之间，每个分组都通过通信链路和分组交换机传输。
 > 使用统计多路复用
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/packetswitch.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/packetswitch.png)
 
 **存储转发传输**：在交换机能够开始向输出链路传输该分组的第一个比特之前，必须接收到整组。
 > 资源共享，按需使用：存储-转发：分组每次移动一跳(hop)
@@ -70,13 +70,13 @@
 
 电路交换中，在端系统间通信会话期间，预留了端系统间沿路径通信所需要的资源(缓存、链路传输速率)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/circuitswitch.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/circuitswitch.png)
 
 电路交换网络中的复用：\
 **频分复用**(Frequency-Division Multiplexing, FDM)：链路的频率域被划分为多个频段。\
 **时分复用**(Time-Division Multiplexing, TDM)：一条TDM链路，时间被划分为固定期间的帧，并且每个帧又被划分为固定数量的时隙。\
 **波分复用**(Wave-Division Multiplexing,WDM)
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/fdm-tdm.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/fdm-tdm.png)
 
 电路交换不适合计算机之间的通信
 - 连接建立时间长
@@ -103,7 +103,7 @@
 - 对等(peer)：位于相同等级结构层次的邻近一对ISP对等，而不是通过上游的ISP传输，节省通信流量。对等表示两个对等ISP之间无需进行流量结算。
 - 因特网交换点(Internet Exchange Point, IXP)：IXP是一个汇总点，多个ISP能够在这里一起对等。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/isbnetwork.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/isbnetwork.png)
 
 #### 分组交换中的时延、丢包和吞吐量
 
@@ -136,7 +136,7 @@
 
 在每一层一个分组都有两种类型的字段：首部字段和**有效荷载字段(payload field)**
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/layers.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/layers.png)
 
 ### 网络攻击
 
@@ -158,7 +158,7 @@ Web应用程序的两种应用程序体系结构：
 1. CS架构。用户主机 - Web服务器主机的服务器程序，如搜索服务、facebook、instagram
 2. 对等体系结构(P2P)。P2P文件共享系统。参与文件共享的社区中，每台主机中都有一个程序。如BitTorrent、迅雷
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/application-architure.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/application-architure.png)
 
 ### 可供应用程序使用的运输服务
 
@@ -195,7 +195,7 @@ UDP没有拥塞控制机制，所以UDP可以用它选定的**任何速率**向�
 
 在TCP和UDP的描述中，没有对吞吐量和定时保证的讨论，这两个指标要求，目前的因特网运输协议并没有提供。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/applicationAndProtocol.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/applicationAndProtocol.png)
 
 ### 应用层协议
 
@@ -217,7 +217,7 @@ web的应用层协议是超文本传输协议(HyperText Transfer Protocol, HTTP)
 - 无状态的协议(不保存客户的信息)
 - 默认使用持续连接方式，支持配置非持续连接方式
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/httpRequestResponse.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/httpRequestResponse.png)
 
 #### 非持续连接和持续连接
 
@@ -263,7 +263,7 @@ Accept-language: fr
 `Accept-language: fr`\
 首部行Accept-language：表示语言版本
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/generalFormatHttp.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/generalFormatHttp.png)
 
 - Request line：请求行
 - Header lines：多个首部行
@@ -315,7 +315,7 @@ Content-Type: text/html
 - 404 Not Found：被请求的文档不再服务器上。
 - 505 HTTP Version Not Supported: 服务器不支持报文使用的HTTP版本
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/generalFormatHttpResponse.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/generalFormatHttpResponse.png)
 
 #### 用户与服务器的交互：cookie
 
@@ -329,13 +329,13 @@ cookie设计的4个组件：
 4. 位于Web站点的一个后台数据库。
 
 交互过程：
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/keepingUserStateWithCookie.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/keepingUserStateWithCookie.png)
 
 #### 代理服务器
 
 Web缓存器(Web cache) 也加代理服务器(proxy server)，它是能够代表初始Web服务器来满足HTTP技术的网络实体。Web缓存器有自己的磁盘存储空间，并在存储空间中保存最近请求过的对象的副本。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/webCache.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/webCache.png)
 交互过程：
 
 1. 浏览器创建一个到Web缓存器的TCP连接，并发起HTTP请求。
@@ -350,7 +350,7 @@ Web缓存器的好处：
 
 例子：
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/webCacheExample.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/webCacheExample.png)
 
 Institutional network为一个高速的100 Mbps的内部局域网，接入因特网的带宽为15 Mbps，假设机构内部`15请求/秒`，每个请求传输1M的数据
 
@@ -385,7 +385,7 @@ Server: Apache/1.3.0 (Unix)
 
 ### 因特网的电子邮件
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/internetEmailSystem.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/internetEmailSystem.png)
 
 电子邮件系统的总体组成：
 1. 用户代理(user agent)
@@ -410,7 +410,7 @@ SMTP是用于从发送方的邮件服务器发送报文到接收方的邮件服�
 
 报文必须为7位ASCII编码，英文看得懂
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/mailcommunicate.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/mailcommunicate.png)
 
 流程简述:
 1. 从发送方Alice的用户代理开始，调用邮件代理程序并提供Bob的邮件地址，进行发送。
@@ -447,12 +447,12 @@ SMTP与Http的比较：
 - HTTP：每个对象封装在各自的响应报文中。一个request一个obj
 - SMTP：多个对象包含在一个报文中。一个request包含多个obj，如邮件报文、附件、图片。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/smtpformat.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/smtpformat.png)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/smtpformatExtend.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/smtpformatExtend.png)
 
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/emailcommunicate-protocol.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/emailcommunicate-protocol.png)
 
 
 #### 邮件DNS路由过程
@@ -475,7 +475,7 @@ SMTP服务器基于DNS中的MX记录来路由电子邮件，MX记录注册了域
 - MRA（Mail Receive Agent）: 负责实现IMAP与POP3协议，与MUA进行交互；相当于让你的邮件账户支持离线邮件收取，而不是电脑打开才能收取邮件。
 > MAA（Mail Access Agent）邮件访问代理 用于将用户连接到系统邮件库，使用POP或IMAP协议收取邮件。Linux下常用的MAA有UW-IMAP，Cyrus-IMAP，COURIER-IMAP等邮件中继:就是当邮件向目的地址传输时，一旦源地址和目的地址都不是本地系统，那么本地系统就是邮件的中继（中转站）
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/email-lifecycle.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/email-lifecycle.png)
 
 
 
@@ -593,12 +593,12 @@ DNS服务器大致可以分为3种类型
 - 权威DNS服务器(authoritative DNS servers)
   ：在因特网上具有公共可访问主机的每个组织机构必须提供公共可访问的DNS记录，这些记录将主机名映射成IP地址。实现的方式有两种，一是实现自己的DNS服务器，另一种是支付费用，让某个服务提供商的DNS服务器帮忙记录。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/hierarchyDNSServers.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/hierarchyDNSServers.png)
 
 在更下层的中还有**本地DNS服务器**(local DNS server)
 ，对于居民区ISP，本地DNS服务通常与主机相隔不超过几个路由器。当主机发出DNS请求时，该请求被发往本地DNS服务器，该服务器起着代理作用，并转发请求到DNS服务层次结构中。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/interactionOfDNSServer.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/interactionOfDNSServer.png)
 
 1. 用户请求主机，发向本地DNS服务器。
 2. 本地DNS，请求根DNS获取地址
@@ -635,7 +635,7 @@ TTL是记录的生存时间，Type类型可以分为4大类：
 
 #### DNS报文
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/DNSMessageFormat.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/DNSMessageFormat.png)
 
 #### DNS脆弱性
 
@@ -679,7 +679,7 @@ TCP套接字是由一个四元组(源IP地址、源端口号、目的IP地址、
 > TCP套接字的四元组，用于标识连接，如果报文段的四元组都相同，则被分配到相同的套接字。
 
 如下图，`client C`有两个不同的端口连接到`server B`，根据TCP套接字四元组，`server B`可以区分不同的连接
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/clientCommunication.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/clientCommunication.png)
 
 ⚠️连接套接字与进程之间并非总是有着一一对应的关系，如今的高性能的web服务器通常使用一个进程，但是为每个新的客户创建一个具有**新连接套接字的新线程**。
 
@@ -708,11 +708,11 @@ UDP除了复用/分解即少量的差错检测外，该协议几乎没有对IP�
 > 每个TCP报文段都有20字节的首部开销，而UDP仅有8个字节的开销。
 
 UDP常用于承载网络管理数据(SNMP)，因为网络管理应用程序通常必须在该网络处于重压状态时运行，而这时候可靠、拥塞受控的数据传输难以实现。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/popularApplicationAndProtocol.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/popularApplicationAndProtocol.png)
 
 #### UDP报文段结构
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/udpSegment.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/udpSegment.png)
 
 UDP首部只有4个字段，每个字段由2个字节组成。
 
@@ -726,7 +726,7 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 
 ### 可靠数据传输协议原理
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/reliableDataTransfer.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/reliableDataTransfer.png)
 
 可靠数据传播协议的**服务抽象**(reliable data transfer protocol)：数据可以通过一条可靠的信道传输。借助于可靠信道，传输数据比特就不会收到损坏或丢失，而且所有数据都是按照其发送顺序进行交付。
 
@@ -785,7 +785,7 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 - 配合定时器机制，引入接收端的**冗余数据分组**(duplicate data packet)
 
 `rtd3.0`的传输过程：a-无丢包操作、b-分组丢失、c-丢失ACK、d-过早超时
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/rtd3.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/rtd3.png)
 
 #### 流水线可靠数据传输协议
 
@@ -800,14 +800,14 @@ UDP提供了差错检测原因：不能保证源和目的之间的所有链路�
 
 解决流水线差错恢复的方法：回退N步、选择重传
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/piplineCompare.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/piplineCompare.png)
 
 ##### 回退N步(Go-Back-N,GBN)
 
 回退N步协议：允许发送方**发送多个分组而不需等待确认**，但是受限于流水线中未确认的分组数不能**超过某个最大允许数N**。
 > N常被称为**窗口长度**，GBN协议也常被称为**滑动窗口协议**(sliding-window protocol)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/gbn.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/gbn.png)
 
 实现：
 
@@ -826,7 +826,7 @@ GBN协议中，接收方丢弃所有失序分组。\
 接收方维护变量：expectedseqnum
 
 运行中的GBN，失序的分组丢弃并返回当前累积确认的最后一个分组序号的ACK
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/gbnOpt.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/gbnOpt.png)
 
 GBN协议潜在地允许发送发用多个分组"填充流水线"，因此避免了停等协议中所提到的信道利用率问题。但是GBN本身也存在着性能问题，尤其是当窗口长度和带宽时延积都很大时。单个分组的差错就能引起GBN重传大量分组，许多分组根本没有必要重传。
 
@@ -835,7 +835,7 @@ GBN协议潜在地允许发送发用多个分组"填充流水线"，因此避免
 选择重传(SR)协议通过让发送方**仅重传**那些怀疑在接收端出错(即丢失或受损)的分组而避免了不必要的重传。接收方需要对于正确接收的分组逐个确认。同时再次用窗口长度N来限制流水线中未完成、未被确认的分组数。
 
 接收及发送流程，与GBN区别是接收方已接收到某些分组的ACK。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/selectRepeat.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/selectRepeat.png)
 
 SR发送方事件与动作:
 
@@ -851,7 +851,7 @@ SR接收方事件与动作:
 3. 其他情况，忽略接收到的分组。
 
 SR接收方将确认一个正确接收的分组而不管其是否按序。失序的分组将被缓存直到所有丢失分组(及序号更小分组)皆被接收为止，**这时才可以将一批分组按序交付给上层**。
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/SROpt.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/SROpt.png)
 
 问题：接收方为啥要做`rcv_base-N` ~ `rcv_base-1` 的分组重复确认？\
 有可能接收方发送的ACK，发送方没接收到。
@@ -877,7 +877,7 @@ SR接收方将确认一个正确接收的分组而不管其是否按序。失序
 - 否定机制
 - 窗口、流水线
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/summaryOfReliable.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/summaryOfReliable.png)
 
 ### 面向连接的TCP
 
@@ -908,7 +908,7 @@ MSS通常根据最初确定的由本地发送主机发送的最大链路层长�
     - SYN
     - FIN
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpSegmentStructure.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpSegmentStructure.png)
 
 **序号与确认号**
 
@@ -926,7 +926,7 @@ TCP把数据看成一个无结构的、有序的数据流。序号是建立在�
 
 > 整体的交互过程是发送的数据的同时携带确认号，进行**累积确认**。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/seqACK.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/seqACK.png)
 
 #### 往返时间RTT的估计与超时
 
@@ -960,13 +960,13 @@ TCP在IP(不可靠的尽力而为服务)服务之上构建了一种**可靠传�
 
 确认丢失导致重传
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpAckLost.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpAckLost.png)
 
 segment 100没有重传
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpSegment1.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpSegment1.png)
 
 累积确认避免了第一个报文段的重传
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpAvoidRetransmission.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpAvoidRetransmission.png)
 
 TCP发送方处理的三个主要事件：
 1. 从上层应用程序接收数据，将数据封装到一个报文段中，并将报文段交给IP。报文段的序号为报文段中第一个数据字节的字节流编码
@@ -981,7 +981,7 @@ TCP发送方处理的三个主要事件：
 > 因为TCP不使用否定确认，通过对已经接收到的最后一个按序字节数据进行重复确认(产生冗余ACK)，进而提示发送端进行重传。TCP接收方对相同数据接收到3个冗余ACK，就执行快速重传。\
 > 为啥等待3个冗余ACK才开始重传？ 网络传输是不可靠的，丢包、乱序和复制等情况，如果出现三次以上DupAck的就认为丢包的可能性很高，可以进入快速重传机制。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpFastRetransmit.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpFastRetransmit.png)
 
 RFC 5681 产生ACK的建议：
 1. 延迟ACK：对另一个按序报文段的到达最多等待500ms。如果下一个按序报文段在这个事件间隔没有到达，则发送一个ACK。
@@ -1014,7 +1014,7 @@ TCP通过若昂发送方维护一个称为接收窗口(receive window)的变量�
 `rwnd = RcvBuffer- [LastByteRcvd - LastByteRead]`\
 由于该空间是随着事件变化的，所以rwnd是动态的。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpReceiveWindow.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpReceiveWindow.png)
 
 发送端控制通过满足如下公式，就可以保证发送主机不会使接收主机的缓存溢出：
 `LastByteSend - LastByteAcked <= rwnd`
@@ -1023,10 +1023,10 @@ TCP通过若昂发送方维护一个称为接收窗口(receive window)的变量�
 #### TCP的连接管理
 
 TCP client状态转换序列
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpClientState.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpClientState.png)
 
 TCP server状态转换序列
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpServerState.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpServerState.png)
 
 ##### TCP三次握手
 
@@ -1046,7 +1046,7 @@ TCP server状态转换序列
     - 因为连接已经建立，首部标志位SYN置为0
     - 确认号ACK设置为`server_isn+1`， 序号设置为`client_isn+1`
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpThreeWayHandshake.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpThreeWayHandshake.png)
 
 ##### TCP四次挥手
 
@@ -1055,7 +1055,7 @@ TCP server状态转换序列
 - server发送**自己**的FIN报文段，将报文段首部的FIN设置为1
 - client接收返回FINACK报文段，对FIN报文进行确认
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpCloseConnect.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpCloseConnect.png)
 
 ##### TCP SYN洪泛攻击
 
@@ -1122,7 +1122,7 @@ TCP拥塞控制算法：慢启动、拥塞避免、快速恢复。
 
 快速恢复的FSM转换： 当出现超时事件，cwnd值设置为1，sshresh更新为cwnd值一半，进入慢启动模式。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/tcpCongestionControl.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/tcpCongestionControl.png)
 
 
 #### 其他
@@ -1134,7 +1134,7 @@ TCP拥塞控制算法：慢启动、拥塞避免、快速恢复。
 
 ## 网络层
 网络层的协议：
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/networkLayer.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/networkLayer.png)
 
 
 **网络层数据平面**：网络层中每台路由器的功能，该数据平面功能决定到达路由器**输入链路**之一的数据报(即网络层的分组)如何转发到该路由器的**输出链路**之一。一个局部的控制。
@@ -1159,7 +1159,7 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 - 交换机构
 - 输出端口
 - 路由选择处理器
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/routerArchitecture.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/routerArchitecture.png)
 
 
 路由器使用分组目标路径的前缀与转发表进行**最长前缀匹配**，确定输出端口方向。
@@ -1186,7 +1186,7 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 - 加权公平排队(Weighted Fair Queuing, WFQ)：每个队列有对应的权重，概率被服务的概率
 
 ### IPv4
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/ipv4Format.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/ipv4Format.png)
 
 - 版本号(version): IP协议的版本
 - 首部长度(header length)
@@ -1210,9 +1210,9 @@ SDN方式：逻辑集中的控制平面，使用统一的远程控制器下发**
 **子网**(subnetwork)：要判断一个子网，将每一个接口从主机或者路由器上分开，构成一个个网络孤岛。交互无需经过路由器。\
 **子网掩码**(network mask)：如`233.1.1.0/24`的地址分配，其中`/24`的记法，有时称为子网掩码。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/ipClassify.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/ipClassify.png)
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/ipSpecial.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/ipSpecial.png)
 
 内网(专用)IP地址
 - 专用地址：地址空间的一部份供专用地址使用
@@ -1246,13 +1246,13 @@ DHCP工作概况:
 - DHCP服务器发送地址：“DHCP ack” 报文
 
 DHCP客户-服务器交互
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/dhcp.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/dhcp.png)
 
 
 #### 网络地址转换
 网络地址转换(Network Address Translation, NAT) 所有离开本地网络的数据报具有一个 相同的源地址NAT 如`IP address:138.76.29.7`, 但是具有不同的端口号
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/natProcess.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/natProcess.png)
 
 
 对NAT是有争议的:
@@ -1267,7 +1267,7 @@ DHCP客户-服务器交互
 
 ### IPv6
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/ipv6Format.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/ipv6Format.png)
 特点：
 - 扩大的地址容量：将IP地址长度从32比特增加到128比特
 - 简化高效的40字节首部
@@ -1341,7 +1341,7 @@ SDN控制平面和数据平面分离的优势:
 > 2)基于流表的匹配+行动的工作方式允许“可编程的”分组交换机
 3. 实现流量工程等高级特性：在此框架下实现各种新型（未来）的网络设备
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/sdn.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/sdn.png)
 
 
 #### 流表OpenFlow
@@ -1354,7 +1354,7 @@ SDN控制平面和数据平面分离的优势:
 - 优先权Priority: 几个模式匹配了，优先采用哪个，消除歧义
 - 计数器Counters: #bytes 以及 #packets
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/openFlowFormat.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/openFlowFormat.png)
 
 match+action: 统一化各种网络设备提供的功能
 - 路由器：match: 最长前缀匹配。action: 通过一条链路转发。
@@ -1363,11 +1363,11 @@ match+action: 统一化各种网络设备提供的功能
 - NAT：match: IP地址和端口号。action: 重写地址和端口号。
 > 目前几乎所有的网络设备都可以在这个 匹配+行动模式框架进行描述，具体化为各种网络设备包括未来的网络设备
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/openFlowExample.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/openFlowExample.png)
 
 ### SDN 数据平面与控制平面交互
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/sdn-example.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/sdn-example.png)
 
 
 ### 控制平面路由选择算法
@@ -1388,7 +1388,7 @@ match+action: 统一化各种网络设备提供的功能
 - 到了这个路由器就是到了这个网络
 
 网络的图抽象\
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/networkAbstract.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/networkAbstract.png)
 
 路由的输入：拓扑、边的代价、源节点\
 输出的输出：源节点的汇集树
@@ -1396,7 +1396,7 @@ match+action: 统一化各种网络设备提供的功能
 汇集树(sink tree)
 - 此节点到所有其它节点的最优路径形成的树
 - 路由选择算法就是为所有路由器找到并使用汇集树
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/sinkTree.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/sinkTree.png)
 
 路由选择算法的原则
 - 正确性(correctness): 算法必须是**正确**的和**完整**的,使分组一站一站接力，正确发向目标站；完整指的是目标所有的站地址，在路由表中都能找到相应的表项；没有处理不了的目标站地址；
@@ -1509,7 +1509,7 @@ RIP 基于Distance vector算法，距离矢量为每条链路`cost=1，# of hops
 - 区域边界路由器: “汇总（聚集）”到自己区域内网络的距离, 向其它区域边界路由器通告. 
 - 骨干路由器: 仅仅在骨干区域内，运行OSPF路由
 - 边界路由器: 连接其它的AS’s.
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//other/networkbook/ospfLevel.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/networkbook/ospfLevel.png)
 
 #### 层次路由
 

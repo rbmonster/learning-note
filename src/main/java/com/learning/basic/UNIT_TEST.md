@@ -11,11 +11,11 @@
 ## 单元测试相关方法论
 测试金字塔里的单元测试：
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/unitTestTower.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/unitTestTower.png)
 
 
 不同测试方法比较：
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//learning/basic/UTCompare.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/UTCompare.png)
 
 ### 优缺点分析
 优点：

@@ -29,13 +29,13 @@ java中只要是字符，不管是数字还是英文还是汉字，都占两个�
 完全可以使用内存的方案来解决，即直接将所有词汇load到内存中。
 
 假如存在上千万条的词汇，那么在上述数据量 1.9M*1000*n 会需要几个G的内存资源就要考虑非内存的其他的方案。
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/character.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/character.jpg)
 
 
 ## <a name="2">DFA算法 (Deterministic Finite Automaton)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 基本思想是基于状态转移来检索敏感词，只需要扫描一次待检测文本，就能对所有敏感词进行检测。
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note//design/sensitiveStructure.jpg)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/sensitiveStructure.jpg)
 将敏感词库中相同前缀的词构建成了一个树形结构
 
 在java 中以HashMap结构进行存储
