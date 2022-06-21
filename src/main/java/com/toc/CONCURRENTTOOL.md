@@ -43,7 +43,7 @@ AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高�
 3. CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）
 4. 通过自旋+CAS获取共享资源，如果获取失败则调用调用native方法 进入park 状态。
 
-```java
+```text
 /** waitStatus value to indicate thread has cancelled */
 static final int CANCELLED =  1;
 /** waitStatus value to indicate successor's thread needs unparking */

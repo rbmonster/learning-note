@@ -86,7 +86,7 @@ def search(path="", name=""):
         item_path = os.path.join(path, item)
         if os.path.isdir(item_path):
             search(item_path, name)
-        elif os.path.isfile(item_path):
+        elif os.path.isfile(item_path) and item_path.find('toc') == -1:
             if name in item:
                 global result
                 result.append(item_path)

@@ -10,11 +10,11 @@ import java.util.Scanner;
  * </pre>
  *
  * @version v1.0
- * @ClassName: Soluction
+ * @ClassName: Solution
  * @Author: 86159
  * @Date: 2020/4/1 20:17
  */
-public class Soluction {
+public class Solution {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         int n = input.nextInt();
@@ -25,7 +25,7 @@ public class Soluction {
             births.add(input.nextInt());
         }
         int time = input.nextInt();
-        int a = new Soluction().birthChild(n,1,time, m,births);
+        int a = new Solution().birthChild(n,1,time, m,births);
         System.out.println(a);
     }
 

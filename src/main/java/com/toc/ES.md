@@ -13,73 +13,76 @@
 &emsp;&emsp;&emsp;<a href="#10">1.2.1. 更新文档</a>  
 &emsp;&emsp;&emsp;<a href="#11">1.2.2. 乐观并发控制</a>  
 &emsp;&emsp;<a href="#12">1.3. 集群</a>  
-&emsp;&emsp;<a href="#13">1.4. 分片</a>  
-&emsp;&emsp;&emsp;<a href="#14">1.4.1. 路由过程</a>  
-&emsp;&emsp;&emsp;<a href="#15">1.4.2. 主分片与副本分片交互</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#16">1.4.2.1. 新建，索引和删除文档</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#17">1.4.2.2. 查询请求交互</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#18">1.4.2.3. 局部更新文档</a>  
-&emsp;&emsp;&emsp;<a href="#19">1.4.3. 分页查询工作流程</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#20">1.4.3.1. 查询阶段</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#21">1.4.3.2. 取回阶段</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#22">1.4.3.3. 搜索选项</a>  
-&emsp;&emsp;&emsp;<a href="#23">1.4.4. 分片内部原理</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#24">1.4.4.1. 不变性</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#25">1.4.4.2. 动态更新索引</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#26">1.4.4.3. 持久化与段合并</a>  
-&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#27">1.4.4.3.1. translog</a>  
-&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#28">1.4.4.3.2. 段合并</a>  
-&emsp;&emsp;<a href="#29">1.5. 搜索</a>  
-&emsp;&emsp;&emsp;<a href="#30">1.5.1. 搜索相关的优化</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#31">1.5.1.1. 查询语句权重改变</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#32">1.5.1.2. 最佳字段查询调优</a>  
-&emsp;&emsp;<a href="#33">1.6. 排序</a>  
-&emsp;&emsp;<a href="#34">1.7. 深度分页</a>  
-&emsp;&emsp;&emsp;<a href="#35">1.7.1. 游标查询Scroll</a>  
-&emsp;&emsp;&emsp;<a href="#36">1.7.2. search after</a>  
-&emsp;&emsp;&emsp;<a href="#37">1.7.3. 总结</a>  
-&emsp;&emsp;&emsp;<a href="#38">1.7.4. 参考资料</a>  
-&emsp;&emsp;<a href="#39">1.8. 聚合</a>  
-&emsp;&emsp;<a href="#40">1.9. 相关性</a>  
-&emsp;&emsp;<a href="#41">1.10. 倒排索引</a>  
-&emsp;&emsp;&emsp;<a href="#42">1.10.1. 倒排索引创建</a>  
-&emsp;&emsp;&emsp;<a href="#43">1.10.2. 搜索过程</a>  
-&emsp;&emsp;&emsp;<a href="#44">1.10.3. 倒排索引优化</a>  
-&emsp;&emsp;&emsp;<a href="#45">1.10.4. ES中分词</a>  
-&emsp;&emsp;<a href="#46">1.11. Doc Values</a>  
-&emsp;&emsp;&emsp;<a href="#47">1.11.1. 结构</a>  
-&emsp;&emsp;&emsp;<a href="#48">1.11.2. 存储优化</a>  
-&emsp;<a href="#49">2. docker 安装</a>  
-&emsp;&emsp;<a href="#50">2.1. elasticsearch 安装</a>  
-&emsp;&emsp;<a href="#51">2.2. ik分词器安装</a>  
-&emsp;&emsp;&emsp;<a href="#52">2.2.1. 在线安装</a>  
-&emsp;&emsp;&emsp;<a href="#53">2.2.2. 离线安装</a>  
-&emsp;&emsp;&emsp;<a href="#54">2.2.3. 分词器测试</a>  
-&emsp;<a href="#55">3. linux http基本操作命令</a>  
-&emsp;&emsp;<a href="#56">3.1. 基本操作</a>  
-&emsp;&emsp;<a href="#57">3.2. 索引创建与新增元素</a>  
-&emsp;&emsp;<a href="#58">3.3. 查询</a>  
-&emsp;<a href="#59">4. kibana 命令行操作</a>  
-&emsp;&emsp;<a href="#60">4.1. 创建索引</a>  
-&emsp;&emsp;<a href="#61">4.2. 中文分词</a>  
-&emsp;&emsp;&emsp;<a href="#62">4.2.1. ik_max_word</a>  
-&emsp;&emsp;&emsp;<a href="#63">4.2.2. ik_smart</a>  
-&emsp;&emsp;&emsp;<a href="#64">4.2.3. 最佳实践</a>  
-&emsp;&emsp;<a href="#65">4.3. 手动插入数据</a>  
-&emsp;&emsp;<a href="#66">4.4. 查询</a>  
-&emsp;&emsp;&emsp;<a href="#67">4.4.1. 字段类型</a>  
-&emsp;&emsp;&emsp;<a href="#68">4.4.2. filter and query</a>  
-&emsp;&emsp;<a href="#69">4.5. 索引新增字段</a>  
-&emsp;&emsp;<a href="#70">4.6. 更改字段类型为 multi_field</a>  
-&emsp;&emsp;<a href="#71">4.7. 其他</a>  
-&emsp;<a href="#72">5. shard & replica</a>  
-&emsp;&emsp;<a href="#73">5.1. primary shard 主分片</a>  
-&emsp;&emsp;<a href="#74">5.2. replica shard 副本分片</a>  
-&emsp;<a href="#75">6. spring 集成</a>  
-&emsp;<a href="#76">7. 面试题</a>  
-&emsp;&emsp;<a href="#77">7.1. ES 的分布式架构原理</a>  
-&emsp;&emsp;<a href="#78">7.2. ES 生产集群的部署架构是什么？每个索引的数据量大概有多少？每个索引大概有多少个分片？</a>  
-&emsp;&emsp;<a href="#79">7.3. ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？</a>  
+&emsp;&emsp;&emsp;<a href="#13">1.3.1. 发现机制</a>  
+&emsp;&emsp;&emsp;<a href="#14">1.3.2. 脑裂问题</a>  
+&emsp;&emsp;<a href="#15">1.4. 分片</a>  
+&emsp;&emsp;&emsp;<a href="#16">1.4.1. 路由过程</a>  
+&emsp;&emsp;&emsp;<a href="#17">1.4.2. 主分片与副本分片交互</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#18">1.4.2.1. 新建，索引和删除文档</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#19">1.4.2.2. 查询请求交互</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#20">1.4.2.3. 局部更新文档</a>  
+&emsp;&emsp;&emsp;<a href="#21">1.4.3. 分页查询工作流程</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#22">1.4.3.1. 查询阶段</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#23">1.4.3.2. 取回阶段</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#24">1.4.3.3. 搜索选项</a>  
+&emsp;&emsp;&emsp;<a href="#25">1.4.4. 分片内部原理</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#26">1.4.4.1. 不变性</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#27">1.4.4.2. 动态更新索引</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#28">1.4.4.3. 持久化与段合并</a>  
+&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#29">1.4.4.3.1. translog</a>  
+&emsp;&emsp;&emsp;&emsp;&emsp;<a href="#30">1.4.4.3.2. 段合并</a>  
+&emsp;&emsp;<a href="#31">1.5. 搜索</a>  
+&emsp;&emsp;&emsp;<a href="#32">1.5.1. 搜索相关的优化</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#33">1.5.1.1. 查询语句权重改变</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#34">1.5.1.2. 最佳字段查询调优</a>  
+&emsp;&emsp;&emsp;<a href="#35">1.5.2. 排序</a>  
+&emsp;&emsp;<a href="#36">1.6. 深度分页</a>  
+&emsp;&emsp;&emsp;<a href="#37">1.6.1. 游标查询Scroll</a>  
+&emsp;&emsp;&emsp;<a href="#38">1.6.2. search after</a>  
+&emsp;&emsp;&emsp;<a href="#39">1.6.3. 总结</a>  
+&emsp;&emsp;&emsp;<a href="#40">1.6.4. 参考资料</a>  
+&emsp;&emsp;<a href="#41">1.7. 聚合</a>  
+&emsp;&emsp;<a href="#42">1.8. 相关性</a>  
+&emsp;&emsp;<a href="#43">1.9. 倒排索引</a>  
+&emsp;&emsp;&emsp;<a href="#44">1.9.1. 倒排索引创建</a>  
+&emsp;&emsp;&emsp;<a href="#45">1.9.2. 搜索过程</a>  
+&emsp;&emsp;&emsp;<a href="#46">1.9.3. 倒排索引优化</a>  
+&emsp;&emsp;&emsp;<a href="#47">1.9.4. ES中分词</a>  
+&emsp;&emsp;<a href="#48">1.10. Doc Values</a>  
+&emsp;&emsp;&emsp;<a href="#49">1.10.1. 结构</a>  
+&emsp;&emsp;&emsp;<a href="#50">1.10.2. 存储优化</a>  
+&emsp;<a href="#51">2. docker 安装</a>  
+&emsp;&emsp;<a href="#52">2.1. elasticsearch 安装</a>  
+&emsp;&emsp;<a href="#53">2.2. ik分词器安装</a>  
+&emsp;&emsp;&emsp;<a href="#54">2.2.1. 在线安装</a>  
+&emsp;&emsp;&emsp;<a href="#55">2.2.2. 离线安装</a>  
+&emsp;&emsp;&emsp;<a href="#56">2.2.3. 分词器测试</a>  
+&emsp;<a href="#57">3. linux http基本操作命令</a>  
+&emsp;&emsp;<a href="#58">3.1. 基本操作</a>  
+&emsp;&emsp;<a href="#59">3.2. 索引创建与新增元素</a>  
+&emsp;&emsp;<a href="#60">3.3. 查询</a>  
+&emsp;<a href="#61">4. kibana 命令行操作</a>  
+&emsp;&emsp;<a href="#62">4.1. 创建索引</a>  
+&emsp;&emsp;<a href="#63">4.2. 中文分词</a>  
+&emsp;&emsp;&emsp;<a href="#64">4.2.1. ik_max_word</a>  
+&emsp;&emsp;&emsp;<a href="#65">4.2.2. ik_smart</a>  
+&emsp;&emsp;&emsp;<a href="#66">4.2.3. 最佳实践</a>  
+&emsp;&emsp;<a href="#67">4.3. 手动插入数据</a>  
+&emsp;&emsp;<a href="#68">4.4. 查询</a>  
+&emsp;&emsp;&emsp;<a href="#69">4.4.1. 字段类型</a>  
+&emsp;&emsp;&emsp;<a href="#70">4.4.2. filter and query</a>  
+&emsp;&emsp;<a href="#71">4.5. 索引新增字段</a>  
+&emsp;&emsp;<a href="#72">4.6. 更改字段类型为 multi_field</a>  
+&emsp;&emsp;<a href="#73">4.7. 其他</a>  
+&emsp;<a href="#74">5. shard & replica</a>  
+&emsp;&emsp;<a href="#75">5.1. primary shard 主分片</a>  
+&emsp;&emsp;<a href="#76">5.2. replica shard 副本分片</a>  
+&emsp;<a href="#77">6. spring 集成</a>  
+&emsp;<a href="#78">7. 面试题</a>  
+&emsp;&emsp;<a href="#79">7.1. ES 的分布式架构原理</a>  
+&emsp;&emsp;<a href="#80">7.2. ES 生产集群的部署架构是什么？每个索引的数据量大概有多少？每个索引大概有多少个分片？</a>  
+&emsp;&emsp;<a href="#81">7.3. ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？</a>  
+&emsp;<a href="#82">8. 参考资料</a>  
 # <a name="0">elasticsearch </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 elasticsearch，基于lucene，隐藏复杂性，提供简单易用的restful api接口、java api接口（还有其他语言的api接口）。
 Elasticsearch 是分布式的**文档**存储。它能存储和检索复杂的数据结构——以**实时**的方式。 换句话说，一旦一个文档被存储在 Elasticsearch 中，它就是可以被集群中的任意节点检索到。
@@ -117,6 +120,9 @@ Elasticsearch 是分布式的**文档**存储。它能存储和检索复杂的�
 创建索引的方式分为两种
 1. 通过索引文档的方式直接创建一个新的索引，新的字段通过动态映射的方式被添加到类型映射中。
 2. 手动创建索引
+> 采用动态映射是不能精确做到这些的，自动识别常常会与我们期望的有些差异。
+
+
 
 ```
 索引文档：
@@ -380,22 +386,70 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 |ingest	          | node.ingest | true|
 |coordinating only |	无 |	设置上面三个参数全部为false|
 
-### <a name="13">分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="13">发现机制</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Elasticsearch 默认被配置为使用单播发现，以防止节点无意中加入集群。只有在同一台机器上运行的节点才会自动组成集群。
 
-#### <a name="14">路由过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+> 为什么不使用组播？\
+> 虽然组播仍然 作为插件提供， 但它应该永远不被使用在生产环境了，否则你得到的结果就是一个节点意外的加入到了你的生产环境，仅仅是因为他们收到了一个错误的组播信号。 对于组播 本身 并没有错，组播会导致一些愚蠢的问题，并且导致集群变的脆弱（比如，一个网络工程师正在捣鼓网络，而没有告诉你，你会发现所有的节点突然发现不了对方了）。
+
+使用单播，你可以为 Elasticsearch 提供一些它应该去尝试连接的节点列表。 当一个节点联系到单播列表中的成员时，它就会得到整个集群所有节点的状态，然后它会联系 master 节点，并加入集群。
+
+这意味着你的单播列表不需要包含你的集群中的所有节点， 它只是需要足够的节点，当一个新节点联系上其中一个并且说上话就可以了。如果你使用 master 候选节点作为单播列表，**你只要列出三个就可以了**。
+
+#### <a name="14">脑裂问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+如果由于网络或其他原因导致集群中选举出多个 Master 节点，使得数据更新时出现不一致，这种现象称之为脑裂，即集群中不同的节点对于 Master 的选择出现了分歧，出现了多个 Master 竞争。
+
+“脑裂”问题可能有以下几个原因造成：
+
+- **网络问题**： 集群间的网络延迟导致一些节点访问不到 Master，认为 Master 挂掉了从而选举出新的 Master，并对 Master 上的分片和副本标红，分配新的主分片。
+- **节点负载**： 主节点的角色既为 Master 又为 Data，访问量较大时可能会导致 ES 停止响应（假死状态）造成大面积延迟，此时其他节点得不到主节点的响应认为主节点挂掉了，会重新选取主节点。
+- **内存回收**： 主节点的角色既为 Master 又为 Data，当 Data 节点上的 ES 进程占用的内存较大，引发 JVM 的大规模内存回收，造成 ES 进程失去响应。
+
+脑裂问题解决方案：
+
+1. **减少误判**：`discovery.zen.ping_timeout`节点状态的响应时间，默认为3s。\
+   可以适当调大，如果master在该响应时间的范围内没有做出响应应答，判断该节点已经挂掉了。调大参数（如6s，`discovery.zen.ping_timeout`:6），可适当减少误判。
+2. **选举触发参数**：`discovery.zen.minimum_master_nodes:1`\
+   该参数是用于控制选举行为发生的最小集群主节点数量。 当备选主节点的个数大于等于该参数的值，且备选主节点中有该参数个节点认为主节点挂了，进行选举。官方建议为（n/2）+1，n为候选主节点个数（即有资格成为主节点的节点个数）\
+   例如：增大该参数，当master的数量为3，我们可以设置该值为2。这样挂掉一台，其他两台都认为主节点挂掉了，才进行主节点选举。
+3. **角色分离**：即master节点与data节点分离，限制角色。
+   主节点配置为： `node.master: true node.data: false`\
+   从节点配置为： `node.master: false node.data: true`
+
+### <a name="15">分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```text
+PUT /my_temp_index
+{
+    "settings": {
+        "number_of_shards" :   1,
+        "number_of_replicas" : 0
+    }
+}
+```
+分片的数量和下面介绍的副本数量都是可以通过创建索引时的 Settings 来配置，ES 默认为一个索引创建 5 个主分片, 并分别为每个分片创建一个副本。
+
+**副本就是对分片的 Copy**，每个主分片都有一个或多个副本分片，当主分片异常时，副本可以提供数据的查询等操作。
+> 主分片和对应的副本分片是不会在同一个节点上的，所以副本分片数的最大值是 N-1（其中 N 为节点数）。
+
+
+- 将数据分片是为了提高可处理数据的容量和易于进行水平扩展，为分片做副本是为了提高集群的稳定性和提高并发量。
+- 副本是乘法，越多消耗越大，但也越保险。分片是除法，分片越多，单分片数据就越少也越分散。
+- 副本越多，集群的可用性就越高，但是由于每个分片都相当于一个 Lucene 的索引文件，会占用一定的文件句柄、内存及 CPU。并且分片间的数据同步也会占用一定的网络带宽，所以索引的分片数和副本数也不是越多越好。
+
+#### <a name="16">路由过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 当索引一个文档的时候，文档会被存储到一个主分片中。确定路由的分片由以下公式确定：
 `shard = hash(routing) % number_of_primary_shards`
 > `routing` 是一个可变值，默认是文档的 `_id` ，也可以设置成一个自定义的值。 routing 通过 hash 函数生成一个数字，然后这个数字再除以 `number_of_primary_shards` （主分片的数量）后得到 余数 。这个分布在 0 到 `number_of_primary_shards-1` 之间的余数，就是我们所寻求的文档所在分片的位置。\
 > 这就解释了为什么我们要在创建索引的时候就确定好主分片的数量 并且永远不会改变这个数量：因为如果数量变化了，那么所有之前路由的值都会无效，文档也再也找不到了。
 
-#### <a name="15">主分片与副本分片交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="17">主分片与副本分片交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/cluster-1.png)
 >  假设有一个集群由三个节点组成。 它包含一个叫 blogs 的索引，有两个主分片，每个主分片有两个副本分片。相同分片的副本不会放在同一节点
 
 **协调节点**(coordinating node)：可以发送请求到集群中的任一节点。 每个节点都有能力处理任意请求。每个节点都知道集群中任一文档位置，所以可以直接将请求转发到需要的节点上。假如将所有的请求发送到 Node 1 ，我们将其称为**协调节点**。
 
-##### <a name="16">新建，索引和删除文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="18">新建，索引和删除文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/cluster-2.png)
 
 以下是在主副分片和任何副本分片上面 成功新建，索引和删除文档所需要的步骤顺序：
@@ -416,7 +470,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 `timeout`：如果没有足够的副本分片， Elasticsearch会等待，希望更多的分片出现。默认情况下，它最多等待1分钟。
 >新索引默认有 1 个副本分片，这意味着为满足 **规定数量** 应该需要两个活动的分片副本。 但是，这些默认的设置会阻止我们在单一节点上做任何事情。为了避免这个问题，要求只有当 `number_of_replicas` 大于1的时候，规定数量才会执行。
 
-##### <a name="17">查询请求交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="19">查询请求交互</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 基于ID的查询：
 
@@ -431,7 +485,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 
 
 
-##### <a name="18">局部更新文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="20">局部更新文档</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/update-1.png)
 
@@ -443,9 +497,9 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 当主分片把更改转发到副本分片时， 它不会转发更新请求。 相反，它转发完整文档的新版本。请记住，这些更改将会异步转发到副本分片，并且不能保证它们以发送它们相同的顺序到达。 如果Elasticsearch仅转发更改请求，则可能以错误的顺序应用更改，导致得到损坏的文档。
 
 
-#### <a name="19">分页查询工作流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="21">分页查询工作流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-##### <a name="20">查询阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="22">查询阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/search-1.png)
 > 优先队列: 一个 优先队列 仅仅是一个存有 top-n 匹配文档的有序列表。优先队列的大小取决于分页参数 from 和 size 。例如，如下搜索请求将需要足够大的优先队列来放入100条文档。
 >
@@ -465,7 +519,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 分片返回一个轻量级的结果列表到协调节点，它仅包含文档 ID 集合以及任何排序需要用到的值，例如 `_score` 。
 
 
-##### <a name="21">取回阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="23">取回阶段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/search-2.png)
 
 分布式阶段由以下步骤构成：
@@ -475,7 +529,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 协调节点给持有相关文档的每个分片创建一个 multi-get request ，并发送请求给同样处理查询阶段的分片副本。
 
 
-##### <a name="22">搜索选项</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="24">搜索选项</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **偏好 preference**：允许用来控制由哪些分片或节点来处理搜索请求。 它接受像` _primary, _primary_first, _local, _only_node:xyz, _prefer_node:xyz, _shards:2,3` 这样的值
 > `Bouncing Results`：每次用户刷新页面，搜索结果表现是不同的顺序。主要指定的排序字段在不同分片上可能不一致，如`timestamp`。可以指定`preference`为用户会话Id解决该问题。
 
@@ -485,7 +539,7 @@ ES 集群多个节点，会自动选举一个节点为 master 节点，这个 ma
 > 这个技术在设计大规模搜索系统时就会派上用场
 
 
-#### <a name="23">分片内部原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="25">分片内部原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 传统的数据库每个字段存储单个值，但这对全文检索并不够。文本字段中的每个单词需要被搜索，对数据库意味着需要单个字段有索引多值(这里指单词)的能力。
 > 最好的支持 一个字段多个值 需求的数据结构 是倒排索引。倒排索引包含一个有序列表，列表包含所有文档出现过的不重复个体，或称为 词项 ，对于每一个词项，包含了它所有曾出现过文档的列表。
 
@@ -508,14 +562,14 @@ the   |   X   |       |  X    | ...
 ```
 
 
-##### <a name="24">不变性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="26">不变性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 倒排索引写入磁盘后就是不可变的，这样有几个好处：
 1. 不需要锁，如果不更新索引，不用担心锁的问题，可以支持较高的并发能力
 2. 如果cache内存足够，不更新索引的话，索引可以一直保存在os cache中，可以提升IO性能。
 3. 如果数据不变，filter cache 会一直驻留在内存。
 4. 索引数据可以压缩，节省 cpu 和 io 开销。
 
-##### <a name="25">动态更新索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="27">动态更新索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 倒排索引是基于不可变模式设计的，但实际Elasticsearch源源不断地有新数据进来。ES通过增加**新的补充索引来接收新的文档和修改的文档**，而不是直接用删除重建的方式重写整个索引。
 
 doc写入过程：
@@ -544,15 +598,20 @@ doc删除和更新
 实时搜索的支持：
 在Elasticsearch和磁盘之间是文件系统缓存。在内存索引缓冲区中的文档会被写入到一个新的段中。Lucene 允许新段被**写入和打开—使其包含的文档在未进行一次完整提交时便对搜索可见**。 这种方式比进行一次提交代价要小得多，并且在不影响性能的前提下可以被频繁地执行。
 
-##### <a name="26">持久化与段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="28">持久化与段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/es-rep-1.png)
+
 Elasticsearch 增加了一个 translog ，或者叫事务日志，在每一次对 Elasticsearch 进行操作时均进行了日志记录。通过 translog ，整个流程看起来是下面这样：
 1. 一个文档被索引之后，就会被添加到内存缓冲区，并且追加到了`translog`。
 2. 刷新（refresh）使分片处于的`In-memory buffer`被清空但是事务日志不会情况的状态，分片每秒被刷新（`refresh`）一次。
 3. 这个进程继续工作，更多的文档被添加到内存缓冲区和追加到事务日志.
 4. 每隔一段时间，例如`translog` 变得越来越大、索引被刷新（flush）；一个新的 `translog` 被创建，并且一个全量提交被执行
 
+
+**延迟写策略**
+
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/es-rep-2.png)
+
 执行一个提交并且截断 `translog` 的行为在 Elasticsearch 被称作一次 `flush` 。 分片每30分钟被自动刷新（`flush`），或者在 `translog` 太大的时候也会刷新。具体流程：
 1. 所有在内存缓冲区的文档都被写入一个新的段
 2. 缓冲区被清空
@@ -561,7 +620,7 @@ Elasticsearch 增加了一个 translog ，或者叫事务日志，在每一次�
 5. 老的 `translog` 被删除
 
 
-###### <a name="27">translog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+###### <a name="29">translog</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **相关流程**：\
 `translog` 提供所有还没有被刷到磁盘的操作的一个持久化纪录。当 Elasticsearch 启动的时候， 它会从磁盘中使用最后一个提交点去恢复已知的段，并且会重放 `translog` 中所有在最后一次提交后发生的变更操作。\
 `translog` 也被用来提供实时 CRUD 。当你试着通过ID查询、更新、删除一个文档，它会在尝试从相应的段中检索之前， 首先检查 `translog` 任何最近的变更。这意味着它总是能够实时地获取到文档的最新版本。
@@ -580,7 +639,7 @@ PUT /my_index/_settings
 }
 ```
 
-###### <a name="28">段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+###### <a name="30">段合并</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 背景：由于自动刷新流程每秒会创建一个新的段 ，这样会导致短时间内的段数量暴增。而段数目太多会带来较大的麻烦。 每一个段都会消耗文件句柄、内存和cpu运行周期。更重要的是，每个搜索请求都必须轮流检查每个段；所以段越多，搜索也就越慢。
 
 Elasticsearch通过在后台进行段合并来解决这个问题。小的段被合并到大的段，然后这些大的段再被合并到更大的段。
@@ -595,7 +654,7 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 3. 新的段被刷新（flush）到了磁盘， 写入一个包含新段且排除旧的和较小的段的新提交点。 然后新的段被打开用来搜索。最终老的段被删除。
 > 合并大的段需要消耗大量的I/O和CPU资源，如果任其发展会影响搜索性能。Elasticsearch在默认情况下会对合并流程进行资源限制，所以搜索仍然 有足够的资源很好地执行。
 
-### <a name="29">搜索</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="31">搜索</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一个查询中常见的字段：
 ```json
 {
@@ -636,8 +695,8 @@ Elasticsearch通过在后台进行段合并来解决这个问题。小的段被�
 - `/gb,us/user,tweet/_search`：在 gb 和 us 索引中搜索 user 和 tweet 类型
 
 
-#### <a name="30">搜索相关的优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-##### <a name="31">查询语句权重改变</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="32">搜索相关的优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="33">查询语句权重改变</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 `boost` 参数被用来提升一个语句的相对权重（ `boost` 值大于 1 ）或降低相对权重（ `boost` 值处于 0 到 1 之间）
 
 ```text
@@ -672,13 +731,13 @@ GET /_search
 }
 ```
 
-##### <a name="32">最佳字段查询调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="34">最佳字段查询调优</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 指定 `tie_breaker` 这个参数将其他匹配语句的评分也考虑其中。
 - [最佳字段查询调优](https://www.elastic.co/guide/cn/elasticsearch/guide/2.x/_tuning_best_fields_queries.html)
 
 
 
-### <a name="33">排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="35">排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 为了按照**相关性**来排序，需要将相关性表示为一个数值。在 Elasticsearch 中，**相关性得分**由一个浮点数进行表示，并在搜索结果中通过 `_score` 参数返回， 默认排序是 `_score` 降序。
 
 
@@ -718,7 +777,7 @@ GET /_search
 - `sort`: 在每个结果中有一个新的名为 sort 的元素，它包含了我们用于排序的值。
 
 
-### <a name="34">深度分页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">深度分页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 理解为什么深度分页是有问题的？
 > 我们可以假设在一个有 5 个主分片的索引中搜索。 当我们请求结果的第一页（结果从 1 到 10 ），每一个分片产生前 10 的结果，并且返回给 协调节点 ，协调节点对 50 个结果排序得到全部结果的前 10 个。\
 > 现在假设我们请求第 1000 页—结果从 10001 到 10010 。所有都以相同的方式工作除了每个分片不得不产生前10010个结果以外。 然后协调节点对全部 50050 个结果排序最后丢弃掉这些结果中的 50040 个结果。\
@@ -731,7 +790,7 @@ GET /_search
 
 Es设置了 `max_result_window`(最大结果窗口)的参数，默认值是10000，它不仅限制了用户在一次查询中最多数据条数是1w条，并且限制了start+size 必须小于1w。
 
-#### <a name="35">游标查询Scroll</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="37">游标查询Scroll</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 `scroll` 查询 可以用来对 Elasticsearch 有效地执行大批量的文档查询，而又不用付出深度分页那种代价。游标查询允许先做查询初始化，然后再批量地拉取结果。这有点儿像传统数据库中的`cursor`。
 > 游标查询会取某个时间点的快照数据，并保存搜索的`search context`。查询初始化之后索引上的任何变化会被它忽略。 它通过保存旧的数据文件来实现这个特性，结果就像保留初始化时的索引 _视图_ 一样。\
 > 在游标查询中，每个shard 它是通过lastEmittedDoc来确定游标位置的。\
@@ -809,7 +868,7 @@ GET /_search/scroll
 }
 ```
 
-#### <a name="36">search after</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="38">search after</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Search接口另一种翻页方式是SearchAfter，时间复杂度O(n)，空间复杂度O(1)。SearchAfter是一种动态指针的技术，每次查询都会携带上一次的排序值，这样下次取结果只需要从上次的位点继续扫数据，前提条件也是该字段是数值类型且设置了docValue。
 > 举个例子，假设"val_1"是数值类型的字段，然后使用Search接口查询时候添加Sort("val_1")，那么response中可以拿到最后一条数据的"val_1"的值，也就是response中sort字段的值，然后下次查询将该值放在query中的searchAfter参数中，下次查询就可以在上一次结果之后继续查询，如此反复，最后可以翻页很深，内存消耗相比size+from的方式降低了数倍。该方式效果类似于我们直接在bool查询中主动加一个rangeFilter，可以达到类似的效果。\
 > 表面看这种方案能将查询速度降到O(1)的复杂度，实际上其内部还是会扫sort字段的docValue，翻页越深，则扫docValve越多，因此复杂度和翻页深度成正比，越往后查询越慢，但是相比size+from的方式，至少可以完成深度翻页的任务，不至于OOM，速度勉强可以接受。SearchAfter的翻页方式在性能上有了质的提升，但是其限制了用户只能一页一页往后翻，无法跳页，因此很多产品在功能设计时候是不允许跳页的，只能一页一页往后翻，也是有一定的技术原因的。
@@ -882,7 +941,7 @@ GET twitter/_search
 } 
 ```
 
-#### <a name="37">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="39">总结</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 深度分页色Scroll与search_after都不允许不能随意跳到任何一页的场景，只能一页一页往后翻，往前跳页的查询方式不支持如120页、往前查10页。
 - `from + size`:灵活性好，实现简单 深度分页问题 数据量比较小，能容忍深度分页问题
 - `scroll`: 解决了深度分页问题 无法反应数据的实时性(快照版本)维护成本高，需要维护一个 scroll_id 海量数据的导出需要查询海量结果集的数据
@@ -903,12 +962,12 @@ GET twitter/_search
 
 SEARCH_AFTER不是**自由跳转到任意页面的**解决方案，而是并行滚动多个查询的解决方案。
 
-#### <a name="38">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="40">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [Elasticsearch 5.x 源码分析（3）from size, scroll 和 search after](https://www.jianshu.com/p/91d03b16af77)
 - [Elasticsearch之SearchScroll原理剖析和优化](https://developer.aliyun.com/article/771575)
 - [ElasticSearch深度分页解决方案](https://developer.51cto.com/article/684507.html)
 
-### <a name="39">聚合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">聚合</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 聚合允许我们向数据提出一些复杂的问题。虽然功能完全不同于搜索，但它使用相同的数据结构。这意味着聚合的执行速度很快并且就像搜索一样几乎是实时的。
 
 聚合相关操作：
@@ -960,7 +1019,7 @@ GET /cars/transactions/_search
 - `post_filter` 只影响搜索结果。
 
 
-### <a name="40">相关性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">相关性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 每个文档都有相关性评分，用一个正浮点数字段 `_score` 来表示 。 `_score` 的评分越高，相关性越高。
 
 查询语句会为每个文档生成一个 `_score` 字段。\
@@ -1020,12 +1079,12 @@ GET /_search?explain
 ```
 
 
-### <a name="41">倒排索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="43">倒排索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 倒排索引：是一种可以根据属性的值来查找记录的索引。这种索引表中的每一项都包括一个属性值和具有该属性值的各条记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，故成为倒排索引。
 > 经常被用来存储在全文搜索下某个单词在一个文档或者一组文档中的存储位置的映射。它是文档检索系统中最常用的数据结构。
 
 
-#### <a name="42">倒排索引创建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="44">倒排索引创建</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 例如，假设我们有两个文档，每个文档的 content 域包含如下内容：
 - position 1: The quick brown fox jumped over the lazy dog
 - position 2: Quick brown foxes leap over lazy dogs in summer
@@ -1035,7 +1094,7 @@ GET /_search?explain
 2. 把文档数据进行分词 Term，得到很多的词条，以词条为索引。保存包含这些词条的文档的编号信息。
 
 
-#### <a name="43">搜索过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="45">搜索过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 当用户输入任意的词条时，首先对用户输入的数据进行分词，得到用户要搜索的所有词条，然后拿着这些词条去倒排索引列表中进行匹配。找到这些词条就能找到包含这些词条的所有文档的编号。
 
 |**Term**    |  Doc_1  | Doc_2| Posting list|
@@ -1066,7 +1125,18 @@ Total   |   2   |  1
 
 两个文档都匹配，但是第一个文档比第二个匹配度更高。优先排在前面。
 
-#### <a name="44">倒排索引优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+Elasticsearch 为了能快速找到某个 Term，先将所有的 Term 排个序，然后根据二分法查找 Term，时间复杂度为 logN，就像通过字典查找一样，这就是 Term Dictionary。
+
+和传统数据库通过 B-Tree 的方式类似。但是如果 Term 太多，Term Dictionary 也会很大，放内存不现实，于是有了 Term Index。
+
+`Term Index`：就像字典里的索引页一样，A 开头的有哪些 Term，分别在哪页，可以理解 Term Index是一棵树。
+这棵树不会包含所有的 Term，它包含的是 Term 的一些前缀。通过 Term Index 可以快速地定位到 Term Dictionary 的某个 Offset，然后从这个位置再往后顺序查找。
+
+ES在内存中用 FST 方式压缩 Term Index，FST 以字节的方式存储所有的 Term，这种压缩方式可以有效的缩减存储空间，使得 Term Index 足以放进内存，但这种方式也会导致查找时需要更多的 CPU 资源。
+对于存储在磁盘上的倒排表同样也采用了压缩技术减少存储所占用的空间。
+
+
+#### <a name="46">倒排索引优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 倒排索引的在输入或者构建的分词中，经常有以下问题
 1. 文本词条化：如带上撇号的格式——“Teacher’s office”，连字符格式——“English-speaking”,也需要进行对应的处理，把单词提取出来。
 2. 停用词过滤：如英文：the, is, and，中文：的、是、个等等
@@ -1074,7 +1144,8 @@ Total   |   2   |  1
 4. 词干提取、词形还原：如英文将“doing”、“done”、“did”转化成原型“do”
 
 
-#### <a name="45">ES中分词</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+#### <a name="47">ES中分词</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ES在处理输入的内容是通过分词器处理的。分析器处理将过三个步骤：
 1. 字符过滤器: 首先，字符串按顺序通过每个 字符过滤器 。他们的任务是在分词前整理字符串。一个字符过滤器可以用来去掉HTML，或者将 & 转化成 and。
@@ -1090,7 +1161,7 @@ Elasticsearch的分词器的一般工作流程：
 参考资料：
 - [搜索引擎之倒排索引解读](https://zhuanlan.zhihu.com/p/28320841)
 
-### <a name="46">Doc Values</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="48">Doc Values</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 在 Elasticsearch 中，`Doc Values` 就是一种**列式存储结构**，默认情况下每个字段的 `Doc Values` 都是激活的，`Doc Values` 是在索引时创建的，当字段索引时，Elasticsearch 为了能够快速检索，会把字段的值加入倒排索引中，同时它也会存储该字段的 `Doc Values`。
 
 Elasticsearch 中的 Doc Values 常被应用到以下场景：
@@ -1101,7 +1172,7 @@ Elasticsearch 中的 Doc Values 常被应用到以下场景：
 > 对于聚合部分，我们需要找到 Doc_1 和 Doc_2 里所有唯一的词项。\
 > 对于排序部分，我们需要找到 Doc 中对应的排序词项
 
-#### <a name="47">结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="49">结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Doc values 的存在是因为倒排索引只对某些操作是高效的。 倒排索引的优势**在于查找包含某个项的文档，而对于从另外一个方向的相反操作并不高效**，即：确定哪些项是否存在单个文档里。
 
 
@@ -1135,15 +1206,17 @@ Doc values 的存在是因为倒排索引只对某些操作是高效的。 倒�
 |Doc_3 | dog, dogs, fox, jumped, over, quick, the|
 
 
-#### <a name="48">存储优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="50">存储优化</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 从广义来说，Doc Values 本质上是一个**序列化**的 列式存储。\
 压缩式存储：序列化的存储方式非常便于压缩，特别是数字类型。这样可以**减少磁盘空间并且提高访问速度**。现代 CPU 的处理速度要比磁盘快几个数量级，减少直接存磁盘读取数据的大小，额外消耗 CPU 运算用来进行解压。
 > 存储的策略是通过借用CPU的处理速度，来提高整体的存取效率。CPU压缩，减少存储磁盘空间。磁盘空间小读取的速度变快，CPU进行解压。。
 
-## <a name="49">docker 安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="50">elasticsearch 安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
+
+## <a name="51">docker 安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="52">elasticsearch 安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+```shell
 
 [root@VM-0-16-centos ~]# docker pull elasticsearch:7.13.1
 [root@VM-0-16-centos ~]# docker images
@@ -1151,7 +1224,7 @@ Doc values 的存在是因为倒排索引只对某些操作是高效的。 倒�
 [root@VM-0-16-centos ~]# docker pull kibana:7.13.1
 [root@VM-0-16-centos ~]# docker images
 
-// 创建自定义的网络(用于连接到连接到同一网络的其他服务(例如Kibana))
+// 创建自定义的网络 用于连接到连接到同一网络的其他服务 例如Kibana
 [root@VM-0-16-centos ~]# docker network create elknetwork
 ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 
@@ -1187,9 +1260,9 @@ ea5897232c9daad0c00b4b47c240ff513177a42ae0b48b770068691a99949798
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/es/ES.jpg)
   
 参考资料： [Docker安装部署ELK教程](https://www.cnblogs.com/fbtop/p/11005469.html)
-### <a name="51">ik分词器安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="53">ik分词器安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="52">在线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="54">在线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```text
 // 进入容器
 docker exec -it elasticsearch /bin/bash
@@ -1198,7 +1271,7 @@ docker exec -it elasticsearch /bin/bash
 ./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.5.4/elasticsearch-analysis-ik-7.13.1.zip
 ```
 
-#### <a name="53">离线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="55">离线安装</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```text
 wget https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.13.1/elasticsearch-analysis-ik-7.13.1.zip
@@ -1225,7 +1298,7 @@ exit
 docker restart elasticsearch
 ```
 
-#### <a name="54">分词器测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="56">分词器测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```text
 POST _analyze 
 {
@@ -1270,8 +1343,8 @@ result:
 
 ```
 参考资料：[docker 安装ElasticSearch的中文分词器IK](https://blog.csdn.net/weixin_34015566/article/details/93554240)
-## <a name="55">linux http基本操作命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="56">基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="57">linux http基本操作命令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="58">基本操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```shell
 [root@VM-0-10-centos ~]# curl -X GET 'http://localhost:9200/_cat/indices?v'
 
@@ -1281,7 +1354,7 @@ result:
 
 ```
 
-### <a name="57">索引创建与新增元素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="59">索引创建与新增元素</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```shell
 [root@VM-0-10-centos ~]# curl -H 'content-Type:application/json'  -X PUT 'localhost:9200/test' -d '
 
@@ -1326,7 +1399,7 @@ result:
 ```
 
 
-### <a name="58">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="60">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```shell
 [root@VM-0-10-centos ~]# curl -X GET 'http://localhost:9200/test/_search'
 {"took":391,"timed_out":false,"_shards":{"total":3,"successful":3,"skipped":0,"failed":0},"hits":{"total":{"value":3,"relation":"eq"},"max_score":1.0,"hits":[{"_index":"test","_type":"_doc","_id":"UPmoeXYBI1Dq1Op9wJWu","_score":1.0,"_source":
@@ -1376,9 +1449,9 @@ result:
 
 - [官网查询说明](https://www.elastic.co/guide/cn/elasticsearch/guide/current/query-dsl-intro.html)
 
-## <a name="59">kibana 命令行操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="61">kibana 命令行操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="60">创建索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="62">创建索引</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```text
 PUT sw_test.trade_contract_v1
 {
@@ -1465,19 +1538,19 @@ PUT sw_test.trade_contract_v1
 }
 ```
 
-### <a name="61">中文分词</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="63">中文分词</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 [参见](https://zhuanlan.zhihu.com/p/52543633)
 
 analysis-ik分两种模式：ik_max_word和ik_smart模式
 
-#### <a name="62">ik_max_word</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="64">ik_max_word</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 会将文本做最细粒度的拆分，比如会将“中华人民共和国人民大会堂”拆分为“中华人民共和国、中华人民、中华、华人、人民共和国、人民、共和国、大会堂、大会、会堂等词语。
 
-#### <a name="63">ik_smart</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="65">ik_smart</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 会做最粗粒度的拆分，比如会将“中华人民共和国人民大会堂”拆分为中华人民共和国、人民大会堂。
 
-#### <a name="64">最佳实践</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="66">最佳实践</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 两种分词器使用的最佳实践是：索引时用ik_max_word，在搜索时用ik_smart。
 即：索引时最大化的将文章内容分词，搜索时更精确的搜索到想要的结果。
@@ -1498,7 +1571,7 @@ analysis-ik分两种模式：ik_max_word和ik_smart模式
 }
 ```
 
-### <a name="65">手动插入数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="67">手动插入数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```text
 POST sw_test.trade_contract/_doc
 {
@@ -1522,7 +1595,7 @@ POST sw_test.trade_contract/_doc
 }
 ```
 
-### <a name="66">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="68">查询</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```text
 POST sw_test.trade_contract/_search
 {
@@ -1550,10 +1623,10 @@ POST sw_test.trade_contract/_search
 
 
 
-#### <a name="67">字段类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="69">字段类型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [Field datatypes](https://www.elastic.co/guide/en/elasticsearch/reference/7.13/mapping-types.html)
 
-#### <a name="68">filter and query</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="70">filter and query</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [Bool Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/query-dsl-bool-query.html)
 
 [Query and Filter context](https://www.elastic.co/guide/en/elasticsearch/reference/7.13/query-filter-context.html#query-filter-context)
@@ -1585,7 +1658,7 @@ Basically, filter = must but without scoring.
 
 
 
-### <a name="69">索引新增字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="71">索引新增字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```text
 POST sw_test.trade_contract_v1/_mapping
@@ -1597,7 +1670,7 @@ POST sw_test.trade_contract_v1/_mapping
   }
 }
 ```
-### <a name="70">更改字段类型为 multi_field</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="72">更改字段类型为 multi_field</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 创建 mapping 时，可以为keyword指定ignore_above ，用来限定字符长度。\
 超过 ignore_above 的字符会被存储，但不会被全文索引。
 
@@ -1617,13 +1690,13 @@ PUT /sw_test.trade_contract_v1/_mapping/
   }
 }
 ```
-### <a name="71">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="73">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - object类型自动映射，无需手动新增
 - int、long、date等类型自动映射，可以不手动新增
 - string类型会自动映射成multi_field，并使用默认分词器，建议手动修改ES mapping
 
 
-## <a name="72">shard & replica</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="74">shard & replica</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```text
 PUT sw_test.trade_contract_v1
@@ -1641,7 +1714,7 @@ PUT sw_test.trade_contract_v1
 2. [es-glossary](https://www.elastic.co/guide/en/elasticsearch/reference/current/glossary.html)
 
 
-### <a name="73">primary shard 主分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="75">primary shard 主分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 When you create an index (an index is automatically created when you index the first document as well) you can define how many shards it will be composed of.\
 If you don't specify a number it will have the default number of shards: 5 primaries. What does it mean?
@@ -1682,7 +1755,7 @@ Every shard comes at a cost, though, therefore if you have a single node and no 
 just stick with a single primary shard.
 
 
-### <a name="74">replica shard 副本分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="76">replica shard 副本分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 Another type of shard is a replica. The default is 1, meaning that every `primary shard will be copied to another shard that will contain the same data`.\
 Replicas are used to increase search performance and for fail-over.\
@@ -1720,19 +1793,19 @@ The replica shards will automatically become primaries, and the cluster will wor
 
 
 
-## <a name="75">spring 集成</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="77">spring 集成</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [spring data与elasticsearch版本对应](https://docs.spring.io/spring-data/elasticsearch/docs/4.1.9/reference/html/#preface.requirements)
 - [spring data 官网文档](https://docs.spring.io/spring-data/elasticsearch/docs/4.1.9/reference/html/#elasticsearch.clients)
 
-## <a name="76">面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="78">面试题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="77">ES 的分布式架构原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="79">ES 的分布式架构原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ElasticSearch 设计的理念就是分布式搜索引擎，底层其实还是基于 lucene 的。核心思想就是在多台机器上启动多个 ES 进程实例，组成了一个 ES 集群。\
 ES 中存储数据的**基本单位是索引**，索引创建的时候需要指定 `shard`，每个 `shard` 存储部分数据。创建`Index`的时候，每个`shard`都有一个`primary shard`，负责写入数据，但是还有几个`replica shard`负责处理查询请求以及做`primary shard`的备份。如果拥有`primary shard`的分片挂了，ES会重新选出一个`replica shard`作为主分片。每个`shard`分布在**不同节点的机器**上。
 > ES 集群多个节点，会自动选举一个节点为 master 节点，这个 master 节点其实就是干一些管理的工作的，比如维护索引元数据、负责切换 primary shard 和 replica shard 身份等。要是 master 节点宕机了，那么会重新选举一个节点为 master 节点。\
 > 如果是非 master 节点宕机了，那么会由 master 节点，让那个宕机节点上的 primary shard 的身份转移到其他机器上的 replica shard。接着你要是修复了那个宕机机器，重启了之后，master 节点会控制将缺失的 replica shard 分配过去，同步后续修改的数据之类的，让集群恢复正常。
 
-### <a name="78">ES 生产集群的部署架构是什么？每个索引的数据量大概有多少？每个索引大概有多少个分片？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="80">ES 生产集群的部署架构是什么？每个索引的数据量大概有多少？每个索引大概有多少个分片？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 部署了几台机器？有多少个索引？每个索引有多大数据量？每个索引给了多少个分片？
 
 基本的版本，待改造。
@@ -1740,8 +1813,11 @@ ES 中存储数据的**基本单位是索引**，索引创建的时候需要指�
 - 我们 es 集群的日增量数据大概是 2000 万条，每天日增量数据大概是 500MB，每月增量数据大概是 6 亿，15G。目前系统已经运行了几个月，现在 es 集群里数据总量大概是 100G 左右。
 - 目前线上有 5 个索引（这个结合你们自己业务来，看看自己有哪些数据可以放 es 的），每个索引的数据量大概是 20G，所以这个数据量之内，我们每个索引分配的是 8 个 shard，比默认的 5 个 shard 多了 3 个 shard。
 
-### <a name="79">ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="81">ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 es 的搜索引擎严重依赖于底层的 filesystem cache ，你如果给 filesystem cache 更多的内存，尽量让内存可以容纳所有的 idx segment file 索引数据文件，那么你搜索的时候就基本都是走内存的，性能会非常高。
 
 [advanced-java ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？](https://github.com/doocs/advanced-java/blob/main/docs/high-concurrency/es-optimizing-query-performance.md)
+
+## <a name="82">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [ES脑裂问题分析及优化](https://blog.csdn.net/kakaluoteyy/article/details/81068387)
