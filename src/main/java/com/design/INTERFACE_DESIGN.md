@@ -128,7 +128,7 @@ HTTP/1.1 200 OK
   1. POST：新建（Create）
   2. GET：读取（Read）
   3. PUT：更新（Update）
-  4. PATCH：更新（Update），通常不分更新，也很少用到。对资源进行部分修改，PUT 也可以用于修改资源，但是只能完全替代原始资源，PATCH 允许部分修改。
+  4. PATCH：更新（Update），通常部分更新，也很少用到。对资源进行部分修改，PUT 也可以用于修改资源，但是只能完全替代原始资源，PATCH 允许部分修改。
   5. DELETE：删除（Delete）
   6. HEAD：获取报文首部和 GET 方法类似，但是不返回报文实体主体部分。主要用于确认 URL 的有效性以及资源更新的日期时间等。
   7. OPTIONS：查询支持的方法，查询指定的 URL 能够支持的方法。会返回 Allow: GET, POST, HEAD, OPTIONS 这样的内容。
