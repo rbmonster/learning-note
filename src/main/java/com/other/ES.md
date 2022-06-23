@@ -120,6 +120,8 @@ PUT /spanish_docs
     }
 }
 ```
+#### 索引分片评估
+[size your shards](https://www.elastic.co/guide/en/elasticsearch/reference/current/size-your-shards.html)
 
 
 #### 分析器
