@@ -1,22 +1,34 @@
 <a name="index">**Index**</a>
 
 <a href="#0">操作系统</a>  
-&emsp;<a href="#1">1. 基本概念</a>  
-&emsp;&emsp;<a href="#2">1.1. 核心态与用户态</a>  
-&emsp;&emsp;<a href="#3">1.2. 体系结构</a>  
-&emsp;<a href="#4">2. 进程管理</a>  
-&emsp;&emsp;<a href="#5">2.1. 进程</a>  
-&emsp;&emsp;<a href="#6">2.2. 线程</a>  
-&emsp;&emsp;<a href="#7">2.3. 线程与进程比较</a>  
-&emsp;&emsp;<a href="#8">2.4. 处理器调度</a>  
-&emsp;&emsp;<a href="#9">2.5. 经典同步问题</a>  
-&emsp;&emsp;&emsp;<a href="#10">2.5.1. 生产者-消费者问题</a>  
-&emsp;&emsp;&emsp;<a href="#11">2.5.2. 读者-写者问题</a>  
-<a href="#12">中间件设计资料</a>  
+&emsp;<a href="#1">1. 硬件结构</a>  
+&emsp;&emsp;<a href="#2">1.1. 冯-诺伊曼模型-计算机硬件</a>  
+&emsp;&emsp;&emsp;<a href="#3">1.1.1. 内存</a>  
+&emsp;&emsp;&emsp;<a href="#4">1.1.2. 中央处理器</a>  
+&emsp;&emsp;&emsp;<a href="#5">1.1.3. 总线</a>  
+&emsp;&emsp;&emsp;<a href="#6">1.1.4. 输入、输出设备</a>  
+&emsp;&emsp;<a href="#7">1.2. 线路位宽与 CPU 位宽</a>  
+&emsp;&emsp;<a href="#8">1.3. 指令</a>  
+&emsp;<a href="#9">2. 操作系统</a>  
+&emsp;&emsp;<a href="#10">2.1. 内核</a>  
+&emsp;&emsp;<a href="#11">2.2. 核心态与用户态</a>  
+&emsp;<a href="#12">3. 内存管理</a>  
+&emsp;<a href="#13">4. 进程管理</a>  
+&emsp;&emsp;<a href="#14">4.1. 进程</a>  
+&emsp;&emsp;<a href="#15">4.2. 线程</a>  
+&emsp;&emsp;<a href="#16">4.3. 线程与进程比较</a>  
+&emsp;&emsp;<a href="#17">4.4. 处理器调度</a>  
+&emsp;&emsp;<a href="#18">4.5. 经典同步问题</a>  
+&emsp;&emsp;&emsp;<a href="#19">4.5.1. 生产者-消费者问题</a>  
+&emsp;&emsp;&emsp;<a href="#20">4.5.2. 读者-写者问题</a>  
+<a href="#21">中间件设计资料</a>  
 # <a name="0">操作系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-## <a name="1">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+参考资料：大量参考=>[小林coding-图解系统介绍](https://xiaolincoding.com/os/)
 
+## <a name="1">硬件结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="2">冯-诺伊曼模型-计算机硬件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 计算机的硬件(或称为冯-诺伊曼模型)组成：
 - 主机部分：运算器、存储器、控制器
 - 外设部分：输入设备、输出设备
@@ -27,6 +39,94 @@
 计算机硬件、软件以及软件的各个部分是一种层次关系。硬件在最底层，其上层是操作系统。通过操作系统供的资源管理功能和方便用户使用的各种功能，把裸机改造成功能更加强大、使用更方便的机器(通常称为虚拟机)。
 > 各种实用程序和应用程序在操作系统之上，这些程序都在均以操作系统作为支撑，并向用户提供各种服务。
 
+#### <a name="3">内存</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+我们的程序和数据都是存储在内存，存储的区域是线性的。
+
+计算机最小的存储单位是字节(byte)，1 字节等于 8 位(8 bit)。每一个字节都对应一个内存地址。
+
+内存的地址是从 0 开始编号的，然后自增排列，最后一个地址为内存总字节数 - 1，这种结构好似我们程序里的数组，所以内存的读写任何一个数据的速度都是一样的。
+
+#### <a name="4">中央处理器</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+央处理器也就是我们常说的 CPU，32 位和 64 位 CPU 最主要区别在于一次能计算多少字节数据：
+- 32 位 CPU 一次可以计算 4 个字节；
+- 64 位 CPU 一次可以计算 8 个字节；
+> 32 位和 64 位，通常称为 CPU 的位宽。
+
+> 之所以 CPU 要这样设计，是为了能计算更大的数值，如果是 8 位的 CPU，那么一次只能计算1个字节(`8bit`) `0~255` 范围内的数值，这样就无法一次完成计算 10000 * 500 ，于是为了能一次计算大数的运算，CPU 需要支持多个 byte 一起计算，所以 CPU 位宽越大，可以计算的数值就越大，比如说 32 位 CPU 能计算的最大整数是 4294967295。
+
+CPU 内部还有一些组件，常见的有**寄存器、控制单元和逻辑运算单元**等。其中，控制单元负责控制 CPU 工作，逻辑运算单元负责计算，而寄存器可以分为多种类，每种寄存器的功能又不尽相同。
+> CPU 中的寄存器主要作用是存储计算时的数据，你可能好奇为什么有了内存还需要寄存器？原因很简单，因为内存离 CPU 太远了，而寄存器就在 CPU 里，还紧挨着控制单元和逻辑运算单元，自然计算时速度会很快。
+
+常见的寄存器种类：
+- 通用寄存器，用来存放需要进行运算的数据，比如需要进行加和运算的两个数据。
+- 程序计数器，用来存储 CPU 要执行下一条指令「所在的内存地址」，注意不是存储了下一条要执行的指令，此时指令还在内存中，程序计数器只是存储了下一条指令的地址。
+- 指令寄存器，用来存放程序计数器指向的指令，也就是指令本身，指令被执行完成之前，指令都存储在这里。
+
+
+#### <a name="5">总线</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+总线是用于 CPU 和内存以及其他设备之间的通信，总线可分为 3 种：
+- 地址总线，用于指定 CPU 将要操作的内存地址；
+- 数据总线，用于读写内存的数据；
+- 控制总线，用于发送和接收信号，比如中断、设备复位等信号，CPU 收到信号后自然进行响应，这时也需要控制总线；
+
+当 CPU 要读写内存数据的时候，一般需要通过下面这三个总线：
+1. 首先要通过「地址总线」来指定内存的地址；
+2. 然后通过「控制总线」控制是读或写命令；
+3. 最后通过「数据总线」来传输数据；
+
+#### <a name="6">输入、输出设备</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+输入设备向计算机输入数据，计算机经过计算后，把数据输出给输出设备。期间，如果输入设备是键盘，按下按键时是需要和 CPU 进行交互的，这时就需要用到控制总线了。
+
+
+### <a name="7">线路位宽与 CPU 位宽</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+数据是如何通过线路传输的呢？其实是通过操作电压，低电压表示 0，高压电压则表示 1。
+
+如果构造了高低高这样的信号，其实就是 101 二进制数据，十进制则表示 5，如果只有一条线路，就意味着每次只能传递 1 bit 的数据，即 0 或 1，那么传输 101 这个数据，就需要 3 次才能传输完成，这样的效率非常低。
+这样一位一位传输的方式，称为串行，下一个 bit 必须等待上一个 bit 传输完成才能进行传输。
+
+**为了避免低效率的串行传输的方式，线路的位宽最好一次就能访问到所有的内存地址。**
+
+CPU 要想操作的内存地址就需要地址总线：
+- 如果地址总线只有 1 条，那每次只能表示 「0 或 1」这两种地址，所以 CPU 能操作的内存地址最大数量为 2（2^1）个（注意，不要理解成同时能操作 2 个内存地址）；
+- 如果地址总线有 2 条，那么能表示 00、01、10、11 这四种地址，所以 CPU 能操作的内存地址最大数量为 4（2^2）个。
+> 那么，想要 CPU 操作 4G 大的内存，那么就需要 32 条地址总线，因为 2 ^ 32 = 4G。
+
+> 对于 64 位 CPU 就可以一次性算出加和两个 64 位数字的结果，因为 64 位 CPU 可以一次读入 64 位的数字，并且 64 位 CPU 内部的逻辑运算单元也支持 64 位数字的计算。
+但是并不代表 64 位 CPU 性能比 32 位 CPU 高很多，很少应用需要算超过 32 位的数字，所以如果计算的数额不超过 32 位数字的情况下，32 位和 64 位 CPU 之间没什么区别的，只有当计算超过 32 位数字的情况下，64 位的优势才能体现出来。
+
+
+### <a name="8">指令</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+流水线的方式来执行指令: Fetch -> Decode -> Execution -> Store
+
+**指令周期（Instruction Cycle）**：CPU 的工作就是一个周期接着一个周期，周而复始。
+
+四个阶段的具体含义：
+1. CPU 通过程序计数器读取对应内存地址的指令，这个部分称为 **Fetch（取得指令）**；
+2. CPU 对指令进行解码，这个部分称为 **Decode（指令译码）**；
+3. CPU 执行指令，这个部分称为 **Execution（执行指令）**；
+4. CPU 将计算结果存回寄存器或者将寄存器的值存入内存，这个部分称为 **Store（数据回写）**；
+
+不同的阶段其实是由计算机中的不同组件完成的：
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/instruction-process.png)
+
+> 取指令的阶段，我们的指令是存放在**存储器**里的，实际上，通过**程序计数器和指令寄存器**取出指令的过程，是由**控制器**操作的；\
+指令的译码过程，也是由**控制器**进行的；\
+指令执行的过程，无论是进行算术操作、逻辑操作，还是进行数据传输、条件分支操作，都是由**算术逻辑单元**操作的，也就是由运算器处理的。但是如果是一个简单的无条件地址跳转，则是直接在**控制器**里面完成的，不需要用到运算器。
+
+
+**指令的执行速度**
+
+`程序CPU的运行时间 = CPU 时钟周期数（CPU Cycles） * 时钟周期时间（Clock Cycle Time）`
+
+时钟周期时间：就是CPU主频，主频越高说明CPU的工作速度就越快。`2.4GHz`就是电脑的主频，**时钟周期时间**就是 `1/2.4G`。
+
+CPU时钟周期数可以进一步拆解成：`CPU时钟周期数 = 指令数 * 每条指令的平均时钟周期数（Cycles Per Instruction，简称 CPI）`
+
+- **指令数**：表示执行程序所需要多少条指令，以及哪些指令。这个层面是基本靠编译器来优化。
+- **每条指令的平均时钟周期数 CPI**：表示一条指令需要多少个时钟周期数，现代大多数 CPU 通过流水线技术（Pipeline），让一条指令需要的 CPU 时钟周期数尽可能的少；
+- **时钟周期时间**：表示计算机主频，取决于计算机硬件。
+
+## <a name="9">操作系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 操作系统是裸机上的第一层软件，是对硬件功能的首次扩充。
 引入操作系统的目的：
 - 提供一个**计算机用户和计算机硬件系统之间的接口**，使计算机易于使用。
@@ -42,18 +142,54 @@
 2. 共享性。资源共享是指系统中的硬件和软件不再为某个程序所独占，而是供多个用户共同使用的。
    - 互斥共享：系统中可供共享的某些资源，一段时间内只能供一个作业使用。如打印机、队列等。
    - 同时访问：系统中另一类资源如磁盘、可重入代码，可以供多个作业同时访问。
-    > 并发和共享是操作系统最基本的特征，二者互为存在的条件。一方面，资源共享是以程序并发执行为条件的。另一方面，若系统不能对共享资源进行有效管理，会影响到程序的并发执行。
+   > 并发和共享是操作系统最基本的特征，二者互为存在的条件。一方面，资源共享是以程序并发执行为条件的。另一方面，若系统不能对共享资源进行有效管理，会影响到程序的并发执行。
 3. 虚拟性：操作系统中，虚拟指的是一个物理上的实体变为若干个逻辑上的对应物，前者是实际存在的，而后者是虚拟的。
 4. 异步性
 
-操作系统基本功能 
+操作系统基本功能
 1. 处理器管理
 2. 存储器管理
 3. 设备管理
 4. 文件管理
 5. 用户接口
 
-### <a name="2">核心态与用户态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="10">内核</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+内核的作用主要是：**作为应用连接硬件设备的桥梁**，应用程序只需关心与内核交互，不用关心硬件的细节。
+
+现代操作系统，内核一般会提供 4 个基本能力：
+1. 管理进程、线程，决定哪个进程、线程使用 CPU，也就是进程调度的能力；
+2. 管理内存，决定内存的分配和回收，也就是内存管理的能力；
+3. 管理硬件设备，为进程与硬件设备之间提供通信能力，也就是硬件通信能力；
+4. 提供系统调用，如果应用程序要运行更高权限运行的服务，那么就需要有系统调用，它是用户程序与操作系统之间的接口。
+
+
+对于内核的架构一般有这三种类型：
+- **宏内核**，包含多个模块，整个内核像一个完整的程序；
+- **微内核**，有一个最小版本的内核，一些模块和服务则由用户态管理；微内核架构的内核只保留最基本的能力，比如进程调度、虚拟机内存、中断等，把一些应用放到了用户空间，比如驱动程序、文件系统等。
+- **混合内核**，是宏内核和微内核的结合体，内核中抽象出了微内核的概念，也就是内核中会有一个小型的内核，其他模块就在这个基础上搭建，整个内核是个完整的程序；
+> 微内核内核功能少，可移植性高，相比宏内核有一点不好的地方在于，由于驱动程序不在内核中，而且驱动程序一般会频繁调用底层能力的，于是驱动和硬件设备交互就需要频繁切换到内核态，这样会带来性能损耗。华为的鸿蒙操作系统的内核架构就是微内核。
+
+
+Linux 的内核设计是采用了宏内核，Window 的内核设计则是采用了混合内核。 这两个操作系统的可执行文件格式也不一样， Linux 可执行文件格式叫作 ELF，Windows 可执行文件格式叫作 PE。
+
+
+
+**内核是怎么工作的？**
+
+内核具有很高的权限，可以控制 cpu、内存、硬盘等硬件，而应用程序具有的权限很小，因此大多数操作系统，把内存分成了两个区域：
+- 内核空间，这个内存空间只有内核程序可以访问；
+- 用户空间，这个内存空间专门给应用程序使用；
+
+
+### <a name="11">核心态与用户态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+用户空间的代码只能访问一个局部的内存空间，而内核空间的代码可以访问所有内存空间。因此，当程序使用用户空间时，我们常说该程序在用户态执行，而当程序使内核空间时，程序则在内核态执行。
+应用程序如果需要进入内核空间，就需要通过系统调用。
+
+内核程序执行在内核态，用户程序执行在用户态。当应用程序使用系统调用时，会产生一个中断。发生中断后， CPU 会中断当前在执行的用户程序，转而跳转到中断处理程序，也就是开始执行内核程序。内核处理完后，主动触发中断，把 CPU 执行权限交回给用户程序，回到用户态继续工作。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/core-change.png)
+
+
 为了避免操作系统及其关键数据(如PCB等)收到用户程序有意或无意的破坏，通常将处理器的执行状态分为两种：核心态和用户态。
 
 - 核心态(管态、系统态)：是操作系统管理程序执行时机器所处的状态。具有较高的权限，能执行包括特权指令等一切的指令，能访问所有寄存器和存储区。
@@ -73,19 +209,17 @@
 
 系统调用(System call):系统调用把用户程序的请求传到内核，调用相应的内核函数完成所需的处理，并将处理结果返回给对应的应用程序。
 > 操作系统提供的系统调用通常包括：进程管理、文件系统控制(文件读写操作和文件系统操作)、系统控制、内存管理、网络控制、socket控制、用户管理及进程间通信(信号、消息、管道、信号量和共享内存)
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/core-change.png)
 
 
-### <a name="3">体系结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-模块组合结构
+## <a name="12">内存管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-层次结构
 
-微内核结构
 
-## <a name="4">进程管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="5">进程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+## <a name="13">进程管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="14">进程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 进程：在计算机操作系统中，进程是资源分配的基本单元，也是独立运行的基本单元。
 
 进程特征：
@@ -112,7 +246,7 @@
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/process-state.png)
 
 
-### <a name="6">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="15">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 线程是进程内一个相对独立的、可调度的执行单元。线程基本上不拥有资源，只拥有在运行时必不可少的资源(如程序计数器、一组寄存器和栈)，但它可以和其他线程共享进程拥有的全部资源。
 
 线程的实现：
@@ -139,7 +273,7 @@
 > 多个用户线程对应多个内核线程,使得库和操作系统都可以管理线程,用户线程由运行时库调度器管理,内核线程由操作系统调度器管理,可运行的用户线程由运行时库分派并标记为准备好执行的可用线程,操作系统选择用户线程并将它映射到可用内核线程.
 
 
-### <a name="7">线程与进程比较</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">线程与进程比较</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - **拥有资源**：进程为拥有系统资源的基本单元，而线程不拥有系统资源，但是线程可以访问隶属进程的系统资源
 - **并发性**：进入线程的操作系统，不仅进程可以并发，而且统一进程的线程也可以并发。系统的并发度更高，大大提高了系统的吞吐量。
 - **调度**：统一进程中的线程切换不会引起进程切换，而不同进程的线程切换会引起进程切换。
@@ -147,7 +281,7 @@
    - 创建或撤销开销：由于创建或撤销进程时，系统都要为之分配或回收资源，如内存空间、I/O设备等。操作系统所付出的代价远大于创建或撤销线程是的开销。
    - 切换开销：进程切换时，涉及整个当前进程CPU环境的保存以及新进程的CPU环境的设置。而线程上下文的切换，只需要保存和设置少量寄存器的内容。多线程的同步和通信因为共享同一进程，甚至无需操作系统干预。
 
-### <a name="8">处理器调度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="17">处理器调度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 高级调度：即作业调度，按照一定策略将选择磁盘上的程序装入内存，并建立进程。
 - 中级调度：即交换调度，按照一定策略在内外存之间进行数据交换。
 - 低级调度：即CPU调度（进程调度），按照一定策略选择就绪进程，占用cpu执行。
@@ -173,9 +307,9 @@
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/multiple-queue-call.png)
 
 
-### <a name="9">经典同步问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">经典同步问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="10">生产者-消费者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">生产者-消费者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 生产者-消费者问题(Producer-consumer problem)，也称有限缓冲问题(Bounded-buffer problem)，是一个多线程同步问题的经典案例。该问题描述了共享固定大小缓冲区的两个线程——即所谓的“生产者”和“消费者”——在实际运行时会发生的问题。生产者的主要作用是生成一定量的数据放到缓冲区中，然后重复此过程。与此同时，消费者也在缓冲区消耗这些数据。该问题的关键就是要保证生产者不会在缓冲区满时加入数据，消费者也不会在缓冲区中空时消耗数据。
 
 相关问题点：
@@ -184,12 +318,12 @@
 - 在一个线程进行生产或消费时，其余线程不能再进行生产或消费等操作，即保持线程间的同步
 - 注意条件变量与互斥锁的顺序
 
-#### <a name="11">读者-写者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">读者-写者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 
 
 
-# <a name="12">中间件设计资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="21">中间件设计资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/disk-memory.png)
 
 通常在大部分组件设计时，往往会选择一种主要介质来存储、另一种介质作为辅助使用。就拿 redis 来说，它主要采用内存存储数据，磁盘用来做辅助的持久化。拿 RabbitMQ 举例，它也是主要采用内存存储消息，但也支持将消息持久化到磁盘。而 RocketMQ、Kafka、Pulsar 这种，则是数据主要存储在磁盘，通过内存来主力提升系统的性能。关系型数据库例如 mysql 这种组件也是主要采用磁盘组织数据，合理利用内存提升性能。

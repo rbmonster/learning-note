@@ -5,7 +5,7 @@
 ## java 自带延迟队列
 
 ```java
-class Soluction {
+class Solution {
     public static void main(String[] args) throws InterruptedException {
         DelayQueue<DelayMealTask> queue = new DelayQueue<>();
         DelayMealTask task = new DelayMealTask(System.nanoTime() + ThreadLocalRandom.current().nextLong(100000000L, 300000000L));
