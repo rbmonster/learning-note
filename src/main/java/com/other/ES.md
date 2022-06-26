@@ -123,6 +123,13 @@ PUT /spanish_docs
 #### 索引分片评估
 [size your shards](https://www.elastic.co/guide/en/elasticsearch/reference/current/size-your-shards.html)
 
+如何评估设计分片的大小？
+
+每一个ES的索引或分片都会拆分成一个或多个分片，并且每个分片会有多个副本，来避免ES集群无法正常工作。经验显示，日志或者时间序列类型的索引数据在10GB～50GB之间，可以工作的很好。
+
+使用ILM定期运行(indices.lifecycle.poll_interval)，需要修改配置：`max_primary_shard_size`最大的主分片数据大小，默认为50GB。
+
+1个30GB对内存的ES节点，建议最多600个分片。如果一个节点上有20个以上1G的分片，需要考虑新增其他节点。
 
 #### 分析器
 一个 分析器 就是在一个包里面组合了三种函数的一个包装器， 三种函数按照顺序被执行:
