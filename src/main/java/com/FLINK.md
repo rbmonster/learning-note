@@ -13,17 +13,17 @@
       * [1.4.2. 数据分析应用](#数据分析应用) 
       * [1.4.3. 数据管道应用](#数据管道应用) 
   * [2. 参考资料](#参考资料) 
-# <a name="0">Apache Flink</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# Apache Flink[[Top]](#index)
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/flink/architecture.png)
 
-## <a name="1">概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 概念[[Top]](#index)
 Apache Flink 是一个框架和分布式处理引擎，用于在**无边界和有边界数据流**上进行**有状态**的计算。Flink 能在所有常见集群环境中运行，并能以内存速度和任意规模进行计算。
 - 分布式：「它的存储或者计算交由多台服务器上完成，最后汇总起来达到最终的效果」。
 - 实时：处理速度是毫秒级或者秒级的
 - 计算：可以简单理解为对数据进行处理，比如清洗数据（对数据进行规整，取出有用的数据）
 
-### <a name="2">处理无界和有界数据</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 处理无界和有界数据[[Top]](#index)
 任何类型的数据都可以形成一种事件流。信用卡交易、传感器测量、机器日志、网站或移动应用程序上的用户交互记录，所有这些数据都形成一种流。
 
 数据可以被作为**无界或者有界流**来处理。
@@ -38,7 +38,7 @@ Apache Flink 是一个框架和分布式处理引擎，用于在**无边界和�
 1. 时间窗口(TimeWindows)：按照时间窗口进行聚合，比如上面所讲得攥着一个小时的数据处理一次。
 2. 计数窗口(CountWindows)：按照指定的条数来进行聚合，比如每来了10条数据处理一次。
 
-### <a name="3">有状态与无状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 有状态与无状态[[Top]](#index)
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/flink/func-state.png)
 
 状态：只有在每一个单独的事件上进行转换操作的应用才不需要状态，换言之，每一个具有一定复杂度的流处理应用都是有状态的。任何运行基本业务逻辑的流处理应用都需要在**一定时间内存储所接收的事件或中间结果**，以供后续的某个时间点（例如收到下一个事件或者经过一段特定时间）进行访问并进行后续处理。
@@ -46,14 +46,14 @@ Apache Flink 是一个框架和分布式处理引擎，用于在**无边界和�
 > 有状态：执行**需要依赖**上一次或上N次的执行结果，某次的执行需要依赖前面事件的处理结果。
 
 
-### <a name="4">流处理应用的基本组件</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 流处理应用的基本组件[[Top]](#index)
 
-#### <a name="5">流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### 流[[Top]](#index)
 - **有界** 和 **无界** 的数据流：流可以是无界的；也可以是有界的，例如固定大小的数据集。Flink 在无界的数据流处理上拥有诸多功能强大的特性，同时也针对有界的数据流开发了专用的高效算子。
 - **实时** 和 **历史记录** 的数据流：所有的数据都是以流的方式产生。
 > 用户通常会使用两种截然不同的方法处理数据。第一种是在数据生成时进行实时的处理；第二种是先将数据流持久化到存储系统中——例如文件系统或对象存储，然后再进行批处理。Flink 的应用能够同时支持处理实时以及历史记录数据流。
 
-#### <a name="6">应用状态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### 应用状态[[Top]](#index)
 应用状态是 Flink 中的一等公民，Flink 提供了许多状态管理相关的特性
 - **多种状态基础类型**：Flink 为多种不同的数据结构提供了相对应的状态基础类型，例如原子值（value），列表（list）以及映射（map）。
 - **插件化的State Backend**：State Backend 负责管理应用程序状态，并在需要的时候进行 checkpoint。Flink 支持多种 state backend，可以将状态存在内存或者 RocksDB。
@@ -72,7 +72,7 @@ Apache Flink 是一个框架和分布式处理引擎，用于在**无边界和�
 状态只持久化一次到最终的存储介质中（本地数据库/HDFS)，在Flink下就叫做`exactly once`（计算的数据可能会重复（无法避免），但状态在存储介质上只会存储一次）。
 > 持久化时间设置，配置中设置checkpointInterval。而`CheckPoint`其实就是Flink会在指定的时间段上保存状态的信息，如果系统宕机则从`checkpoint`重放还没保存的数据进行计算。
 
-#### <a name="7">时间</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### 时间[[Top]](#index)
 许多常见的流计算都基于时间语义，例如窗口聚合、会话计算、模式检测和基于时间的 join。流处理的一个重要方面是应用程序如何衡量时间，即区分事件时间（`event-time`）和处理时间（`processing-time`）。
 
 **时间窗口的参数**：
@@ -90,8 +90,8 @@ Flink的水位线`waterMarks`：存在网络延迟等情况导致数据接收不
 > 解读：因为设置了「事件发生的时间」Event Time，所以Flink可以检测到每一条记录发生的时间，而设置了水位线waterMarks设置延迟一分钟，等到Flink发现07分:59秒的数据来到了Flink，那就确信06分的数据都来了（因为设置了1分钟延迟），此时才聚合06分的窗口数据。
 
 
-### <a name="8">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="9">事件驱动型应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### 应用场景[[Top]](#index)
+#### 事件驱动型应用[[Top]](#index)
 事件驱动型应用是一类具有状态的应用，它从一个或多个事件流提取数据，并根据到来的事件触发计算、状态更新或其他外部动作。
 
 在传统架构中，应用需要读写远程事务型数据库。 相反，事件驱动型应用是基于状态化流处理来完成。在该设计中，数据和计算不会分离，应用只需访问本地（内存或磁盘）即可获取数据。系统容错性的实现依赖于定期向远程持久化存储写入 checkpoint。
@@ -101,7 +101,7 @@ Flink的水位线`waterMarks`：存在网络延迟等情况导致数据接收不
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/flink/usecases-eventdrivenapps.png)
 
-#### <a name="10">数据分析应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### 数据分析应用[[Top]](#index)
 数据分析任务需要从原始数据中提取有价值的信息和指标。
 
 传统的分析方式通常是利用批查询，或将事件记录下来并基于此有限数据集构建应用来完成。为了得到最新数据的分析结果，必须先将它们加入分析数据集并重新执行查询或运行应用，随后将结果写入存储系统或生成报告。
@@ -112,7 +112,7 @@ Flink的水位线`waterMarks`：存在网络延迟等情况导致数据接收不
 2. 导入数据的处理。批量查询必须处理那些由定期导入和输入有界性导致的人工数据边界，而流式查询则无须考虑该问题。
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/flink/usecases-analytics.png)
 
-#### <a name="11">数据管道应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### 数据管道应用[[Top]](#index)
 提取-转换-加载（ETL）是一种在存储系统之间进行数据转换和迁移的常用方法。ETL 作业通常会周期性地触发，将数据从事务型数据库拷贝到分析型数据库或数据仓库。
 数据管道和 ETL 作业的用途相似，都可以转换、丰富数据，并将其从某个存储系统移动到另一个。但数据管道是以持续流模式运行，而非周期性触发。因此它支持从一个**不断生成数据的源头**读取记录，并将它们以低延迟移动到终点。
 
@@ -120,6 +120,6 @@ Flink的水位线`waterMarks`：存在网络延迟等情况导致数据接收不
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/flink/usecases-datapipelines.png)
 
 相关组件：Flink-CDC
-## <a name="12">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## 参考资料[[Top]](#Apache Flink)
 - [Apache Flink 官网](https://flink.apache.org/zh/flink-architecture.html)
 - [Flink入门教程](https://mp.weixin.qq.com/s/Ey-oWpGO_QDo4DixiccVGg)
