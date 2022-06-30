@@ -229,6 +229,23 @@ public void createOrder() {
 3. kafka、RocketMQ、Pulsar 这几款是基于磁盘存储数据的，内存加速访问。而 ActiveMQ、RabbitMQ 采用内存存储数据，也支持数据持久化到磁盘。
 
 
+Kafka vs RabbitMQ
+1. RabbitMQ在架构上引入exchange交换机的概念，由exchange进行消息队列的投递，可以支持更加复杂的路由配置。
+2. RabbitMQ是基于推模型设计的，可以保证消息更低的延迟。可以通过配置预取限制(prefetch limit)，也称为QoS限制，防止消费者过载问题。而Kafka是基于拉模型设计的。
+3. 在吞吐量方面，RabbitMQ差于kafka。
+
+|比较点	|RabbitMQ	|Kafka|
+|----|----|----|
+|起源   |	实施AMQP（高级消息队列协议）诞生于金融行业的消息队列 |	从领英开始|
+|性能	|4K-10K消息/秒|	1百万条消息/秒|
+|有效负载大小	|无限制|	默认限制1MB|
+|消息保留	|基于确认|	基于策略（例如7天）|
+|拓扑结构	|交换类型：直接，扇出，主题，基于标题|	基于发布-订阅|
+|资料类型	|交易数据|	营运数据|
+|再平衡功能	|不支持	|Kafka支持|
+|设计	|它使用智能经纪人/愚蠢的消费者模型	|它使用了傻瓜经纪人/智能消费者模型|
+
+
 ## <a name="18">消息队列背后的设计思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="19">消息队列核心模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/middleware/mq-structure.png)

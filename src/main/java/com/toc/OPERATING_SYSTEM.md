@@ -13,18 +13,28 @@
 &emsp;&emsp;<a href="#10">2.1. 内核</a>  
 &emsp;&emsp;<a href="#11">2.2. 核心态与用户态</a>  
 &emsp;<a href="#12">3. 内存管理</a>  
-&emsp;<a href="#13">4. 进程管理</a>  
-&emsp;&emsp;<a href="#14">4.1. 进程</a>  
-&emsp;&emsp;<a href="#15">4.2. 线程</a>  
-&emsp;&emsp;<a href="#16">4.3. 线程与进程比较</a>  
-&emsp;&emsp;<a href="#17">4.4. 处理器调度</a>  
-&emsp;&emsp;<a href="#18">4.5. 经典同步问题</a>  
-&emsp;&emsp;&emsp;<a href="#19">4.5.1. 生产者-消费者问题</a>  
-&emsp;&emsp;&emsp;<a href="#20">4.5.2. 读者-写者问题</a>  
-<a href="#21">中间件设计资料</a>  
+&emsp;&emsp;<a href="#13">3.1. 虚拟内存</a>  
+&emsp;&emsp;<a href="#14">3.2. 内存分段</a>  
+&emsp;&emsp;<a href="#15">3.3. 内存分页</a>  
+&emsp;&emsp;&emsp;<a href="#16">3.3.1. 多级分表</a>  
+&emsp;&emsp;&emsp;<a href="#17">3.3.2. TLB</a>  
+&emsp;&emsp;<a href="#18">3.4. 段页式内存管理</a>  
+&emsp;&emsp;<a href="#19">3.5. Linux 内存管理</a>  
+&emsp;&emsp;<a href="#20">3.6. 两种分配内存的调用</a>  
+&emsp;<a href="#21">4. 进程管理</a>  
+&emsp;&emsp;<a href="#22">4.1. 进程</a>  
+&emsp;&emsp;<a href="#23">4.2. 线程</a>  
+&emsp;&emsp;<a href="#24">4.3. 线程与进程比较</a>  
+&emsp;&emsp;<a href="#25">4.4. 处理器调度</a>  
+&emsp;&emsp;<a href="#26">4.5. 经典同步问题</a>  
+&emsp;&emsp;&emsp;<a href="#27">4.5.1. 生产者-消费者问题</a>  
+&emsp;&emsp;&emsp;<a href="#28">4.5.2. 读者-写者问题</a>  
+<a href="#29">计算机组成原理</a>  
+&emsp;<a href="#30">1. 局部性原理</a>  
+<a href="#31">中间件设计资料</a>  
 # <a name="0">操作系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-参考资料：大量参考=>[小林coding-图解系统介绍](https://xiaolincoding.com/os/)
+**参考资料：大量参考**=>[小林coding-图解系统介绍](https://xiaolincoding.com/os/)
 
 ## <a name="1">硬件结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -213,13 +223,187 @@ Linux 的内核设计是采用了宏内核，Window 的内核设计则是采用�
 
 ## <a name="12">内存管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
+### <a name="13">虚拟内存</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+单片机是没有操作系统的，所以每次写完代码，都需要借助工具把程序烧录进去，这样程序才能跑起来。
+
+**单片机的 CPU 是直接操作内存的物理地址**。常见的单片机程序就是跑马灯了，通过控制高低电平，循环及等待进而控制LED灯的亮暗。
+> 由于单片机直接操作的是系统内存，在这种情况下，要想在内存中同时运行两个程序是不可能的。如果第一个程序在 2000 的位置写入一个新的值，将会擦掉第二个程序存放在相同位置上的所有内容，所以同时运行两个程序是根本行不通的，这两个程序会立刻崩溃。
+
+操作系统会提供一种机制，将不同进程的虚拟地址和不同内存的物理地址映射起来。
+
+如果程序要访问虚拟地址的时候，由操作系统转换成不同的物理地址，这样不同的进程运行的时候，写入的是不同的物理地址，这样就不会冲突了。
+
+于是，这里就引出了两种地址的概念：
+- 我们程序所使用的内存地址叫做**虚拟内存地址**（Virtual Memory Address）
+- 实际存在硬件里面的空间地址叫**物理内存地址**（Physical Memory Address）。
+
+操作系统引入了虚拟内存，进程持有的虚拟地址会通过 CPU 芯片中的内存管理单元（MMU）的映射关系，来转换变成物理地址，然后再通过物理地址访问内存。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/virtual-memory.png)
+
+操作系统是管理虚拟地址与物理地址，主要有两种方式，分别是**内存分段和内存分页**
+
+### <a name="14">内存分段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+程序是由若干个逻辑分段组成的，如可由代码分段、数据分段、栈段、堆段组成。**不同的段是有不同的属性的，所以就用分段(Segmentation)的形式把这些段分离出来**。
+
+分段机制下的虚拟地址由两部分组成，**段选择因子和段内偏移量**。
+- **段选择子**就保存在段寄存器里面。段选择子里面最重要的是**段号**，用作段表的索引。段表里面保存的是这个**段的基地址、段的界限和特权等级**等。
+- 虚拟地址中的**段内偏移量**应该位于 0 和段界限之间，如果段内偏移量是合法的，就将段基地址加上段内偏移量得到物理内存地址。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/memory-segment.png)
+
+分段机制会把程序的虚拟地址分成 4 个段，每个段在段表中有一个项，在这一项找到段的基地址，再加上**偏移量**，于是就能找到物理内存中的地址。但它也有一些不足之处：
+- 第一个就是内存碎片的问题。
+- 第二个就是内存交换的效率低的问题。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/memory-segment-example.png)
+
+存在两部分的内存碎片
+- 外部内存碎片，也就是产生了多个不连续的小物理内存，导致新的程序无法被装载；
+- 内部内存碎片，程序所有的内存都被装载到了物理内存，但是这个程序有部分的内存可能并不是很常使用，这也会导致内存的浪费；
+> 解决外部内存碎片的问题就是内存交换: \
+> 可以把音乐程序占用的那 256MB 内存**写到硬盘上**，**然后再从硬盘上读回来到内存里**。不过再读回的时候，我们不能装载回原来的位置，而是紧紧跟着那已经被占用了的 512MB 内存后面。这样就能空缺出连续的 256MB 空间，于是新的 200MB 程序就可以装载进来。\
+这个内存交换空间，在 Linux 系统里，也就是我们常看到的 Swap 空间，这块空间是从硬盘划分出来的，用于内存与硬盘的空间交换。
+
+
+分段为什么会导致内存交换效率低的问题？
+> 对于多进程的系统来说，用分段的方式，内存碎片是很容易产生的，产生了内存碎片，那不得不重新 Swap 内存区域，这个过程会产生性能瓶颈。**如果内存交换的时候，交换的是一个占内存空间很大的程序，这样整个机器都会显得卡顿。**
+
+
+### <a name="15">内存分页</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+分段的好处就是能产生连续的内存空间，但是会出现内存碎片和内存交换的空间太大的问题。
+
+内存分页(Paging): 分页是把整个虚拟和物理内存空间切成一段段固定尺寸的大小。这样一个连续并且尺寸固定的内存空间，称为页(Page)。在 Linux 下，每一页的大小为4KB。
+> 当需要进行内存交换的时候，让需要交换写入或者从磁盘装载的数据更少一点
 
 
 
 
-## <a name="13">进程管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+虚拟地址与物理地址之间通过页表来映射\
+**页表**是存储在内存里的，内存管理单元(MMU)就做将虚拟内存地址转换成物理地址的工作。
+> 而当进程访问的虚拟地址在页表中查不到时，系统会产生一个**缺页异常**，进入系统内核空间分配物理内存、更新进程页表，最后再返回用户空间，恢复进程的运行。
 
-### <a name="14">进程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/memory-page.png)
+
+分页是怎么解决分段的内存碎片、内存交换效率低的问题？
+> 由于内存空间都是预先划分好的，也就不会像分段会产生间隙非常小的内存，这正是分段会产生内存碎片的原因。而**采用了分页，那么释放的内存都是以页为单位释放的，也就不会产生无法给进程使用的小内存。**
+
+- 换出(Swap Out): 如果内存空间不够，操作系统会把其他正在运行的进程中的「最近没被使用」的内存页面给释放掉，也就是暂时写在硬盘上。
+- 换入(Swap In): 将从内存页面释放而暂存在硬盘上的数据，重新加载进来。
+
+内存分页相比内存分段好处:
+1. 对于需要内存交换的情况，一次性写入磁盘的也只有少数的一个页或者几个页，不会花太多时间，内存交换的效率就相对比较高。
+2. 分页的方式使得我们在加载程序的时候，不再需要一次性都把程序加载到物理内存中。我们完全可以在进行虚拟内存和物理内存的页之间的映射之后，并不真的把页加载到物理内存里，而是**只有在程序运行中，需要用到对应虚拟内存页里面的指令和数据时，再加载到物理内存里面去**。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/memory-page-swap.png)
+
+
+在分页机制下，虚拟地址分为两部分，**页号和页内偏移**。页号作为页表的索引，**页表包含物理页每页所在物理内存的基地址**，这个基地址与页内偏移的组合就形成了物理内存地址
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/memory-page-structure.png)
+
+
+
+#### <a name="16">多级分表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+对于一个内存地址转换，简单的三个步骤总结：
+- 把虚拟内存地址，切分成页号和偏移量；
+- 根据页号，从**页表**里面，查询对应的物理页号；
+- 直接拿物理页号，加上前面的偏移量，就得到了物理内存地址。
+
+> 简单分页管理的缺陷？
+> 在 `32` 位的环境下，虚拟地址空间共有 `4GB`，假设一个页的大小是 `4KB（2^12）`，那么就需要大约 `100 万 （2^20）` 个页，每个「页表项」需要 `4` 个字节大小来存储，那么整个 `4GB` 空间的映射就需要有 `4MB` 的内存来存储页表。\
+> 这 `4MB` 大小的页表，看起来也不是很大。但是要知道每个进程都是有自己的虚拟地址空间的，也就说都有自己的页表。\
+> 那么，`100` 个进程的话，就需要 `400MB` 的内存来存储页表，这是非常大的内存了，更别说 64 位的环境了。
+
+多级页表(Multi-Level Page Table)\
+在 32 位和页大小 4KB 的环境下，一个进程的页表需要装下 100 多万个「页表项」，并且每个页表项是占用 4 字节大小的，于是相当于每个页表需占用 4MB 大小的空间。\
+我们把这个 100 多万个「页表项」的单级页表再分页，将页表（一级页表）分为 1024 个页表（二级页表），每个表（二级页表）中包含 1024 个「页表项」，形成二级分页。
+
+进一步节省内存方案：**如果某个一级页表的页表项没有被用到，也就不需要创建这个页表项对应的二级页表了，即可以在需要时才创建二级页表。**
+> 做个简单的计算，假设只有 20% 的一级页表项被用到了，那么页表占用的内存空间就只有 4KB（一级页表） + 20% * 4MB（二级页表）= 0.804MB，这对比单级页表的 4MB 是不是一个巨大的节约？
+
+对于 64 位的系统，两级分页肯定不够了，就变成了四级目录，分别是：
+- 全局页目录项 PGD(Page Global Directory)
+- 上层页目录项 PUD(Page Upper Directory)
+- 中间页目录项 PMD(Page Middle Directory)
+- 页表项 PTE(Page Table Entry)
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/multiply-memory-page.png)
+
+
+#### <a name="17">TLB</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+多级页表虽然解决了空间上的问题，但是虚拟地址到物理地址的转换就多了几道转换的工序，这显然就降低了这俩地址转换的速度，也就是带来了时间上的开销。
+
+程序是有局部性的，即在一段时间内，整个程序的执行仅限于程序中的某一部分。相应地，执行所访问的存储空间也局限于某个内存区域。
+
+`TLB(Translation LookAside Buffer)`: 在 CPU 芯片中，加入了一个专门存放程序最常访问的页表项的 Cache，通常称为页表缓存、转址旁路缓存、快表等。
+
+在 CPU 芯片里面，封装了内存管理单元（Memory Management Unit）芯片，它用来完成地址转换和 TLB 的访问与交互。 有了 TLB 后，那么 CPU 在寻址时，会先查 TLB，如果没找到，才会继续查常规的页表。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/TLB.png)
+
+
+### <a name="18">段页式内存管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+内存分段和内存分页并不是对立的，它们是可以组合起来在同一个系统中使用的，那么组合起来后，通常称为段页式内存管理。
+
+段页式内存管理实现的方式：
+1. 先将程序划分为多个有逻辑意义的段，也就是前面提到的分段机制；
+2. 接着再把每个段划分为多个页，也就是对分段划分出来的连续空间，再划分固定大小的页；
+这样，地址结构就由**段号、段内页号和页内位移**三部分组成。
+
+用于段页式地址变换的数据结构是每一个程序一张段表，每个段又建立一张页表，段表中的地址是页表的起始地址，而页表中的地址则为某页的物理页号
+
+段页式地址变换中要得到物理地址须经过三次内存访问：
+- 第一次访问段表，得到页表起始地址；
+- 第二次访问页表，得到物理页号；
+- 第三次将物理页号与页内位移组合，得到物理地址。
+
+
+### <a name="19">Linux 内存管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+Linux 内存主要采用的是页式内存管理，但同时也不可避免地涉及了段机制。 这主要是Intel 处理器发展历史导致的
+
+Linux 系统中的每个段都是从 0 地址开始的整个 4GB 虚拟空间（32 位环境下），也就是所有的段的起始地址都是一样的。这意味着，Linux 系统中的代码，包括操作系统本身的代码和应用程序代码，所面对的地址空间都是线性地址空间（虚拟地址），这种做法相当于屏蔽了处理器中的逻辑地址概念，段只被用于访问控制和内存保护。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/linux-memory-1.png)
+
+
+每个进程都各自有独立的虚拟内存，**每个虚拟内存中的内核地址，其实关联的都是相同的物理内存**。进程切换到内核态后，就可以很方便地访问内核空间内存。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/linux-memory-2.png)
+
+
+看看用户空间分布的情况，以 32 位系统为例。其中用户态的分布：代码段、全局变量、BSS、函数栈、堆内存、映射区。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/linux-memory-3.png)
+
+
+### <a name="20">两种分配内存的调用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+C 库里的函数`malloc()`，用于动态分配内存。`malloc` 申请内存的时候，会有两种方式向操作系统申请堆内存。
+1. 通过 `brk()` 系统调用从堆分配内存。类似与碰撞指针，直接用指针移位表示内存占用。
+2. 通过 `mmap()` 系统调用在**文件映射区域**分配内存；
+
+malloc 申请的内存，free 释放内存会归还给操作系统吗？
+- malloc 通过 `brk()` 方式申请的内存，free 释放内存的时候，**并不会把内存归还给操作系统**，而是缓存在 malloc 的内存池中，待下次使用；
+- malloc 通过` mmap()` 方式申请的内存，free 释放内存的时候，**会把内存归还给操作系统，内存得到真正的释放**。
+
+
+**mmap与brk分配对比**：
+
+mmap 分配的内存每次释放的时候，都会归还给操作系统，于是每次 mmap 分配的虚拟地址都是缺页状态的，然后在第一次访问该虚拟地址的时候，就会触发缺页中断。
+也就是说，频繁通过 mmap 分配的内存话，不仅每次都会发生运行态的切换，还会发生缺页中断（在第一次访问虚拟地址后），这样会导致 CPU 消耗较大。
+
+brk的分配方式，调用在堆空间申请内存的时候，由于堆空间是连续的，所以直接预分配更大的内存来作为内存池，当内存释放的时候，就缓存在内存池中。\
+等下次在申请内存的时候，就直接从内存池取出对应的内存块就行了，而且可能这个内存块的虚拟地址与物理地址的映射关系还存在，这样不仅减少了系统调用的次数，也减少了缺页中断的次数，这将大大降低 CPU 的消耗。\
+brk的分配方式问题在于，如果申请的空间没办法复用，那么将会导致堆内将产生越来越多不可用的碎片，导致“内存泄露”。
+
+
+
+## <a name="21">进程管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+### <a name="22">进程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 进程：在计算机操作系统中，进程是资源分配的基本单元，也是独立运行的基本单元。
 
 进程特征：
@@ -246,7 +430,7 @@ Linux 的内核设计是采用了宏内核，Window 的内核设计则是采用�
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/process-state.png)
 
 
-### <a name="15">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="23">线程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 线程是进程内一个相对独立的、可调度的执行单元。线程基本上不拥有资源，只拥有在运行时必不可少的资源(如程序计数器、一组寄存器和栈)，但它可以和其他线程共享进程拥有的全部资源。
 
 线程的实现：
@@ -273,7 +457,7 @@ Linux 的内核设计是采用了宏内核，Window 的内核设计则是采用�
 > 多个用户线程对应多个内核线程,使得库和操作系统都可以管理线程,用户线程由运行时库调度器管理,内核线程由操作系统调度器管理,可运行的用户线程由运行时库分派并标记为准备好执行的可用线程,操作系统选择用户线程并将它映射到可用内核线程.
 
 
-### <a name="16">线程与进程比较</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="24">线程与进程比较</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - **拥有资源**：进程为拥有系统资源的基本单元，而线程不拥有系统资源，但是线程可以访问隶属进程的系统资源
 - **并发性**：进入线程的操作系统，不仅进程可以并发，而且统一进程的线程也可以并发。系统的并发度更高，大大提高了系统的吞吐量。
 - **调度**：统一进程中的线程切换不会引起进程切换，而不同进程的线程切换会引起进程切换。
@@ -281,7 +465,7 @@ Linux 的内核设计是采用了宏内核，Window 的内核设计则是采用�
    - 创建或撤销开销：由于创建或撤销进程时，系统都要为之分配或回收资源，如内存空间、I/O设备等。操作系统所付出的代价远大于创建或撤销线程是的开销。
    - 切换开销：进程切换时，涉及整个当前进程CPU环境的保存以及新进程的CPU环境的设置。而线程上下文的切换，只需要保存和设置少量寄存器的内容。多线程的同步和通信因为共享同一进程，甚至无需操作系统干预。
 
-### <a name="17">处理器调度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">处理器调度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 高级调度：即作业调度，按照一定策略将选择磁盘上的程序装入内存，并建立进程。
 - 中级调度：即交换调度，按照一定策略在内外存之间进行数据交换。
 - 低级调度：即CPU调度（进程调度），按照一定策略选择就绪进程，占用cpu执行。
@@ -307,9 +491,9 @@ Linux 的内核设计是采用了宏内核，Window 的内核设计则是采用�
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/multiple-queue-call.png)
 
 
-### <a name="18">经典同步问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">经典同步问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-#### <a name="19">生产者-消费者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="27">生产者-消费者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 生产者-消费者问题(Producer-consumer problem)，也称有限缓冲问题(Bounded-buffer problem)，是一个多线程同步问题的经典案例。该问题描述了共享固定大小缓冲区的两个线程——即所谓的“生产者”和“消费者”——在实际运行时会发生的问题。生产者的主要作用是生成一定量的数据放到缓冲区中，然后重复此过程。与此同时，消费者也在缓冲区消耗这些数据。该问题的关键就是要保证生产者不会在缓冲区满时加入数据，消费者也不会在缓冲区中空时消耗数据。
 
 相关问题点：
@@ -318,12 +502,18 @@ Linux 的内核设计是采用了宏内核，Window 的内核设计则是采用�
 - 在一个线程进行生产或消费时，其余线程不能再进行生产或消费等操作，即保持线程间的同步
 - 注意条件变量与互斥锁的顺序
 
-#### <a name="20">读者-写者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="28">读者-写者问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 
 
+# <a name="29">计算机组成原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-# <a name="21">中间件设计资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="30">局部性原理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+// TODO
+[计算机组成原理：局部性原理](https://blog.csdn.net/zhizhengguan/article/details/121172704)
+
+
+# <a name="31">中间件设计资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/disk-memory.png)
 
 通常在大部分组件设计时，往往会选择一种主要介质来存储、另一种介质作为辅助使用。就拿 redis 来说，它主要采用内存存储数据，磁盘用来做辅助的持久化。拿 RabbitMQ 举例，它也是主要采用内存存储消息，但也支持将消息持久化到磁盘。而 RocketMQ、Kafka、Pulsar 这种，则是数据主要存储在磁盘，通过内存来主力提升系统的性能。关系型数据库例如 mysql 这种组件也是主要采用磁盘组织数据，合理利用内存提升性能。
