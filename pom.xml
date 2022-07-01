@@ -44,6 +44,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>markdown-toc</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

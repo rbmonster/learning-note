@@ -31,7 +31,7 @@
 - [拦截器与过滤器](/src/main/java/com/toc/FILTERANDINTERCEPTOR.md)
 - [Spring Boot加载流程](/src/main/java/com/toc/SPRINGBOOT.md)
 - [Spring Security](/src/main/java/com/toc/SPRING-SECURITY.md)
-- [Spring Sharding-JDBC](/src/main/java/com/toc/SPRING-SECURITY.md)
+- [Spring Sharding-JDBC](/src/main/java/com/four/SHARDING_JDBC.md)
 
 ## 中间件
 - [Redis](/src/main/java/com/toc/REDIS.md)
