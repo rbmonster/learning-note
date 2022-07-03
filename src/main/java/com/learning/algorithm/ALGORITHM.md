@@ -571,8 +571,8 @@ public class Solution {
 - [移动零](https://leetcode-cn.com/problems/move-zeroes/)
 - [删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
 - [下一个排列](https://leetcode-cn.com/problems/next-permutation/): 查找的方法比较巧妙，递减区间的利用
+- [下一个更大元素 III](https://leetcode.cn/problems/next-greater-element-iii/): 与上述类似
 - [删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/): 快慢指针，慢指针为确定的区间 
-
 ### 二分法
 [一道可以考察「二分」本质的面试题](https://mp.weixin.qq.com/s/RW20ob2oO4Bfd-PcukTVJA)
 > 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
