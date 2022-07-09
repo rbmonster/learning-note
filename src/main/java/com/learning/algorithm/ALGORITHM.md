@@ -1494,7 +1494,7 @@ class Solution {
 - [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
 - [不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/): review
 - [最长递增子序列的个数](https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/): review
-
+- [最长的斐波那契子序列的长度](https://leetcode.cn/problems/length-of-longest-fibonacci-subsequence/): 子序列状态变形
 #### 子数组问题
 
 - [最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/): review
