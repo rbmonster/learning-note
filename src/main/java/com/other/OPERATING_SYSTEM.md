@@ -1117,6 +1117,93 @@ Direct I/O ：
 #### 参考资料
 [Linux 的 Page Cache](https://spongecaptain.cool/SimpleClearFileIO/1.%20page%20cache.html)
 
+
+
+## 直接内存访问（Direct Memory Access）
+在没有 DMA 技术前，I/O 的过程是这样的：
+- CPU 发出对应的指令给磁盘控制器，然后返回；
+- 磁盘控制器收到指令后，于是就开始准备数据，会把数据放入到磁盘控制器的内部缓冲区中，然后产生一个中断；
+- CPU 收到中断信号后，停下手头的工作，接着把磁盘控制器的缓冲区的数据一次一个字节地读进自己的寄存器，然后再把寄存器里的数据写入到内存，而在数据传输的期间 CPU 是无法执行其他任务的。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/DMA-before.png)
+
+DMA直接内存访问（Direct Memory Access): **在进行 I/O 设备和内存的数据传输的时候，数据搬运的工作全部交给 DMA 控制器，而 CPU 不再参与任何与数据搬运相关的事情，这样 CPU 就可以去处理别的事务。**
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/DMA-working.png)
+
+具体过程：
+- 用户进程调用 read 方法，向操作系统发出 I/O 请求，请求读取数据到自己的内存缓冲区中，进程进入阻塞状态；
+- 操作系统收到请求后，进一步将 I/O 请求发送 DMA，然后让 CPU 执行其他任务；
+- DMA 进一步将 I/O 请求发送给磁盘；
+- 磁盘收到 DMA 的 I/O 请求，把数据从磁盘读取到磁盘控制器的缓冲区中，当磁盘控制器的缓冲区被读满后，向 DMA 发起中断信号，告知自己缓冲区已满；
+- DMA 收到磁盘的信号，将磁盘控制器缓冲区中的数据拷贝到内核缓冲区中，此时不占用 CPU，CPU 可以执行其他任务；
+- 当 DMA 读取了足够多的数据，就会发送中断信号给 CPU；
+- CPU 收到 DMA 的信号，知道数据已经准备好，于是将数据从内核拷贝到用户空间，系统调用返回；
+>  整个数据传输的过程，CPU 不再参与数据搬运的工作，而是全程由 DMA 完成，但是 CPU 在这个过程中也是必不可少的，因为传输什么数据，从哪里传输到哪里，都需要 CPU 来告诉 DMA 控制器。
+
+
+## 零拷贝
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/file-write-read-origin.png)
+
+```
+read(file, tmp_buf, len);
+write(socket, tmp_buf, len);
+```
+期间共发生了 4 次用户态与内核态的上下文切换，因为发生了两次系统调用，一次是 read() ，一次是 write()，每次系统调用都得先从用户态切换到内核态，等内核完成任务后，再从内核态切换回用户态。
+
+发生了 4 次数据拷贝，其中两次是 DMA 的拷贝，另外两次则是通过 CPU 拷贝的：
+- 第一次拷贝，把磁盘上的数据拷贝到操作系统内核的缓冲区里，这个拷贝的过程是通过 DMA 搬运的。
+- 第二次拷贝，把内核缓冲区的数据拷贝到用户的缓冲区里，于是我们应用程序就可以使用这部分数据了，这个拷贝到过程是由 CPU 完成的。
+- 第三次拷贝，把刚才拷贝到用户的缓冲区里的数据，再拷贝到内核的 socket 的缓冲区里，这个过程依然还是由 CPU 搬运的。
+- 第四次拷贝，把内核的 socket 缓冲区里的数据，拷贝到网卡的缓冲区里，这个过程又是由 DMA 搬运的。
+
+> 上下文切换到成本并不小，一次切换需要耗时几十纳秒到几微秒，虽然时间看上去很短，但是在高并发的场景下，这类时间容易被累积和放大，从而影响系统的性能。**要想提高文件传输的性能，就需要减少「用户态与内核态的上下文切换」和「内存拷贝」的次数。**
+
+优化的思路：
+1. 要想减少上下文切换的次数，就要减少系统调用的次数。
+2. 因为文件传输的应用场景中，在用户空间我们并不会对数据「再加工」，所以数据实际上可以不用搬运到用户空间，因此用户的缓冲区是没有必要存在的。
+
+
+零拷贝技术实现的方式通常有 2 种：
+- `mmap + write`
+- `sendfile`
+
+### mmap + write
+```
+buf = mmap(file, len);
+write(sockfd, buf, len);
+```
+通过使用 `mmap()` 来代替 `read()`， 可以减少一次数据拷贝的过程。
+
+`mmap()` 系统调用函数会直接把内核缓冲区里的数据「映射」到用户空间，这样，操作系统内核与用户空间就不需要再进行任何的数据拷贝操作。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/mmp.png)
+
+具体过程如下：
+- 应用进程调用了 `mmap()` 后，DMA 会把磁盘的数据拷贝到内核的缓冲区里。接着，应用进程跟操作系统内核「共享」这个缓冲区；
+- 应用进程再调用 `write()`，操作系统直接将内核缓冲区的数据拷贝到 `socket` 缓冲区中，这一切都发生在内核态，由 `CPU` 来搬运数据；
+- 最后，把内核的 `socket` 缓冲区里的数据，拷贝到网卡的缓冲区里，这个过程是由 `DMA` 搬运的。
+
+> 但这还不是最理想的零拷贝，因为仍然需要通过 CPU 把内核缓冲区的数据拷贝到 socket 缓冲区里，而且仍然需要 4 次上下文切换，因为系统调用还是 2 次。
+
+### sendfile
+
+`sendfile()`系统调用不需要将数据拷贝或者映射到应用程序地址空间中去，所以 `sendfile()` **只是适用于应用程序地址空间不需要对所访问数据进行处理的情况**
+
+`sendfile()`系统调用，可以直接把内核缓冲区里的数据拷贝到 socket 缓冲区里，不再拷贝到用户态，这样就只有 2 次上下文切换，和 3 次数据拷贝
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/send-file-v1.png)
+
+
+网卡支持 SG-DMA（The Scatter-Gather Direct Memory Access）技术（和普通的 DMA 有所不同），可以进一步减少通过 CPU 把内核缓冲区里的数据拷贝到 socket 缓冲区的过程。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/send-file-v2.png)
+
+零拷贝（Zero-copy）技术，因为我们没有在内存层面去拷贝数据，也就是说全程没有通过 CPU 来搬运数据，所有的数据都是通过 DMA 来进行传输的。
+
+零拷贝技术的文件传输方式相比传统文件传输的方式，减少了 2 次上下文切换和数据拷贝次数，只需要 2 次上下文切换和数据拷贝次数，就可以完成文件的传输，而且 2 次的数据拷贝过程，都不需要通过 CPU，2 次都是由 DMA 来搬运。
+所以，总体来看，零拷贝技术可以把文件传输的性能提高至少一倍以上
+
 # 计算机组成原理
 
 ## 局部性原理
