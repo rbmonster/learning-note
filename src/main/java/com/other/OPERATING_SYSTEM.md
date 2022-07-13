@@ -1067,7 +1067,7 @@ poll 不再用 BitsMap 来存储所关注的文件描述符，取而代之用动
 epoll 通过两个方面，很好解决了 select/poll 的问题。
 
 1. 第一点，epoll 在内核里使用红黑树来跟踪进程所有待检测的文件描述字，增删改一般时间复杂度是 `O(logn)`。
-2. 第二点， epoll 使用事件驱动的机制，内核里维护了一个链表来记录就绪事件，当某个 socket 有事件发生时，通过回调函数内核会将其加入到这个就绪事件列表中。
+2. 第二点， epoll 使用事件驱动的机制，内核里维护了一个链表来记录就绪事件。给每个fd注册一个回调函数，当某个 socket 有事件发生时，通过回调函数内核会将其加入到这个就绪事件列表中。以此达到O（1）的时间复杂度
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/epoll.png)
 
