@@ -1041,6 +1041,36 @@ I/O 是分为两个过程的：
 > 基于非阻塞的 I/O 多路复用好比，你去饭堂吃饭，发现有一排窗口，饭堂阿姨告诉你这些窗口都还没做好菜，等做好了再通知你，于是等啊等(select 调用中)，过了一会阿姨通知你菜做好了，但是不知道哪个窗口的菜做好了，你自己看吧。于是你只能一个一个窗口去确认，后面发现 5 号窗口菜做好了，于是你让 5 号窗口的阿姨帮你打菜到饭盒里，这个打菜的过程你是要等待的，虽然时间不长。打完菜后，你自然就可以离开了。\
 > 异步 I/O 好比，你让饭堂阿姨将菜做好并把菜打到饭盒里后，把饭盒送到你面前，整个过程你都不需要任何等待。
 
+
+#### IO多路复用
+
+一个进程虽然任一时刻只能处理一个请求，但是处理每个请求的事件时，耗时控制在 1 毫秒以内，这样 1 秒内就可以处理上千个请求，把时间拉长来看，多个请求复用了一个进程，这就是多路复用，这种思想很类似一个 CPU 并发多个进程，所以也叫做时分多路复用。
+
+`select/poll/epoll` 是内核提供给用户态的多路复用系统调用，进程可以通过一个系统调用函数从内核中获取多个事件。
+
+`select/poll/epoll` 在获取事件时，先把所有连接（文件描述符）传给内核，再由内核返回产生了事件的连接，然后在用户态中再处理这些连接对应的请求即可。
+
+##### select/poll
+
+select 实现多路复用的方式是，将已连接的 Socket 都放到一个**文件描述符集合**，然后调用 select 函数将文件描述符集合拷贝到内核里，让内核来检查是否有网络事件产生。\
+检查方式：通过**遍历**文件描述符集合的方式，当检查到有事件产生后，将此 Socket 标记为可读或可写， 接着再把**整个文件描述符集合拷贝**回用户态里，然后用户态还需要再通过遍历的方法找到可读或可写的 Socket，然后再对其处理。
+> 对于 select 这种方式，需要进行 2 次「遍历」文件描述符集合，一次是在内核态里，一个次是在用户态里 ，而且还会发生 2 次「拷贝」文件描述符集合，先从**用户空间传入内核空间**，由内核修改后，再传出到用户空间中。
+
+select 使用固定长度的`BitsMap`，表示文件描述符集合，而且所支持的文件描述符的个数是有限制的，在 Linux 系统中，由内核中的 `FD_SETSIZE` 限制， 默认最大值为 1024，只能监听 0~1023 的文件描述符。
+
+
+poll 不再用 BitsMap 来存储所关注的文件描述符，取而代之用动态数组，以链表形式来组织，突破了 select 的文件描述符个数限制，当然还会受到系统文件描述符限制。
+
+`poll` 和 `select` 并没有太大的本质区别，都是使用「线性结构」存储进程关注的 Socket 集合，因此都需要遍历文件描述符集合来找到可读或可写的 Socket，时间复杂度为 O(n)，而且也需要在**用户态与内核态之间拷贝文件描述符集合**，这种方式随着并发数上来，性能的损耗会呈指数级增长。
+
+##### epoll
+epoll 通过两个方面，很好解决了 select/poll 的问题。
+
+1. 第一点，epoll 在内核里使用红黑树来跟踪进程所有待检测的文件描述字，增删改一般时间复杂度是 `O(logn)`。
+2. 第二点， epoll 使用事件驱动的机制，内核里维护了一个链表来记录就绪事件，当某个 socket 有事件发生时，通过回调函数内核会将其加入到这个就绪事件列表中。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/epoll.png)
+
 ### page cache
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/linux-filesystem-cache.png)
@@ -1090,7 +1120,7 @@ Page Cache 中的每个文件都是一棵基数树(radix tree，本质上是多�
 - **Write Through(写穿)**：向用户层提供特定接口，应用程序可主动调用接口来保证文件一致性；
 - **Write back(写回)**：系统中存在定期任务(表现形式为内核线程)，周期性地同步文件系统中文件脏数据块，这是默认的 Linux 一致性方案；
 
-系统中存在多个回写时机，第一是应用程序主动调用回写接口（fsync，fdatasync 以及 sync 等)，第二管理线程周期性地唤醒设备上的回写线程进行回写，第三是某些应用程序/内核任务发现内存不足时要回收部分缓存页面而事先进行脏页面回写，设计一个统一的框架来管理这些回写任务非常有必要。
+系统中存在多个回写时机，第一是应用程序主动调用回写接口(fsync，fdatasync 以及 sync 等)，第二管理线程周期性地唤醒设备上的回写线程进行回写，第三是某些应用程序/内核任务发现内存不足时要回收部分缓存页面而事先进行脏页面回写，设计一个统一的框架来管理这些回写任务非常有必要。
 
 Write Through 与 Write back 在持久化的可靠性上有所不同：
 - Write Through 以牺牲系统 I/O 吞吐量作为代价，向上层应用确保一旦写入，数据就已经落盘，不会丢失；
@@ -1104,13 +1134,14 @@ Page Cache 的优势
 
 Page Cache 的劣势
 1. 需要占用额外物理内存空间，物理内存在比较紧俏的时候可能会导致频繁的 swap 操作，最终导致系统的磁盘 I/O 负载的上升。
-2. 对应用层并没有提供很好的管理 API，几乎是透明管理。应用层即使想优化 Page Cache 的使用策略也很难进行。因此一些应用选择在用户空间实现自己的 page 管理，而不使用 page cache，例如 MySQL InnoDB 存储引擎以 16KB 的页进行管理。
-3. Page Cache 最后一个缺陷是在某些应用场景下比 Direct I/O 多一次磁盘读 I/O 以及磁盘写 I/O。
+2. 在传输大文件(GB 级别的文件)的时候，PageCache 会不起作用。其他「热点」的小文件可能就无法充分使用到 PageCache，于是这样磁盘读写的性能就会下降了；
+3. 对应用层并没有提供很好的管理 API，几乎是透明管理。应用层即使想优化 Page Cache 的使用策略也很难进行。因此一些应用选择在用户空间实现自己的 page 管理，而不使用 page cache，例如 MySQL InnoDB 存储引擎以 16KB 的页进行管理。
+4. Page Cache 最后一个缺陷是在某些应用场景下比 Direct I/O 多一次磁盘读 I/O 以及磁盘写 I/O。
 > - 缓存文件 I/O：用户空间要读写一个文件并不直接与磁盘交互，而是中间夹了一层缓存，即 page cache；
 > - 直接文件 I/O：用户空间读取的文件直接与磁盘交互，没有中间 page cache 层；
 
 Direct I/O ：
-- Write 操作：由于其不使用 page cache，所以其进行写文件，如果返回成功，数据就真的落盘了（不考虑磁盘自带的缓存）；
+- Write 操作：由于其不使用 page cache，所以其进行写文件，如果返回成功，数据就真的落盘了(不考虑磁盘自带的缓存)；
 - Read 操作：由于其不使用 page cache，每次读操作是真的从磁盘中读取，不会从文件系统的缓存中读取。
 
 
@@ -1119,15 +1150,15 @@ Direct I/O ：
 
 
 
-### 直接内存访问（Direct Memory Access）
-在没有 DMA 技术前，I/O 的过程是这样的：
+### 直接内存访问
+在没有 DMA (Direct Memory Access)技术前，I/O 的过程是这样的：
 - CPU 发出对应的指令给磁盘控制器，然后返回；
 - 磁盘控制器收到指令后，于是就开始准备数据，会把数据放入到磁盘控制器的内部缓冲区中，然后产生一个中断；
 - CPU 收到中断信号后，停下手头的工作，接着把磁盘控制器的缓冲区的数据一次一个字节地读进自己的寄存器，然后再把寄存器里的数据写入到内存，而在数据传输的期间 CPU 是无法执行其他任务的。
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/DMA-before.png)
 
-DMA直接内存访问（Direct Memory Access): **在进行 I/O 设备和内存的数据传输的时候，数据搬运的工作全部交给 DMA 控制器，而 CPU 不再参与任何与数据搬运相关的事情，这样 CPU 就可以去处理别的事务。**
+DMA直接内存访问(Direct Memory Access): **在进行 I/O 设备和内存的数据传输的时候，数据搬运的工作全部交给 DMA 控制器，而 CPU 不再参与任何与数据搬运相关的事情，这样 CPU 就可以去处理别的事务。**
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/DMA-working.png)
 
@@ -1168,7 +1199,7 @@ write(socket, tmp_buf, len);
 - `mmap + write`
 - `sendfile`
 
-### mmap + write
+#### mmap + write
 ```
 buf = mmap(file, len);
 write(sockfd, buf, len);
@@ -1186,7 +1217,7 @@ write(sockfd, buf, len);
 
 > 但这还不是最理想的零拷贝，因为仍然需要通过 CPU 把内核缓冲区的数据拷贝到 socket 缓冲区里，而且仍然需要 4 次上下文切换，因为系统调用还是 2 次。
 
-### sendfile
+#### sendfile
 
 `sendfile()`系统调用不需要将数据拷贝或者映射到应用程序地址空间中去，所以 `sendfile()` **只是适用于应用程序地址空间不需要对所访问数据进行处理的情况**
 
@@ -1195,14 +1226,17 @@ write(sockfd, buf, len);
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/send-file-v1.png)
 
 
-网卡支持 SG-DMA（The Scatter-Gather Direct Memory Access）技术（和普通的 DMA 有所不同），可以进一步减少通过 CPU 把内核缓冲区里的数据拷贝到 socket 缓冲区的过程。
+网卡支持 SG-DMA(The Scatter-Gather Direct Memory Access)技术(和普通的 DMA 有所不同)，可以进一步减少通过 CPU 把内核缓冲区里的数据拷贝到 socket 缓冲区的过程。
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/send-file-v2.png)
 
-零拷贝（Zero-copy）技术，因为我们没有在内存层面去拷贝数据，也就是说全程没有通过 CPU 来搬运数据，所有的数据都是通过 DMA 来进行传输的。
+零拷贝(Zero-copy)技术，因为我们没有在内存层面去拷贝数据，也就是说全程没有通过 CPU 来搬运数据，所有的数据都是通过 DMA 来进行传输的。
 
 零拷贝技术的文件传输方式相比传统文件传输的方式，减少了 2 次上下文切换和数据拷贝次数，只需要 2 次上下文切换和数据拷贝次数，就可以完成文件的传输，而且 2 次的数据拷贝过程，都不需要通过 CPU，2 次都是由 DMA 来搬运。
 所以，总体来看，零拷贝技术可以把文件传输的性能提高至少一倍以上
+
+
+零拷贝技术的应用: Kafka。使用了零拷贝能够缩短 65% 的时间，大幅度提升了机器传输数据的吞吐量。
 
 # 计算机组成原理
 
