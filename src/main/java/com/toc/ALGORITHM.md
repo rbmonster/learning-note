@@ -656,8 +656,8 @@ public class Solution {
 - [移动零](https://leetcode-cn.com/problems/move-zeroes/)
 - [删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
 - [下一个排列](https://leetcode-cn.com/problems/next-permutation/): 查找的方法比较巧妙，递减区间的利用
+- [下一个更大元素 III](https://leetcode.cn/problems/next-greater-element-iii/): 与上述类似
 - [删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/): 快慢指针，慢指针为确定的区间 
-
 ### <a name="24">二分法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [一道可以考察「二分」本质的面试题](https://mp.weixin.qq.com/s/RW20ob2oO4Bfd-PcukTVJA)
 > 「⼆分」的本质是⼆段性，并⾮单调性。只要⼀段满⾜某个性质，另外⼀段不满⾜某个性质，就可以⽤「⼆分」
@@ -1579,7 +1579,7 @@ class Solution {
 - [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
 - [不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/): review
 - [最长递增子序列的个数](https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/): review
-
+- [最长的斐波那契子序列的长度](https://leetcode.cn/problems/length-of-longest-fibonacci-subsequence/): 子序列状态变形
 #### <a name="65">子数组问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - [最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/): review

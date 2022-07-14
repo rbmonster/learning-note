@@ -22,7 +22,7 @@
 &emsp;&emsp;<a href="#19">6.2. 基于AbstractAuthenticationProcessingFilter</a>  
 &emsp;&emsp;&emsp;<a href="#20">6.2.1. WebSecurityConfigurerAdapter的配置demo</a>  
 &emsp;&emsp;&emsp;<a href="#21">6.2.2. JWTAuthenticationFilter</a>  
-&emsp;&emsp;&emsp;<a href="#22">6.2.3. </a>  
+&emsp;&emsp;&emsp;<a href="#22">6.2.3. JwtAuthenticationProvider</a>  
 &emsp;&emsp;<a href="#23">6.3. 基于OncePerRequestFilter</a>  
 &emsp;&emsp;&emsp;<a href="#24">6.3.1. WebSecurityConfigurer</a>  
 &emsp;&emsp;&emsp;<a href="#25">6.3.2. JwtTokenAuthenticationFilter</a>  
@@ -35,7 +35,7 @@
 &emsp;<a href="#32">9. 相关资料</a>  
 # <a name="0">Spring security</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-[Spring Security官网][https://docs.spring.io/spring-security/site/docs/5.4.2/reference/html5/#servlet-architecture]
+[Spring Security官网](https://docs.spring.io/spring-security/site/docs/5.4.2/reference/html5/#servlet-architecture)
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/four/spring-security.jpg)
 
@@ -453,7 +453,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 ```
 
-#### <a name="22"></a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="22">JwtAuthenticationProvider</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```java
 @Slf4j

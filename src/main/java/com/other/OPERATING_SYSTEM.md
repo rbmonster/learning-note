@@ -973,7 +973,7 @@ Linux 文件系统会为每个文件分配两个数据结构：**索引节点(in
 > 软链接是可以跨文件系统的，甚至目标文件被删除了，链接文件还是在的，只不过指向的文件找不到了而已。
 
 
-### 文件IO
+### 文件/网络IO
 - 缓冲与非缓冲 I/O
 - 直接与非直接 I/O
 - 阻塞与非阻塞 I/O VS 同步与异步 I/O
@@ -1050,6 +1050,9 @@ I/O 是分为两个过程的：
 
 `select/poll/epoll` 在获取事件时，先把所有连接（文件描述符）传给内核，再由内核返回产生了事件的连接，然后在用户态中再处理这些连接对应的请求即可。
 
+
+
+
 ##### select/poll
 
 select 实现多路复用的方式是，将已连接的 Socket 都放到一个**文件描述符集合**，然后调用 select 函数将文件描述符集合拷贝到内核里，让内核来检查是否有网络事件产生。\
@@ -1064,12 +1067,86 @@ poll 不再用 BitsMap 来存储所关注的文件描述符，取而代之用动
 `poll` 和 `select` 并没有太大的本质区别，都是使用「线性结构」存储进程关注的 Socket 集合，因此都需要遍历文件描述符集合来找到可读或可写的 Socket，时间复杂度为 O(n)，而且也需要在**用户态与内核态之间拷贝文件描述符集合**，这种方式随着并发数上来，性能的损耗会呈指数级增长。
 
 ##### epoll
-epoll 通过两个方面，很好解决了 select/poll 的问题。
+epoll 通过两个方面，很好解决了 select/poll 的问题。epoll 是解决 C10K 问题的利器。
 
 1. 第一点，epoll 在内核里使用红黑树来跟踪进程所有待检测的文件描述字，增删改一般时间复杂度是 `O(logn)`。
 2. 第二点， epoll 使用事件驱动的机制，内核里维护了一个链表来记录就绪事件。给每个fd注册一个回调函数，当某个 socket 有事件发生时，通过回调函数内核会将其加入到这个就绪事件列表中。以此达到O（1）的时间复杂度
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/epoll.png)
+
+
+**边缘触发和水平触发**
+
+
+- 使用边缘触发模式时，当被监控的 Socket 描述符上有可读事件发生时，服务器端只会从 epoll_wait 中苏醒一次，即使进程没有调用 read 函数从内核读取数据，也依然只苏醒一次，因此我们程序要保证一次性将内核缓冲区的数据读取完；
+- 使用水平触发模式时，当被监控的 Socket 上有可读事件发生时，服务器端不断地从 epoll_wait 中苏醒，直到内核缓冲区数据被 read 函数读完才结束，目的是告诉我们有数据需要读取；
+> 水平触发的意思是只要满足事件的条件，比如内核中有数据需要读，就一直不断地把这个事件传递给用户；而边缘触发的意思是只有第一次满足条件的时候才触发，之后就不会再传递同样的事件了。
+
+简单说——水平触发代表了一种“**状态**”。边沿触发代表了一个“**事件**”。
+
+
+`select/poll` 只有水平触发模式，`epoll` 默认的触发模式是水平触发，但是可以根据应用场景设置为边缘触发模式。
+一般来说，边缘触发的效率比水平触发的效率要高，因为边缘触发可以减少 `epoll_wait` 的系统调用次数，系统调用也是有一定的开销的的，毕竟也存在上下文的切换。
+
+边缘触发模式一般和非阻塞 I/O 搭配使用，程序会一直执行 I/O 操作，直到系统调用（如 read 和 write）返回错误，错误类型为 EAGAIN 或 EWOULDBLOCK。
+**多路复用 API 返回的事件并不一定可读写的**，如果使用阻塞 I/O， 那么在调用 read/write 时则会发生程序阻塞，因此最好搭配非阻塞 I/O，以便应对极少数的特殊情况。
+
+
+#### Reactor
+
+**单Reactor单进程/线程**
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/singleReactor.png)
+
+进程里有 Reactor、Acceptor、Handler 这三个对象：
+- Reactor 对象的作用是监听和分发事件；
+- Acceptor 对象的作用是获取连接；
+- Handler 对象的作用是处理业务；
+
+介绍下「单 Reactor 单进程」这个方案：
+- Reactor 对象通过 select （IO 多路复用接口） 监听事件，收到事件后通过 dispatch 进行分发，具体分发给 Acceptor 对象还是 Handler 对象，还要看收到的事件类型；
+- 如果是连接建立的事件，则交由 Acceptor 对象进行处理，Acceptor 对象会通过 accept 方法 获取连接，并创建一个 Handler 对象来处理后续的响应事件；
+- 如果不是连接建立事件， 则交由当前连接对应的 Handler 对象来进行响应；
+- Handler 对象通过 read -> 业务处理 -> send 的流程来完成完整的业务流程。
+
+2 个缺点：
+- 第一个缺点，因为只有一个进程，无法充分利用 **多核 CPU 的性能**；
+- 第二个缺点，Handler 对象在业务处理时，整个进程是无法处理其他连接的事件的，**如果业务处理耗时比较长，那么就造成响应的延迟**；
+> 单 Reactor 单进程的方案不适用计算机密集型的场景，只适用于业务处理非常快速的场景。
+
+**单 Reactor 多线程 / 多进程**
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/singleReactorMulti.png)
+
+前三个步骤和单 Reactor 单线程方案是一样的，接下来的步骤：
+- Handler 对象不再负责业务处理，只负责数据的接收和发送，Handler 对象通过 read 读取到数据后，会将数据发给子线程里的 Processor 对象进行业务处理；
+- 子线程里的 Processor 对象就进行业务处理，处理完后，将结果发给主线程中的 Handler 对象，接着由 Handler 通过 send 方法将响应结果发送给 client；
+
+单 Reactor 多线程的方案优势在于能够充分利用**多核 CPU 的性能**，那既然引入多线程，那么自然就带来了多线程竞争资源的问题。
+
+「单 Reactor」的模式还有个问题，因为一个 Reactor 对象承担所有事件的监听和响应，而且只在主线程中运行，在面对瞬间高并发的场景时，容易成为性能的瓶颈的地方。
+
+
+**多 Reactor 多进程 / 线程**
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/multiReactor.png)
+
+方案详细说明如下：
+- 主线程中的 MainReactor 对象通过 select 监控连接建立事件，收到事件后通过 Acceptor 对象中的 accept 获取连接，将新的连接分配给某个子线程；
+- 子线程中的 SubReactor 对象将 MainReactor 对象分配的连接加入 select 继续进行监听，并创建一个 Handler 用于处理连接的响应事件。
+- 如果有新的事件发生时，SubReactor 对象会调用当前连接对应的 Handler 对象来进行响应。
+- Handler 对象通过 read -> 业务处理 -> send 的流程来完成完整的业务流程。
+
+两个开源软件 Netty 和 Memcache 都采用了「多 Reactor 多线程」的方案。
+
+
+#### Proactor
+- **Reactor 是非阻塞同步网络模式，感知的是就绪可读写事件**。在每次感知到有事件发生（比如可读就绪事件）后，就需要应用进程主动调用 read 方法来完成数据的读取，也就是要应用进程主动将 socket 接收缓存中的数据读到应用进程内存中，这个过程是同步的，读取完数据后应用进程才能处理数据。
+- **Proactor 是异步网络模式， 感知的是已完成的读写事件**。在发起异步读写请求时，需要传入数据缓冲区的地址（用来存放结果数据）等信息，这样系统内核才可以自动帮我们把数据的读写工作完成，这里的读写工作全程由操作系统来做，并不需要像 Reactor 那样还需要应用进程主动发起 read/write 来读写数据，操作系统完成读写工作后，就会通知应用进程直接处理数据。
+> Reactor 可以理解为「来了事件操作系统通知应用进程，让应用进程来处理」，而 Proactor 可以理解为「来了事件操作系统来处理，处理完再通知应用进程」
+
+无论是 Reactor，还是 Proactor，都是一种基于「事件分发」的网络编程模式，区别在于 Reactor 模式是基于「**待完成**」的 I/O 事件，而 Proactor 模式则是基于「**已完成**」的 I/O 事件。
+
 
 ### page cache
 

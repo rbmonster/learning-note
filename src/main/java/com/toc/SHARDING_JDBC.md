@@ -1,71 +1,102 @@
 <a name="index">**Index**</a>
 
-<a href="#0">sharding-jdbc</a>  
-&emsp;<a href="#1">1. 前言</a>  
-&emsp;&emsp;<a href="#2">1.1. 写在前面的约定内容</a>  
-&emsp;&emsp;<a href="#3">1.2. sharding-jdbc不支持情况</a>  
-&emsp;<a href="#4">2. Spring参数配置</a>  
-&emsp;&emsp;<a href="#5">2.1. sharding-jdbc官方参数说明</a>  
-&emsp;&emsp;&emsp;<a href="#6">2.1.1. 数据分片</a>  
-<a href="#7">分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一</a>  
-<a href="#8">用于单分片键的标准分片场景</a>  
-<a href="#9">用于多分片键的复合分片场景</a>  
-<a href="#10">行表达式分片策略</a>  
-<a href="#11">Hint 分片策略</a>  
-<a href="#12">分表策略，同分库策略</a>  
-<a href="#13">org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant</a>  
-<a href="#14">org.apache.shardingsphere.core.BaseShardingEngine.shard</a>  
-&emsp;&emsp;&emsp;<a href="#15">0.1.2. 读写分离</a>  
-<a href="#16">省略数据源配置，与数据分片一致</a>  
-&emsp;&emsp;&emsp;<a href="#17">0.1.3. 数据加密</a>  
-<a href="#18">省略数据源配置，与数据分片一致</a>  
-&emsp;&emsp;&emsp;<a href="#19">0.1.4. 治理</a>  
-<a href="#20">省略数据源、数据分片、读写分离和数据脱敏配置</a>  
-&emsp;&emsp;<a href="#21">0.2. sharding-jdbc官方配置实践</a>  
-&emsp;&emsp;&emsp;<a href="#22">0.2.1. 公共配置</a>  
-<a href="#23">数据源名称（必选）</a>  
-<a href="#24">多个逗号隔开，改配置名称和下面数据源配置对应</a>  
-<a href="#25">默认数据源（有单表的情况时，必须配置；若所有表都是分库分表的情景，则可以不配置）</a>  
-<a href="#26">数据源配置（必选）</a>  
-<a href="#27">此处ds-1，ds-2与上面数据源名称对应</a>  
-&emsp;&emsp;&emsp;<a href="#28">0.2.2. 分库分表配置</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#29">0.2.2.1. 单库单表配置</a>  
-<a href="#30">实际逻辑表（必选）</a>  
-<a href="#31">分表策略（必选）：四种策略只能选一种</a>  
-<a href="#32">主键生成策略，支持:UUID和SNOWFLAKE</a>  
-<a href="#33">主键生产策略的属性配置：UUID时不需要配置</a>  
-<a href="#34">使用 SNOWFLAKE 算法，需要配置 worker.id 与 max.tolerate.time.difference.milliseconds 属性。</a>  
-<a href="#35">若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性</a>  
-<a href="#36">spring.shardingsphere.sharding.tables.course.key-generator.props.<property-name>= 1</a>  
-&emsp;&emsp;&emsp;<a href="#37">0.2.3. 多库多表配置</a>  
-<a href="#38">----- 实际逻辑表1 user_course_xx</a>  
-<a href="#39">分库策略</a>  
-<a href="#40">分表策略</a>  
-<a href="#41">主键生成策略，支持:UUID和SNOWFLAKE</a>  
-<a href="#42">----- 实际逻辑表2 user_standard_xx</a>  
-<a href="#43">分库策略</a>  
-<a href="#44">分表策略</a>  
-&emsp;&emsp;&emsp;<a href="#45">0.2.4. 绑定表配置</a>  
-&emsp;&emsp;&emsp;<a href="#46">0.2.5. 广播表配置</a>  
-&emsp;&emsp;&emsp;<a href="#47">0.2.6. 读写分离配置</a>  
-<a href="#48">省略数据源配置，与数据分片一致</a>  
-&emsp;&emsp;&emsp;<a href="#49">0.2.7. 数据加密</a>  
-<a href="#50">省略数据源配置，与数据分片一致</a>  
-&emsp;<a href="#51">1. 分库分表策略及思路</a>  
-&emsp;&emsp;<a href="#52">1.1. 分库策略</a>  
-&emsp;&emsp;<a href="#53">1.2. 分表策略</a>  
-&emsp;&emsp;<a href="#54">1.3. 平滑迁移分表解决方案</a>  
-&emsp;&emsp;<a href="#55">1.4. 一种混合策略思路</a>  
-<a href="#56">必须搭配sharding-jdbc的混合策略配置</a>  
-&emsp;&emsp;<a href="#57">0.5. 多租户配置</a>  
-&emsp;<a href="#58">1. 容量预估</a>  
-# <a name="0">sharding-jdbc</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+<a href="#0">Table of Contents</a>  
+<a href="#1">sharding-jdbc</a>  
+&emsp;<a href="#2">1. 前言</a>  
+&emsp;&emsp;<a href="#3">1.1. 写在前面的约定内容</a>  
+&emsp;&emsp;<a href="#4">1.2. sharding-jdbc不支持情况</a>  
+&emsp;<a href="#5">2. Spring参数配置</a>  
+&emsp;&emsp;<a href="#6">2.1. sharding-jdbc官方参数说明</a>  
+&emsp;&emsp;&emsp;<a href="#7">2.1.1. 数据分片</a>  
+<a href="#8">分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一</a>  
+<a href="#9">用于单分片键的标准分片场景</a>  
+<a href="#10">用于多分片键的复合分片场景</a>  
+<a href="#11">行表达式分片策略</a>  
+<a href="#12">Hint 分片策略</a>  
+<a href="#13">分表策略，同分库策略</a>  
+<a href="#14">org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant</a>  
+<a href="#15">org.apache.shardingsphere.core.BaseShardingEngine.shard</a>  
+&emsp;&emsp;&emsp;<a href="#16">0.1.2. 读写分离</a>  
+<a href="#17">省略数据源配置，与数据分片一致</a>  
+&emsp;&emsp;&emsp;<a href="#18">0.1.3. 数据加密</a>  
+<a href="#19">省略数据源配置，与数据分片一致</a>  
+&emsp;&emsp;&emsp;<a href="#20">0.1.4. 治理</a>  
+<a href="#21">省略数据源、数据分片、读写分离和数据脱敏配置</a>  
+&emsp;&emsp;<a href="#22">0.2. sharding-jdbc官方配置实践</a>  
+&emsp;&emsp;&emsp;<a href="#23">0.2.1. 公共配置</a>  
+<a href="#24">数据源名称（必选）</a>  
+<a href="#25">多个逗号隔开，改配置名称和下面数据源配置对应</a>  
+<a href="#26">默认数据源（有单表的情况时，必须配置；若所有表都是分库分表的情景，则可以不配置）</a>  
+<a href="#27">数据源配置（必选）</a>  
+<a href="#28">此处ds-1，ds-2与上面数据源名称对应</a>  
+&emsp;&emsp;&emsp;<a href="#29">0.2.2. 分库分表配置</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#30">0.2.2.1. 单库单表配置</a>  
+<a href="#31">实际逻辑表（必选）</a>  
+<a href="#32">分表策略（必选）：四种策略只能选一种</a>  
+<a href="#33">主键生成策略，支持:UUID和SNOWFLAKE</a>  
+<a href="#34">主键生产策略的属性配置：UUID时不需要配置</a>  
+<a href="#35">使用 SNOWFLAKE 算法，需要配置 worker.id 与 max.tolerate.time.difference.milliseconds 属性。</a>  
+<a href="#36">若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性</a>  
+<a href="#37">spring.shardingsphere.sharding.tables.course.key-generator.props.<property-name>= 1</a>  
+&emsp;&emsp;&emsp;<a href="#38">0.2.3. 多库多表配置</a>  
+<a href="#39">----- 实际逻辑表1 user_course_xx</a>  
+<a href="#40">分库策略</a>  
+<a href="#41">分表策略</a>  
+<a href="#42">主键生成策略，支持:UUID和SNOWFLAKE</a>  
+<a href="#43">----- 实际逻辑表2 user_standard_xx</a>  
+<a href="#44">分库策略</a>  
+<a href="#45">分表策略</a>  
+&emsp;&emsp;&emsp;<a href="#46">0.2.4. 绑定表配置</a>  
+&emsp;&emsp;&emsp;<a href="#47">0.2.5. 广播表配置</a>  
+&emsp;&emsp;&emsp;<a href="#48">0.2.6. 读写分离配置</a>  
+<a href="#49">省略数据源配置，与数据分片一致</a>  
+&emsp;&emsp;&emsp;<a href="#50">0.2.7. 数据加密</a>  
+<a href="#51">省略数据源配置，与数据分片一致</a>  
+&emsp;<a href="#52">1. 分库分表策略及思路</a>  
+&emsp;&emsp;<a href="#53">1.1. 分库策略</a>  
+&emsp;&emsp;<a href="#54">1.2. 分表策略</a>  
+&emsp;&emsp;<a href="#55">1.3. 平滑迁移分表解决方案</a>  
+&emsp;&emsp;<a href="#56">1.4. 一种混合策略思路</a>  
+<a href="#57">必须搭配sharding-jdbc的混合策略配置</a>  
+&emsp;&emsp;<a href="#58">0.5. 多租户配置</a>  
+&emsp;<a href="#59">1. 容量预估</a>  
+# <a name="0">Table of Contents</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+* [sharding-jdbc](#sharding-jdbc)
+  * [前言](#前言)
+    * [写在前面的约定内容](#写在前面的约定内容)
+    * [sharding-jdbc不支持情况](#sharding-jdbc不支持情况)
+  * [Spring参数配置](#spring参数配置)
+    * [sharding-jdbc官方参数说明](#sharding-jdbc官方参数说明)
+      * [数据分片](#数据分片)
+      * [读写分离](#读写分离)
+      * [数据加密](#数据加密)
+      * [治理](#治理)
+    * [sharding-jdbc官方配置实践](#sharding-jdbc官方配置实践)
+      * [公共配置](#公共配置)
+      * [分库分表配置](#分库分表配置)
+        * [单库单表配置](#单库单表配置)
+      * [多库多表配置](#多库多表配置)
+      * [绑定表配置](#绑定表配置)
+      * [广播表配置](#广播表配置)
+      * [读写分离配置](#读写分离配置)
+      * [数据加密](#数据加密-1)
+  * [分库分表策略及思路](#分库分表策略及思路)
+    * [分库策略](#分库策略)
+    * [分表策略](#分表策略)
+    * [平滑迁移分表解决方案](#平滑迁移分表解决方案)
+    * [一种混合策略思路](#一种混合策略思路)
+    * [多租户配置](#多租户配置)
+  * [容量预估](#容量预估)
+
+
+# <a name="1">sharding-jdbc</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 sharding-jdbc分库分表配置说明：
 - [官方文档](https://shardingsphere.apache.org/document/current/cn/overview/)
 - [官方各版本配置变更历史](https://shardingsphere.apache.org/document/current/cn/reference/api-change-history/shardingsphere-jdbc/spring-boot-starter/)
 
-## <a name="1">前言</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="2">写在前面的约定内容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="2">前言</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="3">写在前面的约定内容</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 Spring官方推荐约定大于配置
 
@@ -76,7 +107,7 @@ Spring官方推荐约定大于配置
     * 表名称必须全小写。  比如 account_1，不能写成 ACCOUNT_1
 * 以前的单表扩容为分库分表形式，原表名称无需变更表名称带上编号
 
-### <a name="3">sharding-jdbc不支持情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="4">sharding-jdbc不支持情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 * [JDBC不支持选项](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/unsupported-items/)
 * [SQL不支持选项](https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/)
 
@@ -86,7 +117,7 @@ Spring官方推荐约定大于配置
 
 ![sharding.jpg](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/sharding.jpg)
 
-## <a name="4">Spring参数配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="5">Spring参数配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 允许一个实体类对应多个表：该参数和Springboot版本有关，非必配
 
@@ -94,10 +125,10 @@ Spring官方推荐约定大于配置
 spring.main.allow-bean-definition-overriding=true
 ```
 
-### <a name="5">sharding-jdbc官方参数说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="6">sharding-jdbc官方参数说明</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [ShardingSphere-4.x](https://shardingsphere.apache.org/document/current/cn/reference/api-change-history/shardingsphere-jdbc/spring-boot-starter/#shardingsphere-4x)
 
-#### <a name="6">数据分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="7">数据分片</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```properties
 spring.shardingsphere.datasource.names= # 数据源名称，多数据源以逗号分隔
 
@@ -110,25 +141,25 @@ spring.shardingsphere.datasource.<data-source-name>.xxx= # 数据库连接池的
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.actual-data-nodes= # 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持 inline 表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
 
-# <a name="7">分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="8">分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-# <a name="8">用于单分片键的标准分片场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="9">用于单分片键的标准分片场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.standard.sharding-column= # 分片列名称
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.standard.precise-algorithm-class-name= # 精确分片算法类名称，用于 = 和 IN。该类需实现 PreciseShardingAlgorithm 接口并提供无参数的构造器
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.standard.range-algorithm-class-name= # 范围分片算法类名称，用于 BETWEEN，可选。该类需实现 RangeShardingAlgorithm 接口并提供无参数的构造器
 
-# <a name="9">用于多分片键的复合分片场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="10">用于多分片键的复合分片场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.complex.sharding-columns= # 分片列名称，多个列以逗号分隔
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.complex.algorithm-class-name= # 复合分片算法类名称。该类需实现 ComplexKeysShardingAlgorithm 接口并提供无参数的构造器
 
-# <a name="10">行表达式分片策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="11">行表达式分片策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.inline.sharding-column= # 分片列名称
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.inline.algorithm-expression= # 分片算法行表达式，需符合 groovy 语法
 
-# <a name="11">Hint 分片策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="12">Hint 分片策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.hint.algorithm-class-name= # Hint 分片算法类名称。该类需实现 HintShardingAlgorithm 接口并提供无参数的构造器
 
-# <a name="12">分表策略，同分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="13">分表策略，同分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= # 省略
 
 spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= # 自增列名称，缺省表示不使用自增主键生成器
@@ -156,16 +187,16 @@ spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= # 详见读写分离部分
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= # 详见读写分离部分
 
-# <a name="13">org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-# <a name="14">org.apache.shardingsphere.core.BaseShardingEngine.shard</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="14">org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="15">org.apache.shardingsphere.core.BaseShardingEngine.shard</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.props.sql.show= # 是否开启 SQL 显示，默认值: false
 spring.shardingsphere.props.executor.size= # 工作线程数量，默认值: CPU 核数
 ```
 
-#### <a name="15">读写分离</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="16">读写分离</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```properties
-# <a name="16">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="17">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= # 主库数据源名称
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= # 从库数据源名称列表
@@ -179,10 +210,10 @@ spring.shardingsphere.props.executor.size= # 工作线程数量，默认值: CPU
 spring.shardingsphere.props.check.table.metadata.enabled= # 是否在启动时检查分表元数据一致性，默认值: false
 ```
 
-#### <a name="17">数据加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="18">数据加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```properties
-# <a name="18">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="19">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= # 加解密器类型，可自定义或选择内置类型：MD5/AES
 spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= # 属性配置, 注意：使用 AES 加密器，需要配置 AES 加密器的 KEY 属性：aes.key.value
@@ -192,10 +223,10 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.as
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor= # 加密器名字
 ```
 
-#### <a name="19">治理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">治理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```properties
-# <a name="20">省略数据源、数据分片、读写分离和数据脱敏配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="21">省略数据源、数据分片、读写分离和数据脱敏配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 spring.shardingsphere.orchestration.name= # 治理实例名称
 spring.shardingsphere.orchestration.overwrite= # 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
@@ -210,26 +241,26 @@ spring.shardingsphere.orchestration.registry.time-to-live-seconds= # 临时节�
 spring.shardingsphere.orchestration.registry.props= # 配置中心其它属性
 ```
 
-### <a name="21">sharding-jdbc官方配置实践</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="22">sharding-jdbc官方配置实践</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```properties
 druid.enabled=false
 ```
 
-#### <a name="22">公共配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">公共配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 数据源配置
 
 ```properties
-# <a name="23">数据源名称（必选）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-# <a name="24">多个逗号隔开，改配置名称和下面数据源配置对应</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="24">数据源名称（必选）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="25">多个逗号隔开，改配置名称和下面数据源配置对应</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.datasource.names=ds-1,ds-2
 
-# <a name="25">默认数据源（有单表的情况时，必须配置；若所有表都是分库分表的情景，则可以不配置）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="26">默认数据源（有单表的情况时，必须配置；若所有表都是分库分表的情景，则可以不配置）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.default-data-source-name=ds-1
 
-# <a name="26">数据源配置（必选）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-# <a name="27">此处ds-1，ds-2与上面数据源名称对应</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="27">数据源配置（必选）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="28">此处ds-1，ds-2与上面数据源名称对应</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.datasource.ds-1.type=com.alibaba.druid.pool.DruidDataSource
 spring.shardingsphere.datasource.ds-1.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.shardingsphere.datasource.ds-1.url=jdbc:mysql://xxxx:10032/sanwu_sharding-1?serverTimezone=GMT%2B8
@@ -259,7 +290,7 @@ spring.shardingsphere.props.sql.show=true # 是否开启 SQL 显示，默认值:
 spring.shardingsphere.props.executor.size=2 # 工作线程数量，默认值: CPU 核数
 ```
 
-#### <a name="28">分库分表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="29">分库分表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 sharding-jdbc支持4种分库分表策略
 
@@ -277,59 +308,59 @@ sharding-jdbc支持4种分库分表策略
 * UUID
 * SNOWFLAKE
 
-##### <a name="29">单库单表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="30">单库单表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 course表有两个分表：course_1,couser_2
 
 ```properties
-# <a name="30">实际逻辑表（必选）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="31">实际逻辑表（必选）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.course.actual-data-nodes=ds-1.course_$->{1..2}
 
-# <a name="31">分表策略（必选）：四种策略只能选一种</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="32">分表策略（必选）：四种策略只能选一种</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.course.table-strategy.inline.sharding-column=cid
 spring.shardingsphere.sharding.tables.course.table-strategy.inline.algorithm-expression=course_$->{cid % 2 + 1}
 
-# <a name="32">主键生成策略，支持:UUID和SNOWFLAKE</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="33">主键生成策略，支持:UUID和SNOWFLAKE</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.course.key-generator.column=cid
 spring.shardingsphere.sharding.tables.course.key-generator.type=SNOWFLAKE
-# <a name="33">主键生产策略的属性配置：UUID时不需要配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-# <a name="34">使用 SNOWFLAKE 算法，需要配置 worker.id 与 max.tolerate.time.difference.milliseconds 属性。</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-# <a name="35">若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-# <a name="36">spring.shardingsphere.sharding.tables.course.key-generator.props.<property-name>= 1</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="34">主键生产策略的属性配置：UUID时不需要配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="35">使用 SNOWFLAKE 算法，需要配置 worker.id 与 max.tolerate.time.difference.milliseconds 属性。</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="36">若使用此算法生成值作分片值，建议配置 max.vibration.offset 属性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="37">spring.shardingsphere.sharding.tables.course.key-generator.props.<property-name>= 1</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ```
 
-#### <a name="37">多库多表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="38">多库多表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 和单库多表配置相比，只是多了一个数据库路由策略配置
 
 ```properties
-# <a name="38">----- 实际逻辑表1 user_course_xx</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="39">----- 实际逻辑表1 user_course_xx</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.user_course.actual-data-nodes=ds-$->{1..2}.user_course_$->{1..2}
-# <a name="39">分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="40">分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.user_course.database-strategy.inline.sharding-column=cid
 spring.shardingsphere.sharding.tables.user_course.database-strategy.inline.algorithm-expression=ds-$->{cid % 2 + 1}
-# <a name="40">分表策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="41">分表策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.user_course.table-strategy.inline.sharding-column=user_id
 spring.shardingsphere.sharding.tables.user_course.table-strategy.inline.algorithm-expression=user_course_$->{user_id % 2 + 1}
-# <a name="41">主键生成策略，支持:UUID和SNOWFLAKE</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="42">主键生成策略，支持:UUID和SNOWFLAKE</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.user_course.key-generator.column=cid
 spring.shardingsphere.sharding.tables.user_course.key-generator.type=UUID
 
-# <a name="42">----- 实际逻辑表2 user_standard_xx</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="43">----- 实际逻辑表2 user_standard_xx</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.user_standard.actual-data-nodes=ds-$->{1..2}.user_standard_$->{1..2}
-# <a name="43">分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="44">分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.user_standard.database-strategy.standard.sharding-column=cid
 spring.shardingsphere.sharding.tables.user_standard.database-strategy.standard.precise-algorithm-class-name=com.sanwu.infra.sharding.DBCidShardingAlgorithm
 #spring.shardingsphere.sharding.tables.user_standard.database-strategy.standard.range-algorithm-class-name=ds-$->{cid % 2 + 1}
 
-# <a name="44">分表策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="45">分表策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.tables.user_standard.table-strategy.standard.sharding-column=user_id
 #spring.shardingsphere.sharding.tables.user_standard.table-strategy.inline.algorithm-expression=user_course_$->{user_id % 2 + 1}
 spring.shardingsphere.sharding.tables.user_standard.table-strategy.standard.precise-algorithm-class-name=com.sanwu.infra.sharding.TableCidShardingAlgorithm
 #spring.shardingsphere.sharding.tables.user_standard.table-strategy.standard.range-algorithm-class-name=user_id
 ```
 
-#### <a name="45">绑定表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="46">绑定表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [sharding-jdbc 绑定表](https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/table/#绑定表)
 
 绑定表：指分片规则一致的主表和子表，主要解决主表和字表的笛卡尔积问题.
@@ -368,7 +399,7 @@ SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE
 
 其中 t_order 在 FROM 的最左侧，ShardingSphere 将会以它作为整个绑定表的主表。 所有路由计算将会只使用主表的策略，那么 t_order_item 表的分片计算将会使用 t_order 的条件。 因此，绑定表间的分区键需要完全相同。
 
-#### <a name="46">广播表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="47">广播表配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [广播表官方说明](https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/table/#广播表)
 
 广播表：指所有的分片数据源中都存在的表，表结构及其数据在每个数据库中均完全一致。 适用于数据量不大且需要与海量数据的表进行关联查询的场景，例如：字典表。
@@ -380,12 +411,12 @@ spring.shardingsphere.sharding.broadcast-tables[1]= # 广播表规则列表
 spring.shardingsphere.sharding.broadcast-tables[x]= # 广播表规则列表
 ```
 
-#### <a name="47">读写分离配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="48">读写分离配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 用于主从模式中，进行数据读写分离：主库写，从库读
 
 ```properties
-# <a name="48">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="49">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= # 主库数据源名称
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= # 从库数据源名称列表
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= # 从库数据源名称列表
@@ -394,10 +425,10 @@ spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= # 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若 `load-balance-algorithm-class-name` 存在则忽略该配置
 ```
 
-#### <a name="49">数据加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="50">数据加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```properties
-# <a name="50">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="51">省略数据源配置，与数据分片一致</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 spring.shardingsphere.encrypt.encryptors.<encryptor-name>.type= # 加解密器类型，可自定义或选择内置类型：MD5/AES
 spring.shardingsphere.encrypt.encryptors.<encryptor-name>.props.<property-name>= # 属性配置, 注意：使用 AES 加密器，需要配置 AES 加密器的 KEY 属性：aes.key.value
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plainColumn= # 存储明文的字段
@@ -407,25 +438,25 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.en
 ```
 
 
-## <a name="51">分库分表策略及思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="52">分库分表策略及思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 sharding-jdbc支持4种分库分表策略：inline、standard、complex、hint。
 
 实际应用中，经常会需要使用hint或complex方式去自定义自己的分库分表的策略实现类继承对应的实现类接口，以支持业务。
 
-### <a name="52">分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="53">分库策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 根据自ID分库
 2. 根据租户字段和主键类型字段分库
 3. 根据租户字段分库（限每个租户只有一个库）
 4. 根据租户字段和sharding_mapping业务字段分库）：
 
-### <a name="53">分表策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="54">分表策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 根据主键分表
 2. 混合策略分表：依赖sharding_mapping分库分表  
 3. 根据日期月份和年份分表
 
 
-### <a name="54">平滑迁移分表解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="55">平滑迁移分表解决方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 增加配置字段`insert-table-nodes`：该字段用于配置允许插入数据的表节点，非全量表节点，必填字段。
 
@@ -438,7 +469,7 @@ sharding-jdbc支持4种分库分表策略：inline、standard、complex、hint�
 需要扩展新表，同时旧表不允许在插入数据（因为已经很多了）。那么此时该参数配置可以插入数据的表。
 
 
-### <a name="55">一种混合策略思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="56">一种混合策略思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 引入映射表`sharding_mapping`，并指定用于映射分表键的业务键：`mappingBizIdColumn`
 
@@ -464,7 +495,7 @@ sharding-jdbc支持4种分库分表策略：inline、standard、complex、hint�
 
 ```properties
 sanwu.sharding.config.tables.sw_account.mapping-biz-id-column=firm_id
-# <a name="56">必须搭配sharding-jdbc的混合策略配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="57">必须搭配sharding-jdbc的混合策略配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 sharding.jdbc.config.sharding.tables.sw_account.actual-data-nodes=ds-$->{0..1}.sw_account$->{0..1}
 sharding.jdbc.config.sharding.tables.sw_account.table-strategy.complex.sharding-columns=account_no,firm_id
 sharding.jdbc.config.sharding.tables.sw_account.table-strategy.complex.algorithm-class-name=com.sanwu.sharding.algorithm.TableByMappingComplexShardingAlgorithm
@@ -488,7 +519,7 @@ create table `sharding_mapping`
 ) engine=innodb default charset=utf8 COMMENT '分片映射表';
 ```
 
-### <a name="57">多租户配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="58">多租户配置</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 租户架构情况
 
@@ -504,7 +535,7 @@ create table `sharding_mapping`
 * boss-db-2库有分表:t_user_3，t_user_4
 * 根据user_id进行分表，期望user路由到user_db分库，boss用户路由到boss_db分库
 
-## <a name="58">容量预估</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="59">容量预估</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 分库分表首先是基于**现有的业务量和未来的增量**做出判断。
 
 举个例子，现在我们日单量是10万单，预估一年后可以达到日100万单，根据业务属性，一般我们就支持查询半年内的订单，超过半年的订单需要做归档处理。
