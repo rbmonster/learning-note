@@ -38,6 +38,39 @@ MySQL的一个设计思想：如果内存够用，就要多利用内存，尽量
 索引的出现其实就是为了提高数据查询的效率，就像书的目录一样。 一本500页的书，对于数据库的表而言，索引其实就是它的“目录”。
 > 若一张表中无主键索引，mysql会默认创建一个长度为6字节的rowid主键。
 
+除了B-Tree 索引，MySQL还提供了如下索引：
+- `Hash索引` 只有Memory引擎支持，场景简单
+- `R-Tree索引` MyISAM的一个特殊索引类型，主要用于地理空间数据类型
+- `Full-text` MyISAM的一个特殊索引，主要用于全文索引，从MySQL 5.6开始InnoDB支持全文索引
+
+| 索引 / 存储引擎 |	MyISAM |	InnoDB |	Memory|
+| --- | --- | --- | --- |
+|B-Tree索引	|支持|	支持|	支持|
+|HASH索引	|不支持	|不支持	|支持|
+|R-Tree索引	|支持	|支持	|不支持|
+|Full-text索引	|支持|	支持	|不支持|
+
+
+### Hash索引
+Hash索引适于key-value查询，通过Hash索引比B-tree索引查询更加迅速。但Hash索引不支持范围查找例如`!>`,`<=`,`>=`等。 Memory只有在"="的条件下才会使用hash索引
+
+值存在数组，用一个hash函数把key转换成一个确定的内存位置，然后把value放在数组的该位置。使用 hash 自然会有哈希冲突可能，MySQL 采取拉链法解决。\
+Hash索引基于Hash表实现，只有查询条件精确匹配Hash索引中的列时，才能够使用到hash索引。对于Hash索引中的所有列，存储引擎会为每行计算一个hashcode，Hash索引中存储的就是hashcode。
+
+
+Hash索引缺点：
+- 必须二次查找
+- 哈希码可能存在哈希冲突，如果hash 算法设计不好，碰撞过多，性能也会变差
+- 索引存放的是hash值，所以仅支持 < = > 以及 IN、只能处理键值的全值匹配查询、**不支持部分索引查找、范围查找**
+- **无法排序**、无法通过操作索引来排序，因为存放的时候会经过hash计算，但是计算的hash值和存放的不一定相等
+- 不能避免全表扫描，只是由于在memory表里支持非唯一值hash索引，即不同的索引键，可能存在相同hash值
+- 因为哈希表是一种根据关键字直接访问内存存储位置的数据结构 ，所以利用其原理的hash 索引，也就需要将所有数据文件添加到内存，这就很耗内存
+- 如果所有的查询都是等值查询，那么hash确实快，但实际上**范围查找**数据更多
+- Hash函数决定着索引键的大小
+
+
+
+
 ### 主键索引、唯一索引、普通索引
 索引分类：唯一索引，主键（聚集）索引，非聚集索引(普通索引)
 
@@ -444,7 +477,7 @@ MVCC的实现原理：主要是版本链，undo日志 ，Read View 来实现的
 例子：
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/mysql/versionChain.png)
 1. db_row_id是数据库默认为该行记录生成的唯一隐式主键
-2. db_trx_id是当前操作该记录的事务ID
+2. db_trx_id是记录创建这条记录以及最后一次修改该记录的事务的ID。
 3. db_roll_pointer是一个回滚指针，用于配合undo日志，指向上一个旧版本。
 每次对数据库记录进行改动，都会记录一条undo日志，每条undo日志也都有一个roll_pointer属性（INSERT操作对应的undo日志没有该属性，因为该记录并没有更早的版本）
 > 对该记录每次更新后，都会将旧值放到一条undo日志中，就算是该记录的一个旧版本，随着更新次数的增多，所有的版本都会被roll_pointer属性连接成一个链表，我们把这个链表称之为版本链，版本链的头节点就是当前记录最新的值。
@@ -456,6 +489,13 @@ MVCC的实现原理：主要是版本链，undo日志 ，Read View 来实现的
 ##### Read View(读视图)
 事务进行快照读操作的时候生产的读视图(Read View)，在该事务执行的快照读的那一刻，会生成数据库系统当前的一个快照。\
 记录并维护系统当前活跃事务的ID(没有commit，当每个事务开启时，都会被分配一个ID, 这个ID是递增的，所以越新的事务，ID值越大)，是系统中当前不应该被本事务看到的其他事务id列表。
+
+ReadView是一个数据结构，包含4个字段
+- `m_ids`: 当前活跃的事务编号集合（未提交事务）
+- `low_limit_id`: 目前出现过的最大的事务ID+1，即下一个将被分配的事务ID。
+- `up_limit_id`: 活跃事务列表trx_ids中最小的事务ID，如果trx_ids为空，则up_limit_id 为 low_limit_id。
+- `creator_trx_id`: ReadView创建者的事务编号
+
 
 
 #### 隔离级别与MVCC
@@ -478,10 +518,10 @@ mysql> select k from t where id=1 lock in share mode;
 mysql> select k from t where id=1 for update;
  ```
 
-具体分析有三种情况：
-1. 版本未提交，不可见；
-2. 版本已提交，但是是在视图创建后提交的，不可见；
-3. 版本已提交，而且是在视图创建前提交的，可见。
+具体分析有三种情况，`undolog`: `trx_id`, 读视图： `low_limit_id`、`up_limit_id`：
+1. 版本未提交，不可见；`trx_id > low_limit_id`
+2. 版本已提交，但是是在视图创建后提交的，不可见；`up_limit_id<=trx_id<= low_limit_id && (txn_id in trx_ids)`
+3. 版本已提交，而且是在视图创建前提交的，可见。`trx_id < up_limit_id` 或 `up_limit_id<=trx_id<= low_limit_id && (txn_id  not in trx_ids)` 或 `trx_id = creator_trx_id`
 
 
 读提交(RC)的逻辑和可重复读(RR)的逻辑类似，它们最主要的区别是： 
@@ -1065,14 +1105,32 @@ MGR(MySQL Group Replication)是 MySQL 自带的一个插件，可以灵活部署
 
 
 ### 主从数据同步
+参考资料：
+- [MySQL5.7新特性--官方高可用方案MGR介绍](https://www.cnblogs.com/luoahong/articles/8043035.html)
+- [看完这篇还不懂 MySQL 主从复制](https://juejin.cn/post/6967224081410162696)
 
-参考资料：[MySQL5.7新特性--官方高可用方案MGR介绍](https://www.cnblogs.com/luoahong/articles/8043035.html)
+MySQL 的主从复制工作过程大致如下：
+1. 从库生成两个线程，一个 I/O 线程，一个 SQL 线程；
+2. I/O 线程去请求主库的 binlog，并将得到的 binlog 日志写到 relay log(中继日志) 文件中；
+3. 主库会生成一个 log dump 线程，用来给从库 I/O 线程传 binlog；
+4. SQL 线程会读取 relay log 文件中的日志，并解析成具体操作，来实现主从的操作一致，而最终数据一致；
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/mysql/master-slave-sync.png)
+
+**请求流程**:
+MySQL 建立请求的主从的详细流程如下：
+1. 当从服务器连接主服务器时，主服务器会创建一个 log dump 线程，用于发送 binlog 的内容。在读取 binlog 的内容的操作中，会对象主节点上的 binlog 加锁，当读取完成并发送给从服务器后解锁。
+2. 当从节点上执行 start slave 命令之后，从节点会创建一个 IO 线程用来连接主节点，请求主库中更新 binlog。IO 线程接收主节点 binlog dump 进程发来的更新之后，保存到 relay-log 中。
+3. 从节点 SQL 线程负责读取 realy-log 中的内容，解析成具体的操作执行，最终保证主从数据的一致性。
+
 #### MySQL异步复制
 master事务的提交不需要经过slave的确认。\
 master不关心slave是否接收到master的binlog。slave接收到master的binlog后先写relay log，最后异步地去执行relay log中的sql应用到自身。
 由于master的提交不需要确保slave relay log是否被正确接受，当slave接受master binlog失败或者relay log应用失败，master无法感知。
 
 #### MySQL半同步复制
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/mysql/master-slave-half-sync.png)
+
 在master事务的commit之前，必须确保一个slave收到relay log并且响应给master以后，才能进行事务的commit。但是slave对于relay log的应用仍然是异步进行的
 
 #### MySQL组复制
