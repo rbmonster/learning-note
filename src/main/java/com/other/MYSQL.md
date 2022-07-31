@@ -76,9 +76,8 @@ Hash索引缺点：
 1. 如果包含记录太多，索引表可能因为太大而无法在内存中存储，导致查找过程中需要多次磁盘访问。可以引入多级索引解决该问题。
 2. 记录增删需要更新稠密索引，而稠密索引有序并且是顺序存储的，记录更新会引起记录的移动，因此稠密索引的插入和删除代价很高。
 
-
-稀疏索引：在文件中，只为某些查找键值建立索引记录。 TODO
-
+稀疏索引：在文件中，只为某些查找键值建立索引记录。稀疏索引则需要先定位到搜索值>索引值的最小的那个，然后在通过起始位置去定位具体的偏移量。
+> 稀疏索引占用空间少，但是在查询的精确率上还是相对于稠密索引还是比较慢的，因为不需要顺序查找，还有回表。
 
 ### 主键索引、唯一索引、普通索引
 索引分类：唯一索引，主键（聚集）索引，非聚集索引(普通索引)
@@ -262,6 +261,192 @@ mysql> alter table t add id_card_crc int unsigned, add index(id_card_crc);
 - 联合索引字段个数不宜过度，充分权衡插入删除操作及DBA操作表的成本
 - 索引组合引用、少用单列索引：单列建索引在使用中效果可能跟组合索引效果差不多，但是索引数量变多影响数据库操作
 - where,on,group by,order by 后面跟着的字段建索引：这些关键字后面关联的字段常常使用，考虑建立索引
+
+### MySql 查询分析
+
+MySQL基于索引的查询成本分析主要包含两个方式：**扫描索引树和索引统计**
+
+在MySQL中的查询成本主要包含下面两部分：
+- **CPU成本**：检测记录是否满足对应的查询条件、对结果集进行排序等这些操作消耗的时间称之为CPU成本。
+- **I/O成本**：当我们做一次数据查询时，需要先把索引页从磁盘加载到内存中然后再操作。这个从磁盘到内存加载的过程消耗的时间称之为I/O成本。
+> MySQL中定义加载一条记录到内存花费的成本常数是1.0，即一条记录的I/O成本为1.0。检查一条记录是否满足查询条件的成本常数是0.2，即一条记录的CPU成本为0.2。
+
+在MySQL中有一个配置参数`eq_range_index_dive_limit`，`eq_range_index_dive_limit`参数的默认值在5.7版本更新为200。它的作用如下：
+- 如果一个字段的查询条件是一个等值查询(比如：in查询，=查询)，其`等值条件数大于等于该配置参数`，则**查询成本分析使用索引统计**的方式完成。而小于的情况使用扫描索引树的方式。
+- 如果一个字段的查询条件是**非等值范围查询或者是等值查询**，其中，是等值查询时，等值条件数小于该配置参数，那么，这个**范围查询和等值查询的查询成本分析使用扫描索引树的方式**完成。
+
+
+基于索引的查询成本分析:
+
+| 进入方法 | 退出方法 |
+| --- | --- |
+|扫描索引树分析 |效率低，但分析结果比较准确|
+|索引统计分析	| 效率高，但分析结果不准确 |
+|全表扫描分析	| 效率很低，但分析结果准确 |
+
+- 扫描索引树分析`index dives`：方案的效率低是由于必须扫描索引树来确定查询成本，如果索引树的分叉很多，势必会降低扫描的效率，从而降低了查询成本计算的效率。
+- 索引统计分析`index statistics`：方案的计算不准确是由于MySQL是通过采样部分索引树的节点，然后对这些节点做相关计算，从而生成索引统计结果，最后，得出查询成本的。
+- 全表扫描分析：大多数情况下，它的成本计算结果往往都比上面两个基于索引计算查询成本的方案要差很多
+
+#### 基于扫描索引树的分析
+```sql
+SELECT * FROM user WHERE age >= 16 AND age < 25 ORDER BY age LIMIT 0, 20;
+
+ALTER TABLE user add index index_age_birth(age,birthday);
+```
+
+使用的范围查询，通过扫描索引树的方式，完成查询成本分析。由于[16,25)区间内的记录数为4，成本计算如下：
+- 计算CPU成本：`4 * 0.2 + 0.01 + 4 * 0.2 = 1.61` (在辅助索引中搜索满足查询条件的记录的总成本 + 微调参数 + 在聚簇索引中搜索满足查询条件的记录的总成本 + 0.01为MySQL对CPU成本的微调参数。)
+- I/O成本: `1.0 + 4 * 1.0 = 5.0`  (范围区间的数量 + 聚簇索引中满足条件的记录的加载成本)
+> 范围区间的数量：由于MySQL在做索引树扫描分析前，需要读取查询条件到内存中，再做分析，所以，该案例中，在扫描`index_age_birth`索引树，需要读取一次条件区间[16,25)的上下限到内存中，这个读取次数就叫做范围区间的数量。
+
+最终，[16,25)的查询总成本为CPU成本 + I/O成本： `1.61 + 5.0 = 6.61`
+
+
+#### 基于索引统计的分析
+
+```sql
+SELECT * FROM user WHERE id IN (1, 5, 3, '...', 2);
+
+ALTER TABLE user add index index_age_birth(age,birthday);
+```
+> id字段值个数超过eq_range_index_dive_limit，为300个
+
+```
+
+mysql> show index from user;
++-------+------------+-----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table | Non_unique | Key_name        | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++-------+------------+-----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| user  |          0 | PRIMARY         |            1 | id          | A         |           3 |     NULL | NULL   |      | BTREE      |         |               |
+| user  |          1 | index_age_birth |            1 | age         | A         |           3 |     NULL | NULL   | YES  | BTREE      |         |               |
+| user  |          1 | index_age_birth |            2 | birthday    | A         |           3 |     NULL | NULL   | YES  | BTREE      |         |               |
++-------+------------+-----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+```
+> 主要关注**Cardinality**这一列，它表示索引列中不重复值的数量。
+
+假设我们定义user表的总记录数为total_rows，某一个索引列的Cardinality值为cardinality，那么，我们可以计算出平均一个值在该列重复多少次。即
+- 一个值的重复次数 ≈ `total_rows/cardinality`
+
+案例中的SQL是**主键id查询**，一定命中主键索引，即表格中的聚簇索引PRIMARY，结合上面的公式，假设user表中包含记录数为8，我们就可以得出平均一个值在id这一列重复的次数，即 `8/8 = 1`
+
+查询条件id值的个数为300，这条SQL查询成本估算如下：
+- I/O成本：`300 * 1.0 = 300`
+- CPU成本：`300 * 0.2 = 60`
+- 总成本：300 + 60 = 360
+
+
+#### 基于全表扫描
+在InnoDB中全表扫描的时间为**聚簇索引的所有节点的数量**。
+
+- IO总成本 = 全表扫描时间 * 单个节点的io成本 + 1.1
+- 单个节点的io成本: 内存中节点读成本 + 磁盘中节点的读成本
+> 1.1为MySQL微调固定参数。
+
+**内存中节点读成本**
+`内存中节点读成本 = 内存中节点大小 * MEMORY_BLOCK_READ_COST`
+
+MEMORY_BLOCK_READ_COST是一个常量，默认值为0.25:
+```sql
+UPDATE mysql.engine_cost
+SET cost_value=0.5
+WHERE cost_name="memory_block_read_cost"
+```
+
+内存中节点大小 = 总节点大小(包含内存和磁盘) * 内存中节点占用百分比
+
+内存中节点占用百分比:
+- `总节点大小 < buffer_pool_size的20%`，说明所有节点都在内存中，`内存中节点占用百分比 = 1.0`
+- `buffer_pool_size的20% < 总节点大小(table_size) < buffer_pool_size`情况，`内存中节点占用百分比 = 1.0 - (总节点占用buffer_pool_size的百分比 - 0.2)/(1.0 - 0.2)`
+- `总节点大小 > buffer_pool_size`，说明内存中放不下所有节点，只能将节点放到磁盘中，内存中无节点，所以`内存中节点占用百分比 = 0.0`
+
+**磁盘中节点读成本**
+`磁盘中节点读成本 = 磁盘中节点大小 * IO_BLOCK_READ_COST`
+
+IO_BLOCK_READ_COST为一个常量，默认为1.0，可以使用如下命令修改：
+```sql
+UPDATE mysql.engine_cost
+SET cost_value=0.5
+WHERE cost_name="io_block_read_cost"
+```
+
+磁盘中节点大小 = 总节点大小 - 内存中节点大小
+
+- 单个节点的io成本 = `(总节点大小 - 内存中节点大小) * IO_BLOCK_READ_COST` + `内存中节点大小 * MEMORY_BLOCK_READ_COST`
+
+
+#### 索引统计优化
+
+##### 索引统计结果的基础信息
+INFORMATION_SCHEMA，它是MySQL生成索引统计结果时需要的基础数据来源。
+索引统计结果的基础信息主要来源于2张字典表：INNODB_SYS_TABLES和INNODB_SYS_INDEXES
+
+|表名	|说明|
+| ---- | ----|
+|INNODB_SYS_TABLES	|存放了MySQL中所有表的基础信息|
+|INNODB_SYS_INDEXES	|存放了MySQL中所有索引的基础信息|
+
+
+为了保证索引统计结果的准确性，MySQL在构建索引统计结果时，为了获取基础数据，必须从磁盘上频繁读取这两张表，此时，磁盘IO会增加，导致MySQL性能下降。所以，为了解决这个问题，MySQL对InnoDB数据字典做了缓存，即InnoDB字典缓存。
+两张核心的数据字典表缓存：INNODB_SYS_TABLES缓存和INNODB_SYS_INDEXES缓存
+
+|缓存名	|说明|
+| ---- | ----|
+|INNODB_SYS_TABLES缓存|	主要包含3个结构：table_hash、table_id_hash和table_LRU|
+|INNODB_SYS_INDEXES缓存	|MySQL为每张表的索引维护了一个双向链表|
+
+核心的数据字典表缓存的构建过程：
+
+|构建方式	|说明|
+| ---- | ----|
+|创建表时构建	|创建表时触发构建INNODB_SYS_TABLES缓存|
+|创建索引时构建	|创建索引时触发构建INNODB_SYS_INDEXES缓存|
+|MySQL重启时构建	|在MySQL重启时，会全量加载INNODB_SYS_TABLES和INNODB_SYS_INDEXES表数据到缓存中|
+
+
+##### 索引统计表
+
+索引统计表innodb_index_stats的数据：
+```
+mysql> SELECT * FROM mysql.innodb_index_stats WHERE table_name = 'user';
++---------------+------------+-----------------+---------------------+--------------+------------+-------------+-----------------------------------+
+| database_name | table_name | index_name      | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
++---------------+------------+-----------------+---------------------+--------------+------------+-------------+-----------------------------------+
+| tms           | user       | PRIMARY         | 2022-07-31 15:38:00 | n_diff_pfx01 |          2 |           1 | id                                |
+| tms           | user       | PRIMARY         | 2022-07-31 15:38:00 | n_leaf_pages |          1 |        NULL | Number of leaf pages in the index |
+| tms           | user       | PRIMARY         | 2022-07-31 15:38:00 | size         |          1 |        NULL | Number of pages in the index      |
+| tms           | user       | index_age_birth | 2022-07-31 15:38:00 | n_diff_pfx01 |          1 |           1 | age                               |
+| tms           | user       | index_age_birth | 2022-07-31 15:38:00 | n_diff_pfx02 |          1 |           1 | age,birthday                      |
+| tms           | user       | index_age_birth | 2022-07-31 15:38:00 | n_diff_pfx03 |          2 |           1 | age,birthday,id                   |
+| tms           | user       | index_age_birth | 2022-07-31 15:38:00 | n_leaf_pages |          1 |        NULL | Number of leaf pages in the index |
+| tms           | user       | index_age_birth | 2022-07-31 15:38:00 | size         |          1 |        NULL | Number of pages in the index      |
++---------------+------------+-----------------+---------------------+--------------+------------+-------------+-----------------------------------+
+```
+
+
+MySQL采用两种方式更新索引统计表：
+- 定时更新方式：每隔10秒更新一次索引统计表。
+- ANALYZE TABLE语句方式：手动执行该语句更新一次索引统计表。
+
+
+结合索引统计表定时更新方式，我们看一下这个场景：
+- MySQL扫描所有table对应的INNODB_SYS_INDEXES链表
+- 逐个读取index索引，获取索引基础信息
+- 逐个根据索引基础信息计算索引统计项
+- 将统计项写入索引统计表
+> 如果INNODB_SYS_INDEXES链表随着表越来越多，早期更新的表可能要花很长时间才能扫描到，导致该表更新索引统计表周期变长，**该表对应的索引统计表统计项更新变慢**，最终影响该表相关SQL的查询的性能。\
+> `recalc_pool`引入可以解决这个问题，可以让MySQL总是从最早变化的表取出索引的基础信息，然后，用这些信息计算，得到索引统计结果。
+
+`recalc_pool`：一个存储table->id的列表，将最近变更的table->id添加到`recalc_pool`尾部，定时任务从`recalc_pool`头部取最早变更的table->id进行索引统计。
+
+**调整参数，增加Mysql采样叶子节点数量**
+
+采样叶子节点的数量是由MySQL参数`innodb_stats_persistent_sample_pages`决定的，所以，如果我们可以调大这个参数，就可以保证精确计算索引统计表中的各统计项，从而使得MySQL能够更加正确地选择执行计划。采样的叶子节点数参数默认为20。
+```
+SET GLOBAL innodb_stats_persistent_sample_pages=30;
+```
+
+
 
 
 ## MySQL的锁
@@ -1175,9 +1360,9 @@ master不关心slave是否接收到master的binlog。slave接收到master的binl
 alter table T drop index k; 
 alter table T add index(k);
 ```
-索引可能因为删除，或者页分 裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样 页面的利用率最高，也就是索引更紧凑、更省空间。
+索引可能因为删除，或者页分裂等原因，导致数据页有空洞，重建索引的过程会创建一个新的索引，把数据按顺序插入，这样 页面的利用率最高，也就是索引更紧凑、更省空间。
 但是，重建主键的过程不合理。不论是删 除主键还是创建主键，都会将整个表重建。
-> 这两个语句，你可以用这个语句代替 ： alter table Tengine=InnoDB
+> 这两个语句，你可以用这个语句代替 ：`alter table Tengine=InnoDB`
 
 ### mysql数据库抖动
 当内存数据页跟磁盘数据页内容不一致的时候，我们称这个内存页为“脏页”。 \
@@ -1328,7 +1513,6 @@ explain 分析例子
 |  1 | SIMPLE      | csm   | NULL       | ref    | idx_container_id | idx_container_id | 9       | ct.container_id              |    1 |   100.00 | NULL                                               |
 |  1 | SIMPLE      | yjtsp | NULL       | eq_ref | PRIMARY          | PRIMARY          | 8       | csm.sea_plan_id              |    1 |   100.00 | NULL                                               |
 +----+-------------+-------+------------+--------+------------------+------------------+---------+----------------------------------+------+----------+----------------------------------------------------+
-
 ```
 
 - 相关资料：[敖丙工作以来总结的大厂SQL调优姿势](https://mp.weixin.qq.com/s/nEmN4S9JOTVGj5IHyfNtCw)
