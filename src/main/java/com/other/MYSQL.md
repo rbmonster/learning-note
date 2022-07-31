@@ -447,6 +447,10 @@ SET GLOBAL innodb_stats_persistent_sample_pages=30;
 ```
 
 
+#### 参考资料
+- [MySQL为什么选择执行计划A而不选择B(上)？](https://juejin.cn/post/6960488581685051428)
+- [MySQL为什么选择执行计划A而不选择B？(下)](https://juejin.cn/post/6960524921118130213)
+- [什么？！我们竟然可以自己决定MySQL的查询计划！！！](https://juejin.cn/post/6960685740414107662)
 
 
 ## MySQL的锁
