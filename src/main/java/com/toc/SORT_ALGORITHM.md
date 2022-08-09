@@ -43,7 +43,7 @@
 
 - In-place: 内部排序
 - out-place: 外部排序
-- 相关资料：https://www.jianshu.com/p/47170b1ced23
+- 相关资料：[一文搞定十大经典排序算法（Java实现）](https://www.jianshu.com/p/47170b1ced23)
 
 ## <a name="1">冒泡排序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -768,12 +768,8 @@ public class Solution {
 
 TimeSort： 一个稳定的具有自适应性的MergeSort算法
 
-- [参考资料](https://mp.weixin.qq.com/s?__biz=MzI2MTY0OTg2Nw==&mid=2247483816&idx=1&sn=079af3d70efcb68efa7400f09decb59c&chksm=ea56650cdd21ec1ace7c8fd168d62feb636e4b32f9a4d90329fe479489d8e7a70e612df8920b&token=2074049324&lang=zh_CN#rd)
+[TimeSort参考资料](https://mp.weixin.qq.com/s?__biz=MzI2MTY0OTg2Nw==&mid=2247483816&idx=1&sn=079af3d70efcb68efa7400f09decb59c&chksm=ea56650cdd21ec1ace7c8fd168d62feb636e4b32f9a4d90329fe479489d8e7a70e612df8920b&token=2074049324&lang=zh_CN#rd)
 
-二路插入排序：
+[二路插入参考资料](https://mp.weixin.qq.com/s/TRO3FOKT90Mpvn3hQWVBAQ)
 
-- [参考资料](https://mp.weixin.qq.com/s/TRO3FOKT90Mpvn3hQWVBAQ)
-
-双轴快排：
-
-- [参考资料](https://www.cnblogs.com/nullzx/p/5880191.html)
+[双轴快排](https://www.cnblogs.com/nullzx/p/5880191.html)
