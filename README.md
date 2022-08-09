@@ -59,7 +59,7 @@
 - [领域驱动设计(DDD)](/src/main/java/com/toc/DDD.md)
 
 ### 设计案例
-- [Java接口设计](/src/main/java/com/toc/INTERFACE_DESIGN.md)
+- [接口设计](/src/main/java/com/toc/INTERFACE_DESIGN.md)
 - [秒杀系统](/src/main/java/com/toc/SECONDS_KILL_DESIGN.md)
 - [短连接](/src/main/java/com/toc/TINYURL.md)
 - [抢红包](/src/main/java/com/toc/SECONDKILL_REDPACKAGE.md)
