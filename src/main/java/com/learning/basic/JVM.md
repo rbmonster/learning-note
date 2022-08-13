@@ -321,7 +321,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 灰色：本对象已经被访问过（被GCRoot扫描过），且本对象中的属性没有被GCRoot扫描，该对象就是为灰色对象；如果该对象的属性被扫描的情况下，从灰色变为黑色。\
 黑色：本对象已经被访问过（被GCRoot扫描过），且本对象中的属性已经被GCRoot扫描过，该对象就是为黑色对象。
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/color-mark.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/jvm/color-mark.png)
 
 >三色标记算法缺陷：在并发标记阶段的时候，因为用户线程与GC线程同时运行，有可能会产生多标或者漏标；\
 多标--多标记（浮动垃圾）\
@@ -759,8 +759,8 @@ JConsole:Java 监视与管理控制台，很强大，可以检测死锁，查看
 2. 其他所有的类加载器，由Java语言实现，独立于虚拟机之外，都是继承自抽象类java.lang.ClassLoader。
 
 java相关的三层类加载器
-- 启动类加载器BootStrap ClassLoader：负责加载存放在<JAVA HOME>\lib目录，或者被-Xbootclaspath参数，启动类加载器无法被Java程序直接引用，用户在编写自定义类加载器时，需要需要给引导类加载器去处理，那直接使用null替代即可。
-- 扩展类加载器Extension ClassLoader：负责加载<JAVA HOME>\lib\ext目录，或者被java.ext.dirs系统变量所指定的目录中所有的类库。
+- 启动类加载器BootStrap ClassLoader：负责加载存放在`<JAVA HOME>\lib`目录，或者被`-Xbootclaspath`参数，启动类加载器无法被Java程序直接引用，用户在编写自定义类加载器时，如果需要交给引导类加载器去处理，那直接使用`null`替代即可。
+- 扩展类加载器Extension ClassLoader：负责加载`<JAVA HOME>\lib\ext`目录，或者被`java.ext.dirs`系统变量所指定的目录中所有的类库。
 - 应用程序类加载器Application ClassLoader：负责加载用户类路径ClassPath上所有的类库。
 
 双亲委派模型加载过程：

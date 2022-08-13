@@ -428,7 +428,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 灰色：本对象已经被访问过（被GCRoot扫描过），且本对象中的属性没有被GCRoot扫描，该对象就是为灰色对象；如果该对象的属性被扫描的情况下，从灰色变为黑色。\
 黑色：本对象已经被访问过（被GCRoot扫描过），且本对象中的属性已经被GCRoot扫描过，该对象就是为黑色对象。
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/color-mark.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/jvm/color-mark.png)
 
 >三色标记算法缺陷：在并发标记阶段的时候，因为用户线程与GC线程同时运行，有可能会产生多标或者漏标；\
 多标--多标记（浮动垃圾）\
