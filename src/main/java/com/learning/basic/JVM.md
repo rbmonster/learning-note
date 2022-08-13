@@ -333,7 +333,7 @@ staticObj随着Test的信息类型存放在方法区，instantObj随着Test对�
 
 **漏标问题**
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/mark-problem.png)
+![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/jvm/mark-problem.png)
 1. 用户线程先执行C的E属性=null；GC线程的GcRoot就扫描不到E。GC就认为E对象就是为垃圾对象，不可达对象。
 2. 用户线程执行B.E属性=E；E对象就是应该是为可达对象。
 因为GCRoot是从C开始，不会从黑色的B开始，就会导致漏标的情况发生。
