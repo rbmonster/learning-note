@@ -11,37 +11,22 @@ public class TestSort {
         System.out.println(Arrays.toString(array));
     }
 
-    public static void heapsort(int[] nums) {
+    public static  void heapsort(int[] nums) {
         int len = nums.length;
-        for (int i = len / 2 - 1; i >= 0; i--) {
+        for (int i = len/2 -1; i >= 0; i--) {
             adjustHeap(nums, i, len);
         }
-        for (int j = len - 1; j > 0; j--) {
+        for (int j = len-1; j > 0; j--) {
             swap(nums, 0, j);
-            adjustHeap(nums, 0, j );
+            adjustHeap(nums, 0, j);
         }
     }
-    public String reverseWords(String s) {
-        // Write your code here
-        String[] strs = s.split(" ");
-        StringBuilder sb = new StringBuilder();
-        for(String str: strs) {
-            sb.append(reverseHelper(str) + " ");
-        }
-        sb.deleteCharAt(sb.length()-1);
-        return sb.toString();
-    }
 
-    private String reverseHelper(String s) {
-        StringBuilder sb = new StringBuilder(s);
-        return sb.reverse().toString();
-    }
-
-    public static void adjustHeap(int[] nums, int i, int len) {
+    private static void adjustHeap(int[] nums, int i, int len) {
         int tmp = nums[i];
-        for (int j = 2 * i + 1; j < len; j = j * 2 + 1) {
-            if (j + 1 < len && nums[j] < nums[j + 1]) {
-                j = j + 1;
+        for (int j = 2*i+1; j < len; j = j*2+1) {
+            if (j+1<len && nums[j+1]> nums[j]) {
+                j = j+1;
             }
             if (nums[j] > tmp) {
                 nums[i] = nums[j];
