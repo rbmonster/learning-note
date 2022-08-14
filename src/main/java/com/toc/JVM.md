@@ -718,7 +718,7 @@ Avg : 0.1 , Min : 0 . 0 , Max : 0.1 , Diff : 0.1)
 常用参数：
 - `-XX:+UseG1GC`：标记打开 GI 集器开关
 - `-XX:G1HeapRegionSize`: 参数Region的大小可通过该参数设定，取值范围为1M~32M，为2的N次幂。
-- `-XX:MaxGCPauseMills`：设置用户设定的允许收集停顿时间使，默认为200毫秒。调的调小会导致每次的回收集只占内存的很小一部分，收集的速度慢于分配的速度导致垃圾堆积，进而引发Full GC。正常设置为100~300毫秒之间。
+- `-XX:MaxGCPauseMills`：设置用户设定的允许收集停顿时间时，默认为200毫秒。调的调小会导致每次的回收集只占内存的很小一部分，收集的速度慢于分配的速度导致垃圾堆积，进而引发Full GC。正常设置为100~300毫秒之间。
 - `-XX:ParallelGCThreads`：用于设置并行回收时，GC的工作线程数量。
 - `-XX:InitiatingHeapOccupancyPercent` 参数可以指定当整个堆使用率达到多少时，触发并发标记周期的执行。默认值是45，即当整个堆占用率达到45%时，执行并发标记周期。
 
@@ -734,7 +734,7 @@ G1计划作为并发标记扫描收集器(CMS)的长期替代品。
 5. 收集方式：G1使用混合收集的方式。G1可以扫描年轻代和一小部分老年代，但这意味着比简单地只扫描老年代、完全的快得多。
 6. String重复数据删除。G1可以配置针对String的重复数据进行删除，而重复的数据将指向同一个char[] array。`-XX:+UseStringDeduplication`
 
-- CMS对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此弱核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
+- CMS对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此若核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
 - G1针对具有大内存的多处理器机器，因为其`Remembered Sets`的记忆集的设计，需要占用更多内存。
 
 [what’s new in Java 8](https://www.overops.com/blog/garbage-collectors-serial-vs-parallel-vs-cms-vs-the-g1-and-whats-new-in-java-8/)

@@ -609,7 +609,7 @@ Avg : 0.1 , Min : 0 . 0 , Max : 0.1 , Diff : 0.1)
 常用参数：
 - `-XX:+UseG1GC`：标记打开 GI 集器开关
 - `-XX:G1HeapRegionSize`: 参数Region的大小可通过该参数设定，取值范围为1M~32M，为2的N次幂。
-- `-XX:MaxGCPauseMills`：设置用户设定的允许收集停顿时间使，默认为200毫秒。调的调小会导致每次的回收集只占内存的很小一部分，收集的速度慢于分配的速度导致垃圾堆积，进而引发Full GC。正常设置为100~300毫秒之间。
+- `-XX:MaxGCPauseMills`：设置用户设定的允许收集停顿时间时，默认为200毫秒。调的调小会导致每次的回收集只占内存的很小一部分，收集的速度慢于分配的速度导致垃圾堆积，进而引发Full GC。正常设置为100~300毫秒之间。
 - `-XX:ParallelGCThreads`：用于设置并行回收时，GC的工作线程数量。
 - `-XX:InitiatingHeapOccupancyPercent` 参数可以指定当整个堆使用率达到多少时，触发并发标记周期的执行。默认值是45，即当整个堆占用率达到45%时，执行并发标记周期。
 
@@ -625,7 +625,7 @@ G1计划作为并发标记扫描收集器(CMS)的长期替代品。
 5. 收集方式：G1使用混合收集的方式。G1可以扫描年轻代和一小部分老年代，但这意味着比简单地只扫描老年代、完全的快得多。
 6. String重复数据删除。G1可以配置针对String的重复数据进行删除，而重复的数据将指向同一个char[] array。`-XX:+UseStringDeduplication`
 
-- CMS对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此弱核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
+- CMS对处理器资源非常敏感。CMS默认启动的回收线程数是(处理器数量+3)/4，因此若核心数量在4个以上，占用内存不超过25%。若核心数量小于4，则占用内存过大。
 - G1针对具有大内存的多处理器机器，因为其`Remembered Sets`的记忆集的设计，需要占用更多内存。
 
 [what’s new in Java 8](https://www.overops.com/blog/garbage-collectors-serial-vs-parallel-vs-cms-vs-the-g1-and-whats-new-in-java-8/)
@@ -1349,16 +1349,16 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 ### 问题排查思路
 四种分析思路
 
-- 时序分析：先发生的事件是根因的概率更大，通过监控手段分析各个指标的异常时间点，还原事件时间线，如先观察到 CPU 负载高(要有足够的时间 Gap)，那么整个问题影响链就可能是：
+- **时序分析**：先发生的事件是根因的概率更大，通过监控手段分析各个指标的异常时间点，还原事件时间线，如先观察到 CPU 负载高(要有足够的时间 Gap)，那么整个问题影响链就可能是：
 > CPU 负载高 -> 慢查询增多 -> GC 耗时增大 -> 线程Block增多 -> RT 上涨。
 
-- 概率分析：使用统计概率学，结合历史问题的经验进行推断，由近到远按类型分析，如过往慢查的问题比较多，那么整个问题影响链就可能是：
+- **概率分析**：使用统计概率学，结合历史问题的经验进行推断，由近到远按类型分析，如过往慢查的问题比较多，那么整个问题影响链就可能是：
 > 慢查询增多 -> GC 耗时增大 ->  CPU 负载高   -> 线程 Block 增多 -> RT上涨。
 
-- 实验分析：通过故障演练等方式对问题现场进行模拟，触发其中部分条件(一个或多个)，观察是否会发生问题，如只触发线程 Block 就会发生问题，那么整个问题影响链就可能是：
+- **实验分析**：通过故障演练等方式对问题现场进行模拟，触发其中部分条件(一个或多个)，观察是否会发生问题，如只触发线程 Block 就会发生问题，那么整个问题影响链就可能是：
 > 线程Block增多  -> CPU 负载高  -> 慢查询增多  -> GC 耗时增大 ->  RT 上涨。
 
-- 反证分析：对其中某一表象进行反证分析，即判断表象的发不发生跟结果是否有相关性，例如我们从整个集群的角度观察到某些节点慢查和 CPU 都正常，但也出了问题，那么整个问题影响链就可能是：
+- **反证分析**：对其中某一表象进行反证分析，即判断表象的发不发生跟结果是否有相关性，例如我们从整个集群的角度观察到某些节点慢查和 CPU 都正常，但也出了问题，那么整个问题影响链就可能是：
 > GC 耗时增大 -> 线程 Block 增多 ->  RT 上涨。
 
 ### 案例
@@ -1369,7 +1369,8 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/localIssue.png)
 
 
-##### 场景一：动态扩容引起的空间震荡
+**场景一：动态扩容引起的空间震荡**
+
 服务刚刚启动时 GC 次数较多，最大空间剩余很多但是依然发生 GC， GC Cause 一般为 Allocation Failure，且在 GC 日志中会观察到经历一次 GC ，堆内各个空间的大小会被调整。
 
 解决：尽量将成对出现的空间大小配置参数设置成固定的，
@@ -1378,7 +1379,9 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 策略：保证 Java 虚拟机的堆是稳定的，避免弹性伸缩带来的额外 GC 消耗，确保 -Xms 和 -Xmx 设置的是一个值(即初始值和最大值一致)，获得一个稳定的堆，同理在 MetaSpace 区也有类似的问题
 > 在不追求停顿时间的情况下震荡的空间也是有利的，可以动态地伸缩以节省空间，例如作为富客户端的 Java 应用。
 
-##### 场景二：显式 GC 的去与留 (System.gc)
+---
+**场景二：显式 GC 的去与留 (System.gc)**
+
 除了扩容缩容会触发 CMS GC 之外，还有
  1. Old 区达到回收阈值.
  2. MetaSpace 空间不足
@@ -1393,33 +1396,27 @@ CMS GC 共分为 Background 和 Foreground 两种模式，
 - Background： 正常的CMS收集过程，初始标记、并发标记、重新标记、标记清除
 - Foreground： 会进行一次压缩式 GC，使用 MSC(Mark-Sweep-Compact)做 Full GC。收集的范围是 Java 堆的 Young 区和 Old 区以及 MetaSpace，会带来非常长的 STW。
 
-
-保留 `System.gc`：在显示触发System.gc会使用Foreground模式对Old区域进行垃圾收集造成，长时间的STW。
-
+保留 `System.gc`：在显示触发System.gc会使用Foreground模式对Old区域进行垃圾收集造成，长时间的STW。\
 去掉 `System.gc`：DirectByteBuffer直接内存在分配空间会显式调用 System.gc ，希望通过 Full GC 来强迫已经无用的 DirectByteBuffer 对象释放掉它们关联的 Native Memory。若禁用`System.gc`，会导致已经晋升到 Old 的 DirectByteBuffer 关联的 Native Memory 得不到及时释放，于是就有发生 Direct Memory 的 OOM。
 > -XX:+DisableExplicitGC 可以用于禁用System.gc
 
 
-**策略**
-因为DirectByteBuffer经常用于Netty 等各种 NIO 框架使用，所以不应该去除`System.gc`，可以使用参数改变System.gc的触发类型为Background，该模式也会触发old的DirectByteMemory 的清理工作。
-> -XX:+ExplicitGCInvokesConcurrent  和 -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses  参数来将 System.gc 的触发类型从 Foreground 改为 Background
-
+**策略**: 因为DirectByteBuffer经常用于Netty 等各种 NIO 框架使用，所以不应该去除`System.gc`，可以使用参数改变System.gc的触发类型为Background，该模式也会触发old的DirectByteMemory 的清理工作。
+> -XX:+ExplicitGCInvokesConcurrent  和 -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses  参数来将 System.gc 的触发类型从 Foreground 改为 Background\
 > 不止 CMS，在 G1 或 ZGC中开启 ExplicitGCInvokesConcurrent 模式，都会采用高性能的并发收集方式进行收集，不过还是建议在代码规范方面也要做好约束，规范好 System.gc 的使用。
 
-##### 场景三：MetaSpace 区 OOM
+--- 
+**场景三：MetaSpace 区 OOM**
+
 现象：JVM 在启动后或者某个时间点开始，MetaSpace 的已使用大小在持续增长，同时每次 GC 也无法释放，调大 MetaSpace 空间也无法彻底解决。
 
---- 
+
 MetaSpace 主要由 Klass Metaspace 和 NoKlass Metaspace 两大部分组成。
-- Klass MetaSpace：就是用来存 Klass 的，就是 Class 文件在 JVM 里的运行时数据结构.\
-> 这部分默认放在 Compressed Class Pointer Space 中，是一块连续的内存区域，紧接着 Heap。Compressed Class Pointer Space 不是必须有的，如果设置了 -XX:-UseCompressedClassPointers，或者 -Xmx 设置大于 32 G，就不会有这块内存，这种情况下 Klass 都会存在 NoKlass Metaspace 里。
-- NoKlass MetaSpace：专门来存 Klass 相关的其他的内容，比如 Method，**ConstantPool** 常量池等，可以由多块不连续的内存组成。虽然叫做 NoKlass Metaspace，但是也其实可以存 Klass 的内容。
+- **Klass MetaSpace**：就是用来存 Klass 的，就是 Class 文件在 JVM 里的运行时数据结构. 这部分默认放在 Compressed Class Pointer Space 中，是一块连续的内存区域，紧接着 Heap。Compressed Class Pointer Space 不是必须有的，如果设置了 -XX:-UseCompressedClassPointers，或者 -Xmx 设置大于 32 G，就不会有这块内存，这种情况下 Klass 都会存在 NoKlass Metaspace 里。
+- **NoKlass MetaSpace**：专门来存 Klass 相关的其他的内容，比如 Method，**ConstantPool** 常量池等，可以由多块不连续的内存组成。虽然叫做 NoKlass Metaspace，但是也其实可以存 Klass 的内容。
 
-MetaSpace 内存管理：类和其元数据的生命周期与其对应的类加载器相同，只要类的类加载器是存活的，在 Metaspace 中的类元数据也是存活的，不能被回收。每个加载器有单独的存储空间，通过 ClassLoaderMetaspace 来进行管理 SpaceManager* 的指针，相互隔离的
-
+MetaSpace 内存管理：类和其元数据的生命周期与其对应的类加载器相同，只要类的类加载器是存活的，在 Metaspace 中的类元数据也是存活的，不能被回收。每个加载器有单独的存储空间，通过 ClassLoaderMetaspace 来进行管理 SpaceManager* 的指针，相互隔离的\
 MetaSpace 弹性伸缩：由于 MetaSpace 空间和 Heap 并不在一起，所以这块的空间可以不用设置或者单独设置，一般情况下避免 MetaSpace 耗尽 VM 内存都会设置一个 MaxMetaSpaceSize
-
----
 
 问题原因：为了避免弹性伸缩带来的额外 GC 消耗，我们会将 -XX:MetaSpaceSize 和 -XX:MaxMetaSpaceSize 两个值设置为固定的，但是这样也会导致在空间不够的时候无法扩容，然后频繁地触发 GC，最终 OOM。
 > 经常会出问题的几个点有 Orika 的 classMap、JSON 的 ASMSerializer、Groovy 动态加载类等，基本都集中在反射、Javasisit 字节码增强、CGLIB 动态代理、OSGi 自定义类加载器等的技术点上。
@@ -1427,8 +1424,8 @@ MetaSpace 弹性伸缩：由于 MetaSpace 空间和 Heap 并不在一起，所�
 
 策略： 给 MetaSpace 区的使用率加一个监控，如果指标有波动提前发现并解决问题。
 
+**场景四：过早晋升** 
 
-##### 场景四：过早晋升 
 现象：
 1. 分配速率接近于晋升速率，对象晋升年龄较小
 2. Full GC 比较频繁，且经历过一次 GC 之后 Old 区的变化比例非常大。
@@ -1441,23 +1438,25 @@ MetaSpace 弹性伸缩：由于 MetaSpace 空间和 Heap 并不在一起，所�
 设定固定的 MaxTenuringThreshold 值作为晋升条件：
 - MaxTenuringThreshold 如果设置得过大，原本应该晋升的对象一直停留在 Survivor 区，直到 Survivor 区溢出，一旦溢出发生。Eden + Survivor 中对象将不再依据年龄全部提升到 Old 区，这样对象老化的机制就失效了。
 - MaxTenuringThreshold 如果设置得过小，过早晋升即对象不能在 Young 区充分被回收，大量短期对象被晋升到 Old 区，Old 区空间迅速增长，引起频繁的 Major GC，分代回收失去了意义，严重影响 GC 性能。
-> 未设置情况，Hotspot 会使用动态计算的方式来调整晋升的阈值：
+> 未设置情况，Hotspot 会使用动态计算的方式来调整晋升的阈值：\
 > Hotspot 遍历所有对象时，从所有年龄为 0 的对象占用的空间开始累加，如果加上年龄等于 n 的所有对象的空间之后，使用 Survivor 区的条件值(TargetSurvivorRatio / 100，TargetSurvivorRatio 默认值为 50)进行判断，若大于这个值则结束循环，将 n 和 MaxTenuringThreshold 比较，若 n 小，则阈值为 n，若 n 大，则只能去设置最大阈值为 MaxTenuringThreshold。动态年龄触发后导致更多的对象进入了 Old 区，造成资源浪费。
 
-
 策略：
-1. Young/Eden 区过小：调整堆分区内存，一般情况下 Old 的大小应当为活跃对象的 2~3 倍左右，考虑到浮动垃圾问题最好在 3 倍左右，剩下的都可以分给 Young 区。
-    - > 如何设置Survivor面积，可以自己推算。
+1. Young/Eden 区过小：调整堆分区内存，一般情况下 Old 的大小应当为活跃对象的 2~3 倍左右，考虑到浮动垃圾问题最好在 3 倍左右，剩下的都可以分给 Young 区。 如何设置Survivor面积，可以自己推算。
 2. 分配速率过大： 
-- 偶发较大：通过内存分析工具找到问题代码，从业务逻辑上做一些优化。
-- 一直较大：当前的 Collector 已经不满足 Mutator 的期望了，这种情况要么扩容 Mutator 的 VM，要么调整 GC 收集器类型或加大空间。
+   - 偶发较大：通过内存分析工具找到问题代码，从业务逻辑上做一些优化。
+   - 一直较大：当前的 Collector 已经不满足 Mutator 的期望了，这种情况要么扩容 Mutator 的 VM，要么调整 GC 收集器类型或加大空间。
 
-##### 场景五：CMS Old GC 频繁 
+--- 
+**场景五：CMS Old GC 频繁** 
+
 现象：Old 区频繁的做 CMS GC，但是每次耗时不是特别长，整体最大 STW 也在可接受范围内，但由于 GC 太频繁导致吞吐下降比较多。
  
 > 描述过于抽象，见文章
 
-##### 场景六：单次 CMS Old GC 耗时长
+--- 
+**场景六：单次 CMS Old GC 耗时长**
+
 CMS 在回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark 这两个阶段
 - 初始标记 Init Mark ： 整个过程比较简单，从 GC Root 出发标记 Old 中的对象，处理完成后借助 BitMap 处理下 Young 区对 Old 区的引用，整个过程基本都比较快，很少会有较大的停顿。
 - 最终标记 Final Remark ：Final Remark 的开始阶段与 Init Mark 处理的流程相同，但是后续多了 **Card Table 遍历**、**Reference 实例的清理**并将其加入到 Reference 维护的 pend_list 中，如果要收集元数据信息，还要清理 SystemDictionary、CodeCache、SymbolTable、StringTable 等组件中不再使用的资源
@@ -1466,12 +1465,13 @@ CMS 在回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark �
 由上述过程可以推断，大部分出问题的耗时都是出现在最终标记中。处理思路如下：
 1. 分析Reference 处理和元数据处理 real 耗时是否正常，一般来说最容易出问题的地方就是 Reference 中的 FinalReference 和元数据信息处理中的 scrub symbol table 两个阶段。
 2. 需要通过` -XX:+PrintReferenceGC` 参数开启。基本在日志里面就能定位到大概是哪个方向出了问题，耗时超过 10% 的就需要关注
-    - 对 FinalReference 的分析
-        - > 经常会出现问题的几个点有 Socket 的 SocksSocketImpl 、Jersey 的 ClientRuntime、MySQL 的 ConnectionImpl 等等。
-    - scrub symbol table 表示清理元数据符号引用耗时，观察 MetaSpace 区的历史使用峰值，看是否有使用动态类加载或者 DSL 处理等。
-        - > 如果MateSpace 数据没啥变化，可以通过 -XX:-CMSClassUnloadingEnabled 来避免 MetaSpace 的处理。
- 
-##### 场景七：内存碎片&收集器退化
+    - 对 FinalReference 的分析: 经常会出现问题的几个点有 Socket 的 SocksSocketImpl 、Jersey 的 ClientRuntime、MySQL 的 ConnectionImpl 等等。
+    - `scrub symbol table` 表示清理元数据符号引用耗时，观察 MetaSpace 区的历史使用峰值，看是否有使用动态类加载或者 DSL 处理等。 如果MateSpace 数据没啥变化，可以通过 -XX:-CMSClassUnloadingEnabled 来避免 MetaSpace 的处理。
+
+---
+
+**场景七：内存碎片&收集器退化**
+
 现象：
 并发的 CMS GC 算法，退化为 Foreground 单线程串行 GC 模式，STW 时间超长，有时会长达十几秒。其中 CMS 收集器退化后单线程串行 GC 算法有两种：
 - 带压缩动作的算法，称为 MSC，上面我们介绍过，使用标记-清理-压缩，单线程全暂停的方式，对整个堆进行垃圾收集，也就是真正意义上的 Full GC，暂停时间要长于普通 CMS。
@@ -1479,35 +1479,34 @@ CMS 在回收的过程中，STW 的阶段主要是 Init Mark 和 Final Remark �
 
 原因：
 1. 晋升失败：
-    1. 在进行 Young GC 时，Survivor 放不下，对象只能放入 Old，但此时 Old 也放不下。
-        > 发生的条件是很苛刻
-    2. 另有一种情况就是内存碎片导致的 Promotion Failed，Young GC 以为 Old 有足够的空间，结果到分配时，晋级的大对象找不到连续的空间存放。
-        - 碎片带来了两个问题：
-            - 空间分配效率较低：连续空间使用指针碰撞，而有大量碎片的空闲链表则需要逐个访问 freelist 中的项来访问
-            - 空间利用效率变低: Young 区晋升的对象大小大于了连续空间的大小，那么将会触发 Promotion Failed ，即使整个 Old 区的容量是足够的，但由于其不连续，也无法存放新对象
- 
+    1. 在进行 Young GC 时，Survivor 放不下，对象只能放入 Old，但此时 Old 也放不下。 **发生的条件是很苛刻**
+    2. 内存碎片导致的 Promotion Failed，Young GC 以为 Old 有足够的空间，结果到分配时，晋级的大对象找不到连续的空间存放。
+       - 碎片空间问题-空间分配效率较低：连续空间使用指针碰撞，而有大量碎片的空闲链表则需要逐个访问 freelist 中的项来访问
+       - 碎片空间问题-空间利用效率变低: Young 区晋升的对象大小大于了连续空间的大小，那么将会触发 Promotion Failed ，即使整个 Old 区的容量是足够的，但由于其不连续，也无法存放新对象
 2. 增量收集担保失败: 分配内存失败后，会判断统计得到的 Young GC 晋升到 Old 的平均大小,，以及当前 Young 区已使用的大小也就是最大可能晋升的对象大小，是否大于 Old 区的剩余空间。只要 CMS 的剩余空间比前两者的任意一者大，CMS 就认为晋升还是安全的，反之不安全，进行FULL GC。
 3. 显式 GC： System.gc
 4. 并发模式失败(Concurrent Mode Failure):在 GC 日志中经常能看到 Concurrent Mode Failure 关键字。这种是由于并发 Background CMS GC 正在执行，同时又有 Young GC 晋升的对象要放入到了 Old 区中，而此时 Old 区空间不足造成的。
-> 概率较高，主要是由于 CMS 无法处理浮动垃圾(Floating Garbage)引起的。CMS 的并发清理阶段，Mutator 还在运行，因此不断有新的垃圾产生，而这些垃圾不在这次清理标记的范畴里，无法在本次 GC 被清除掉，这些就是浮动垃圾，除此之外在 Remark 之前那些断开引用脱离了读写屏障控制的对象也算浮动垃圾。
+    > 概率较高，主要是由于 CMS 无法处理浮动垃圾(Floating Garbage)引起的。CMS 的并发清理阶段，Mutator 还在运行，因此不断有新的垃圾产生，而这些垃圾不在这次清理标记的范畴里，无法在本次 GC 被清除掉，这些就是浮动垃圾，除此之外在 Remark 之前那些断开引用脱离了读写屏障控制的对象也算浮动垃圾。
 
 策略
 - 内存碎片：通过配置 -XX:UseCMSCompactAtFullCollection=true 来控制 Full GC的过程中是否进行空间的整理(默认开启，注意是Full GC，不是普通CMS GC)，以及 -XX: CMSFullGCsBeforeCompaction=n 来控制多少次 Full GC 后进行一次压缩。
 - 增量收集：降低触发 CMS GC 的阈值，即参数 -XX:CMSInitiatingOccupancyFraction 的值，让 CMS GC 尽早执行，以保证有足够的连续空间，也减少 Old 区空间的使用大小，另外需要使用 -XX:+UseCMSInitiatingOccupancyOnly 来配合使用，不然 JVM 仅在第一次使用设定值，后续则自动调整。
 - 浮动垃圾：视情况控制每次晋升对象的大小，或者缩短每次 CMS GC 的时间，必要时可调节 NewRatio 的值。另外就是使用 -XX:+CMSScavengeBeforeRemark 在过程中提前触发一次 Young GC，防止后续晋升过多对象。
 
+--- 
 
-##### 场景八：堆外内存 OOM
+**场景八：堆外内存 OOM**
+
 现象： 内存使用率不断上升，甚至开始使用 SWAP 内存，同时可能出现 GC 时间飙升，线程被 Block 等现象，通过 top 命令发现 Java 进程的 RES 甚至超过了 -Xmx 的大小。
 
 JVM 的堆外内存泄漏，主要有两种的原因：
 1. 通过 UnSafe#allocateMemory，ByteBuffer#allocateDirect 主动申请了堆外内存而没有释放，常见于 NIO、Netty 等相关组件。
 2. 代码中有通过 JNI 调用 Native Code 申请的内存没有释放。
 
-策略： 在项目中添加 -XX:NativeMemoryTracking=detail JVM参数后重启项目(需要注意的是，打开 NMT 会带来 5%~10% 的性能损耗)。使用命令 jcmd pid VM.native_memory detail 查看内存分布。
+策略：在项目中添加 -XX:NativeMemoryTracking=detail JVM参数后重启项目(需要注意的是，打开 NMT 会带来 5%~10% 的性能损耗)。使用命令 jcmd pid VM.native_memory detail 查看内存分布。
     
 
-##### 场景九：JNI 引发的 GC 问题
+**场景九：JNI 引发的 GC 问题**
 
 > 太抽象了
 
