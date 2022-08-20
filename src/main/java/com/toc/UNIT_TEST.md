@@ -77,14 +77,14 @@ TDD开发应该达到100%的单元测试覆盖率？
 JUnit是一个Java编程语言编写的单元测试框架。需要区分的是Junit的版本，在Junit5中做了很多的改变。以下主要基于Junit4进行的说明。
 
 ### <a name="7">基本注解</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
-@BeforeClass 使用此注解的方法在测试类被调用之前执行
-@AfterClass 使用此注解的方法在测试类被调用结束退出之前执行
-一个类中有多少个@Test注解方法，以下对应注解方法就被调用多少次
-@Before 在每个@Test调用之前执行
-@After 在每个@Test调用之后执行
-@Test 使用此注解的方法为一个单元测试用例，一个测试类中可多次声明，每个注解为@Test只执行一次
-@Ignore 暂不执行的测试用例，会被JUnit4忽略执行
+```java
+//@BeforeClass 使用此注解的方法在测试类被调用之前执行
+//@AfterClass 使用此注解的方法在测试类被调用结束退出之前执行
+//一个类中有多少个@Test注解方法，以下对应注解方法就被调用多少次
+//@Before 在每个@Test调用之前执行
+//@After 在每个@Test调用之后执行
+//@Test 使用此注解的方法为一个单元测试用例，一个测试类中可多次声明，每个注解为@Test只执行一次
+//@Ignore 暂不执行的测试用例，会被JUnit4忽略执行
 
 
 @Slf4j
@@ -219,7 +219,7 @@ TestNG不是一个JUnit扩展。它的灵感来源于JUnit。它的目的是优�
 -[与UnitTest比较](http://www.testng.org.cn/1723.html)
 
 使用套件，指定某几个test中的group 为一个套件。在IDEA中直接运行xml文件，可以执行套件的测试。
-```
+```xml
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 <suite name="testng-demo">
     <test name="testGroup1">

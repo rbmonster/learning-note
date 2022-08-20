@@ -13,7 +13,7 @@
 &emsp;&emsp;<a href="#10">3.1. 为什么要有用户态和内核态</a>  
 &emsp;&emsp;<a href="#11">3.2. 用户态与内核态的性能开销</a>  
 &emsp;&emsp;<a href="#12">3.3. 避免频繁切换</a>  
-&emsp;<a href="#13">4. java内存模型</a>  
+&emsp;<a href="#13">4. Java内存模型JMM</a>  
 &emsp;<a href="#14">5.  volatile</a>  
 &emsp;&emsp;<a href="#15">5.1. 保证变量可见性</a>  
 &emsp;&emsp;<a href="#16">5.2. 禁止指令重排序优化</a>  
@@ -68,8 +68,7 @@
 
 ### <a name="4">互斥</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 互斥：同一时刻，只允许一个线程访问共享变量。分工和同步强调的是性能，但是互斥是强调正确性
-
-当多个线程同时访问一个共享变量/成员变量时，就可能发生不确定性，造成不确定性主要是有可见性、原子性、有序性这三大问题，而解决这些问题的核心就是互斥
+> 当多个线程同时访问一个共享变量/成员变量时，就可能发生不确定性，造成不确定性主要是有可见性、原子性、有序性这三大问题，而解决这些问题的核心就是互斥
 
 ## <a name="5">三大问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ### <a name="6">可见性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -85,7 +84,7 @@ Java 内存模型规定，将所有的变量都存放在 主内存中，当线�
 >4. 刚好在线程 A 没有回刷 x 到主内存时，线程 B 同样从主内存中读取 x，此时为 0，和线程 A 一样的操作，最后期盼的 x=2 就会编程 x=1
 
 ### <a name="7">原子性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-原子性：原子（atom）指化学反应不可再分的基本微粒，原子性操作你应该能感受到其含义:
+原子性：原子(atom)指化学反应不可再分的基本微粒，原子性操作你应该能感受到其含义:
 
 count++ 分解为四步，解释一下字节码的指令，
 > 16 : 获取当前 count 值，并且放入栈顶\
@@ -120,13 +119,13 @@ count++ 分解为四步，解释一下字节码的指令，
 ### <a name="10">为什么要有用户态和内核态</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 系统需要限制不同的程序之间的访问能力,防止程序获取不相同程序的内存数据,或者外围设备的数据,并发送到网络,所有cpu划分出两个权限等级用户态和内核态
 
-内核态：用户态如果要做一些比较危险的操作直接访问硬件，很容易把硬件搞死（格式化，访问网卡，访问内存干掉、）\
+内核态：用户态如果要做一些比较危险的操作直接访问硬件，很容易把硬件搞死(格式化，访问网卡，访问内存干掉、)\
 
 
 ### <a name="11">用户态与内核态的性能开销</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 当发生用户态到内核态的切换时，会发生如下过程:
 1. 设置处理器至内核态。
-2. 保存当前寄存器（栈指针、程序计数器、通用寄存器）。
+2. 保存当前寄存器(栈指针、程序计数器、通用寄存器)。
 3. 将栈指针设置指向内核栈地址。
 4. 将程序计数器设置为一个事先约定的地址上，该地址上存放的是系统调用处理程序的起始地址。
 5. 而之后从内核态返回用户态时，又会进行类似的工作。
@@ -140,7 +139,7 @@ count++ 分解为四步，解释一下字节码的指令，
 - 使用最少的线程。避免创建不需要的线程协程。在单线程里实现多任务的调度，并在单线程里维持多个任务间的切换
 
 
-## <a name="13">java内存模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="13">Java内存模型JMM</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/jvm/java-memory.jpg)
 
 java内存模型是关注在虚拟机中把变量值存储到内存和从内存取出变量这样的底层细节。
@@ -159,7 +158,7 @@ java内存模型规定了所有变量都存储在主内存，每条线程还有�
 性能：volatile变量的读操作性能与普通变量几乎没有差别，但是写操作可能会慢些，因为需要插入内存屏障指令来保证处理器不乱序执行。
 > 当读一个 volatile 变量时, JMM 会把该线程对应的本地内存置为无效。线程接下来将从主内存中读取共享变量。\
 > 线程在【读取】共享变量时，会先清空本地内存变量值，再从主内存获取最新值\
-> 线程在【写入】共享变量时，不会把值缓存在寄存器或其他地方（就是刚刚说的所谓的「工作内存」），而是会把值刷新回主内存
+> 线程在【写入】共享变量时，不会把值缓存在寄存器或其他地方(就是刚刚说的所谓的「工作内存」)，而是会把值刷新回主内存
 
 ### <a name="15">保证变量可见性</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：当一条线程修改了这个变量的值，新值对于其他线程是立即可见的。 正常的变量修改的过程中，工作内存与主内存同步是存在延迟的，也就出现了可见性的问题。
@@ -178,7 +177,7 @@ java内存模型规定了所有变量都存储在主内存，每条线程还有�
 但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1>3>2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。例如，线程 T1 执行了 1 和 3，此时 T2 调用 getUniqueInstance() 后发现 uniqueInstance 不为空，因此返回 uniqueInstance，但此时 uniqueInstance 还未被初始化。
 
 java编译器会在生成指令系列时在适当的位置会插入 **"内存屏障"指令**来禁止特定类型的处理器重排序。
-```
+```java
 public class Singleton{
     private Singleton() {}
     private static volatile Singleton singleton = null;
@@ -210,32 +209,34 @@ public class Singleton{
 1. 对于普通实例方法，锁的是当前实例对象，通常指 this
 2. 对于静态同步方法，锁的是当前类的 Class 对象，如 ThreeSync.class
 3. 对于同步代码块，锁的是 synchronized 括号内的对象
-```
+```java
+public class Test {
+
     // 锁方法
-	public synchronized void normalSyncMethod(){
-		//临界区
-	}
+    public synchronized void normalSyncMethod() {
+        //临界区
+    }
 
-	public static synchronized void staticSyncMethod(){
-		//临界区
-	}
+    public static synchronized void staticSyncMethod() {
+        //临界区
+    }
 
-	public void syncBlockMethod(){
-		synchronized (object){
-			//临界区
-		}
-	}
+    public void syncBlockMethod() {
+        synchronized (object) {
+            //临界区
+        }
+    }
 
-	public void syncBlockMethod(){
-		synchronized (Object.class){
-			//临界区
-		}
-	}
+    public void syncBlockMethod() {
+        synchronized (Object.class) {
+            //临界区
+        }
+    }
+}
 ```
 #### <a name="20">使用有误例子</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
 银行转账的方法，典型的忽略锁和资源的指向关系，这里的Account target并没有保护作用
-```
+```java
 class Account {
   private int balance;
   // 转账
@@ -249,7 +250,7 @@ class Account {
 ```
 
 #### <a name="21">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-> 一个线程可以从挂起状态变为可运行状态（也就是被唤醒），即使线程没有被其他线程调用notify()/notifyAll() 方法进行通知，或被中断，或者等待超时，这就是所谓的【虚假唤醒】。虽然虚假唤醒很少发生，但要防患于未然，做法就是不停的去测试该线程被唤醒条件是否满足
+> 一个线程可以从挂起状态变为可运行状态(也就是被唤醒)，即使线程没有被其他线程调用notify()/notifyAll() 方法进行通知，或被中断，或者等待超时，这就是所谓的【虚假唤醒】。虽然虚假唤醒很少发生，但要防患于未然，做法就是不停的去测试该线程被唤醒条件是否满足
 
 volatile 与 synchronize比较
 1. volatile 非阻塞 ，synchronize阻塞
@@ -258,8 +259,8 @@ volatile 与 synchronize比较
 ### <a name="22">synchronized关键字JVM底层原理解析</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 #### <a name="23">synchronized 同步语句块的情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
-publicclass SynchronizedDemo {
+```java
+public class SynchronizedDemo {
 	public void method() {
 		synchronized (this) {
 			System.out.println("synchronized 代码块");
@@ -267,14 +268,14 @@ publicclass SynchronizedDemo {
 	}
 }
 
-javap -c -s -v -l SynchronizedDemo.class 反编译
+//javap -c -s -v -l SynchronizedDemo.class 反编译
 ```
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/synchronizeCode.jpg)
-synchronized 同步语句块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。\
-当计数器为0则可以成功获取，获取后将锁计数器设为1也就是加1。相应的在执行 monitorexit 指令后，将锁计数器设为0，表明锁被释放。
+synchronized 同步语句块的实现使用的是 `monitorenter` 和 `monitorexit` 指令，其中 `monitorenter` 指令指向同步代码块的开始位置，`monitorexit` 指令则指明同步代码块的结束位置。\
+当计数器为0则可以成功获取，获取后将锁计数器设为1也就是加1。相应的在执行 `monitorexit` 指令后，将锁计数器设为0，表明锁被释放。
 
 #### <a name="24">synchronized 修饰方法的的情况</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
+```java
 public class SynchronizedDemo2 {
 	public synchronized void method() {
 		System.out.println("synchronized 方法");
@@ -282,16 +283,16 @@ public class SynchronizedDemo2 {
 }
 ```
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/synchronizeMethod.jpg)
-方法体出现ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
+方法体出现`ACC_SYNCHRONIZED` 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
 
 ### <a name="25">对象创建与加锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/objectCreate.png)
 
 一个对象在new出来之后在内存中主要分为4个部分：
-1. MarkWord这部分其实就是加锁的核心，同时还包含的对象的一些生命信息，例如是否GC、经过了几次Young GC还存活。
-2. klass pointer记录了指向对象的class文件指针。
-3. instance data记录了对象里面的变量数据。
-4. padding作为对齐使用，对象在64位服务器版本中，规定对象内存必须要能被8字节整除，如果不能整除，那么就靠对齐来补。举个例子：new出了一个对象，内存只占用18字节，但是规定要能被8整除，所以padding=6。
+1. `MarkWord`这部分其实就是加锁的核心，同时还包含的对象的一些生命信息，例如是否GC、经过了几次`Young GC`还存活。
+2. `klass pointer`记录了指向对象的class文件指针。
+3. `instance data`记录了对象里面的变量数据。
+4. `padding`作为对齐使用，对象在64位服务器版本中，规定对象内存必须要能被8字节整除，如果不能整除，那么就靠对齐来补。举个例子：new出了一个对象，内存只占用18字节，但是规定要能被8整除，所以padding=6。
 
 
 
@@ -301,10 +302,10 @@ public class SynchronizedDemo2 {
 > 操作系统为了系统安全分成两层，用户态和内核态 。申请锁资源的时候用户态要向操作系统老大内核态申请。Jdk1.2的时候用户需要跟内核态申请锁，然后内核态还会给用户态。这个过程是非常消耗时间的，导致早期效率特别低。有些jvm就可以处理的为什么还交给操作系统做去呢？能不能把jvm就可以完成的锁操作拉取出来提升效率，所以也就有了锁优化。
 
 #### <a name="27">自旋锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-自旋锁：对于锁状态很短的线程，挂起和恢复线程是开销很大的，因此让线程执行一个忙等待（自旋），这就是自旋锁的技术
+自旋锁：对于锁状态很短的线程，挂起和恢复线程是开销很大的，因此让线程执行一个忙等待(自旋)，这就是自旋锁的技术
 
 #### <a name="28">自适应锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-自适应锁：自适应意味着自旋的时间不固定，由前一次在同一个锁上的自旋时间及锁的状态拥有者来决定。（如果之前自旋获得过锁，进而允许本次自旋更长时间。若很少成果获得锁，那么可能直接忽略跳过等待）
+自适应锁：自适应意味着自旋的时间不固定，由前一次在同一个锁上的自旋时间及锁的状态拥有者来决定。(如果之前自旋获得过锁，进而允许本次自旋更长时间。若很少成果获得锁，那么可能直接忽略跳过等待)
   
 #### <a name="29">锁消除</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 执行的方法体所有数据都不会逃逸出去被其他线程访问到，认为是线程私有的，便可以消除锁。
@@ -324,10 +325,10 @@ public class SynchronizedDemo2 {
 1. 当线程1访问代码块并获取锁对象时，会在java对象头和栈帧中记录偏向锁的ThreadID。
 2. 因为偏向锁不会主动释放锁，因此以后线程1再次获取锁时会比较当前线程的ThreadID与java对象头中的ThreadID是否相等
   - 相等就直接执行，无需CAS来加锁解锁
-  - 如果不相等（其他线程需要获取锁对象，如线程2），查看线程1是否存活。
-     - 不存活则锁对象被重置为无锁状态，其他线程（线程2）可以竞争将其设置为偏向锁。
-     - 存活状态下则立刻查找该**线程（线程1）的栈帧信息**
-        - 如果需要继续持有这个锁对象，那么会暂停该线程（线程1），撤销偏向锁，升级为轻量级锁进行后续操作。
+  - 如果不相等(其他线程需要获取锁对象，如线程2)，查看线程1是否存活。
+     - 不存活则锁对象被重置为无锁状态，其他线程(线程2)可以竞争将其设置为偏向锁。
+     - 存活状态下则立刻查找该**线程(线程1)的栈帧信息**
+        - 如果需要继续持有这个锁对象，那么会暂停该线程(线程1)，撤销偏向锁，升级为轻量级锁进行后续操作。
         - 如果不再需要这个锁对象，那么将锁对象设置为无锁状态，重新进行偏向锁竞争。
 
 第一次获取替换对象头TheadID：
@@ -352,8 +353,8 @@ public class SynchronizedDemo2 {
 轻量级锁：由于阻塞线程需要CPU从**用户状态转到内核状态**代价比较大，如果刚线程阻塞这个锁就被释放了时候代价太大，所以这个时候不会阻塞线程，而是通过CAS操作让它自旋等待锁对象的释放。
 
 轻量级锁原理与升级过程：
-1. 线程1获取轻量级锁时会把锁对象的对象头MarkWord复制一份到线程1的栈帧中创建的用于存储锁记录的空间（DisplacedMarkWord），然后使用CAS把对象中的内存替换为线程1存储的锁记录（DisplacedMarkWord）的地址。
-2. 如果在线程1复制对象头的同时（在线程1CAS之前），线程2也准备获取锁，复制了对象头到线程2的锁记录空间中，但是在线程2 **CAS的时候**发现线程1已经把对象头换了，线程2的CAS失败，那么线程2就尝试使用自旋锁来等在线程1释放锁。
+1. 线程1获取轻量级锁时会把锁对象的对象头MarkWord复制一份到线程1的栈帧中创建的用于存储锁记录的空间(DisplacedMarkWord)，然后使用CAS把对象中的内存替换为线程1存储的锁记录(DisplacedMarkWord)的地址。
+2. 如果在线程1复制对象头的同时(在线程1CAS之前)，线程2也准备获取锁，复制了对象头到线程2的锁记录空间中，但是在线程2 **CAS的时候**发现线程1已经把对象头换了，线程2的CAS失败，那么线程2就尝试使用自旋锁来等在线程1释放锁。
 
 升级为重量级锁条件，达到以下两条件都会升级为重量级锁。
 1. 长时间自旋会导致CPU消耗，CAS如果自旋10次依然没有获取到锁
@@ -378,14 +379,14 @@ OnDeck：任何时刻最多只能有一个线程竞争锁，该线程成为OnDec
 
 Owner：获得锁的线程
 ```
-1. 步骤1是线程在进入Contention List时阻塞等待之前，程会先尝试自旋使用CAS操作获取锁，如果获取不到就进入Contention List队列的尾部。
-2. 步骤2是Owner线程在解锁时，如果Entry List为空，那么会**先将Contention List中队列尾部的部分线程移动到Entry List**
-3. 步骤3是Owner线程在解锁时，如果Entry List不为空，从Entry List中取一个线程，让它成为OnDeck线程，Owner线程并不直接把锁传递给OnDeck线程，而是把锁竞争的权利交给OnDeck，OnDeck需要重新竞争锁，JVM中这种选择行为称为 “竞争切换”。（主要是与还没有进入到ContentionList，还在自旋获取重量级锁的线程竞争）
+1. 步骤1是线程在进入`Contention List`时阻塞等待之前，程会先尝试自旋使用CAS操作获取锁，如果获取不到就进入Contention List队列的尾部。
+2. 步骤2是Owner线程在解锁时，如果`Entry List`为空，那么会**先将Contention List中队列尾部的部分线程移动到Entry List**
+3. 步骤3是Owner线程在解锁时，如果`Entry List`不为空，从Entry List中取一个线程，让它成为OnDeck线程，Owner线程并不直接把锁传递给OnDeck线程，而是把锁竞争的权利交给OnDeck，OnDeck需要重新竞争锁，JVM中这种选择行为称为 “竞争切换”。(主要是与还没有进入到ContentionList，还在自旋获取重量级锁的线程竞争)
 4. 步骤4就是OnDeck线程获取到锁，成为Owner线程进行执行。
-5. 步骤5就是Owner线程调用锁对象的wait（）方法进行等待，会移动到Wait Set中，并且会释放CPU资源，也同时释放锁，
-6. 步骤6.就是当其他线程调用锁对象的notify（）方法，之前调用wait方法等待的这个线程才会从Wait Set移动到Entry List，等待获取锁。
+5. 步骤5就是Owner线程调用锁对象的`wait()`方法进行等待，会移动到`Wait Set`中，并且会释放CPU资源，也同时释放锁，
+6. 步骤6.就是当其他线程调用锁对象的`notify()`方法，之前调用wait方法等待的这个线程才会从Wait Set移动到Entry List，等待获取锁。
 
-> Synchronized 是非公平锁。 Synchronized 在线程进入 ContentionList 时， 等待的线程会先尝试自旋获取锁，如果获取不到就进入 ContentionList，这明显对于已经进入队列的线程是不公平的，还有一个不公平的事情就是自旋获取锁的线程还可能直接抢占 OnDeck 线程的锁资源\
+> `Synchronized` 是非公平锁。 `Synchronized` 在线程进入 ContentionList 时， 等待的线程会先尝试自旋获取锁，如果获取不到就进入 ContentionList，这明显对于已经进入队列的线程是不公平的，还有一个不公平的事情就是自旋获取锁的线程还可能直接抢占 OnDeck 线程的锁资源\
 > 可重入锁：在Monitor中其实还有一个计数器，主要是用来记录重入次数的，当计数器为0时，表示没有任何线程持有锁，当某线程获取锁时，计算器则加1，若当前线程再次获取锁时，计数器则会再次递增，
 
 ##### <a name="36">与ReentrantLock区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -398,7 +399,7 @@ Owner：获得锁的线程
 
 
 #### <a name="37">调试synchronize加锁过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```
+```text
 <dependency>
     <groupId>org.openjdk.jol</groupId>
     <artifactId>jol-core</artifactId>
@@ -452,13 +453,13 @@ public static void main(String[] args) {
 
 #### <a name="43">无同步方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **无同步方案**：同步和线程安全没有必然联系。\同步只是保障存在共享数据争用时正确性的手段，如果能让一个方法本来就不涉及共享数据，那么它自然就不需要任何同步措施去保证去其正确性，因此会有一些代码天生就是线程安全的。
-1. **可重入代码**(Reentrant Code)：指可以在代码执行的任何时刻终端他，转而去执行另外一段代码（包括递归调用它本身），而在控制权返回后，原来的程序不会出错，也不会对结果产生影响。
+1. **可重入代码**(Reentrant Code)：指可以在代码执行的任何时刻终端他，转而去执行另外一段代码(包括递归调用它本身)，而在控制权返回后，原来的程序不会出错，也不会对结果产生影响。
 > ⚠️可重入代码的共同特性：不依赖全局变量、存储在堆上的数据和公共系统资源，用到的状态量都由参数传入，不调用非可重入的方法等。
 2. 线程本地存储(Thread Local Storage)：保证共享的数据在一个线程执行。
 > 相关应用：
-> 1. 消费队列(生产者-消费者模式)消费的过程在一个线程进行; \
-> 2. web服务器交互模型"一个请求对应一个服务器线程"; \
-> 3. java中一个变量要被多线程访问使用volatile关键字;\
+> 1. 消费队列(生产者-消费者模式)消费的过程在一个线程进行
+> 2. web服务器交互模型"一个请求对应一个服务器线程"
+> 3. java中一个变量要被多线程访问使用volatile关键字
 > 4. java中使用ThreadLocal实现线程本地存储
 
 ### <a name="44">long 和 double的型变量的特殊规则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -558,14 +559,14 @@ public class HappenBefore {
 #### <a name="47">枚举类为什么是线程安全？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 普通的一个枚举类
-```
+```java
 public enum t {
     SPRING,SUMMER,AUTUMN,WINTER;
 }
 ```
 
 反编译后的代码
-```
+```java
 public final class T extends Enum
 {
     private T(String s, int i)
@@ -617,11 +618,11 @@ public final class T extends Enum
 在刚开始执行代码时，一定有好多线程来抢锁，如果开了偏向锁效率反而降低。
 > 通过配置参数-XX:-UseBiasedLocking = false来禁用偏向锁。jdk15之后默认已经禁用了偏向锁。
 
-> 偏向锁开启的过程中是STW（Stop The World）也就是需要暂停所有线程，详细见JVM章节末尾s
+> 偏向锁开启的过程中是STW(Stop The World)也就是需要暂停所有线程，详细见JVM章节末尾s
 
 
 ### <a name="50">System.out.println() 的实现使用synchronized</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-我们常使用的System.out.println、StringBuffer，虽然底层加了syn锁，但是基本没有多线程竞争的情况。
+我们常使用的`System.out.println`、`StringBuffer`，虽然底层加了syn锁，但是基本没有多线程竞争的情况。
 
 ```
 public void println(String x) {
@@ -639,7 +640,7 @@ public void println(String x) {
 - 描述synchronized和ReentrantLock的底层实现和重入的底层原理。
 - 谈谈AQS，为什么AQS底层是CAS+volatile？
 - 描述下锁的四种状态和锁升级过程？
-- Object  o = new Object() 在内存中占用多少字节？
+- `Object o = new Object()` 在内存中占用多少字节？
 - 自旋锁是不是一定比重量级锁效率高？
 - 打开偏向锁是否效率一定会提升？
 - 重量级锁到底重在哪里？
