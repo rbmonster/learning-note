@@ -1,6 +1,6 @@
 # MyBatis 
 - 一个demo
-```
+```xml
     <resultMap id="ExtListBaseResultMap" type="com.xy.tms.tran.entity.vo.TranSeaPlanListVo"
                extends="com.xy.tms.tran.dao.TranSeaPlanMapper.BaseResultMap">
         <result column="sea_plan_detail_id" jdbcType="BIGINT" property="seaPlanDetailId"/>
@@ -142,17 +142,17 @@ Executor、ResultSetHandler、StatementHandler、ParameterHandler，这是Mybati
 org.apache.ibatis.session.Configuration类，在新建接口对象的时候，通过调用interceptorChain：拦截器执行链的plugin方法，返回被拦截器包装后的代理对象。
 因此对象调用的时候，会判断方法是否拦截进而进入拦截器的方法。
 
-```
+```java
 public class Plugin implements InvocationHandler {
     public static Object wrap(Object target, Interceptor interceptor) {
         Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
         Class<?> type = target.getClass();
         Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
         if (interfaces.length > 0) {
-          return Proxy.newProxyInstance(
-              type.getClassLoader(),
-              interfaces,
-              new Plugin(target, interceptor, signatureMap));
+            return Proxy.newProxyInstance(
+                    type.getClassLoader(),
+                    interfaces,
+                    new Plugin(target, interceptor, signatureMap));
         }
         return target;
     }
@@ -160,15 +160,16 @@ public class Plugin implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
-          Set<Method> methods = signatureMap.get(method.getDeclaringClass());
-          if (methods != null && methods.contains(method)) {
-            return interceptor.intercept(new Invocation(target, method, args));
-          }
-          return method.invoke(target, args);
+            Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+            if (methods != null && methods.contains(method)) {
+                return interceptor.intercept(new Invocation(target, method, args));
+            }
+            return method.invoke(target, args);
         } catch (Exception e) {
-          throw ExceptionUtil.unwrapThrowable(e);
+            throw ExceptionUtil.unwrapThrowable(e);
         }
     }
+}
 ```
 
 ## #{}和${}的区别是什么？
@@ -191,18 +192,19 @@ MyBatis的分页有两种，一种是使用 RowBounds 对象进行分页，另�
   - 使用 RowBounds 对象分页，它是针对 ResultSet 结果集执行的内存分页，而非物理分页，对于数据量大的情况，使用这种分页方式会浪费内存
   - 使用PageHelper 进行分页，它是在StatementHandler之前进行拦截，对MappedStatement进行分页sql的拼接操作，PageHelper只对紧跟着的第一个SQL语句起作用.
   - 另外可以使用mybatis插件，声明拦截器进行sql的处理
-    - ```
-      @Intercepts({
-              @Signature(type = Executor.class,
-                      method = "query",
-                      args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
-                              CacheKey.class, BoundSql.class}),
-              @Signature(type = Executor.class,
-                      method = "query",
-                      args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})
-      })
-      public class DataPermissionInterceptor implements Interceptor  {}  
-      ```
+
+```java
+@Intercepts({
+      @Signature(type = Executor.class,
+              method = "query",
+              args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
+                      CacheKey.class, BoundSql.class}),
+      @Signature(type = Executor.class,
+              method = "query",
+              args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})
+})
+public class DataPermissionInterceptor implements Interceptor  {}  
+```
 ## MyBatis 是如何将 sql 执行结果封装为目标对象并返回的？都有哪些映射形式？
 答：第一种是使用<resultMap>标签，逐一定义列名和对象属性名之间的映射关系。第二种是使用 sql 列的别名功能，将列别名书写为对象属性名，比如 T_NAME AS NAME，对象属性名一般是 name，小写，但是列名不区分大小写
 
@@ -266,7 +268,8 @@ Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象
 ## 千万级数据查询方案---- 流式查询
 - 流式查询指的是查询成功后不是返回一个集合而是返回一个迭代器，应用每次从迭代器取一条查询结果。流式查询的好处是能够降低内存使用。
 - 流式查询的过程当中，数据库连接是保持打开状态的，因此要注意的是：执行一个流式查询后，数据库访问框架（mybatis）就不负责关闭数据库连接了，需要应用在取完数据后自己关闭。
-- ```
+
+```text
   // Cursor 还提供了三个方法：
   
   // 1. isOpen()：用于在取数据之前判断 Cursor 对象是否是打开状态。只有当打开时 Cursor 才能取数据；
@@ -305,8 +308,8 @@ Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象
 - 对于多对象参数的传递，参数可以使用别名代替。
 
 - 参数解析方法：
-```
-Class MapperMethod{
+```java
+class MapperMethod{
     public Object convertArgsToSqlCommandParam(Object[] args) {
       return paramNameResolver.getNamedParams(args);
     }
@@ -315,24 +318,21 @@ Class MapperMethod{
 
 
 - 参数获取方法
-```
-MetaObject{
-  public Object getValue(String name) {
-    PropertyTokenizer prop = new PropertyTokenizer(name);
-    if (prop.hasNext()) {
-      MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
-      if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
-        return null;
-      } else {
-        return metaValue.getValue(prop.getChildren());
-      }
-    } else {
-      return objectWrapper.get(prop);
+```java
+class MetaObject{
+    public Object getValue(String name) {
+        PropertyTokenizer prop = new PropertyTokenizer(name);
+        if (prop.hasNext()) {
+              MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
+              if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
+                    return null;
+              } else {
+                    return metaValue.getValue(prop.getChildren());
+              }
+        } else {
+            return objectWrapper.get(prop);
+        }
     }
-  }
-
-
 }
-
 
 ```

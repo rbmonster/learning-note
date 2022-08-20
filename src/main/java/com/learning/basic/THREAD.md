@@ -32,19 +32,18 @@
 
 ### 线程方法与状态切换
 
-sleep 导致当前线程休眠，与 wait 方法不同的是 sleep 不会释放当前占有的锁,sleep(long)会导致线程进入 **TIMED-WATING** 状态，而 wait()方法会导致当前线程进入 WATING 状态
+`sleep` 导致当前线程休眠，与 wait 方法不同的是 sleep 不会释放当前占有的锁,sleep(long)会导致线程进入 **TIMED-WATING** 状态，而 wait()方法会导致当前线程进入 WATING 状态
 
-wait 方法，主动让出锁。
+`wait` 方法，主动让出锁。
 1. 不带时间常数的wait 方法进入WAITING状态。
 2. 带时间常数的wait 进入TIME-WAITING状态。
 
-yield 方法，线程让步。
-> yield 会使当前线程让出 CPU 执行时间片，与其他线程一起重新竞争 CPU 时间片。一般情况下，优先级高的线程有更大的可能性成功竞争得到 CPU 时间片
+`yield` 方法，线程让步。 yield 会使当前线程让出 CPU 执行时间片，与其他线程一起重新竞争 CPU 时间片。一般情况下，优先级高的线程有更大的可能性成功竞争得到 CPU 时间片
 
-join方法，当前线程转为阻塞状态，等到另一个线程结束，当前线程再由阻塞状态变为就绪状态，等待 cpu 的宠幸。
-> join方法可用于多线程的协作，如主子线程的协作，主线程等待子线程完成任务。
-> - join 方法的状态转换与wait方法相同，带时间的进入TIME-WAITING状态，不带时间的进入WAITING状态。
-```
+`join`方法，当前线程转为阻塞状态，等到另一个线程结束，当前线程再由阻塞状态变为就绪状态，等待 cpu 的宠幸。
+> join方法可用于多线程的协作，如主子线程的协作，主线程等待子线程完成任务。\
+> join 方法的状态转换与wait方法相同，带时间的进入TIME-WAITING状态，不带时间的进入WAITING状态。
+```text
 System.out.println(Thread.currentThread().getName() + "线程运行开始!");
 Thread6 thread1 = new Thread6();
 thread1.setName("线程 B");
@@ -63,62 +62,66 @@ JVM 在背后帮我们做了哪些事情:
 6. 将与线程相关的描述符添加到JVM内部数据结构中
 7. 线程共享堆和方法区域
 
-> 用数据来说明创建一个线程(即便不干什么)需要多大空间呢？答案是大约 1M 左右
-
-> java -XX:+UnlockDiagnosticVMOptions -XX:NativeMemoryTracking=summary -XX:+PrintNMTStatistics -version
-- 用 Java8 的测试结果，19个线程，预留和提交的大概都是19000+KB，平均每个线程大概需要 1M 左右的大小
+> 用数据来说明创建一个线程(即便不干什么)需要多大空间呢？\
+> 答案是大约 1M 左右。`java -XX:+UnlockDiagnosticVMOptions -XX:NativeMemoryTracking=summary -XX:+PrintNMTStatistics -version`\
+> 用 Java8 的测试结果，19个线程，预留和提交的大概都是19000+KB，平均每个线程大概需要 1M 左右的大小
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/concurrent/threadState2.jpg)
 
 
 ## 创建线程的方式
 - callable 接口继承: 可以获取线程的返回值。
-- Future接口 相当于 Runnable接口
-- FutureTask类 类似于Thread类，最后执行调用都要使用Thread类
-```
- public void test() throws ExecutionException, InterruptedException, TimeoutException {
-    FutureTask<String> futureTask = new FutureTask<>(new CallableThread());
-    Thread callable = new Thread(futureTask);
-    callable.start();
-    boolean done = futureTask.isDone();
-    boolean cancelled = futureTask.isCancelled();
-    // while (!Thread.interrupted())，那么本次任务会一直执行，只有mayInterruptIfRunning=true
-    futureTask.cancel(true);
-    // 设置获取结果的等待时间,超时抛出timeOutException
-    // String s = futureTask.get(1, TimeUnit.SECONDS);
-    // 阻塞等待
-    String result = futureTask.get();
-    System.out.println(result);
-}
+> Future接口 相当于 Runnable接口\
+> FutureTask类 类似于Thread类，最后执行调用都要使用Thread类
+```java
+public class Solution {
+    public void test() throws ExecutionException, InterruptedException, TimeoutException {
+        FutureTask<String> futureTask = new FutureTask<>(new CallableThread());
+        Thread callable = new Thread(futureTask);
+        callable.start();
+        boolean done = futureTask.isDone();
+        boolean cancelled = futureTask.isCancelled();
+        // while (!Thread.interrupted())，那么本次任务会一直执行，只有mayInterruptIfRunning=true
+        futureTask.cancel(true);
+        // 设置获取结果的等待时间,超时抛出timeOutException
+        // String s = futureTask.get(1, TimeUnit.SECONDS);
+        // 阻塞等待
+        String result = futureTask.get();
+        System.out.println(result);
+    }
 
-class CallableThread implements Callable<String> {
+    class CallableThread implements Callable<String> {
 
-    @Override
-    public String call() throws Exception {
-        // do some job
-        TimeUnit.SECONDS.sleep(10);
-        return "complete the job";
+        @Override
+        public String call() throws Exception {
+            // do some job
+            TimeUnit.SECONDS.sleep(10);
+            return "complete the job";
+        }
     }
 }
 ```
 
-- Runnable接口实现与 继承Thread
-```
-public void test1(){
-    Thread thread1 = new OriThread();
-    Thread thread2 = new Thread(new RunnableThread());
-}
-class OriThread extends Thread{
-    @Override
-    public void run() {
-        System.out.println("this is the org thread!");
+- Runnable接口实现 与 继承Thread
+```java
+public class Solution {
+    public void test1() {
+        Thread thread1 = new OriThread();
+        Thread thread2 = new Thread(new RunnableThread());
     }
-}
 
-class RunnableThread implements Runnable{
-    @Override
-    public void run() {
-        System.out.println("this is runnable thread");
+    class OriThread extends Thread {
+        @Override
+        public void run() {
+            System.out.println("this is the org thread!");
+        }
+    }
+
+    class RunnableThread implements Runnable {
+        @Override
+        public void run() {
+            System.out.println("this is runnable thread");
+        }
     }
 }
 ```
@@ -134,25 +137,24 @@ class RunnableThread implements Runnable{
 
 ### 基于ReentrantLock
 ReentrantLock调用锁的`lockInterruptibly()`方法，
-1. `lock()`, 拿不到lock就不罢休，不然线程就一直block。 比较无赖的做法。
+1. `lock()`, 拿不到lock就不罢休，不然线程就一直block。 
 2. `tryLock()`，马上返回，拿到lock就返回true，不然返回false。带时间限制的`tryLock()`，拿不到lock，就等一段时间，超时返回false。比较聪明的做法。
 3. `lockInterruptibly()`就稍微难理解一些。
-  先说说线程的打扰机制，每个线程都有一个 打扰 标志。这里分两种情况，
+  先说说线程的打扰机制，每个线程都有一个 _打扰_ 标志。这里分两种情况，
   - 线程在sleep或wait、join， 此时如果别的进程调用此进程的 interrupt()方法，此线程会被唤醒并被要求处理InterruptedException；(thread在做IO操作时也可能有类似行为，见java thread api)
   - 此线程在运行中，则不会收到提醒。但是 此线程的 “打扰标志”会被设置， 可以通过isInterrupted()查看并 作出处理。
   - 结论: `lockInterruptibly()`和上面的第一种情况是一样的， 线程在请求lock并被阻塞时，如果被interrupt，则“此线程会被唤醒并被要求处理InterruptedException”。并且如果线程已经被interrupt，再使用lockInterruptibly的时候，此线程也会被要求处理interruptedException
  
 ### 中断标志Interrupt
 中断一个线程，其本意是给这个线程一个通知信号，会影响这个线程内部的一个中断标识位。 这个线程本身并不会因此而改变状态(如阻塞，终止等)。
-1. 调用 interrupt()方法并不会中断一个正在运行的线程。也就是说处于 Running 状态的线程并不会因为被中断而被终止，仅仅改变了内部维护的中断标识位而已。
-2. 若调用 sleep()而使线程处于 TIMED-WATING 状态，这时调用 interrupt()方法，会抛出InterruptedException,从而使线程提前结束 TIMED-WATING 状态。
-3. 许多声明抛出 InterruptedException 的方法，抛出异常前，都会**清除中断标识位**，所以抛出异常后，调用 isInterrupted()方法将会返回 false
-4. 利用中断标识，可以调用 thread.interrupt()方法，在线程的 run 方法内部可以根据 thread.isInterrupted()的值来优雅的终止线程。
+1. 调用 `interrupt()`方法并不会中断一个正在运行的线程。也就是说处于 `Running` 状态的线程并不会因为被中断而被终止，仅仅改变了内部维护的中断标识位而已。
+2. 若调用 `sleep()`而使线程处于`TIMED-WATING` 状态，这时调用 `interrupt()`方法，会抛出`InterruptedException`,从而使线程提前结束 `TIMED-WATING` 状态。
+3. 许多声明抛出 InterruptedException 的方法，抛出异常前，都会**清除中断标识位**，所以**抛出异常后**，调用 `isInterrupted()`方法将会返回 false
+4. 利用中断标识，可以调用 `thread.interrupt()`方法，在线程的 run 方法内部可以根据 `thread.isInterrupted()`的值来优雅的终止线程。
 
 ## 线程池
 
-```
-
+```text
 /**
  * Lock held on access to workers set and related bookkeeping.
  * While we could use a concurrent set of some sort, it turns out
@@ -174,29 +176,29 @@ private final ReentrantLock mainLock = new ReentrantLock();
 线程池的5种状态: Running、ShutDown、Stop、Tidying、Terminated。
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/concurrent/threadPool.png)
 
- RUNNING
-  1. 状态说明: 线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
-  2. 状态切换: 线程池的初始化状态是RUNNING。换句话说，线程池被一旦被创建，就处于RUNNING状态
+RUNNING
+1. 状态说明: 线程池处在RUNNING状态时，能够接收新任务，以及对已添加的任务进行处理。 
+2. 状态切换: 线程池的初始化状态是RUNNING。换句话说，线程池被一旦被创建，就处于RUNNING状态
 
- SHUTDOWN
-  1. 状态说明: 线程池处在SHUTDOWN状态时，不接收新任务，但能处理已添加的任务。 
-  2. 状态切换: 调用线程池的shutdown()接口时，线程池由RUNNING -> SHUTDOWN。
+SHUTDOWN
+1. 状态说明: 线程池处在SHUTDOWN状态时，不接收新任务，但能处理已添加的任务。 
+2. 状态切换: 调用线程池的shutdown()接口时，线程池由RUNNING -> SHUTDOWN。
 
- STOP
-  1. 状态说明: 线程池处在STOP状态时，不接收新任务，不处理已添加的任务，并且会中断正在处理的任务。 
-  2. 状态切换: 调用线程池的shutdownNow()接口时，线程池由(RUNNING or SHUTDOWN ) -> STOP。 
+STOP
+1. 状态说明: 线程池处在STOP状态时，不接收新任务，不处理已添加的任务，并且会中断正在处理的任务。 
+2. 状态切换: 调用线程池的shutdownNow()接口时，线程池由(RUNNING or SHUTDOWN ) -> STOP。 
 
- TIDYING
-  1. 状态说明: 当所有的任务已终止，ctl记录的”任务数量”为0，线程池会变为TIDYING状态。当线程池变为TIDYING状态时，会执行钩子函数terminated()。terminated()在ThreadPoolExecutor类中是空的，若用户想在线程池变为TIDYING时，进行相应的处理；可以通过重载terminated()函数来实现。 
-  2. 状态切换: 当线程池在SHUTDOWN状态下，阻塞队列为空并且线程池中执行的任务也为空时，就会由 SHUTDOWN -> TIDYING。 
+TIDYING
+1. 状态说明: 当所有的任务已终止，ctl记录的”任务数量”为0，线程池会变为TIDYING状态。当线程池变为TIDYING状态时，会执行钩子函数terminated()。terminated()在ThreadPoolExecutor类中是空的，若用户想在线程池变为TIDYING时，进行相应的处理；可以通过重载terminated()函数来实现。 
+2. 状态切换: 当线程池在SHUTDOWN状态下，阻塞队列为空并且线程池中执行的任务也为空时，就会由 SHUTDOWN -> TIDYING。 
 
- TERMINATED
-  1. 状态说明: 线程池彻底终止，就变成TERMINATED状态。 
-  2. 状态切换: 线程池处在TIDYING状态时，执行完terminated()之后，就会由 TIDYING -> TERMINATED当线程池在STOP状态下，线程池中执行的任务为空时，就会由STOP -> TIDYING。
+TERMINATED
+1. 状态说明: 线程池彻底终止，就变成TERMINATED状态。 
+2. 状态切换: 线程池处在TIDYING状态时，执行完terminated()之后，就会由 TIDYING -> TERMINATED当线程池在STOP状态下，线程池中执行的任务为空时，就会由STOP -> TIDYING。
   
 ### 线程池创建
  线程池的初始化: 
-```
+```text
 /**
  * 用给定的初始参数创建一个新的ThreadPoolExecutor。
  */
@@ -211,12 +213,12 @@ public ThreadPoolExecutor(int corePoolSize,//线程池的核心线程数量
 .......
 }
 ```
-corePoolSize: 核心线程数量，当有新任务在`execute()`方法提交时，会执行以下判断: 
-1. 如果运行的线程少于 corePoolSize，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；
-2. 如果线程池中的线程数量大于等于 corePoolSize 且小于 maximumPoolSize，则只有当workQueue满时才创建新的线程去处理任务；
-3. 如果设置的corePoolSize 和 maximumPoolSize相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；
-4. 如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务
-5. 所以，任务提交时，判断的顺序为 corePoolSize –> workQueue –> maximumPoolSize。
+`corePoolSize`: 核心线程数量，当有新任务在`execute()`方法提交时，会执行以下判断: 
+1. 如果运行的线程少于 `corePoolSize`，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；
+2. 如果线程池中的线程数量大于等于 `corePoolSize` 且小于 `maximumPoolSize`，则只有当`workQueue`满时才创建新的线程去处理任务；
+3. 如果设置的`corePoolSize` 和 `maximumPoolSize`相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；
+4. 如果运行的线程数量大于等于`maximumPoolSize`，这时如果`workQueue`已经满了，则通过handler所指定的策略来处理任务
+5. 所以，任务提交时，判断的顺序为 `corePoolSize` –> `workQueue` –> `maximumPoolSize`。
 
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/concurrent/threadPoolProcess.png)
@@ -242,7 +244,7 @@ corePoolSize: 核心线程数量，当有新任务在`execute()`方法提交时�
 5. `Executors.newWorkStealingPool()`: 内部会构建ForkJoinPool，利用Work-Stealing算法，并行地处理任务，不保证处理顺序。
 > 工作窃取算法: 工作窃取(work-stealing)算法是指某个线程从其他队列里窃取任务来执行。一个大任务分割为若干个互不依赖的子任务，为了减少线程间的竞争，把这些子任务分别放到不同的队列里，并未每个队列创建一个单独的线程来执行队列里的任务，线程和队列一一对应。比如线程1负责处理1队列里的任务，2线程负责2队列的。但是有的线程会先把自己队列里的任务干完，而其他线程对应的队列里还有任务待处理。干完活的线程与其等着，不如帮其他线程干活，于是它就去其他线程的队列里窃取一个任务来执行。默认从其他队列的队尾开始窃取任务执行。\
 > 思想为: 充分利用线程进行并行计算，减少线程间的竞争。在某些情况下还是会存在竞争，比如双端队列里只有一个任务时。并且该算法会消耗更多的系统资源， 比如创建多个线程和多个双端队列。
- ```
+ ```text
 return new ForkJoinPool
        (Runtime.getRuntime().availableProcessors(),  //默认使用的是硬件的cpu数目
          ForkJoinPool.defaultForkJoinWorkerThreadFactory,
@@ -313,7 +315,7 @@ CPU利用率: `(CPU耗时)/ (I/O耗时 + CPU耗时)`
 
 
 #### 实际执行解决方案: 动态配置线程池核心线程数和最大线程数
-```
+```text
   ThreadPoolExecutor threadPoolExecutor =  new ThreadPoolExecutor(
                 2,5,60,
                 TimeUnit.SECONDS,
@@ -331,12 +333,12 @@ CPU利用率: `(CPU耗时)/ (I/O耗时 + CPU耗时)`
 1. 设置核心线程数的时候，同时设置最大线程数。否则若出现核心线程数大于最大线程数，在线程池getTask的任务处理中，会因为该问题导致设置不生效。
 2. 由于LinkedBlockingQueue的容量capacity为final类型的，需要动态修改队列的容量可以通过继承该queue声明一个可改变的capacity参数。
 3. **其他的tip**
-    - ```
-        // 预启动线程池的核心线程，对线程池进行预热
-        threadPoolExecutor.prestartAllCoreThreads();
-        // 回收核心线程的一个方案允许核心线程过期
-        threadPoolExecutor.allowCoreThreadTimeOut(true);
-      ```
+    ```text
+    // 预启动线程池的核心线程，对线程池进行预热
+    threadPoolExecutor.prestartAllCoreThreads();
+    // 回收核心线程的一个方案允许核心线程过期
+    threadPoolExecutor.allowCoreThreadTimeOut(true);
+    ```
 4. 使用以下工具来了解I/O 耗时与 CUP耗时
   - SkyWalking
   - CAT
@@ -348,14 +350,14 @@ CPU利用率: `(CPU耗时)/ (I/O耗时 + CPU耗时)`
 
 ### ThreadFactory 线程工厂
 ThreadFactory 主要用于创建新线程对象，使用线程工厂就无需再手工编写对 new Thread 的调用了。 
-  - 对于区分业务的线程池，就可以用到到命名线程工厂的实现，针对不同线程池资源定义不同的线程名
-  - 或者设置一个创建守护线程的线程工厂。
+- 对于区分业务的线程池，就可以用到到命名线程工厂的实现，针对不同线程池资源定义不同的线程名
+- 或者设置一个创建守护线程的线程工厂。
   
 优点:  
 - 很容易改变的类创建的对象或我们创建这些对象的方式。
 - 很容易用有限的资源限制的创建对象，例如,我们只能有N个对象。
 - 很容易生成统计数据对创建的对象。
-```
+```java
 public final class NamingThreadFactory implements ThreadFactory {
 
     private final AtomicInteger threadNum = new AtomicInteger();
@@ -381,7 +383,7 @@ public final class NamingThreadFactory implements ThreadFactory {
 ```
 
 ### Worker工作流程
-```java 
+```text
 
     /**
      * Set containing all worker threads in pool. Accessed only when
@@ -419,8 +421,9 @@ Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实�
     2. 另外线程中的实际执行方法也可能调用 `setCorePoolSize()`。
 3. Worker使用HashSet进行保存，通过ReentrantLock方法保证线程安全，控制Worker集合的修改。
 
-```
-  final void runWorker(Worker w) {
+```java
+public class Test {
+    final void runWorker(Worker w) {
         Thread wt = Thread.currentThread();
         Runnable task = w.firstTask;
         w.firstTask = null;
@@ -429,7 +432,7 @@ Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实�
         try {
             while (task != null || (task = getTask()) != null) {
                 w.lock();
-                ... 
+//                ...
                 try {
                     // 空的插槽方法
                     beforeExecute(wt, task);
@@ -437,11 +440,14 @@ Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实�
                     try {
                         task.run();
                     } catch (RuntimeException x) {
-                        thrown = x; throw x;
+                        thrown = x;
+                        throw x;
                     } catch (Error x) {
-                        thrown = x; throw x;
+                        thrown = x;
+                        throw x;
                     } catch (Throwable x) {
-                        thrown = x; throw new Error(x);
+                        thrown = x;
+                        throw new Error(x);
                     } finally {
                         // 空的插槽方法
                         afterExecute(task, thrown);
@@ -457,7 +463,7 @@ Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实�
             processWorkerExit(w, completedAbruptly);
         }
     }
-
+}
 ```
 
 
@@ -467,51 +473,56 @@ Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实�
 1. 因为队列为阻塞队列，若为核心线程直接调用阻塞队列的take()方法。
 2. 若目前线程数超过核心线程，那么使用`workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)`，未获取到新任务推出线程的while方法，进入销毁流程。
 
-```
-final void runWorker(Worker w) {
-     Thread wt = Thread.currentThread();
-     Runnable task = w.firstTask;
-     w.firstTask = null;
-     w.unlock(); // allow interrupts
-     boolean completedAbruptly = true;
-     try {
-         while (task != null || (task = getTask()) != null) {
-         ...
-         }
-         ...
-     }
- }
+```java
 
-
-private Runnable getTask() {
-    boolean timedOut = false; // Did the last poll() time out?
-
-    for (;;) {
-        int c = ctl.get();
-        int rs = runStateOf(c);
-        // Check if queue empty only if necessary.
-
-        int wc = workerCountOf(c);
-
-        // Are workers subject to culling?
-        boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
-
-        if ((wc > maximumPoolSize || (timed && timedOut))
-            && (wc > 1 || workQueue.isEmpty())) {
-            if (compareAndDecrementWorkerCount(c))
-                return null;
-            continue;
-        }
-
+public class Test {
+    final void runWorker(Worker w) {
+        Thread wt = Thread.currentThread();
+        Runnable task = w.firstTask;
+        w.firstTask = null;
+        w.unlock(); // allow interrupts
+        boolean completedAbruptly = true;
         try {
-            Runnable r = timed ?
-                workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
-                workQueue.take();
-            if (r != null)
-                return r;
-            timedOut = true;
-        } catch (InterruptedException retry) {
-            timedOut = false;
+            while (task != null || (task = getTask()) != null) {
+//         ...
+            }
+//         ...
+        } finally {
+            
+        }
+    }
+
+
+    private Runnable getTask() {
+        boolean timedOut = false; // Did the last poll() time out?
+
+        for (; ; ) {
+            int c = ctl.get();
+            int rs = runStateOf(c);
+            // Check if queue empty only if necessary.
+
+            int wc = workerCountOf(c);
+
+            // Are workers subject to culling?
+            boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+
+            if ((wc > maximumPoolSize || (timed && timedOut))
+                    && (wc > 1 || workQueue.isEmpty())) {
+                if (compareAndDecrementWorkerCount(c))
+                    return null;
+                continue;
+            }
+
+            try {
+                Runnable r = timed ?
+                        workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                        workQueue.take();
+                if (r != null)
+                    return r;
+                timedOut = true;
+            } catch (InterruptedException retry) {
+                timedOut = false;
+            }
         }
     }
 }
@@ -530,12 +541,12 @@ private Runnable getTask() {
 
 ## ThreadLocal 
 Thread 类存储了ThreadLocal.ThreadLocalMap 对象 : `ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;`
-  - key: key视作ThreadLocal，value为代码中放入的值(实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference).
-  - ThreadLocalMap的key为每个新建的`ThreadLocal private void set(ThreadLocal<?> key, Object value) { }`
+- key: key视作ThreadLocal，value为代码中放入的值(实际上key并不是ThreadLocal本身，而是它的一个弱引用WeakReference).
+- ThreadLocalMap的key为每个新建的`ThreadLocal private void set(ThreadLocal<?> key, Object value) { }`
 
 ThreadMap的实现类似于HashMap，不过其数据结构仅使用数组，定义一个Entry的类，key为 WeakReference引用的ThreadLocal，value为存入的value。
-  - key的hash计算: 使用黄金分割数*AtomInteger计算，再根据容量确定索引位置。每次新增一个元素，AtomInteger都自动加一。
-  - 因为map的key都是threadLocal，所以在不set或remove元素的时候，每次get都是同一个元素的值。
+- key的hash计算: 使用黄金分割数*AtomInteger计算，再根据容量确定索引位置。每次新增一个元素，AtomInteger都自动加一。
+- 因为map的key都是threadLocal，所以在不set或remove元素的时候，每次get都是同一个元素的值。
   
 set元素逻辑: 
 1. hash定位到数组索引位置，如果位置无元素直接设值。
@@ -596,53 +607,55 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
 > 没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
 
 ```
-    @Bean
-      public Executor taskExecutor() {
-        // Spring 默认配置是核心线程数大小为1，最大线程容量大小不受限制，队列容量也不受限制。
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(CORE_POOL_SIZE);
-        executor.setMaxPoolSize(MAX_POOL_SIZE);
-        executor.setQueueCapacity(QUEUE_CAPACITY);
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.setThreadNamePrefix("My ThreadPoolTaskExecutor-");
-        executor.initialize();
-        return executor;
-      }
+@Bean
+public Executor taskExecutor() {
+    // Spring 默认配置是核心线程数大小为1，最大线程容量大小不受限制，队列容量也不受限制。
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(CORE_POOL_SIZE);
+    executor.setMaxPoolSize(MAX_POOL_SIZE);
+    executor.setQueueCapacity(QUEUE_CAPACITY);
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    executor.setThreadNamePrefix("My ThreadPoolTaskExecutor-");
+    executor.initialize();
+    return executor;
+}
 ```
-### 异步编程的例子: 
-```
-     @Async
-      public CompletableFuture<List<String>> completableFutureTask(String start) {
+### 异步编程demo
+```java
+public class Solution {
+    @Async
+    public CompletableFuture<List<String>> completableFutureTask(String start) {
         // 打印日志
         logger.warn(Thread.currentThread().getName() + "start this task!");
         // 找到特定字符/字符串开头的电影
         List<String> results =
-            movies.stream().filter(movie -> movie.startsWith(start)).collect(Collectors.toList());
+                movies.stream().filter(movie -> movie.startsWith(start)).collect(Collectors.toList());
         // 模拟这是一个耗时的任务
         try {
-          Thread.sleep(1000L);
+            Thread.sleep(1000L);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
         //返回一个已经用给定值完成的新的CompletableFuture。
         return CompletableFuture.completedFuture(results);
-      }
-    
+    }
+
     // 调用方法
     @GetMapping("/movies")
-      public String completableFutureTask() throws ExecutionException, InterruptedException {
+    public String completableFutureTask() throws ExecutionException, InterruptedException {
         //开始时间
         long start = System.currentTimeMillis();
         // 开始执行大量的异步任务
         List<String> words = Arrays.asList("F", "T", "S", "Z", "J", "C");
         List<CompletableFuture<List<String>>> completableFutureList =
-            words.stream()
-                .map(word -> asyncService.completableFutureTask(word))
-                .collect(Collectors.toList());
+                words.stream()
+                        .map(word -> asyncService.completableFutureTask(word))
+                        .collect(Collectors.toList());
         // CompletableFuture.join()方法可以获取他们的结果并将结果连接起来
         List<List<String>> results = completableFutureList.stream().map(CompletableFuture::join).collect(Collectors.toList());
         // 打印结果以及运行程序运行花费时间
         System.out.println("Elapsed time: " + (System.currentTimeMillis() - start));
         return results.toString();
-      }
+    }
+}
 ```
