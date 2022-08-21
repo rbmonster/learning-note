@@ -980,7 +980,8 @@ Redis Cluster 属于服务端分片的方式。Redis 实例会把自己的哈希
 
 MOVED重定向（**负载均衡，数据已经迁移到其他实例上**）: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
 > **客户端还会更新本地缓存，将该 slot 与 Redis 实例对应关系更新正确。**
-https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/redis-move.jpg
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/redis-move.jpg)
+
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/cluster-move.png)
 
 ```
@@ -1077,8 +1078,8 @@ redis 分布式锁：保证集群之间的资源同步。
 其实删除缓存，而不是更新缓存，就是一个 lazy 计算的思想。类似于redis的key过期处理策略。
 > 解决更新数据库后，可能**缓存删除失败的脏数据情况**，可以使用**双删的策略**，即删缓存-更新数据库-删缓存。该策略仍然可能最后一步删除失败导致脏数据。
 
-数据库和缓存数据强一致场景：
-更新DB的时候同样更新cache，不过需要加一个锁/分布式锁来保证更新cache的时候不存在线程安全问题。另外做锁等待的时候可能出现大批量请求的情况，还需要做好限流来保障我们的服务运行。\
+**数据库和缓存数据强一致场景**：
+更新DB的时候同样更新cache，不过需要加一个锁/分布式锁来保证更新cache的时候不存在线程安全问题。另外做锁等待的时候可能出现大批量请求的情况，还需要做好限流来保障我们的服务运行。
 
 延迟双删： 策略是分布式系统中存储和缓存数据保持一致性的常用策略，但它不是强一致。
 ```
