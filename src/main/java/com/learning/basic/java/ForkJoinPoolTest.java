@@ -1,6 +1,5 @@
 package com.learning.basic.java;
 
-import scala.collection.parallel.ForkJoinTasks;
 
 import java.util.ArrayList;
 import java.util.List;

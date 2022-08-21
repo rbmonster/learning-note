@@ -294,7 +294,7 @@ CPU利用率: `(CPU耗时)/ (I/O耗时 + CPU耗时)`
 问题1：
 > 假设要求一个系统的TPS(Transaction Per Second 或者 Task Per Second)至少为20，然后假设每个Transaction由一个线程完成，继续假设平均每个线程处理一个Transaction的时间为4s\
 > 如何设计线程个数，使得可以在1s内处理完20个Transaction？\
-> 答案: 一个线程平均1s处理`1/4s=0.25`个TPS请求，`20/0.25=8`0。一般服务器的CPU核数为16或者32，如果有80个线程，**那么肯定会带来太多不必要的线程上下文切换开销**
+> 答案: 一个线程平均1s处理`1/4s=0.25`个TPS请求，`20/0.25=80`。一般服务器的CPU核数为16或者32，如果有80个线程，**那么肯定会带来太多不必要的线程上下文切换开销**
 
 问题2：
 > 计算操作需要5ms，DB操作需要 100ms，对于一台 8 核CPU的服务器，怎么设置线程数呢？\
@@ -561,38 +561,37 @@ TheadMap的key为weakReference包裹的threadLocal  因此会存在被jvm回收�
 > 在扩容、get和set的过程中遇到过期的键都会触发探测性清理。
 
 ### 父线程与子线程传递threadLocal的方案
-阿里巴巴提供TransmittableThreadLocal组件: 父线程与子线程传递threadLocal的方案
-InheritableThreadLocal:  父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
-- 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
+1. 阿里巴巴提供TransmittableThreadLocal组件: 父线程与子线程传递threadLocal的方案
+2. InheritableThreadLocal:  父线程与子线程共享threadLocal的方案，new Thread的时候会传递InheritableThreadLocal的解决方案。
+> 缺陷需要在父线程中调用new Thread传递，而使用中新建线程都是使用线程池技术。
     
 ### ThreadLocal应用
-Spring 事务应用
+> 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文(Context)，它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
+
+
+**Spring 事务应用**
 - Spring采用ThreadLocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。
 - Spring框架里面就是用的ThreadLocal来实现这种隔离，主要是在TransactionSynchronizationManager这个类里面.
 - spring security 使用ThreadLocal 存储是否请求是否已经认证。
-  
-> 存在一个线程经常遇到横跨若干方法调用，需要传递的对象，也就是上下文(Context)，它是一种状态，经常就是是用户身份、任务信息等，就会存在过渡传参的问题。
 
-读写分离实现
+**读写分离实现**
 - 使用theadLocal获取当前需要执行的数据源，结合AbstractDataSourceRouter执行需要执行的数据库。
 
-ThreadLocalRandom 是ThreadLocal与 Random的结合，在Random的基础上进行性能的优化，在并发的情况下提供较大的性能提升。
+**ThreadLocalRandom** 是ThreadLocal与 Random的结合，在Random的基础上进行性能的优化，在并发的情况下提供较大的性能提升。
 > Random 也是线程安全的类，内部使用AtomLong 结合 CAS技术实现，但是CAS技术在并发的情况下，性能比较糟糕。
 > ThreadLocalRandom 是通过为每个线程实例化一个随机数生成器，来减少系统开销和对资源的争用。
 
+**跨方法传递**: 常规web服务接收到request的时候，经常有一些用户信息需要传递到service层。此时就可以使用ThreadLocal存储用户信息，每个service方法就不用写传递参数。
 
-跨方法传递: 
-- 常规web服务接收到request的时候，经常有一些用户信息需要传递到service层。此时就可以使用ThreadLocal存储用户信息，每个service方法就不用写传递参数。
 ### TheadLocal 与 SimpleDateFormat的应用
 使用SimpleDataFormat的parse()方法，内部有一个Calendar对象，调用SimpleDataFormat的parse()方法会先调用Calendar.clear()，然后调用Calendar.add()，如果一个线程先调用了add()然后另一个线程又调用了clear()，这时候parse()方法解析的时间就不对了。
 
 解决: 使用了线程池加上ThreadLocal包装SimpleDataFormat，再调用initialValue让每个线程有一个SimpleDataFormat的副本，从而解决了线程安全的问题，也提高了性能。
-```
+```text
 private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.withInitial(() ->
     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 );
 ```
-
 **如果是Java8应用，可以使用DateTimeFormatter代替SimpleDateFormat, 线程安全**
 
 
@@ -600,13 +599,14 @@ private static ThreadLocal<SimpleDateFormat> simpleDateFormat = ThreadLocal.with
 [Java面试必问: ThreadLocal终极篇 淦](https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ)
 
 待补充资料: netty的fastThreadLocal
+
 ## spring 中的线程池
 如果我们需要在 SpringBoot 实现异步编程的话，通过 Spring 提供的两个注解会让这件事情变的非常简单。
-  - @EnableAsync: 通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
-  - @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
+- @EnableAsync: 通过在配置类或者Main类上加@EnableAsync开启对异步方法的支持。
+- @Async 可以作用在类上或者方法上，作用在类上代表这个类的所有方法都是异步方法。
 > 没有自定义Executor, Spring 将创建一个 SimpleAsyncTaskExecutor 并使用它。
 
-```
+```text
 @Bean
 public Executor taskExecutor() {
     // Spring 默认配置是核心线程数大小为1，最大线程容量大小不受限制，队列容量也不受限制。

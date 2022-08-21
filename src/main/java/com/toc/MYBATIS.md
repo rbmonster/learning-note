@@ -21,9 +21,6 @@
 # <a name="0">MyBatis </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 一个demo
 ```xml
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">-->
-<!--<mapper namespace="..">-->
     <resultMap id="ExtListBaseResultMap" type="com.xy.tms.tran.entity.vo.TranSeaPlanListVo"
                extends="com.xy.tms.tran.dao.TranSeaPlanMapper.BaseResultMap">
         <result column="sea_plan_detail_id" jdbcType="BIGINT" property="seaPlanDetailId"/>
@@ -137,7 +134,6 @@
         </trim>
       where id=#{id}
     </update>
-<!--</mapper>-->
 ```
 ## <a name="1">执行流程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/mybatisgo.png)

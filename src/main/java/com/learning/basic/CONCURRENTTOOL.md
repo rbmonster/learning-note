@@ -29,16 +29,20 @@ static final int PROPAGATE = -3;
 
 ```text
 isHeldExclusively()//该线程是否正在独占资源。只有用到condition才需要去实现它。
+
 tryAcquire(int)//独占方式。尝试获取资源，成功则返回true，失败则返回false。
+
 tryRelease(int)//独占方式。尝试释放资源，成功则返回true，失败则返回false。
+
 tryAcquireShared(int)//共享方式。尝试获取资源。负数表示失败；0表示成功，但没有剩余可用资源；正数表示成功，且有剩余资源。
+
 tryReleaseShared(int)//共享方式。尝试释放资源，成功则返回true，失败则返回false。
 ```
 
 比如独占锁相关的方法调用框架
 
 ```java
-public class TestReentrantLock {
+public class AbstractQueuedSynchronizer {
     // 尝试获取锁
     public final void acquire(int arg) {
         // tryAcquire 需重写   acquireQueued、addWaiter为默认方法
@@ -69,14 +73,16 @@ public class TestReentrantLock {
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/aqsblocklock.jpg)
 
-```text
- // 尝试获取锁
- public final void acquire(int arg) {
-     // tryAcquire 需重写   acquireQueued、addWaiter为默认方法
+```java
+public class AbstractQueuedSynchronizer {
+  // 尝试获取锁
+  public final void acquire(int arg) {
+    // tryAcquire 需重写   acquireQueued、addWaiter为默认方法
     if (!tryAcquire(arg) &&
-        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
-        selfInterrupt();
- }
+            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+      selfInterrupt();
+  }
+}
 ```
 
 addWaiter：用于添加节点到队尾
@@ -84,7 +90,8 @@ addWaiter：用于添加节点到队尾
 - 如果队尾节点不存在，使用for自旋先**添加空的头节点**，再添加当前线程的队尾节点
 
 ```java
-public class TestReentrantLock {
+public class AbstractQueuedSynchronizer {
+    
     final boolean acquireQueued(final Node node, int arg) {
         boolean failed = true;
         try {
@@ -129,7 +136,7 @@ parkAndCheckInterrupt方法：正常尾结点添加完成之后，进入到挂�
 
 ```java
 
-public class TestReentrantLock {
+public class AbstractQueuedSynchronizer {
     // 释放锁
     public final boolean release(int arg) {
         // tryRelease 需重写
@@ -163,14 +170,14 @@ condition 的方法主要就两个await等待、signal唤醒
 - **阻塞队列为Lock中获取共享资源的CLH阻塞双向链表队列**，AQS中设置head和tail变量。
 - 条件队列为**conditionObject中维护的一个单向链表**
 
-```text
+```java
   public class ConditionObject implements Condition, java.io.Serializable {
       private static final long serialVersionUID = 1173984872572414699L;
       /** First node of condition queue. */
       private transient Node firstWaiter;
       /** Last node of condition queue. */
       private transient Node lastWaiter;
-      ...
+//      ...
   }
 ```
 
@@ -186,7 +193,7 @@ condition 的方法主要就两个await等待、signal唤醒
 5. await的线程被唤醒后，进入阻塞队列的队列获取锁逻辑，如果前驱节点为头结点，尝试去获取锁资源，否则修改前驱节点为带唤醒状态。等待锁资源释放后的调用。
 
 > 注意点：在条件队列中，等待的线程节点，即使发生了中断，节点依然会转移到阻塞队列。主要通过是唤醒之后，执行检查中断状态为true的transferAfterCancelledWait实现。\
-> 这里描绘了一个场景，本来有个线程，它是排在条件队列的后面的，但是因为它被中断了，那么它会被唤醒，然后它发现自己不是被 signal 的那个，但是它会自己主动去进入到阻塞队列。\
+> 这里描绘了一个场景，本来有个线程，它是排在条件队列的后面的，但是因为它被中断了，那么它会被唤醒，然后它发现自己不是被 signal 的那个，但是它会自己主动去进入到阻塞队列。
 
 ```java
 static final class Node {
@@ -224,7 +231,8 @@ interruptMode 中断状态：
 - `0` ：说明在 await 期间，没有发生中断
 
 ```java
-public class TestAQS {
+public class AbstractQueuedSynchronizer {
+    
     public final void await() throws InterruptedException {
         // 检查当前线程是不是中断
         if (Thread.interrupted())
@@ -267,7 +275,8 @@ public class TestAQS {
 ##### signal方法
 
 ```java
-public class TestAQS {
+public class AbstractQueuedSynchronizer {
+    
     public final void signal() {
         // 自定义方法，主要用于判断是否获取到监听器对象，如果没有抛出IllegalMonitorStateException
         if (!isHeldExclusively())
@@ -314,19 +323,19 @@ public class TestAQS {
   > 非公平锁会有更好的性能，因为它的吞吐量比较大。当然，非公平锁让获取锁的时间变得更加不确定，可能会导致在阻塞队列中的线程长期处于饥饿状态。
 
 AQS独占锁获取流程简述：
+1. 非公平锁: 获取资源会先直接CAS去获取，没获取到进入acquire模板逻辑，若发现此时状态为0，会再进行一次CAS获取。
+2. 公平锁: 获取资源，会先检查是否有CLH队列存在，直接返回，不进行获取的逻辑。
 
-1. 非公平锁:获取资源会先直接CAS去获取，没获取到进入acquire模板逻辑，若发现此时状态为0，会再进行一次CAS获取。
-2. 公平锁获取资源，会先检查是否有CLH队列存在，直接返回，不进行获取的逻辑。
-3. 以下共同逻辑
+以下共同逻辑
 1. 首先自旋+CAS操作添加当前线程节点到队尾。（包括初始化逻辑）。
 2. 接着判断前驱节点是否为头结点，如果为头结点就尝试一次获取。否则就修改前驱节点的状态为signal待唤醒状态，并挂起线程。
 3. 当有其他线程唤醒时，同样判断前驱是否为头结点，为头节点才获取。获取成功后，修改自身为头结点。脱离双向链表结构。
-6. unlock逻辑：状态减1，当状态为零时，释放共享资源。CAS替换头结点状态为0，从尾到头找第一个状态<0的节点，唤醒线程。
+4. unlock逻辑：状态减1，当状态为零时，释放共享资源。CAS替换头结点状态为0，从尾到头找第一个状态<0的节点，唤醒线程。
 
 #### 非公平锁
 
 ```java
-public class TestAQS {
+public class ReentrantLock {
     final void lock() {
         // 调用时候先CAS获取锁
         if (compareAndSetState(0, 1))
@@ -363,7 +372,7 @@ public class TestAQS {
 #### 公平锁
 
 ```java
-public class TestAQS {
+public class ReentrantLock {
     protected final boolean tryAcquire(int acquires) {
         final Thread current = Thread.currentThread();
         int c = getState();
@@ -391,15 +400,39 @@ public class TestAQS {
 定义：实现了AQS的共享锁，初始化的时候设置了AQS的state的数量。主要方法是await 和 countdown方法
 
 await实际调用AQS的acquireShared模板方法
-
 - 如果state为0，表示数全部被countdown了，不阻塞方法。
 - 数量不为0，新建的Node节点添加CLH队列中，更新前缀节点为-1。
 
 countdown方法：CAS+自旋扣减statue状态。当状态为0时，唤醒await等待的线程。
-
 - countdown使用自旋加CAS更新状态，状态为0时，更新等待队列头结点为0，唤醒头结点后的第一个待唤醒节点。
 - 唤醒后的节点自己设置为头节点，更新状态为0，并依次唤醒后序节点。
 
+countDown demo:
+```java
+public class TestCountdownLatch {
+    static CountDownLatch countDownLatch = new CountDownLatch(2);
+
+    public static void main(String[] args) throws InterruptedException {
+        Runnable runnable = () -> {
+            try {
+                countDownLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName()+ ": countDown complete");
+        };
+
+        new Thread(runnable).start();
+        new Thread(runnable).start();
+
+        TimeUnit.SECONDS.sleep(1);
+        countDownLatch.countDown();
+        countDownLatch.countDown();
+        countDownLatch.await();
+    }
+}
+
+```
 ### CyclicBarrier(可重复使用的栅栏)
 
 内部使用ReentrantLock 非公平锁，每次await时，加锁扣减数量，使用condition的await等待唤醒。CountDownLatch 基于 AQS 的共享模式的使用，而 CyclicBarrier 基于 Condition
@@ -409,13 +442,12 @@ countdown方法：CAS+自旋扣减statue状态。当状态为0时，唤醒await�
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/cyclicBarrier.jpg)
 
 什么时候栅栏会被打破，总结如下：
-
 - 中断，如果某个等待的线程发生了中断，那么会打破栅栏，同时抛出 InterruptedException 异常；
 - 超时，打破栅栏，同时抛出 TimeoutException 异常；
 - 指定执行的操作抛出了异常。
 
 ```java
-public class TestCyclicBarrier {
+public class CyclicBarrier {
     public int await() throws InterruptedException, BrokenBarrierException {
         try {
             return dowait(false, 0L);
@@ -479,10 +511,50 @@ public class TestCyclicBarrier {
                 //              ...
             }
         } finally {
-            //          ...
+            lock.unlock();
         }
     }
 }
+```
+
+CyclicBarrier demo
+```java
+
+public class TestCyclicBarrier {
+
+  private static CyclicBarrier cyclicBarrier = new CyclicBarrier(4, () -> log.info("barrier on going"));
+
+  public static void main(String[] args) throws InterruptedException {
+    Runnable runnable = () -> {
+      String name = Thread.currentThread().getName();
+      try {
+        log.info("{} cyclicBarrier await, parties:{}, waitingNumber:{}", name, cyclicBarrier.getParties(), cyclicBarrier.getNumberWaiting());
+        cyclicBarrier.await();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (BrokenBarrierException e) {
+        e.printStackTrace();
+      }
+      log.info("{} : start to work", name);
+    };
+    
+    workProcess(runnable);
+    TimeUnit.SECONDS.sleep(2);
+    log.info("=============  next loop ===========");
+    cyclicBarrier.reset();
+    workProcess(runnable);
+
+  }
+
+  private static void workProcess(Runnable runnable) throws InterruptedException {
+    for (int i = 0; i < 4; i++) {
+      new Thread(runnable).start();
+      TimeUnit.SECONDS.sleep(1);
+    }
+  }
+}
+
+// output ~
 ```
 
 ### Semaphore
@@ -557,11 +629,17 @@ AtomicInteger 类常用方法
 
 ```text
 public final int get() //获取当前的值
+
 public final int getAndSet(int newValue)//获取当前的值，并设置新的值
+
 public final int getAndIncrement()//获取当前的值，并自增
+
 public final int getAndDecrement() //获取当前的值，并自减
+
 public final int getAndAdd(int delta) //获取当前的值，并加上预期的值
+
 boolean compareAndSet(int expect, int update) //如果输入的数值等于预期值，则以原子方式将该值设置为输入值（update）,添加失败返回false
+
 public final void lazySet(int newValue)//最终设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
 ```
 
@@ -577,11 +655,17 @@ AtomicIntegerArray 类常用方法
 
 ```text
 public final int get(int i) //获取 index=i 位置元素的值
+
 public final int getAndSet(int i, int newValue)//返回 index=i 位置的当前的值，并将其设置为新值：newValue
+
 public final int getAndIncrement(int i)//获取 index=i 位置元素的值，并让该位置的元素自增
+
 public final int getAndDecrement(int i) //获取 index=i 位置元素的值，并让该位置的元素自减
+
 public final int getAndAdd(int i, int delta) //获取 index=i 位置元素的值，并加上预期的值
+
 boolean compareAndSet(int i, int expect, int update) //如果输入的数值等于预期值，则以原子方式将 index=i 位置的元素值设置为输入值（update）
+
 public final void lazySet(int i, int newValue)//最终 将index=i 位置的元素设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
 ```
 
@@ -589,9 +673,9 @@ public final void lazySet(int i, int newValue)//最终 将index=i 位置的元�
 
 引用类型
 
-- AtomicReference：引用类型原子类
-- AtomicMarkableReference：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来，也可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
-- AtomicStampedReference ：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+- `AtomicReference`：引用类型原子类
+- `AtomicMarkableReference`：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来，也可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+- `AtomicStampedReference` ：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
 
 AtomicReference 类使用示例
 
@@ -617,7 +701,7 @@ AtomicStampedReference 类使用示例
 final Integer initialRef = 0, initialStamp = 0;
 final AtomicStampedReference<Integer> asr = new AtomicStampedReference<>(initialRef, initialStamp);
 
-   // compare and set 操作
+ // compare and set 操作
 final Integer newReference = 666, newStamp = 999;
 final boolean casResult = asr.compareAndSet(initialRef, newReference, initialStamp, newStamp);
 ```
@@ -626,9 +710,9 @@ final boolean casResult = asr.compareAndSet(initialRef, newReference, initialSta
 
 如果需要原子更新某个类里的某个字段时，需要用到对象的属性修改类型原子类。
 
-- AtomicIntegerFieldUpdater:原子更新整型字段的更新器
-- AtomicLongFieldUpdater：原子更新长整型字段的更新器
-- AtomicReferenceFieldUpdater：原子更新引用类型里的字段
+- `AtomicIntegerFieldUpdater`:原子更新整型字段的更新器
+- `AtomicLongFieldUpdater`：原子更新长整型字段的更新器
+- `AtomicReferenceFieldUpdater`：原子更新引用类型里的字段
 
 ```text
 AtomicIntegerFieldUpdater<User> a = AtomicIntegerFieldUpdater.newUpdater(User.class, "age");
@@ -639,11 +723,11 @@ System.out.println(a.getAndIncrement(user));// 22
 
 ## 线程安全集合
 
-- ConcurrentHashMap: 线程安全的 HashMap
-- CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.
-- ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
-- BlockingQueue: 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。
-- ConcurrentSkipListMap: 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
+- `ConcurrentHashMap`: 线程安全的 HashMap
+- `CopyOnWriteArrayList`: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.
+- `ConcurrentLinkedQueue`: 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
+- `BlockingQueue`: 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。
+- `ConcurrentSkipListMap`: 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
 
 ### blockingQueue
 
@@ -662,22 +746,20 @@ LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做
 
 #### PriorityBlockingQueue
 
-PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator
-来指定排序规则。
+PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
 
-- PriorityBlockingQueue 并发控制采用的是 ReentrantLock，队列为**无界队列**
+PriorityBlockingQueue 并发控制采用的是 `ReentrantLock`，队列为**无界队列**
 
 #### SynchronousQueue
 
-是一个不存储元素的阻塞队列。每一个 put 操作必须等待一个 take 操作，否则不能继续添加元素。
-> 队列本身并不存储任何元素，非常适合于传递性场景,比如在一个线程中使用的数据，传递给另 外 一 个 线 程 使 用 ， SynchronousQueue 的 吞 吐 量 高 于 LinkedBlockingQueue 和ArrayBlockingQueue。
+`SynchronousQueue` 是一个不存储元素的阻塞队列。每一个 put 操作必须等待一个 take 操作，否则不能继续添加元素。
+> 队列本身并不存储任何元素，非常适合于传递性场景,比如在一个线程中使用的数据，传递给另外一个线程使用 ， SynchronousQueue 的吞吐量高于 LinkedBlockingQueue 和ArrayBlockingQueue。
 
 ### DelayQueue
 
 #### 实现
-
 DelayQueue 延迟队列实现使用数据结构使用PriorityQueue，**线程安全协作**使用的是ReentrantLock 与 Condition 条件队列实现。关键的实现在take方法的
-available.awaitNanos(delay);
+`available.awaitNanos(delay);`
 
 - 队列中的元素必须是Delayed的实现类
 

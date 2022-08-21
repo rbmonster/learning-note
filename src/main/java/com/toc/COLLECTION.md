@@ -215,13 +215,12 @@ private static class Node<E> {
 
 Map 最大大小：static final int MAXIMUM_CAPACITY = 1 << 30;
 ```java
-static class Node<K,V> implements Map.Entry<K,V> {
-    final int hash;
-    final K key;
-    V value;
-    // 用于处理哈希冲突的拉链法解决方案
-    Node<K, V> next;
-}
+  static class Node<K,V> implements Map.Entry<K,V> {
+        final int hash;
+        final K key;
+        V value;
+        // 用于处理哈希冲突的拉链法解决方案
+        Node<K,V> next;
 ```
 
 负载因子：hashMap的负载因子默认为0.75，当hashMap中的元素达到 3/4就进行元素的扩容。
