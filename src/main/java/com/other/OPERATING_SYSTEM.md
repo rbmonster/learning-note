@@ -1233,11 +1233,11 @@ Direct I/O ：
 - 磁盘控制器收到指令后，于是就开始准备数据，会把数据放入到磁盘控制器的内部缓冲区中，然后产生一个中断；
 - CPU 收到中断信号后，停下手头的工作，接着把磁盘控制器的缓冲区的数据一次一个字节地读进自己的寄存器，然后再把寄存器里的数据写入到内存，而在数据传输的期间 CPU 是无法执行其他任务的。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/DMA-before.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/DMA-before.png)
 
 DMA直接内存访问(Direct Memory Access): **在进行 I/O 设备和内存的数据传输的时候，数据搬运的工作全部交给 DMA 控制器，而 CPU 不再参与任何与数据搬运相关的事情，这样 CPU 就可以去处理别的事务。**
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/DMA-working.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/DMA-working.png)
 
 具体过程：
 - 用户进程调用 read 方法，向操作系统发出 I/O 请求，请求读取数据到自己的内存缓冲区中，进程进入阻塞状态；
@@ -1251,7 +1251,7 @@ DMA直接内存访问(Direct Memory Access): **在进行 I/O 设备和内存的�
 
 
 ### 零拷贝
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/file-write-read-origin.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/file-write-read-origin.png)
 
 ```
 read(file, tmp_buf, len);
@@ -1285,7 +1285,7 @@ write(sockfd, buf, len);
 
 `mmap()` 系统调用函数会直接把内核缓冲区里的数据「映射」到用户空间，这样，操作系统内核与用户空间就不需要再进行任何的数据拷贝操作。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/mmp.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/mmp.png)
 
 具体过程如下：
 - 应用进程调用了 `mmap()` 后，DMA 会把磁盘的数据拷贝到内核的缓冲区里。接着，应用进程跟操作系统内核「共享」这个缓冲区；
@@ -1300,12 +1300,12 @@ write(sockfd, buf, len);
 
 `sendfile()`系统调用，可以直接把内核缓冲区里的数据拷贝到 socket 缓冲区里，不再拷贝到用户态，这样就只有 2 次上下文切换，和 3 次数据拷贝
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/send-file-v1.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/send-file-v1.png)
 
 
 网卡支持 SG-DMA(The Scatter-Gather Direct Memory Access)技术(和普通的 DMA 有所不同)，可以进一步减少通过 CPU 把内核缓冲区里的数据拷贝到 socket 缓冲区的过程。
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/send-file-v2.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/operatingsystem/send-file-v2.png)
 
 零拷贝(Zero-copy)技术，因为我们没有在内存层面去拷贝数据，也就是说全程没有通过 CPU 来搬运数据，所有的数据都是通过 DMA 来进行传输的。
 
