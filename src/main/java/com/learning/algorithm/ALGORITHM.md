@@ -413,6 +413,7 @@ public class Solution {
 - [二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
 - [二叉树的层次遍历 II](https://leetcode-cn.com/problems/binary-tree-level-order-traversal-ii/  )
 - [二叉树的锯齿形层次遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
+- [二叉树最大宽度](https://leetcode.cn/problems/maximum-width-of-binary-tree/): 类似堆排序
 
 #### 树的属性
 - [二叉树的所有路径](https://leetcode-cn.com/problems/binary-tree-paths/)
