@@ -12,7 +12,7 @@
 &emsp;&emsp;<a href="#9">1.2. ReentrantLock</a>  
 &emsp;&emsp;&emsp;<a href="#10">1.2.1. 非公平锁</a>  
 &emsp;&emsp;&emsp;<a href="#11">1.2.2. 公平锁</a>  
-&emsp;&emsp;<a href="#12">1.3. countdownLatch</a>  
+&emsp;&emsp;<a href="#12">1.3. CountdownLatch</a>  
 &emsp;&emsp;<a href="#13">1.4. CyclicBarrier(可重复使用的栅栏)</a>  
 &emsp;&emsp;<a href="#14">1.5. Semaphore</a>  
 &emsp;&emsp;<a href="#15">1.6. ReentrantReadWriteLock</a>  
@@ -38,12 +38,13 @@
 
 ### <a name="2">AbstractQueuedSynchronizer AQS 基础类</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器。核心思想是
+AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器。
 
+核心工作流程：
 1. 使用volatile修饰的statue变量表示共享资源的状态。如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程(`Thread exclusiveOwnerThread`)，并且将共享资源设置为锁定状态。
 2. 如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
 3. `CLH(Craig,Landin,and Hagersten)`队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）
-4. 通过自旋+CAS获取共享资源，如果获取失败则调用调用native方法 进入park 状态。
+4. 通过自旋+CAS获取共享资源，如果获取失败则调用调用 `native` 方法 进入 `park` 状态。
 
 ```text
 /** waitStatus value to indicate thread has cancelled */
@@ -155,12 +156,12 @@ public class AbstractQueuedSynchronizer {
 }
 ```
 
-acquireQueued ：CLH节点休眠与被唤醒后的主要处理逻辑
+`acquireQueued` ：CLH节点休眠与被唤醒后的主要处理逻辑
 1. 进入一段自旋
 2. 节点正常添加到队尾后，如果当前节点的前驱为头节点，使用CAS尝试获取。获取成功后设置当前节点为头结点。之前的头节点让GC回收
 3. 获取失败，则进入shouldParkAfterFailedAcquire方法。
 
-shouldParkAfterFailedAcquire方法：
+`shouldParkAfterFailedAcquire` 方法：
 1. 正常的尾节点添加，需要使用CAS先把前驱节点的状态变成signal，通过acquireQueued的自旋，再进入到挂起的状态。
 2. 若前驱节点声明为取消CANCELLED状态，则需要找到非CANCELLED的前驱节点并连接上，取消的节点排除在双链表外。
 
@@ -429,16 +430,16 @@ public class ReentrantLock {
 }
 ```
 
-### <a name="12">countdownLatch</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="12">CountdownLatch</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 定义：实现了AQS的共享锁，初始化的时候设置了AQS的state的数量。主要方法是await 和 countdown方法
 
-await实际调用AQS的acquireShared模板方法
+`await`实际调用AQS的acquireShared模板方法
 - 如果state为0，表示数全部被countdown了，不阻塞方法。
 - 数量不为0，新建的Node节点添加CLH队列中，更新前缀节点为-1。
 
-countdown方法：CAS+自旋扣减statue状态。当状态为0时，唤醒await等待的线程。
-- countdown使用自旋加CAS更新状态，状态为0时，更新等待队列头结点为0，唤醒头结点后的第一个待唤醒节点。
+`countdown()` 方法：CAS+自旋扣减statue状态。当状态为0时，唤醒await等待的线程。
+- countdown 使用自旋加CAS更新状态，状态为0时，更新等待队列头结点为0，唤醒头结点后的第一个待唤醒节点。
 - 唤醒后的节点自己设置为头节点，更新状态为0，并依次唤醒后序节点。
 
 countDown demo:
@@ -655,11 +656,11 @@ public class TestReentrantReadWriteLock {
 
 使用原子的方式更新基本类型
 
-- AtomicInteger：整型原子类
-- AtomicLong：长整型原子类
-- AtomicBoolean ：布尔型原子类
+- `AtomicInteger`：整型原子类
+- `AtomicLong`：长整型原子类
+- `AtomicBoolean` ：布尔型原子类
 
-AtomicInteger 类常用方法
+`AtomicInteger` 类常用方法
 
 ```text
 public final int get() //获取当前的值
@@ -681,11 +682,11 @@ public final void lazySet(int newValue)//最终设置为newValue,使用 lazySet 
 
 数组类型:使用原子的方式更新数组里的某个元素
 
-- AtomicIntegerArray：整型数组原子类
-- AtomicLongArray：长整型数组原子类
-- AtomicReferenceArray ：引用类型数组原子类
+- `AtomicIntegerArray`：整型数组原子类
+- `AtomicLongArray`：长整型数组原子类
+- `AtomicReferenceArray` ：引用类型数组原子类
 
-AtomicIntegerArray 类常用方法
+`AtomicIntegerArray` 类常用方法
 
 ```text
 public final int get(int i) //获取 index=i 位置元素的值
@@ -767,22 +768,21 @@ System.out.println(a.getAndIncrement(user));// 22
 
 #### <a name="25">ArrayBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-ArrayBlockingQueue 是 BlockingQueue 接口的有界队列实现类，底层采用数组来实现。ArrayBlockingQueue
-一旦创建，容量不能改变。其并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。
+`ArrayBlockingQueue` 是 BlockingQueue 接口的有界队列实现类，底层采用数组来实现。`ArrayBlockingQueue` 一旦创建，容量不能改变。其并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。
 
-ArrayBlockingQueue 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
+`ArrayBlockingQueue` 默认情况下不能保证线程访问队列的公平性。因为底层使用一个ReentrantLock，因此可以设置公平锁和非公平锁。
 
 #### <a name="26">LinkedBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做**无界队列也可以当做有界队列**来使用，同样满足 FIFO 的特性。 而 LinkedBlockingQueue
-之所以能够高效的处理并发数据，还因为其对于生产者端和消费者端分别采用了独立的锁来控制数据同步，这也意味着在高并发的情况下生产者和消费者可以并行地操作队列中的数据，以此来提高整个队列的并发性能。
+`LinkedBlockingQueue` 底层基于单向链表实现的阻塞队列，可以当做**无界队列也可以当做有界队列**来使用，同样满足 FIFO 的特性。 而 LinkedBlockingQueue
+> 之所以能够高效的处理并发数据，还因为其对于生产者端和消费者端分别采用了独立的锁来控制数据同步，这也意味着在高并发的情况下生产者和消费者可以并行地操作队列中的数据，以此来提高整个队列的并发性能。\
 > 使用两个ReentrantLock，takeLock和putLock两把锁，分别用于阻塞队列的读写线程，也就是说，读线程和写线程可以同时运行，在多线程高并发场景，应该可以有更高的吞吐量，性能比单锁更高。
 
 #### <a name="27">PriorityBlockingQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-PriorityBlockingQueue是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
+`PriorityBlockingQueue` 是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
 
-PriorityBlockingQueue 并发控制采用的是 `ReentrantLock`，队列为**无界队列**
+`PriorityBlockingQueue` 并发控制采用的是 `ReentrantLock`，队列为**无界队列**
 
 #### <a name="28">SynchronousQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -792,15 +792,11 @@ PriorityBlockingQueue 并发控制采用的是 `ReentrantLock`，队列为**无�
 ### <a name="29">DelayQueue</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 #### <a name="30">实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-DelayQueue 延迟队列实现使用数据结构使用PriorityQueue，**线程安全协作**使用的是ReentrantLock 与 Condition 条件队列实现。关键的实现在take方法的
-`available.awaitNanos(delay);`
+`DelayQueue` 延迟队列实现使用数据结构使用PriorityQueue，**线程安全协作**使用的是ReentrantLock 与 Condition 条件队列实现。关键的实现在take方法的`available.awaitNanos(delay);`
+> 队列中的元素必须是Delayed的实现类\
+> 延迟队列：可应用于缓存失效及定时任务中。
 
-- 队列中的元素必须是Delayed的实现类
-
-> 可应用于缓存失效及定时任务中。
-
-take() 方法源码
-
+`take()` **方法源码**
 ```java
 public class TestDelayQueue {
     public E take() throws InterruptedException {

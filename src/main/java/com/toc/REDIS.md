@@ -103,9 +103,11 @@
 &emsp;&emsp;&emsp;<a href="#100">19.3.2. 第一次同步怎么实现？</a>  
 &emsp;&emsp;&emsp;<a href="#101">19.3.3. 主从正常运行期间的同步</a>  
 &emsp;&emsp;&emsp;<a href="#102">19.3.4.  主从库间网络断开重连同步                                                                                                </a>  
-&emsp;&emsp;<a href="#103">19.4. Redis热点Key</a>  
-&emsp;&emsp;&emsp;<a href="#104">19.4.1. 如何解决热点Key访问过多，超过某一个主机Server的情况？</a>  
-&emsp;&emsp;&emsp;<a href="#105">19.4.2. 定位热点Key</a>  
+&emsp;&emsp;<a href="#103">19.4. 大Key与热Key</a>  
+&emsp;&emsp;&emsp;<a href="#104">19.4.1. 大Key</a>  
+&emsp;&emsp;&emsp;<a href="#105">19.4.2. 热Key</a>  
+&emsp;&emsp;&emsp;<a href="#106">19.4.3. 定位热Key及大Key</a>  
+&emsp;&emsp;&emsp;<a href="#107">19.4.4. 参考资料</a>  
 # <a name="0">Redis 基础</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 缓存基本思想：CPU Cache 缓存的是内存数据用于解决 CPU 处理速度和内存不匹配的问题，内存缓存的是硬盘数据用于解决硬盘访问速度过慢的问题。为了避免用户在请求数据的时候获取速度过于缓慢，所以我们在数据库之上增加了缓存这一层来弥补。
 
@@ -1088,7 +1090,8 @@ Redis Cluster 属于服务端分片的方式。Redis 实例会把自己的哈希
 
 MOVED重定向（**负载均衡，数据已经迁移到其他实例上**）: 在集群模式下，Redis接收任何键相关命令时首先计算键对应的槽，再根据槽找出所对应的节点，如果节点是自身，则处理键命令；否则回复MOVED重定向错误，通知客户端请求正确的节点。
 > **客户端还会更新本地缓存，将该 slot 与 Redis 实例对应关系更新正确。**
-https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/redis-move.jpg
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/redis-move.jpg)
+
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/cluster-move.png)
 
 ```
@@ -1185,8 +1188,8 @@ redis 分布式锁：保证集群之间的资源同步。
 其实删除缓存，而不是更新缓存，就是一个 lazy 计算的思想。类似于redis的key过期处理策略。
 > 解决更新数据库后，可能**缓存删除失败的脏数据情况**，可以使用**双删的策略**，即删缓存-更新数据库-删缓存。该策略仍然可能最后一步删除失败导致脏数据。
 
-数据库和缓存数据强一致场景：
-更新DB的时候同样更新cache，不过需要加一个锁/分布式锁来保证更新cache的时候不存在线程安全问题。另外做锁等待的时候可能出现大批量请求的情况，还需要做好限流来保障我们的服务运行。\
+**数据库和缓存数据强一致场景**：
+更新DB的时候同样更新cache，不过需要加一个锁/分布式锁来保证更新cache的时候不存在线程安全问题。另外做锁等待的时候可能出现大批量请求的情况，还需要做好限流来保障我们的服务运行。
 
 延迟双删： 策略是分布式系统中存储和缓存数据保持一致性的常用策略，但它不是强一致。
 ```
@@ -1627,19 +1630,77 @@ master 只需要把 master_repl_offset与 slave_repl_offset之间的命令同步
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/master-salve-offline.png)
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/redis/master-salve-offline-copy.png)
      
-### <a name="103">Redis热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="103">大Key与热Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="104">大Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+大Key：通常以Key的大小和Key中成员的数量来综合判定，例如：
+- Key本身的**数据量过大**：一个String类型的Key，它的值为5 MB。
+- Key中的**成员数过多**：一个ZSET类型的Key，它的成员数量为10,000个。
+- Key中成员的**数据量过大**：一个Hash类型的Key，它的成员数量虽然只有1,000个但这些成员的Value（值）总大小为100 MB。
+
+**大Key引发问题**：
+- 客户端执行命令的时长变慢。
+- Redis内存达到maxmemory参数定义的上限引发操作阻塞或重要的Key被逐出，甚至引发内存溢出（Out Of Memory）。
+- 集群架构下，分片内存使用不平衡。某个数据分片的内存使用率远超其他数据分片，无法使数据分片的内存资源达到均衡。
+- 对大Key执行读请求，会使Redis实例的带宽使用率被占满，导致自身服务变慢，同时易波及相关的服务。
+- 对大Key执行删除操作，易造成主库较长时间的阻塞，进而可能引发同步中断或主从切换。
+
+**产生原因**：
+- 在不适用的场景下使用Redis，易造成Key的value过大，如使用String类型的Key存放大体积二进制文件型数据；
+- 业务上线前规划设计不足，没有对Key中的成员进行合理的拆分，造成个别Key中的成员数量过多；
+- 未定期清理无效数据，造成如HASH类型Key中的成员持续不断地增加；
+- 使用LIST类型Key的业务消费侧发生代码故障，造成对应Key的成员只增不减。
+
+**优化措施**：
+- 对大Key进行拆分：例如将含有数万成员的一个HASH Key拆分为多个HASH Key，并确保每个Key的成员数量在合理范围。在Redis集群架构中，拆分大Key能对数据分片间的内存平衡起到显著作用。
+- 对大Key进行清理：将不适用Redis能力的数据存至其它存储，并在Redis中删除此类数据。
+- 选用其他的数据结构去支撑，如部分场景下set可替换成布隆过滤器。
+
+
+#### <a name="105">热Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 热点Key：某一件商品被数万次点击、购买时，会形成一个较大的需求量，这种情况下就会产生一个单一的Key，这样就会引起一个热点；同理，当被大量刊发、浏览的热点新闻，热点评论等也会产生热点；另外，在服务端读数据进行访问时，往往会对数据进行分片切分，此类过程中会在某一主机Server上对相应的Key进行访问，当访问超过主机Server极限时，就会导致热点Key问题的产生。
 
-#### <a name="104">如何解决热点Key访问过多，超过某一个主机Server的情况？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-1. 服务端缓存：即将热点数据缓存至服务端的内存中。利用Redis自带的消息通知机制，保证Redis和服务端热点Key的数据一致性
-2. 备份热点Key：即将热点Key+随机数，随机分配至Redis其他节点中。这样访问热点key的时候就不会全部命中到一台机器上了。
-> 使用公式CRC16(key) % 16384来计算Key属于哪个槽
+热Key：通常以其接收到的Key被请求频率来判定，例如：
+- QPS集中在特定的Key：Redis实例的总QPS（每秒查询率）为10,000，而其中一个Key的每秒访问量达到了7,000。
+- 带宽使用率集中在特定的Key：对一个拥有上千个成员且总大小为1 MB的HASH Key每秒发送大量的HGETALL操作请求。
+- CPU使用时间占比集中在特定的Key：对一个拥有数万个成员的Key（ZSET类型）每秒发送大量的ZRANGE操作请求。
 
-#### <a name="105">定位热点Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+**热Key产生原因**：预期外的访问量陡增，如突然出现的爆款商品、访问量暴涨的热点新闻、直播间某主播搞活动带来的大量刷屏点赞、游戏中某区域发生多个工会之间的战斗涉及大量玩家等。
+
+
+优化措施：
+- 在Redis集群架构中对热Key进行复制。即将热点Key+随机数，随机分配至Redis其他节点中。这样访问热点key的时候就不会全部命中到一台机器上了。
+    > 在Redis集群架构中，由于热Key的迁移粒度问题，无法将请求分散至其他数据分片，导致单个数据分片的压力无法下降。此时，可以将对应热Key进行复制并迁移至其他数据分片，例如将热Key foo复制出3个内容完全一样的Key并名为foo2、foo3、foo4，将这三个Key迁移到其他数据分片来解决单个数据分片的热Key压力。
+- 使用读写分离架构
+    > 如果热Key的产生来自于读请求，您可以将实例改造成读写分离架构来降低每个数据分片的读请求压力，甚至可以不断地增加从节点。
+- 服务端缓存：即将热点数据缓存至服务端的内存中。利用Redis自带的消息通知机制，保证Redis和服务端热点Key的数据一致性
+
+
+
+定位热点Key
 1. 凭借经验，进行预估：例如提前知道了某个活动的开启，那么就将此Key作为热点Key
 2. 客户端收集：在操作Redis之前对数据进行统计
 3. 抓包进行评估：Redis使用TCP协议与客户端进行通信，通信协议采用的是RESP，所以能进行拦截包进行解析
 4. 在proxy层，对每一个 redis 请求进行收集上报
 5. Redis自带命令查询：Redis4.0.4版本提供了redis-cli –hotkeys就能找出热点Key
 
-参考资料：[关于Redis热点key的一些思考](http://modouxiansheng.top/2019/07/10/%E4%B8%8D%E5%AD%A6%E6%97%A0%E6%95%B0-%E5%85%B3%E4%BA%8ERedis%E7%83%AD%E7%82%B9key%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83-2019/)
+
+#### <a name="106">定位热Key及大Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+- 实时Top Key统计（推荐）：阿里的云数据库Redis集成了DAS的Key分析功能，可实时展示实例中的大Key和热Key信息，同时支持查看4天内的大Key和热Key历史信息。
+- 通过redis-cli的bigkeys和hotkeys参数查找大Key和热Key
+
+通过RDB文件分析
+- 离线全量Key分析
+- 通过redis-rdb-tools工具以定制化方式找出大Key
+
+手动定位：
+- 通过Redis内置命令对目标Key进行分析：即分别对不同数据类型进行`strlen` 、`llen`等指令判断
+- 通过业务层定位热Key
+
+日志观察：
+- 通过MONITOR命令找出热Key：Redis的MONITOR命令能够忠实地打印Redis中的所有请求，包括时间信息、Client信息、命令以及Key信息。
+
+#### <a name="107">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [发现并处理Redis的大Key和热Key](https://help.aliyun.com/document_detail/353223.html)
+- [关于Redis热点key的一些思考](http://modouxiansheng.top/2019/07/10/%E4%B8%8D%E5%AD%A6%E6%97%A0%E6%95%B0-%E5%85%B3%E4%BA%8ERedis%E7%83%AD%E7%82%B9key%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83-2019/)
