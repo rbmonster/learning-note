@@ -2141,3 +2141,6 @@ class Solution {
 相关问题：
 
 - [找出游戏的获胜者](https://leetcode-cn.com/problems/find-the-winner-of-the-circular-game/)
+
+### 拒绝采样
+-[用 Rand7() 实现 Rand10()](https://leetcode.cn/problems/implement-rand10-using-rand7/)
