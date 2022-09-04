@@ -1,14 +1,53 @@
 package com.test;
 
-import java.util.Arrays;
+import com.learning.basic.java.consumerproducer.singledemo.Consumer;
+
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TestSort {
 
-    public static void main(String[] args) {
-        int[] array = {3, 1, 2, 5, 7, 23, 123, 45, 2, 15, 12};
-        heapsort(array);
-        System.out.println(Arrays.toString(array));
+
+    public static void main(String[] args) throws InterruptedException {
+
+         ReentrantLock lock = new ReentrantLock();
+         Condition condition1 = lock.newCondition();
+         Condition condition2 = lock.newCondition();
+         Condition condition3 = lock.newCondition();
+        new Thread(runnable(lock, condition1, condition2, "A")).start();
+        new Thread(runnable(lock, condition2, condition3, "B")).start();
+        new Thread(runnable(lock, condition3, condition1, "C")).start();
+
+        TimeUnit.SECONDS.sleep(1);
+        lock.lock();
+        condition1.signal();
+        lock.unlock();
+
+        TimeUnit.SECONDS.sleep(10);
+    }
+
+
+    private static Runnable runnable(ReentrantLock lock, Condition waitCondition, Condition signCondition, String msg) {
+        Runnable runnable = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    lock.lock();
+                    waitCondition.await();
+                    System.out.println(msg);
+//                    TimeUnit.MILLISECONDS.sleep(1);
+                    signCondition.signal();
+                }catch (InterruptedException e) {
+                    System.out.println(e);
+                } finally {
+                    lock.unlock();
+                }
+            }
+        };
+        return runnable;
     }
 
     public static void heapsort(int[] nums) {
