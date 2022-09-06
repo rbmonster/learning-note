@@ -200,86 +200,142 @@ class Producer implements Runnable {
 
 ### 基于Synchronize锁对象
 
+
 ```java
+public class SynchronizeObject {
+    
+   static boolean flag = true;
+
+   public static void main(String[] args) throws InterruptedException {
+      Object obj = new Object();
+      ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 20, 10,
+              TimeUnit.SECONDS, new LinkedBlockingQueue<>(10));
+      threadPoolExecutor.execute(new Thread1(obj));
+      threadPoolExecutor.execute(new Thread2(obj));
+      TimeUnit.SECONDS.sleep(3);
+      threadPoolExecutor.shutdown();
+   }
+}
+
 class Thread1 implements Runnable {
 
-    private Object obj;
+   private final Object obj;
 
-    public Thread1(Object obj) {
-        this.obj = obj;
-    }
+   public Thread1(Object obj) {
+      this.obj = obj;
+   }
 
-    @Override
-    public void run() {
+   @Override
+   public void run() {
 
-        try {
-            while (!Thread.interrupted()) {
-                synchronized (obj) {
-                    while (!SynchronizeObject.flag) {
-                        obj.wait();
-                    }
-                    System.out.println(Thread.currentThread() + " this is thread1");
-                    SynchronizeObject.flag = false;
-                    obj.notify();
-                }
+      try {
+         while (!Thread.interrupted()) {
+            synchronized (obj) {
+               while (!SynchronizeObject.flag) {
+                  obj.wait();
+               }
+               System.out.println(Thread.currentThread() + " this is thread1");
+               SynchronizeObject.flag = false;
+               obj.notify();
             }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+         }
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+   }
 }
 
 class Thread2 implements Runnable {
 
-    private Object obj;
+   private final Object obj;
 
-    public Thread2(Object obj) {
-        this.obj = obj;
-    }
+   public Thread2(Object obj) {
+      this.obj = obj;
+   }
 
-    @Override
-    public void run() {
+   @Override
+   public void run() {
 
-        try {
-            while (!Thread.interrupted()) {
-                synchronized (obj) {
-                    while (SynchronizeObject.flag) {
-                        obj.wait();
-                    }
-                    System.out.println(Thread.currentThread() + " this is thread2~~");
-                    SynchronizeObject.flag = true;
-                    obj.notify();
-                }
+      try {
+         while (!Thread.interrupted()) {
+            synchronized (obj) {
+               while (SynchronizeObject.flag) {
+                  obj.wait();
+               }
+               System.out.println(Thread.currentThread() + " this is thread2~~");
+               SynchronizeObject.flag = true;
+               obj.notify();
             }
+         }
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+   }
 }
 ```
 
-### 基于Reentrant Lock
-
-方法1：设立一个flag，防止非公平锁抢锁输出，导致的顺序混乱问题。
-
-方法2： 使用Reentrant Lock 公平锁
+### 公平锁
 
 ```java
-public class Solution extends Thread {
-    ReentrantLock lock = new ReentrantLock(true);
+@Slf4j
+public class CorrectOrderLock {
 
-    public void run() {
+   public static void main(String[] args) throws InterruptedException {
+      ReentrantLock lock = new ReentrantLock(true);
+      new Thread(createRunnable(lock, "A")).start();
+      new Thread(createRunnable(lock, "B")).start();
+      new Thread(createRunnable(lock, "C")).start();
+      TimeUnit.SECONDS.sleep(3);
+   }
 
-        while (!Thread.interrupted()) {
+
+   private static Runnable createRunnable(ReentrantLock lock, String msg) {
+      return () -> {
+         while (!Thread.currentThread().isInterrupted()) {
             try {
-                lock.lock();
-                System.out.println(Thread.currentThread() + " consumer shout !!!!");
+               lock.lock();
+               log.info(msg);
             } finally {
-                lock.unlock();
+               lock.unlock();
             }
-        }
+         }
+      };
+   }
+}
+
+```
+
+### 基于阻塞队列
+
+```java
+public class BlockingQueueOrder {
+
+    public static void main(String[] args) throws InterruptedException {
+        BlockingQueue<Object> queue1 = new LinkedBlockingDeque<>();
+        BlockingQueue<Object> queue2 = new LinkedBlockingDeque<>();
+        BlockingQueue<Object> queue3 = new LinkedBlockingDeque<>();
+        new Thread(createRunnable(queue1, queue2, "A")).start();
+        new Thread(createRunnable(queue2, queue3, "B")).start();
+        new Thread(createRunnable(queue3, queue1, "C")).start();
+
+        queue1.offer(new Object());
+        new CountDownLatch(1).await();
+    }
+
+
+    private static Runnable createRunnable(BlockingQueue<Object> consumerQueue, BlockingQueue<Object> producerQueue, String msg) {
+        return () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    consumerQueue.take();
+                    System.out.println(msg);
+                    producerQueue.offer(new Object());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 }
 ```
@@ -335,8 +391,8 @@ class TestString implements Runnable {
 ```
 
 区别是：
-1. interns常量池有限，存储在hashtable中，数据多了之后，碰撞厉害，而且容易加重full gc负担
-2. Interners内部基于ConcurrentHashMap实现，而且可以设置引用类型，不会加重full gc负担，但有一个问题就是如果gc回收了存储在Interners里面的String，那么pool.intern(lock)
+1. `interns`常量池有限，存储在hashtable中，数据多了之后，碰撞厉害，而且容易加重full gc负担
+2. `Interners`内部基于ConcurrentHashMap实现，而且可以设置引用类型，不会加重full gc负担，但有一个问题就是如果gc回收了存储在Interners里面的String，那么pool.intern(lock)
    可能也会返回不同的引用，总之，还是建议使用Interners，效率和内存使用率更高
 
 ## 类加载中synchronized的应用

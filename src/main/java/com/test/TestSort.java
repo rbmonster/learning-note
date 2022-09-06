@@ -1,10 +1,6 @@
 package com.test;
 
-import com.learning.basic.java.consumerproducer.singledemo.Consumer;
-
 import java.util.LinkedList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -13,16 +9,20 @@ public class TestSort {
 
 
     public static void main(String[] args) throws InterruptedException {
+        ReentrantLock lock = new ReentrantLock();
+        Condition condition1 = lock.newCondition();
+        Condition condition2 = lock.newCondition();
+        Condition condition3 = lock.newCondition();
+        Thread thread = new Thread(runnable(lock, condition1, condition2, "A"));
+        thread.setName("AAA");
+        Thread thread1 = new Thread(runnable(lock, condition2, condition3, "B"));
+        thread1.setName("BBB");
+        Thread thread2 = new Thread(runnable(lock, condition3, condition1, "C"));
+        thread2.setName("CCC");
+        thread.start();
+        thread1.start();
+        thread2.start();
 
-         ReentrantLock lock = new ReentrantLock();
-         Condition condition1 = lock.newCondition();
-         Condition condition2 = lock.newCondition();
-         Condition condition3 = lock.newCondition();
-        new Thread(runnable(lock, condition1, condition2, "A")).start();
-        new Thread(runnable(lock, condition2, condition3, "B")).start();
-        new Thread(runnable(lock, condition3, condition1, "C")).start();
-
-        TimeUnit.SECONDS.sleep(1);
         lock.lock();
         condition1.signal();
         lock.unlock();
@@ -33,18 +33,18 @@ public class TestSort {
 
     private static Runnable runnable(ReentrantLock lock, Condition waitCondition, Condition signCondition, String msg) {
         Runnable runnable = () -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    lock.lock();
+            try {
+                lock.lock();
+                while (!Thread.currentThread().isInterrupted()) {
                     waitCondition.await();
+                    TimeUnit.MILLISECONDS.sleep(50);
                     System.out.println(msg);
-//                    TimeUnit.MILLISECONDS.sleep(1);
                     signCondition.signal();
-                }catch (InterruptedException e) {
-                    System.out.println(e);
-                } finally {
-                    lock.unlock();
                 }
+            } catch (InterruptedException e) {
+                System.out.println("asdfasdf" + e);
+            } finally {
+                lock.unlock();
             }
         };
         return runnable;
@@ -63,7 +63,7 @@ public class TestSort {
 
     private static void adjustHeap(int[] nums, int i, int len) {
         int tmp = nums[i];
-        for (int j = 2 * i+1; j < len; j = j * 2 + 1) {
+        for (int j = 2 * i + 1; j < len; j = j * 2 + 1) {
             if (j + 1 < len && nums[j + 1] > nums[j]) {
                 j = j + 1;
             }

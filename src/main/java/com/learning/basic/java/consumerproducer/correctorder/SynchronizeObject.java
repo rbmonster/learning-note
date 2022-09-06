@@ -28,13 +28,11 @@ public class SynchronizeObject {
         TimeUnit.SECONDS.sleep(3);
         threadPoolExecutor.shutdown();
     }
-
-
 }
 
 class Thread1 implements Runnable {
 
-    private Object obj;
+    private final Object obj;
 
     public Thread1(Object obj) {
         this.obj = obj;
@@ -54,7 +52,6 @@ class Thread1 implements Runnable {
                     obj.notify();
                 }
             }
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -63,7 +60,7 @@ class Thread1 implements Runnable {
 
 class Thread2 implements Runnable {
 
-    private Object obj;
+    private final Object obj;
 
     public Thread2(Object obj) {
         this.obj = obj;
