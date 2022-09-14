@@ -198,7 +198,7 @@ class Producer implements Runnable {
 
 ## 多线程顺序输出
 
-### 基于Synchronize锁对象
+### Synchronize锁对象实现
 
 
 ```java
@@ -275,7 +275,7 @@ class Thread2 implements Runnable {
 }
 ```
 
-### 公平锁
+### 公平锁实现
 
 ```java
 @Slf4j
@@ -306,7 +306,7 @@ public class CorrectOrderLock {
 
 ```
 
-### 基于阻塞队列
+### 阻塞队列实现
 
 ```java
 public class BlockingQueueOrder {
@@ -338,6 +338,56 @@ public class BlockingQueueOrder {
         };
     }
 }
+```
+
+### 条件队列实现
+
+```java
+@Slf4j
+public class ConditionOrder {
+
+    private static final ReentrantLock lock = new ReentrantLock();
+    private static final Condition condition1 = lock.newCondition();
+    private static final Condition condition2 = lock.newCondition();
+    private static final Condition condition3 = lock.newCondition();
+
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread thread1 = new Thread(createRunnable(condition1, condition2, "A"));
+        Thread thread2 = new Thread(createRunnable(condition2, condition3, "B"));
+        Thread thread3 = new Thread(createRunnable(condition3, condition1, "C"));
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+
+        TimeUnit.SECONDS.sleep(1);
+        lock.lock();
+        condition1.signal();
+        lock.unlock();
+        TimeUnit.SECONDS.sleep(3);
+    }
+
+
+    private static Runnable createRunnable(Condition waitCondition, Condition signalCondition, String msg) {
+        return () -> {
+            try {
+                lock.lock();
+                while (!Thread.currentThread().isInterrupted()) {
+                    waitCondition.await();
+                    log.info(msg);
+                    signalCondition.signal();
+                }
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+                log.error("error:", e);
+            } finally {
+                lock.unlock();
+            }
+        };
+    }
+}
+
 ```
 
 ## 使用String常量作为synchronized的锁 优化同步锁

@@ -9,10 +9,10 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class ConditionOrder {
 
-    private static ReentrantLock lock = new ReentrantLock();
-    private static Condition condition1 = lock.newCondition();
-    private static Condition condition2 = lock.newCondition();
-    private static Condition condition3 = lock.newCondition();
+    private static final ReentrantLock lock = new ReentrantLock();
+    private static final Condition condition1 = lock.newCondition();
+    private static final Condition condition2 = lock.newCondition();
+    private static final Condition condition3 = lock.newCondition();
 
 
     public static void main(String[] args) throws InterruptedException {
