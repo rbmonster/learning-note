@@ -59,6 +59,8 @@
 - [领域驱动设计(DDD)](/src/main/java/com/toc/DDD.md)
 
 ### 设计案例
+
+场景设计:
 - [接口设计](/src/main/java/com/toc/INTERFACE_DESIGN.md)
 - [秒杀系统](/src/main/java/com/toc/SECONDS_KILL_DESIGN.md)
 - [短连接](/src/main/java/com/toc/TINYURL.md)
@@ -71,6 +73,7 @@
 - [pvuv设计](/src/main/java/com/toc/PVUV_DESIGN.md)
 - [基于Feed流系统设计](/src/main/java/com/toc/PVUV_DESIGN.md)
 
+拓展设计:
 - [延迟队列](/src/main/java/com/toc/DELAYQUEUE_DESIGN.md)
 - [RPC框架介绍与设计](/src/main/java/com/toc/RPC_DESIGN.md)
 - [JWT、MFA及相关应用](/src/main/java/com/toc/JWT_APPLICATION.md)
