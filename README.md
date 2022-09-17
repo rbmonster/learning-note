@@ -53,7 +53,7 @@
 
 ## 系统设计
 ### 设计思想及概念
-- [设计及架构思想](/src/main/java/com/toc/SYSTEM_DESIGN.md)
+- [设计原则及架构思想](/src/main/java/com/toc/SYSTEM_DESIGN.md)
 - [设计模式](/src/main/java/com/toc/CODEDESIGN_BOOK.md)
 - [分布式基本概念](/src/main/java/com/toc/DISTRIBUTED_SYSTEM.md)
 - [领域驱动设计(DDD)](/src/main/java/com/toc/DDD.md)
