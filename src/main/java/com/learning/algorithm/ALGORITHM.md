@@ -1421,7 +1421,7 @@ public class Soluction {
 - [子集 II](https://leetcode-cn.com/problems/subsets-ii/): review
 - [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)
 
-
+变形：
 - [括号生成（review）](https://leetcode-cn.com/problems/generate-parentheses/) - > 动态规划 + dfs + 回溯 或者 dfs + 回溯
 - [解数独](https://leetcode-cn.com/problems/sudoku-solver/)
 - [单词搜索](https://leetcode-cn.com/problems/word-search/)
@@ -1436,6 +1436,11 @@ public class Soluction {
   排序后树层去重```if(i>0 && nums[i] == nums[i-1] && used[i-1] == false) ```
 - [子集 II](https://leetcode-cn.com/problems/subsets-ii/): 树层去重`if (i != index && nums[i] == nums[i-1])`
 - [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/): 无序元素树层去重`if(used.contains(nums[i]))`
+
+
+### 其他
+- [划分为k个相等的子集](https://leetcode.cn/problems/partition-to-k-equal-sum-subsets/)
+- [剑指 Offer 12. 矩阵中的路径](https://leetcode.cn/problems/ju-zhen-zhong-de-lu-jing-lcof/)
 
 ## 贪心
 
