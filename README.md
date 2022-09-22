@@ -39,7 +39,7 @@
 - [MongoDB](/src/main/java/com/toc/MONGODB.md)
 - [Elasticsearch](/src/main/java/com/toc/ES.md)
 - [ZooKeeper](/src/main/java/com/toc/ZOOKEEPER.md)
-- [消息队列(包含MQ)](/src/main/java/com/toc/MESSAGEQUEUE.md)
+- [消息队列](/src/main/java/com/toc/MESSAGEQUEUE.md)
 - [FastDFS](/src/main/java/com/toc/FASTDFS.md)
 
 ## 算法
@@ -62,7 +62,7 @@
 
 场景设计:
 - [秒杀系统](/src/main/java/com/toc/SECONDS_KILL_DESIGN.md)
-- [短连接](/src/main/java/com/toc/TINYURL.md)
+- [短链接](/src/main/java/com/toc/TINYURL.md)
 - [抢红包](/src/main/java/com/toc/SECONDKILL_REDPACKAGE.md)
 - [扫码登陆](/src/main/java/com/toc/SCAN_LOGIN.md)
 - [会议系统设计](/src/main/java/com/toc/MEETING_DESIGN.md)

@@ -635,3 +635,5 @@ RocketMQ采用了2PC的思想来实现了提交事务消息，同时增加一个
 3. 根据本地事务状态，重新Commit或者Rollback
 
 其中，补偿阶段用于解决消息Commit或者Rollback发生超时或者失败的情况。
+
+# RabbitMQ

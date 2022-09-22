@@ -1439,7 +1439,7 @@ public class Soluction {
 
 
 ### 其他
-- [划分为k个相等的子集](https://leetcode.cn/problems/partition-to-k-equal-sum-subsets/)
+- [划分为k个相等的子集](https://leetcode.cn/problems/partition-to-k-equal-sum-subsets/): review
 - [剑指 Offer 12. 矩阵中的路径](https://leetcode.cn/problems/ju-zhen-zhong-de-lu-jing-lcof/)
 
 ## 贪心
