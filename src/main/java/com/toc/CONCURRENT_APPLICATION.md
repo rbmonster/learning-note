@@ -9,18 +9,20 @@
 &emsp;&emsp;<a href="#6">1.2. 基于ReentrantLock 结合 condition</a>  
 &emsp;&emsp;<a href="#7">1.3. 基于BlockingQueue</a>  
 &emsp;<a href="#8">2. 多线程顺序输出</a>  
-&emsp;&emsp;<a href="#9">2.1. 基于Synchronize锁对象</a>  
-&emsp;&emsp;<a href="#10">2.2. 基于Reentrant Lock</a>  
-&emsp;<a href="#11">3. 使用String常量作为synchronized的锁 优化同步锁</a>  
-&emsp;<a href="#12">4. 类加载中synchronized的应用</a>  
-&emsp;<a href="#13">5. 单订单重复退款请求</a>  
-&emsp;&emsp;<a href="#14">5.1. 分布式锁的处理方案</a>  
-&emsp;<a href="#15">6. 消息批量发送设计</a>  
-&emsp;&emsp;<a href="#16">6.1. 问题场景</a>  
-&emsp;&emsp;<a href="#17">6.2. 解决方法</a>  
-&emsp;&emsp;<a href="#18">6.3. 进阶问题处理</a>  
-&emsp;&emsp;<a href="#19">6.4. 相关类似资料</a>  
-&emsp;<a href="#20">7. future编程</a>  
+&emsp;&emsp;<a href="#9">2.1. Synchronize锁对象实现</a>  
+&emsp;&emsp;<a href="#10">2.2. 公平锁实现</a>  
+&emsp;&emsp;<a href="#11">2.3. 阻塞队列实现</a>  
+&emsp;&emsp;<a href="#12">2.4. 条件队列实现</a>  
+&emsp;<a href="#13">3. 使用String常量作为synchronized的锁 优化同步锁</a>  
+&emsp;<a href="#14">4. 类加载中synchronized的应用</a>  
+&emsp;<a href="#15">5. 单订单重复退款请求</a>  
+&emsp;&emsp;<a href="#16">5.1. 分布式锁的处理方案</a>  
+&emsp;<a href="#17">6. 消息批量发送设计</a>  
+&emsp;&emsp;<a href="#18">6.1. 问题场景</a>  
+&emsp;&emsp;<a href="#19">6.2. 解决方法</a>  
+&emsp;&emsp;<a href="#20">6.3. 进阶问题处理</a>  
+&emsp;&emsp;<a href="#21">6.4. 相关类似资料</a>  
+&emsp;<a href="#22">7. future编程</a>  
 # <a name="0">Java并发应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">生产者与消费者模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -221,93 +223,199 @@ class Producer implements Runnable {
 
 ## <a name="8">多线程顺序输出</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="9">基于Synchronize锁对象</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="9">Synchronize锁对象实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
 
 ```java
+public class SynchronizeObject {
+    
+   static boolean flag = true;
+
+   public static void main(String[] args) throws InterruptedException {
+      Object obj = new Object();
+      ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, 20, 10,
+              TimeUnit.SECONDS, new LinkedBlockingQueue<>(10));
+      threadPoolExecutor.execute(new Thread1(obj));
+      threadPoolExecutor.execute(new Thread2(obj));
+      TimeUnit.SECONDS.sleep(3);
+      threadPoolExecutor.shutdown();
+   }
+}
+
 class Thread1 implements Runnable {
 
-    private Object obj;
+   private final Object obj;
 
-    public Thread1(Object obj) {
-        this.obj = obj;
-    }
+   public Thread1(Object obj) {
+      this.obj = obj;
+   }
 
-    @Override
-    public void run() {
+   @Override
+   public void run() {
 
-        try {
-            while (!Thread.interrupted()) {
-                synchronized (obj) {
-                    while (!SynchronizeObject.flag) {
-                        obj.wait();
-                    }
-                    System.out.println(Thread.currentThread() + " this is thread1");
-                    SynchronizeObject.flag = false;
-                    obj.notify();
-                }
+      try {
+         while (!Thread.interrupted()) {
+            synchronized (obj) {
+               while (!SynchronizeObject.flag) {
+                  obj.wait();
+               }
+               System.out.println(Thread.currentThread() + " this is thread1");
+               SynchronizeObject.flag = false;
+               obj.notify();
             }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+         }
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+   }
 }
 
 class Thread2 implements Runnable {
 
-    private Object obj;
+   private final Object obj;
 
-    public Thread2(Object obj) {
-        this.obj = obj;
+   public Thread2(Object obj) {
+      this.obj = obj;
+   }
+
+   @Override
+   public void run() {
+
+      try {
+         while (!Thread.interrupted()) {
+            synchronized (obj) {
+               while (SynchronizeObject.flag) {
+                  obj.wait();
+               }
+               System.out.println(Thread.currentThread() + " this is thread2~~");
+               SynchronizeObject.flag = true;
+               obj.notify();
+            }
+         }
+
+      } catch (InterruptedException e) {
+         e.printStackTrace();
+      }
+   }
+}
+```
+
+### <a name="10">公平锁实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+```java
+@Slf4j
+public class CorrectOrderLock {
+
+   public static void main(String[] args) throws InterruptedException {
+      ReentrantLock lock = new ReentrantLock(true);
+      new Thread(createRunnable(lock, "A")).start();
+      new Thread(createRunnable(lock, "B")).start();
+      new Thread(createRunnable(lock, "C")).start();
+      TimeUnit.SECONDS.sleep(3);
+   }
+
+
+   private static Runnable createRunnable(ReentrantLock lock, String msg) {
+      return () -> {
+         while (!Thread.currentThread().isInterrupted()) {
+            try {
+               lock.lock();
+               log.info(msg);
+            } finally {
+               lock.unlock();
+            }
+         }
+      };
+   }
+}
+
+```
+
+### <a name="11">阻塞队列实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+```java
+public class BlockingQueueOrder {
+
+    public static void main(String[] args) throws InterruptedException {
+        BlockingQueue<Object> queue1 = new LinkedBlockingDeque<>();
+        BlockingQueue<Object> queue2 = new LinkedBlockingDeque<>();
+        BlockingQueue<Object> queue3 = new LinkedBlockingDeque<>();
+        new Thread(createRunnable(queue1, queue2, "A")).start();
+        new Thread(createRunnable(queue2, queue3, "B")).start();
+        new Thread(createRunnable(queue3, queue1, "C")).start();
+
+        queue1.offer(new Object());
+        new CountDownLatch(1).await();
     }
 
-    @Override
-    public void run() {
 
-        try {
-            while (!Thread.interrupted()) {
-                synchronized (obj) {
-                    while (SynchronizeObject.flag) {
-                        obj.wait();
-                    }
-                    System.out.println(Thread.currentThread() + " this is thread2~~");
-                    SynchronizeObject.flag = true;
-                    obj.notify();
+    private static Runnable createRunnable(BlockingQueue<Object> consumerQueue, BlockingQueue<Object> producerQueue, String msg) {
+        return () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    consumerQueue.take();
+                    System.out.println(msg);
+                    producerQueue.offer(new Object());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        };
     }
 }
 ```
 
-### <a name="10">基于Reentrant Lock</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
-方法1：设立一个flag，防止非公平锁抢锁输出，导致的顺序混乱问题。
-
-方法2： 使用Reentrant Lock 公平锁
+### <a name="12">条件队列实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```java
-public class Solution extends Thread {
-    ReentrantLock lock = new ReentrantLock(true);
+@Slf4j
+public class ConditionOrder {
 
-    public void run() {
+    private static final ReentrantLock lock = new ReentrantLock();
+    private static final Condition condition1 = lock.newCondition();
+    private static final Condition condition2 = lock.newCondition();
+    private static final Condition condition3 = lock.newCondition();
 
-        while (!Thread.interrupted()) {
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread thread1 = new Thread(createRunnable(condition1, condition2, "A"));
+        Thread thread2 = new Thread(createRunnable(condition2, condition3, "B"));
+        Thread thread3 = new Thread(createRunnable(condition3, condition1, "C"));
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+
+        TimeUnit.SECONDS.sleep(1);
+        lock.lock();
+        condition1.signal();
+        lock.unlock();
+        TimeUnit.SECONDS.sleep(3);
+    }
+
+
+    private static Runnable createRunnable(Condition waitCondition, Condition signalCondition, String msg) {
+        return () -> {
             try {
                 lock.lock();
-                System.out.println(Thread.currentThread() + " consumer shout !!!!");
+                while (!Thread.currentThread().isInterrupted()) {
+                    waitCondition.await();
+                    log.info(msg);
+                    signalCondition.signal();
+                }
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+                log.error("error:", e);
             } finally {
                 lock.unlock();
             }
-        }
+        };
     }
 }
+
 ```
 
-## <a name="11">使用String常量作为synchronized的锁 优化同步锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="13">使用String常量作为synchronized的锁 优化同步锁</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 String是final的，每次对它的操作都会产生新的String，这很大程度上是安全性的考虑，但是产生大量的String也是会有一些问题的。
 
@@ -358,11 +466,11 @@ class TestString implements Runnable {
 ```
 
 区别是：
-1. interns常量池有限，存储在hashtable中，数据多了之后，碰撞厉害，而且容易加重full gc负担
-2. Interners内部基于ConcurrentHashMap实现，而且可以设置引用类型，不会加重full gc负担，但有一个问题就是如果gc回收了存储在Interners里面的String，那么pool.intern(lock)
+1. `interns`常量池有限，存储在hashtable中，数据多了之后，碰撞厉害，而且容易加重full gc负担
+2. `Interners`内部基于ConcurrentHashMap实现，而且可以设置引用类型，不会加重full gc负担，但有一个问题就是如果gc回收了存储在Interners里面的String，那么pool.intern(lock)
    可能也会返回不同的引用，总之，还是建议使用Interners，效率和内存使用率更高
 
-## <a name="12">类加载中synchronized的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="14">类加载中synchronized的应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 类加载过程中为了控制并发的情况，使用synchronized控制。而synchronized控制并发主要使用锁对象的方式
 
@@ -427,22 +535,22 @@ public class ClassLoader {
 }
 ```
 
-## <a name="13">单订单重复退款请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="15">单订单重复退款请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 1. synchronize修饰退款方法。
 2. 缩小synchronize锁范围，使用对象锁。对象锁，创建弱引用的一个订单ID对象，放到统一的锁对象资源池中。
     - 清理锁对象可以使用守护线程的方法，基于Unsafe的包操作去清除。
 3. 分布式应用，使用分布式锁来处理。
 
-### <a name="14">分布式锁的处理方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="16">分布式锁的处理方案</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 1. 数据库锁，数据库乐观锁，数据库悲观锁。
 2. redis 锁 或者 ZooKeeper锁
 3. 使用消息队列顺序消费，保证不重复退款
 
-## <a name="15">消息批量发送设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="17">消息批量发送设计</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="16">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">问题场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 某个活动需要对平台的客户进行短信的推销发送，假设对平台的10w用户推送某个活动。推送的用户数据由数据仓库已经推送到表t_user_promotion总共10w条数据。
 
@@ -458,7 +566,7 @@ public class ClassLoader {
 1. 表结构设计
 2. 查询效率问题
 
-### <a name="17">解决方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">解决方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 方法1： 设计一张中间表作为批次表，每100个用户打一个批次。用户表中增加批次id。
 
@@ -489,16 +597,16 @@ public class ClassLoader {
         > sql可能会因为pageIndex+pageNo 导致慢查询，需要使用延迟关联的方式进行sql优化
 2. 加锁不推荐，悲观锁（使用mysql的行锁），乐观锁（使用mysql的version乐观锁）
 
-### <a name="18">进阶问题处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="20">进阶问题处理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 如何解决重复发送问题，短信批量发送的请求更新为中间状态发送中。
 2. 消息模版不一致问题，使用数据分组，相同消息模版的数据统一处理。
 
-### <a name="19">相关类似资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="21">相关类似资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 [批量任务体现多线程的威力！](https://juejin.cn/post/6844903774234869774) \
 [JAVA实现多线程处理批量发送短信、APP推送](https://blog.csdn.net/weixin_30443747/article/details/95104128)
 
-## <a name="20">future编程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="22">future编程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```java
 public class Solution {
