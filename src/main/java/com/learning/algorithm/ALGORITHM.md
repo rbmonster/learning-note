@@ -2149,3 +2149,8 @@ class Solution {
 
 ### 拒绝采样
 -[用 Rand7() 实现 Rand10()](https://leetcode.cn/problems/implement-rand10-using-rand7/)
+
+
+### 字典序
+- [字典序排数](https://leetcode.cn/problems/lexicographical-numbers/)
+- [字典序的第K小数字](https://leetcode.cn/problems/k-th-smallest-in-lexicographical-order/)
