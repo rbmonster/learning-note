@@ -85,6 +85,7 @@
 &emsp;&emsp;<a href="#82">18.3. Kanade 算法</a>  
 &emsp;&emsp;<a href="#83">18.4. 约瑟夫环问题</a>  
 &emsp;&emsp;<a href="#84">18.5. 拒绝采样</a>  
+&emsp;&emsp;<a href="#85">18.6. 字典序</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -2236,3 +2237,8 @@ class Solution {
 
 ### <a name="84">拒绝采样</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 -[用 Rand7() 实现 Rand10()](https://leetcode.cn/problems/implement-rand10-using-rand7/)
+
+
+### <a name="85">字典序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [字典序排数](https://leetcode.cn/problems/lexicographical-numbers/)
+- [字典序的第K小数字](https://leetcode.cn/problems/k-th-smallest-in-lexicographical-order/)
