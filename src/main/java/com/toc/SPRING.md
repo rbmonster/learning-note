@@ -7,7 +7,7 @@
 &emsp;&emsp;&emsp;<a href="#4">1.2.1. 应用场景</a>  
 &emsp;&emsp;&emsp;<a href="#5">1.2.2. aop 相关概念</a>  
 &emsp;&emsp;&emsp;<a href="#6">1.2.3. aop切面的相关方法   </a>  
-&emsp;&emsp;<a href="#7">1.3. Spring AOP 和 AspectJ AOP 有什么区别？</a>  
+&emsp;&emsp;<a href="#7">1.3. 面试问题</a>  
 &emsp;<a href="#8">2. Spring 中的 bean 的作用域有哪些?</a>  
 &emsp;<a href="#9">3. Spring 中的 bean 生命周期</a>  
 &emsp;<a href="#10">4. Spring 循环依赖</a>  
@@ -75,7 +75,7 @@ Spring AOP就是基于动态代理的，如果要代理的对象，实现了某�
 
 #### <a name="6">aop切面的相关方法   </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-```
+```java
 @Aspect
 public class TransactionDemo {
     @Pointcut(value="execution(* com.yangxin.core.service.*.*.*(..))")
@@ -100,11 +100,22 @@ public class TransactionDemo {
 [Spring AOP切点表达式用法总结](https://www.cnblogs.com/zhangxufeng/p/9160869.html)
 
 
-### <a name="7">Spring AOP 和 AspectJ AOP 有什么区别？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="7">面试问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+**Spring AOP 和 AspectJ AOP 有什么区别**？\
 Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
 - 如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，基于字节码的修改实现代理，它比Spring AOP 快很多。
 - @EnableAspectJAutoProxy + @Configuration 用于加载@AspectJ的类。但是在Spring Boot项目中，我们不必显式使用@EnableAspectJAutoProxy。 如果Aspect或Advice位于类路径中，则有一个专用的AopAutoConfiguration启用Spring的AOP支持。
 
+**代理方法可以为private吗**？
+- Jdk动态代理代理类必须要实现接口，并且只能代理接口中的方法，接口默认的封装级别都是public
+- Cglib动态代理本质是基于继承代理类，重写子类方法实现代理，重写子类方法不能为private的。
+
+**Jdk动态代理和Cglib动态代理区别**?\
+Jdk动态代理和Cglib动态代理对比：
+- Jdk动态代理本质是基于反射，Cglib动态代理本质是基于继承代理类，重写子类方法实现代理。
+- Jdk动态代理代理类必须要实现接口，并且只能代理接口中的方法，Cglib动态代理，代理类本身不需要实现任何方法即可实现代理，但是由于实现原理是基于继承代理类实现，所以，代理类以及代理的方法不能用final修饰。
+- Jdk动态代理基于反射实现，在运行期间完成代理工作，Cglib动态代理是通过字节码增强技术，在编译器完成代理，所以，Cglib动态代理的效率要稍高于Jdk动态代理。
 
 ## <a name="8">Spring 中的 bean 的作用域有哪些?</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。
@@ -194,6 +205,7 @@ public interface TransactionStatus{
 1. 使用 TransactionManager 进行编程式事务管理
 2. 使用TransactionTemplate 进行编程式事务管理
 ```java
+public class TestTransactionController {
     private PlatformTransactionManager transactionManager;
 
     private TransactionTemplate transactionTemplate;
@@ -236,9 +248,10 @@ public interface TransactionStatus{
             }
         });
     }
+}
 ```
 ### <a name="16">@Transactional 声明式事务管理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-```java
+```text
 @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = RuntimeException.class, readOnly = false, timeout = -1)
 @GetMapping("/update")
 public String update() {
@@ -360,7 +373,7 @@ spring boot启动过程
 
 ## <a name="26">@RestController vs @Controller</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 @RestController
-```java
+```text
 @Controller
 @ResponseBody
 public @interface RestController { ... }
@@ -446,9 +459,9 @@ public class ExceptionControllerAdvice {
 @ResponseStatusException：通过 ResponseStatus注解简单处理异常的方法（将异常映射为状态码）。
 ```java
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class ResourseNotFoundException2 extends RuntimeException {
+public class ResourceNotFoundException2 extends RuntimeException {
 
-   public ResourseNotFoundException2() {
+   public ResourceNotFoundException2() {
    }
 
    // status ： http status 

@@ -1315,7 +1315,10 @@ BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相�
 - [二进制矩阵中的最短路径](https://leetcode-cn.com/problems/shortest-path-in-binary-matrix/)
 - [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
 - [钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
+
+染色法：
 - [判断二分图](https://leetcode-cn.com/problems/is-graph-bipartite/): 判断方法很特别，通过节点染色
+- [可能的二分法](https://leetcode.cn/problems/possible-bipartition/)
 
 ## <a name="41">递归</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 

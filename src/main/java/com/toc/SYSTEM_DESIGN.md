@@ -17,25 +17,28 @@
 &emsp;<a href="#14">5. 系统架构</a>  
 &emsp;&emsp;<a href="#15">5.1. 单体</a>  
 &emsp;&emsp;<a href="#16">5.2. 分布式系统</a>  
-&emsp;&emsp;&emsp;<a href="#17">5.2.1. 常用技术</a>  
-&emsp;&emsp;<a href="#18">5.3. SOA</a>  
-&emsp;&emsp;<a href="#19">5.4. 微服务</a>  
-&emsp;&emsp;&emsp;<a href="#20">5.4.1. 拆分原则</a>  
-&emsp;&emsp;&emsp;<a href="#21">5.4.2. DDD 领域驱动</a>  
-&emsp;<a href="#22">6. 相关资料</a>  
-<a href="#23">微服务</a>  
-&emsp;<a href="#24">1. 基本概念</a>  
-&emsp;&emsp;<a href="#25">1.1. 负载均衡</a>  
-&emsp;&emsp;<a href="#26">1.2. 缓存</a>  
-&emsp;&emsp;<a href="#27">1.3. 分片/数据分区</a>  
-&emsp;&emsp;<a href="#28">1.4. 代理</a>  
-&emsp;&emsp;<a href="#29">1.5. 冗余</a>  
-&emsp;<a href="#30">2. 限流</a>  
-&emsp;&emsp;<a href="#31">2.1. 限流算法</a>  
-&emsp;&emsp;<a href="#32">2.2. 分布式限流</a>  
-&emsp;&emsp;<a href="#33">2.3. 实际应用</a>  
-&emsp;<a href="#34">3. 熔断</a>  
-&emsp;<a href="#35">4. 监控 </a>  
+&emsp;&emsp;<a href="#17">5.3. SOA</a>  
+&emsp;&emsp;<a href="#18">5.4. 微服务</a>  
+&emsp;&emsp;&emsp;<a href="#19">5.4.1. 拆分原则</a>  
+&emsp;&emsp;&emsp;<a href="#20">5.4.2. DDD 领域驱动</a>  
+&emsp;<a href="#21">6. 相关资料</a>  
+<a href="#22">微服务</a>  
+&emsp;<a href="#23">1. 常用技术</a>  
+&emsp;<a href="#24">2. 基本概念</a>  
+&emsp;&emsp;<a href="#25">2.1. 负载均衡</a>  
+&emsp;&emsp;<a href="#26">2.2. 缓存</a>  
+&emsp;&emsp;<a href="#27">2.3. 分片/数据分区</a>  
+&emsp;&emsp;<a href="#28">2.4. 代理</a>  
+&emsp;&emsp;<a href="#29">2.5. 冗余</a>  
+&emsp;&emsp;<a href="#30">2.6. 服务治理</a>  
+&emsp;&emsp;<a href="#31">2.7. 流量调度</a>  
+&emsp;<a href="#32">3. 限流</a>  
+&emsp;&emsp;<a href="#33">3.1. 限流算法</a>  
+&emsp;&emsp;<a href="#34">3.2. 分布式限流</a>  
+&emsp;&emsp;<a href="#35">3.3. 实际应用</a>  
+&emsp;<a href="#36">4. 熔断</a>  
+&emsp;<a href="#37">5. 监控 </a>  
+&emsp;&emsp;<a href="#38">5.1. 系统可用性测量</a>  
 # <a name="0">设计原则及架构思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">编程思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -70,7 +73,7 @@ OOP=对象+类+继承+多态+消息，其中核心概念是类和对象。
 
 ### <a name="4">函数式编程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 函数式编程类似于面向过程的程序设计，但其思想更接近数学计算。允许把函数本身作为参数传入另一个函数，还允许返回一个函数。是一种抽象程度很高的编程范式，纯粹的函数式编程语言编写的函数没有变量。
-> 面向过程编程体现的是解决方法的步骤，而函数式编程体现的是**数据集的映射**。
+> 面向过程编程体现的是解决方法的步骤，而函数式编程体现的是**数据集的映射**
 
 函数式编程关心**数据的映射**，命令式编程关心解决问题的步骤
 
@@ -180,7 +183,7 @@ BFF 解决了什么问题？\
 - [Pattern: Backends For Frontends](https://samnewman.io/patterns/architectural/bff/)
 ## <a name="14">系统架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/distribution-sys.png)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/distribution-sys.png)
 
 ### <a name="15">单体</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
@@ -191,9 +194,11 @@ BFF 解决了什么问题？\
 
 ### <a name="16">分布式系统</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-布式系统（Distributed system）如何进行计算。分布式系统是一组电脑，透过网络相互连接传递消息与通信后并协调它们的行为而形成的系统。组件之间彼此进行交互以实现一个共同的目标。把需要进行大量计算的工程数据分割成小块，由多台计算机分别计算，再上传运算结果后，将结果统一合并得出数据结论的科学。分布式系统的例子来自有所不同的面向服务的架构，大型多人在线游戏，对等网络应用。
+分布式系统（Distributed system）如何进行计算。分布式系统是一组电脑，透过网络相互连接传递消息与通信后并协调它们的行为而形成的系统。组件之间彼此进行交互以实现一个共同的目标。把需要进行大量计算的工程数据分割成小块，由多台计算机分别计算，再上传运算结果后，将结果统一合并得出数据结论的科学。分布式系统的例子来自有所不同的面向服务的架构，大型多人在线游戏，对等网络应用。
 
-
+构建分布式系统的目的主要是以下两件事情：
+1. **大流量处理**。通过集群技术把大规模并发请求的负载分散到不同的机器上。
+2. **关键业务保护**。提高后台服务的可用性，把故障隔离阻止雪崩效应。如果流量过大，需要对业务降级，以保护关键业务流转。
 
 分布式系统存在的问题：
 1. 异构系统不标准问题。主要体现在通信协议不标准、数据格式不标准、运维跟开发方式不标准(比如服务发布打包使用自定的流程进行)
@@ -201,19 +206,7 @@ BFF 解决了什么问题？\
 3. 故障发生的概率更大。虽然服务相互隔离，但是机器多，系统架构复杂，出故障频率也会增大。
 4. 多层架构的系统复杂度更大。通常系统可以分为四层：基础层(机器、网络和存储设备等)、平台层(即中间件层如Mysql、kafka、redis等软件)、应用层(即我们部署的应用服务)、接入层(网关、负载均衡、CDN、DNS等)
 
-
-
-#### <a name="17">常用技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
-TODO 分布式系统技术栈
-
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ds-1.png)
-
-![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ds-2.png)
-
-
-
-### <a name="18">SOA</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="17">SOA</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 SOA 架构（Service-Oriented Architecture）: 面向服务的架构是一次具体地、系统性地成功解决分布式服务主要问题的架构模式。
 
@@ -222,7 +215,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 通过ESB 通信的时候，明确了采用 SOAP 作为远程调用的协议，依靠 SOAP 协议族（WSDL、UDDI 和一大票 WS-*协议）来完成服务的发布、发现和治理。
 
 
-### <a name="19">微服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="18">微服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **微服务是一种通过多个小型服务组合来构建单个应用的架构风格，这些服务围绕业务能力而非特定的技术标准来构建。各个服务可以采用不同的编程语言，不同的数据存储技术，运行在不同的进程之中。服务采取轻量级的通信机制和自动化的部署机制实现通信与运维。**
 
 **微服务的九个核心的业务与技术特征**:
@@ -238,21 +231,21 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 
 
 
-#### <a name="20">拆分原则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="19">拆分原则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 垂直划分优先原则：应该根据业务领域对服务进行垂直划分，让团队能关注业务实现。
 
 持续演进原则： 服务数量在非必要的情况下，应该逐步划分，持续演进，避免服务数量的爆炸性增长
 
 
-#### <a name="21">DDD 领域驱动</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="20">DDD 领域驱动</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 详细见
 [DDD设计思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DDD.md)
 
-## <a name="22">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="21">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [微服务拆分方法论](https://blog.csdn.net/no_game_no_life_/article/details/103390169)
 
 
-# <a name="23">微服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="22">微服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 **主要特点**
 
@@ -277,6 +270,26 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 **可服务性/可管理性**
 - 系统易于操作和维护。
 - 一个系统被修理或维护的复杂度和花费的时间成本。
+
+
+
+## <a name="23">常用技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+微服务提高系统性能常用技术：
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/ds-1.png)
+
+
+微服务提高架构稳定性常用技术：
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/ds-2.png)
+
+- 服务拆分：一是为了隔离故障。而是为了服务模块。但是会有服务调用间依赖问题。
+- 服务冗余：是为了去除单点故障，并可以支持服务的弹性伸缩，以及故障转移。但是如果一些有状态的服务，冗余有状态的服务会带来更高的复杂度。
+- 限流降级：系统实在扛不住压力时，只能通过限流或者功能降级的方式来停掉一部分服务，或是拒绝一部分用户，以确保整个架构不会挂掉。
+- 高可用架构：避免单点故障。如多租户隔离、灾备多活、或是数据可以在其中复制保持一致性的集群。
+- 高可用运维：CICD、自动化测试、灰度发布，线上系统自动化控制。
+
 
 
 ## <a name="24">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -346,7 +359,50 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
   - 无状态：无需特殊条件或知识就可以增加新的服务器。
   - 没有单点故障。
 
-## <a name="30">限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">服务治理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+服务治理关键技术：
+- 服务关键程度
+- 服务依赖关系
+- 服务发现
+- 整个架构的版本管理
+- 服务应用生命周期全管理
+
+服务依赖关系: 微服务是服务依赖最优解的上限，而**服务依赖的下限是千万不要有依赖环**。
+> 如果系统架构中有服务依赖环，表明架构的设计是错误的。循环依赖有很多副作用，最大的问题是极强的耦合，会导致服务部署复杂，而且导致无穷尽的递归故障。\
+> 解决服务依赖环的方案一般是，依赖倒置的设计模式。而在分布式架构上，可以使用一个**三方服务如消息中间件**，或者**将其中的依赖关系抽到一个三方服务**中，由三方服务来提供依赖的服务。
+
+服务状态与生命周期：常见如K8s中的节点状态有Run(健康运行)、Ready(启动成功)、Update(升级)、Rollback（回滚）、Failed（失败状态）、Destroy(销毁中)、Scale(伸缩中)
+
+整个架构的版本管理：各个服务的版本兼容，如A服务1.2版本只能和B服务的2.2版本一起工作，这就是版本兼容问题。
+
+服务治理还包括如下：
+
+**服务状态的维持和拟合**：
+- 服务状态维持：健康实例变少，启动新的实例，摘除问题实例。
+- 服务状态拟合：发布新版本、回滚服务、伸缩服务。现有的集群从现有状态迁移到另一个新的状态。
+
+**服务弹性伸缩和故障迁移**
+
+### <a name="31">流量调度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+流量调度系统的主要功能：
+1. 根据系统运行的情况，自动地进行流量调度，在无需人工干预的情况，提升整个系统的稳定性
+2. 让系统应对灾害或其他突发事件时，在弹性计算扩缩容的较长时间窗口或底层资源消耗殆尽的情况下，保护系统平稳运行。
+
+
+流量调度系统还可以完成如下事情：
+- **服务流控**。服务路由、服务降级、服务熔断、服务保护。
+- **流量控制**。负载均衡、流量分配、流量控制、异地灾备。
+- **流量管理**。协议转换、请求校验、数据缓存、数据计算等。
+
+流量调度的关键技术，即API Gateway的关键技术：
+1. 高性能
+2. 抗流量。
+3. 业务逻辑。可以拥有简单业务逻辑。
+4. 服务化。
+
+## <a name="32">限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 流量统计指标：
 - 每秒事务数（Transactions per Second，TPS）：TPS 是衡量信息系统吞吐量的最终标准。
@@ -359,7 +415,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 > 目前，主流系统大多倾向使用 HPS 作为首选的限流指标，它是相对容易观察统计的，而且能够在一定程度上反应系统当前以及接下来一段时间的压力。但**限流指标并不存在任何必须遵循的权威法则**，**根据系统的实际需要**，哪怕完全不选择基于调用计数的指标都是有可能的。譬如下载、视频、直播等 I/O 密集型系统，往往会把每次请求和响应报文的大小，而不是调用次数作为限流指标，譬如只允许单位时间通过 100MB 的流量。又譬如网络游戏等基于长连接的应用，可能会把登陆用户数作为限流指标，热门的网游往往超过一定用户数就会让你在登陆前排队等候。
 
 
-### <a name="31">限流算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">限流算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 流量计数器模式：设置一个计算器，根据当前时刻的流量计数结果是否超过阈值来决定是否限流，如控制任何一秒内，发现超过 80 次业务请求就直接拒绝掉超额部分。
 > 缺陷：可能存在两个时间间隔总流量大于限制请求数情况，如前半秒+后半秒的时间区间大于限制数。以及超时误杀。(详细见周老师凤凰架构)
@@ -373,7 +429,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 
 TODO
 
-### <a name="32">分布式限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">分布式限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 微服务架构下，上述的限流算法就最多只能应用于集群最入口处的网关上，对整个服务集群进行流量控制，而无法细粒度地管理流量在内部微服务节点中的流转情况。所以，我们把前面介绍的限流模式都统称为单机限流，把能够精细控制分布式集群中每个服务消耗量的限流算法称为分布式限流。
 
@@ -382,7 +438,7 @@ TODO
 在可以共享统计数据的前提下，原本用于单机的限流模式理论上也是可以应用于分布式环境中的，可是其代价也显而易见：每次服务调用都必须要额外增加一次网络开销，所以这种方法的效率肯定是不高的，流量压力大时，限流本身反倒会显著降低系统的处理能力。
 
 
-### <a name="33">实际应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">实际应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```properties
 zuul.ratelimit.add-response-headers = false
@@ -409,13 +465,34 @@ zuul.ratelimit.repository = REDIS
 zuul.ratelimit.verify-path = /api/v1/user/v-code/captcha/verify
 ```
 
-## <a name="34">熔断</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="36">熔断</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 
+## <a name="37">监控 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-## <a name="35">监控 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-// TODO 全栈监控 
+全栈监控
+- **基础层**：监控主机和底层资源。比如：CPU、内存、网络吞吐、硬盘I/O、硬盘使用等。
+- **中间层**：中间件层的监控。比如：Nginx、Redis、RabbitMQ、Kafka、MySQL、Tomcat等。
+- **应用层**：监控应用层的使用。比如：HTTP访问的吞吐量、相应时间、返回码，调用链路分析，性能瓶颈，还包括用户端的监控。
+> 监控还需要进行标准化：日志结构标准化、监控数据格式标准化、统一的监控平台、统一的日志分析
 
-SLA 
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/system-monitor.png)
+
+监控系统：
+1. 关注于**整体应用的SLA**(Service-Level Agreement)。主要从用户服务的API来监控整个系统。
+2. **关联指标聚合**。把有关联的系统及其指标聚合展示。最重要的是把服务和相关的中间件和主机关联在一起，如Docker、JVM、Tomcat。
+3. **快速故障定位**。用户请求trace监控，监控分布式系统中的调用链路。
+
+如何快速定位故障？
+把服务运行的机器节点上的数据(如CPU、memory、I/O、disk、network)关联起来，这样可以知道服务和基础层资源的关系。
+> 机器因为CPU或I/O过高，马上知道影响对外服务的API，快速判断是否进行弹性伸缩。\
+> 服务相应过慢，快速定位是否在进行Java GC、或者计算节点资源不足、依赖服务有问题。\
+> 慢SQL，快速定位对外影响的API，快速决策是否做流量限制或者是降级操作。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/system-monitor-1.png)
+
+
+### <a name="38">系统可用性测量</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
 
 MTTA

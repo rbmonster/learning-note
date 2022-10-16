@@ -89,15 +89,16 @@
 &emsp;&emsp;<a href="#86">10.2. GC 调优目的</a>  
 &emsp;&emsp;<a href="#87">10.3. GC 调优策略</a>  
 &emsp;&emsp;<a href="#88">10.4. 调优指标</a>  
-&emsp;&emsp;<a href="#89">10.5. 问题排查思路</a>  
-&emsp;&emsp;<a href="#90">10.6. 案例</a>  
-&emsp;&emsp;&emsp;<a href="#91">10.6.1. 美团技术案例(基于CMS JDK1.8)</a>  
-&emsp;&emsp;&emsp;<a href="#92">10.6.2. 不恰当的数据结构导致内存过大</a>  
-&emsp;&emsp;&emsp;<a href="#93">10.6.3. 堆外内存导致溢出错误</a>  
-&emsp;&emsp;&emsp;<a href="#94">10.6.4. 异步系统Socket连接</a>  
-&emsp;&emsp;&emsp;<a href="#95">10.6.5. Evosuite 自动生成单元测试</a>  
-&emsp;&emsp;&emsp;<a href="#96">10.6.6. 参考资料</a>  
-&emsp;&emsp;&emsp;<a href="#97">10.6.7. 其他建议</a>  
+&emsp;&emsp;<a href="#89">10.5. 调优的时机</a>  
+&emsp;&emsp;<a href="#90">10.6. 问题排查思路</a>  
+&emsp;&emsp;<a href="#91">10.7. 案例</a>  
+&emsp;&emsp;&emsp;<a href="#92">10.7.1. 美团技术案例(基于CMS JDK1.8)</a>  
+&emsp;&emsp;&emsp;<a href="#93">10.7.2. 不恰当的数据结构导致内存过大</a>  
+&emsp;&emsp;&emsp;<a href="#94">10.7.3. 堆外内存导致溢出错误</a>  
+&emsp;&emsp;&emsp;<a href="#95">10.7.4. 异步系统Socket连接</a>  
+&emsp;&emsp;&emsp;<a href="#96">10.7.5. Evosuite 自动生成单元测试</a>  
+&emsp;&emsp;&emsp;<a href="#97">10.7.6. 参考资料</a>  
+&emsp;&emsp;&emsp;<a href="#98">10.7.7. 其他建议</a>  
 # <a name="0">JVM </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 大部分参考周志明【深入理解Java虚拟机】
 - 附上官网文档搭配食用 [java8官网文档](https://docs.oracle.com/javase/specs/jvms/se8/html/index.html)
@@ -1425,7 +1426,9 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 
 
 ### <a name="86">GC 调优目的</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-将转移到老年代的对象数量降低到最小； 减少 GC 的执行时间。
+将转移到老年代的对象数量降低到最小
+
+减少 GC 的执行时间。
 
 ### <a name="87">GC 调优策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **策略 1**：将新对象预留在新生代，由于 Full GC 的成本远高于 Minor GC，因此尽可能将对象分配在新生代是明智的做法，实际项目中根据 GC 日志分析新生代空间大小分配是否合理，适当通过“-Xmn”命令调节新生代大小，最大限度降低新对象直接进入老年代的情况。
@@ -1443,17 +1446,36 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 
 ### <a name="88">调优指标</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 延迟(Latency)：也可以理解为最大停顿时间，即垃圾收集过程中一次 STW 的最长时间，越短越好，一定程度上可以接受频次的增大，GC 技术的主要发展方向。
-
 - 吞吐量(Throughput)：应用系统的生命周期内，由于 GC 线程会占用 Mutator 当前可用的 CPU 时钟周期，吞吐量即为 Mutator 有效花费的时间占系统总运行时间的百分比，例如系统运行了 100 min，GC 耗时 1 min，则系统吞吐量为 99%，吞吐量优先的收集器可以接受较长的停顿。
+- 内存占用：java堆区所占的内存大小；
 
-### <a name="89">问题排查思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+主要抓住两点:
+- 吞吐量: 吞吐量优先，意味着在单位时间内，STW的时间最短
+- 延迟(暂停时间): 暂停时间优先，意味这尽可能让单次STW的时间最短
+
+### <a name="89">调优的时机</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+虚拟机书籍提供的建议，如果满足下面的指标，则一般不需要进行 GC 优化：
+- MinorGC 执行时间不到50ms； Minor GC 执行不频繁，约10秒一次； 
+- Full GC 执行时间不到1s； Full GC 执行频率不算频繁，不低于10分钟1次。
+
+
+不得不考虑进行JVM调优的是那些情况呢？
+1. Heap内存（老年代）持续上涨达到设置的最大内存值，正常超过75%以上还未进行回收的情况；
+2. Full GC 次数频繁；
+3. GC 停顿时间过长（超过1秒）；
+4. 应用出现OutOfMemory 等内存异常；
+5. 应用中有使用本地缓存且占用大量内存空间；
+6. 系统吞吐量与响应性能不高或下降。
+
+### <a name="90">问题排查思路</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 四种分析思路
 
 - **时序分析**：先发生的事件是根因的概率更大，通过监控手段分析各个指标的异常时间点，还原事件时间线，如先观察到 CPU 负载高(要有足够的时间 Gap)，那么整个问题影响链就可能是：
 > CPU 负载高 -> 慢查询增多 -> GC 耗时增大 -> 线程Block增多 -> RT 上涨。
 
 - **概率分析**：使用统计概率学，结合历史问题的经验进行推断，由近到远按类型分析，如过往慢查的问题比较多，那么整个问题影响链就可能是：
-> 慢查询增多 -> GC 耗时增大 ->  CPU 负载高   -> 线程 Block 增多 -> RT上涨。
+> 慢查询增多 -> GC 耗时增大 ->  CPU 负载高  -> 线程 Block 增多 -> RT上涨。
 
 - **实验分析**：通过故障演练等方式对问题现场进行模拟，触发其中部分条件(一个或多个)，观察是否会发生问题，如只触发线程 Block 就会发生问题，那么整个问题影响链就可能是：
 > 线程Block增多  -> CPU 负载高  -> 慢查询增多  -> GC 耗时增大 ->  RT 上涨。
@@ -1461,8 +1483,8 @@ Mutator：生产垃圾的角色，也就是我们的应用程序，垃圾制造�
 - **反证分析**：对其中某一表象进行反证分析，即判断表象的发不发生跟结果是否有相关性，例如我们从整个集群的角度观察到某些节点慢查和 CPU 都正常，但也出了问题，那么整个问题影响链就可能是：
 > GC 耗时增大 -> 线程 Block 增多 ->  RT 上涨。
 
-### <a name="90">案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-#### <a name="91">美团技术案例(基于CMS JDK1.8)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="91">案例</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="92">美团技术案例(基于CMS JDK1.8)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/gcProcess.jpg)
 
@@ -1610,17 +1632,17 @@ JVM 的堆外内存泄漏，主要有两种的原因：
 
 > 太抽象了
 
-#### <a name="92">不恰当的数据结构导致内存过大</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="93">不恰当的数据结构导致内存过大</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 场景：-Xms4g -Xmx8g -Xmn1g 使用ParNew + CMS组合。业务上需要10min加载80MB的数据到内存，会产生100W HashMap entry， Minor GC超过500ms，因为新生代使用了标记复制算法\
 
 方案：不从修改程序，仅从GC调优，可以直接去掉SurvivorRatio，让新生代存活的对象一次Minor GC就进入到老年代` -XX:SurvivorRatio=65536 -XX:MaxTenuringThreshold=0`(或者-XX:+AlwaysTenure)
-#### <a name="93">堆外内存导致溢出错误</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="94">堆外内存导致溢出错误</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 NIO使用直接内存复制，而虚拟机中最大最小内存直接设值成系统内存大小了
 
-#### <a name="94">异步系统Socket连接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="95">异步系统Socket连接</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 Socket 使用BIO连接异步处理，导致了系统连接数过多，进而虚拟机崩溃
 
-#### <a name="95">Evosuite 自动生成单元测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="96">Evosuite 自动生成单元测试</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 表现：maven build时候单元测试需要一个多小时。
 
 排查：
@@ -1641,12 +1663,12 @@ YGC出现大量复制工作，很耗费时间。每次分配的空间过大，�
 
 解决处理：死循环线程、修改自动生成的test分配合理内存。
 
-#### <a name="96">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="97">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [JSP引起的老年代不回收场景](https://blog.csdn.net/u012948161/article/details/102983795?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
 - [native memory](http://mahaijin.github.io/2015/04/27/JVM%E7%9A%84Heap%20Memory%E5%92%8CNative%20Memory/)
 - [美团：Java中9种常见的CMS GC问题分析与解决](https://mp.weixin.qq.com/s/RFwXYdzeRkTG5uaebVoLQw)
 
-#### <a name="97">其他建议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="98">其他建议</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 1. 禁用偏向锁：偏向锁在只有一个线程使用到该锁的时候效率很高，但是在竞争激烈情况会升级成轻量级锁，此时就需要先消除偏向锁，这个过程是 STW 的。
     > 在已知并发激烈的前提下，一般会禁用偏向锁 -XX:-UseBiasedLocking 来提高性能。
 2. 主动式 GC： 观测 Old 区的使用情况，即将到达阈值时将应用服务摘掉流量，手动触发一次 Major GC。必要时引入，会影响系统健壮性。
