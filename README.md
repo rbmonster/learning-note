@@ -119,6 +119,7 @@
 
 | 地址 | 简介 |
 | --- | --- |
+| [🌟OI-wiki](https://oi-wiki.org/basic/) | OI-wiki 算法体系化宝典(强力推荐)|
 | [fucking-algorithm](https://github.com/labuladong/fucking-algorithm) | labuladong刷算法套路，提供算法题的工具方法思想 |
 | [leetcode-master](https://github.com/youngyangyang04/leetcode-master) | 代码随想录LeetCode 刷题攻略：配思维导图 |
 | [LogicStack-LeetCode](https://github.com/SharingSource/LogicStack-LeetCode) | 「宫水三叶的刷题日记」刷穿 LeetCode 系列文章源码 |
