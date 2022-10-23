@@ -2095,6 +2095,28 @@ private static boolean isPowerOfTwo(int n) {
 
 - [寻找数组的中心下标](https://leetcode-cn.com/problems/find-pivot-index/)
 
+### 素数
+
+如何确定一个数是素数
+```java
+
+public class Solution {
+
+    public static boolean isPrime(int n) {
+        if (n < 0) {
+            return false;
+        }
+        int k = (int) Math.sqrt(n);
+        for (int i = 2; i <= k; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
 ### 求余数常见操作
 
 ```java
