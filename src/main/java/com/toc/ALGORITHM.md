@@ -81,11 +81,12 @@
 &emsp;<a href="#78">17. KMP</a>  
 &emsp;<a href="#79">18. 其他</a>  
 &emsp;&emsp;<a href="#80">18.1. 前缀和</a>  
-&emsp;&emsp;<a href="#81">18.2. 求余数常见操作</a>  
-&emsp;&emsp;<a href="#82">18.3. Kanade 算法</a>  
-&emsp;&emsp;<a href="#83">18.4. 约瑟夫环问题</a>  
-&emsp;&emsp;<a href="#84">18.5. 拒绝采样</a>  
-&emsp;&emsp;<a href="#85">18.6. 字典序</a>  
+&emsp;&emsp;<a href="#81">18.2. 素数</a>  
+&emsp;&emsp;<a href="#82">18.3. 求余数常见操作</a>  
+&emsp;&emsp;<a href="#83">18.4. Kanade 算法</a>  
+&emsp;&emsp;<a href="#84">18.5. 约瑟夫环问题</a>  
+&emsp;&emsp;<a href="#85">18.6. 拒绝采样</a>  
+&emsp;&emsp;<a href="#86">18.7. 字典序</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -2183,7 +2184,29 @@ private static boolean isPowerOfTwo(int n) {
 
 - [寻找数组的中心下标](https://leetcode-cn.com/problems/find-pivot-index/)
 
-### <a name="81">求余数常见操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="81">素数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+如何确定一个数是素数
+```java
+
+public class Solution {
+
+    public static boolean isPrime(int n) {
+        if (n < 0) {
+            return false;
+        }
+        int k = (int) Math.sqrt(n);
+        for (int i = 2; i <= k; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+### <a name="82">求余数常见操作</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```java
 public class Solution {
@@ -2202,7 +2225,7 @@ public class Solution {
 }
 ```
 
-### <a name="82">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="83">Kanade 算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 对于一个给定数组 A，Kadane 算法可以用来找到 A 的最大子段和。
 
@@ -2221,7 +2244,7 @@ class Solution {
 }
 ```
 
-### <a name="83">约瑟夫环问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="84">约瑟夫环问题</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 以**找出游戏的获胜者**该题为例：
 
@@ -2238,10 +2261,10 @@ class Solution {
 
 - [找出游戏的获胜者](https://leetcode-cn.com/problems/find-the-winner-of-the-circular-game/)
 
-### <a name="84">拒绝采样</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="85">拒绝采样</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 -[用 Rand7() 实现 Rand10()](https://leetcode.cn/problems/implement-rand10-using-rand7/)
 
 
-### <a name="85">字典序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="86">字典序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [字典序排数](https://leetcode.cn/problems/lexicographical-numbers/)
 - [字典序的第K小数字](https://leetcode.cn/problems/k-th-smallest-in-lexicographical-order/)

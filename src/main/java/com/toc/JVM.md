@@ -301,7 +301,7 @@ public class JavaMethodAreaOOM {
 ```
 
 #### <a name="14">本机直接内存溢出</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-特征是Heap dump很小，而程序中又间接使用了DirectMemory(如NIO)
+特征是Heap dump很小，而程序中有间接使用了DirectMemory(如NIO)
 ```java
 //* 参数：-Xmx20M -XX:MaxDirectMemorySize=10M
 //* 本机直接内存溢出
@@ -433,7 +433,7 @@ G1收集器解决漏标问题：原始快照方式。
 ### <a name="21">回收方法区</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 方法区的回收主要是两部分内容：废弃的常量和不再使用的类型。
 - 废弃的常量的例子：字符串常量进入到常量池中，但当前系统有没有任何一个字符串对象的值为“java”，则该常量就会被系统清理出常量池。
-- 不在使用的类，需同时满足一下三个条件：
+- 不在使用的类，需同时满足以下三个条件：
   - 该类的所有实例已经被回收，也就是java对重不存在该类及其任何派生的子类实例。
   - 加载该类的类加载器已经被回收。正常很难达成。如OSGi、JSP的重加载会产生。
   - 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。
@@ -1633,7 +1633,7 @@ JVM 的堆外内存泄漏，主要有两种的原因：
 > 太抽象了
 
 #### <a name="93">不恰当的数据结构导致内存过大</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-场景：-Xms4g -Xmx8g -Xmn1g 使用ParNew + CMS组合。业务上需要10min加载80MB的数据到内存，会产生100W HashMap entry， Minor GC超过500ms，因为新生代使用了标记复制算法\
+场景：-Xms4g -Xmx8g -Xmn1g 使用ParNew + CMS组合。业务上需要10min加载80MB的数据到内存，会产生100W HashMap entry， Minor GC超过500ms，因为新生代使用了标记复制算法
 
 方案：不从修改程序，仅从GC调优，可以直接去掉SurvivorRatio，让新生代存活的对象一次Minor GC就进入到老年代` -XX:SurvivorRatio=65536 -XX:MaxTenuringThreshold=0`(或者-XX:+AlwaysTenure)
 #### <a name="94">堆外内存导致溢出错误</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>

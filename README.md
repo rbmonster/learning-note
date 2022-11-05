@@ -71,6 +71,8 @@
 - [本地缓存设计](/src/main/java/com/toc/LOCALCACHE.md)
 - [pvuv设计](/src/main/java/com/toc/PVUV_DESIGN.md)
 - [基于Feed流系统设计](/src/main/java/com/toc/PVUV_DESIGN.md)
+- [评论系统](/src/main/java/com/toc/COMMENT-SYSTEM.md)
+- [核酸系统](/src/main/java/com/toc/NCOV-SYSTEM.md)
 
 拓展设计:
 - [接口设计](/src/main/java/com/toc/INTERFACE_DESIGN.md)

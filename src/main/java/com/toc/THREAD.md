@@ -454,7 +454,7 @@ Worker为线程池内部对于线程的包装类，继承了AQS抽象类，实�
 3. Worker使用HashSet进行保存，通过ReentrantLock方法保证线程安全，控制Worker集合的修改。
 
 ```java
-public class Test {
+public class ThreadPoolExecutor {
     final void runWorker(Worker w) {
         Thread wt = Thread.currentThread();
         Runnable task = w.firstTask;
@@ -507,7 +507,7 @@ public class Test {
 
 ```java
 
-public class Test {
+public class ThreadPoolExecutor {
     final void runWorker(Worker w) {
         Thread wt = Thread.currentThread();
         Runnable task = w.firstTask;
