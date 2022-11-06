@@ -2179,3 +2179,36 @@ class Solution {
 ### 字典序
 - [字典序排数](https://leetcode.cn/problems/lexicographical-numbers/)
 - [字典序的第K小数字](https://leetcode.cn/problems/k-th-smallest-in-lexicographical-order/)
+
+
+### 超精度的判断
+
+针对于整数，超过精度的时候，经常会导致答案有误
+
+针对于字符串转数字场景下，常用的超精读判断如下：
+```java
+public class Solution{
+    
+    public int convert(String str, boolean isMinus) {
+        int res = 0;
+        int sign = isMinus? -1 : 1;
+        int len = str.length();
+        for(int i = 0;i<len;i++) {
+            char ch = str.charAt(i);
+            int num = ch - '0';
+            // 针对于正数，提前判断是否超过最大值
+            if (res > Integer.MAX_VALUE / 10
+                    || (res == Integer.MAX_VALUE / 10 && num > Integer.MAX_VALUE % 10)) {
+                return Integer.MAX_VALUE;
+            }
+            // 针对于负数，提前判断是否超过最小值
+            if (res < Integer.MIN_VALUE / 10 
+                    || (res == Integer.MIN_VALUE / 10 && num > -(Integer.MIN_VALUE % 10))) {
+                return Integer.MIN_VALUE;
+            }
+            res = res*10 + num * sign;
+        }
+        
+    }
+}
+```
