@@ -3,33 +3,41 @@
 <a href="#0">领域驱动设计(Domain Driven Design,DDD)</a>  
 &emsp;<a href="#1">1. 使用DDD场景</a>  
 &emsp;&emsp;<a href="#2">1.1. 两个转变</a>  
-&emsp;&emsp;<a href="#3">1.2. 领域驱动设计统一过程（DDDRUP）</a>  
-&emsp;<a href="#4">2. 分层架构</a>  
-&emsp;<a href="#5">3. 战略建模</a>  
-&emsp;&emsp;<a href="#6">3.1. 通用语言(Ubiquitous Language)</a>  
-&emsp;&emsp;<a href="#7">3.2. 限界上下文(Bounded Context)</a>  
-&emsp;&emsp;&emsp;<a href="#8">3.2.1. 上下文关系</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#9">3.2.1.1. 共享内核(Shared Kernel)</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#10">3.2.1.2. 客户-供应商(Customer-Supplier)</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#11">3.2.1.3. 顺从者/遵奉者</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#12">3.2.1.4. 隔离通道(Separate Way)/分离方式</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#13">3.2.1.5. 开放主机服务(Open Host Service)</a>  
-&emsp;&emsp;&emsp;&emsp;<a href="#14">3.2.1.6. 防崩溃层(Anticorruption Layer)</a>  
-&emsp;&emsp;&emsp;<a href="#15">3.2.2. 大泥球</a>  
-&emsp;&emsp;<a href="#16">3.3. 领域与子领域</a>  
-&emsp;<a href="#17">4. 战术建模</a>  
-&emsp;&emsp;<a href="#18">4.1. 实体(Entity)</a>  
-&emsp;&emsp;<a href="#19">4.2. 值对象(Value Object)</a>  
-&emsp;&emsp;<a href="#20">4.3. 领域服务(domain service)</a>  
-&emsp;&emsp;<a href="#21">4.4. 模块(module)</a>  
-&emsp;&emsp;<a href="#22">4.5. 领域事件(domain event)</a>  
-&emsp;<a href="#23">5. 生命周期</a>  
-&emsp;&emsp;<a href="#24">5.1. 聚合(aggregate)</a>  
-&emsp;&emsp;<a href="#25">5.2. 工厂(factory)</a>  
-&emsp;&emsp;<a href="#26">5.3. 资源库(repository)</a>  
-&emsp;<a href="#27">6. 四种模型</a>  
-&emsp;<a href="#28">7. 代码实现</a>  
-&emsp;<a href="#29">8. 参考资料</a>  
+&emsp;&emsp;<a href="#3">1.2. 领域驱动设计统一过程(DDDRUP)</a>  
+&emsp;<a href="#4">2. 领域建模方法</a>  
+&emsp;&emsp;<a href="#5">2.1. event Storming(事件风暴建模)</a>  
+&emsp;&emsp;<a href="#6">2.2. 4C(四色建模)</a>  
+&emsp;&emsp;<a href="#7">2.3. Domain Storytelling(领域叙事建模)</a>  
+&emsp;&emsp;&emsp;<a href="#8">2.3.1. 背景及过程</a>  
+&emsp;&emsp;&emsp;<a href="#9">2.3.2. 领域叙事</a>  
+&emsp;&emsp;&emsp;<a href="#10">2.3.3. 与事件风暴的区别</a>  
+&emsp;&emsp;<a href="#11">2.4. 参考资料</a>  
+&emsp;<a href="#12">3. 分层架构</a>  
+&emsp;<a href="#13">4. 战略建模</a>  
+&emsp;&emsp;<a href="#14">4.1. 通用语言(Ubiquitous Language)</a>  
+&emsp;&emsp;<a href="#15">4.2. 限界上下文(Bounded Context)</a>  
+&emsp;&emsp;&emsp;<a href="#16">4.2.1. 上下文关系</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#17">4.2.1.1. 共享内核(Shared Kernel)</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#18">4.2.1.2. 客户-供应商(Customer-Supplier)</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#19">4.2.1.3. 顺从者/遵奉者</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#20">4.2.1.4. 隔离通道(Separate Way)/分离方式</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#21">4.2.1.5. 开放主机服务(Open Host Service)</a>  
+&emsp;&emsp;&emsp;&emsp;<a href="#22">4.2.1.6. 防崩溃层(Anticorruption Layer)</a>  
+&emsp;&emsp;&emsp;<a href="#23">4.2.2. 大泥球</a>  
+&emsp;&emsp;<a href="#24">4.3. 领域与子领域</a>  
+&emsp;<a href="#25">5. 战术建模</a>  
+&emsp;&emsp;<a href="#26">5.1. 实体(Entity)</a>  
+&emsp;&emsp;<a href="#27">5.2. 值对象(Value Object)</a>  
+&emsp;&emsp;<a href="#28">5.3. 领域服务(domain service)</a>  
+&emsp;&emsp;<a href="#29">5.4. 模块(module)</a>  
+&emsp;&emsp;<a href="#30">5.5. 领域事件(domain event)</a>  
+&emsp;<a href="#31">6. 生命周期</a>  
+&emsp;&emsp;<a href="#32">6.1. 聚合(aggregate)</a>  
+&emsp;&emsp;<a href="#33">6.2. 工厂(factory)</a>  
+&emsp;&emsp;<a href="#34">6.3. 资源库(repository)</a>  
+&emsp;<a href="#35">7. 四种模型</a>  
+&emsp;<a href="#36">8. 代码实现</a>  
+&emsp;<a href="#37">9. 参考资料</a>  
 # <a name="0">领域驱动设计(Domain Driven Design,DDD)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 基本元素：分层架构、实体、值对象、服务、模块、聚合、工厂、资源库
@@ -38,7 +46,7 @@
 
 ## <a name="1">使用DDD场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-领域驱动指的是以领域作为解决问题切入点，面对业务需求，先提炼出领域概念，并构建领域模型来表达业务问题，而构建过程中我们应该尽可能避免牵扯技术方案或技术细节。而编码实现更像是对领域模型的代码翻译，代码（变量名、方法名、类名等）中要求能够表达领域概念，让人见码明义。
+领域驱动指的是以领域作为解决问题切入点，面对业务需求，先提炼出领域概念，并构建领域模型来表达业务问题，而构建过程中我们应该尽可能避免牵扯技术方案或技术细节。而编码实现更像是对领域模型的代码翻译，代码(变量名、方法名、类名等)中要求能够表达领域概念，让人见码明义。
 
 ### <a name="2">两个转变</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 结合实践经验，“领域驱动”是一种**思维模式转变**\
@@ -50,12 +58,116 @@ DDD 通过解锁新角色”领域专家"以及模型驱动设计，**有效地�
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/cooperate.png)
 
 
-### <a name="3">领域驱动设计统一过程（DDDRUP）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="3">领域驱动设计统一过程(DDDRUP)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/dddrup.png)
 
-## <a name="4">分层架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="4">领域建模方法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+
+### <a name="5">event Storming(事件风暴建模)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+事件风暴准备工作：
+1. 确定事件风暴的参与者: 事件风暴采用工作坊的方式，将项目团队和领域专家聚集在一起，通过可视化、高互动的方式一步一步将领域模型设计出来。
+2. 事件风暴要准备的材料: 事件风暴参与者会将自己的想法和意见写在即时贴上，并将贴纸贴在墙上的合适位置，我们戏称这个过程是“刷墙”。所以即时贴和笔是必备材料，另外，你还可以准备一些胶带或者磁扣，以便贴纸随时能更换位置。
+3. 事件风暴的场地
+4. 事件风暴分析的关注点: 在领域建模的过程中，我们需要重点关注这类业务的语言和行为。比如某些业务动作或行为(事件)是否会触发下一个业务动作，这个动作(事件)的输入和输出是什么？是谁(实体)发出的什么动作(命令)，触发了这个动作(事件)…我们可以从这些暗藏的词汇中，分析出领域模型中的事件、命令和实体等领域对象。
+
+
+如何用事件风暴构建领域模型？
+1. **确定产品愿景**。产品愿景的主要目的是对产品顶层价值的设计，使产品目标用户、核心价值、差异化竞争点等信息达成一致，避免产品偏离方向。
+2. **业务场景分析**。场景分析是从用户视角出发的，根据业务流程或用户旅程，采用用例和场景分析，探索领域中的典型场景，找出领域事件、实体和命令等领域对象，支撑领域建模。事件风暴参与者要尽可能地遍历所有业务细节，充分发表意见，不要遗漏业务要点。
+3. **领域建模**。领域建模时，我们会根据场景分析过程中产生的领域对象，比如命令、事件等之间关系，找出产生命令的实体，分析实体之间的依赖关系组成聚合，为聚合划定限界上下文，建立领域模型以及模型之间的依赖。领域模型利用限界上下文向上可以指导微服务设计，通过聚合向下可以指导聚合根、实体和值对象的设计。
+4. **微服务拆分与设计**。原则上一个领域模型就可以设计为一个微服务，但由于领域建模时只考虑了业务因素，没有考虑微服务落地时的技术、团队以及运行环境等非业务因素，因此在微服务拆分与设计时，我们不能简单地将领域模型作为拆分微服务的唯一标准，它只能作为微服务拆分的一个重要依据。
+
+在这个事件风暴过程中，我们要用不同颜色的贴纸区分领域行为。如下图，我们可以用蓝色表示命令，用绿色表示实体，橙色表示领域事件，黄色表示补充信息等。补充信息主要用来说明注意事项，比如外部依赖等。颜色并不固定，团队内统一才是重点。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/event-stroming-1.png)
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/event-stroming-2.png)
+
+
+参考资料: [如何用事件风暴构建领域模型？](http://t.zoukankan.com/junzi2099-p-13058234.html)
+
+### <a name="6">4C(四色建模)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+四色建模法源于《Java Modeling In Color With UML》，它是一种模型的分析和设计方法，提出要把所有模型分为四种类型，用四种颜色表示。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/4-color.png)
+
+在四色模型中，我们将抽象出来的对象分为四种原型(archetype): 
+
+1. **业务关键时刻**(Moment-Interval): 这种对象表示那些在某个时间点存在，或者会存在一段时间的。这样的对象往往表示了一次外界的请求，比如一次询价，一次下单或者一次租赁。\
+业务关键时刻是最重要的一类对象，因为他是系统业务价值所在，一般用**粉红色表示**。这样的对象一般有一个起始时间和终止时间，以及一个唯一的标识号，用来唯一的标识这一次用户请求，比如OrderNo.
+
+2. **Role**(角色): 这种对象表示的是一种角色，往往由人或者物来承担，会有相应的责任和权利，一般一个moment-interval对象会关联多个Role。例如一次下单涉及两个Role：客户-商品。 \
+这类对象是除moment-interval对象外最重要的一类对象，一般用**黄色表示**。
+
+3. **人-事-物**(Party,Place, or Thing): 这种对象往往表示的是一种客观存在的事物，例如：人、组织、产品或者配件等，这些事物往往会在一种moment-interval 中扮演某个Role。例如，某个人会在一次购买中扮演Customer的角色，也可以在询价中扮演询价人的角色。一般用**绿色表示**。
+
+4. **描述**(Description): 这种对象一般是分类用或者描述性的对象，它的属性一般都是这一类事物都有的属性，这类对象一般用**蓝色表示**。
+
+
+建模过程：
+1. 首先以满足管理和运营的需要为前提，寻找需要追溯的业务事件。
+2. 发现业务关键时刻。任何的业务事件都会以某种数据的形式留下足迹，这些足迹都是Moment-interval，是建模的起点。发现这些业务关键时刻对象就是建模的起点。对于这些对象稍加整理，我们就能得到整个领域模型的骨干。
+3. 补充人-事-物，丰富骨干模型，使它可以更好的描述业务概念。
+4. 从“人-事-物”中抽象出Role。
+5. 把一些描述信息(Description)用对象补足。
+
+### <a name="7">Domain Storytelling(领域叙事建模)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+**Domain Storytelling** 是一种领域分析建模方法，通过这种方法，产品和研究人员可以利用相同的原理建立或者学习一个领域的通用语言，并建立领域模型
+
+#### <a name="8">背景及过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+使用领域叙事，可让领域专家讲述自己的工作方式。领域专家讲述的故事使用了下面的象形语言、一组有差异的符号和文本注释做可视化展示：
+- 演员。例如一个人、一位客户，或者是汽车、船舶这样更技术化的事物。
+- 工作对象。例如文档或消息，也可以是更抽象的事物，例如运输路线。
+- 用箭头表示活动。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/storytelling.png)
+
+为了找出候选的界限上下文，作者在领域叙事中使用了指示符。具体的指示符例子包括：
+- 一个单向信息流。
+- 语言中的差异。例如，使用同一名称描述了不同的事物。
+- 对不同的部分使用不同的触发器。例如，部分工作需每日完成，而部分工作是按需完成的。
+
+> 一旦发现了三种指示符，就找到了在两个不同上下文间的一个有效界限。但作者强调指出，这种方法只表明了存在界限的迹象，而非确证。虽然在故事中，单向信息流是界限的一种指示符。但如果我们对领域做深入了解，就可能会发现该信息流在其它故事中表现出更复杂的特性。因此，这样的信息流不能构成一种界限。\
+同时仅仅找出上下文间的界限是不够的，因为业务流程通常是一种跨界限的合作性工作。两位作者强调指出，找出界限的目标并非是要树立起一道墙壁，而是构建一种能分离上下文的模型，支持人们一起共事。他们需要分离模型，让所构建的软件易于理解且不易出错，所构建的系统可供不同的人使用。
+
+#### <a name="9">领域叙事</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+领域叙事由以下两件事的结合：
+- 一种是象形语言，因此它是一种用于建模业务流程的符号。基本思想是我们有一组简单的图标。
+> 1. **定义“Actor”**，他们是我们软件系统中做事的人，故事围绕着这些Actor演进。所以他们是故事中的活跃部分。他们做什么？嗯，他们创造东西，他们使用东西，他们交换东西，那些我们称之为工作对象的东西，所以它们可以是物理的东西，比如纸上的文件。
+> 2. **使用描绘活动的箭头**。这个想法是象形语言遵循自然语言。
+> 3. **给箭头编号**，表达一个序列或者说表现叙事分支。
+
+- 第二部分是它也是一种研讨会形式。我有时也会做的是您可以自己使用域讲故事。但通常，这是一项协作活动。
+> 什么是故事？嗯，这是一个场景，它是一个领域中实际发生的事情的具体例子。因此，我们并不是在谈论业务流程，因为这些都是可能发生的所有可能发生的事情，或者发生这种情况或发生那种情况。
+例如，典型案例或最常见的案例，我们只看最重要的例子。也许两三个例子就足以真正理解一个业务流程。\
+当领域专家讲述故事时，有一个主持人。他们以视觉方式记录领域故事，这意味着他们创造了象形语言的图片，重要的是每个人都可以看到正在创建的图片，整个过程可以消除各方理解的偏差。
+这种对话或研讨形式，至少与最终图片和最终结果一样重要。**因为整个讨论的过程会带来更深的认识**，一下完成的成果和参与整个过程，理解的程度是有偏差的。
+
+
+#### <a name="10">与事件风暴的区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- 如果它是一个涉及很多人的问题、领域或业务流程，并且会进行很多交互。在涉及多个系统之后，了解有关此交互的更多信息是很有意义的。我们想看看谁和谁一起做什么。然后我会选择Domain Storytelling。
+- 如果我知道该领域更多地是关于状态变化，更多地是关于这个时间序列，那么事件风暴可能是更好的选择。
+
+> 有时也可以很有趣地询问这个过程已经成熟到什么程度。那么它是人们真正可以谈论的东西吗？然后，再次，我宁愿使用storytelling。\
+如果他们需要 Event Storming 的这种头脑风暴方面的内容，可以有一个促进者，但它不像 Domain Storytelling 那样严格，所以每个人都只是从在墙上贴上橙色便签开始。因此，如果我的印象是这有助于让他们自由表达他们的想法，那么我宁愿选择 Event Storming。\
+这里有不同的因素在起作用。我经常在同一个项目中使用这两种技术。
+
+### <a name="11">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+- [领域故事(Domain storytelling)讲述：协作构建领域驱动软件 - Stefan Hofer](https://www.suibibk.com/topic/1025009382699565056)
+- [领域驱动设计学习笔记-战略设计](http://blog.claves.cn/archives/5403)
+- [Domain Modelling Using Event Storming](https://www.infoq.com/news/2014/06/dddx-brandolini-eventstorming/)
+- [Finding Bounded Contexts Using Domain Storytelling](https://www.infoq.com/news/2018/02/storytelling-domain-contexts/)
+
+
+案例：
+- [从“四色建模法”到“限界纸笔建模法”](https://insights.thoughtworks.cn/paper-pen-modeling/)
+
+
+## <a name="12">分层架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/structureIntroduce.png)
 - 应用层(接入层)：通常用来接收前端(展现层)的请求，转发给领域层获取请求结果，再组装结果返回前端。
@@ -69,20 +181,20 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/ddd-core.png)
 
-## <a name="5">战略建模</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="13">战略建模</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="6">通用语言(Ubiquitous Language)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="14">通用语言(Ubiquitous Language)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 其实写软件就像是翻译，把领域上的业务需求翻译成软件的各个功能。业务需求来自领域专家(Domain Expert)，程序员们需要把领域专家的语言翻译成程序。如果程序员们翻译的时候使用的是自己的语言，而领域专家使用自己的行话，导致术语不一致，就会使得沟通不顺畅，难于消化知识。所以团队需要一种通用语言来进行沟通。这样的通用语言尽量以业务语言为主，而非技术语言。一开始的通用语言可能不尽完美，但它就像是代码一样，经常需要重构。例如：“创建一个订单”就比“插入一条订单数据”更容易让领域专家明白谈话的背景。
 
-### <a name="7">限界上下文(Bounded Context)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="15">限界上下文(Bounded Context)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 界定的上下文：主要的思想是定义模型的范围，画出它的上下文的边界，然后尽最大可能保持模型的一致性。
 
 
-#### <a name="8">上下文关系</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-限界上下文封装了分离的业务能力，上下文映射则建立了限界上下文之间的关系。上下文映射提供了各种模式（防腐层、开放主机服务、发布语言、共享内核、合作者、客户方/供应方、分离方式、遵奉者、大泥球），**本质是在控制变化在限界上下文之间传递所产生的影响**。
+#### <a name="16">上下文关系</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+限界上下文封装了分离的业务能力，上下文映射则建立了限界上下文之间的关系。上下文映射提供了各种模式(防腐层、开放主机服务、发布语言、共享内核、合作者、客户方/供应方、分离方式、遵奉者、大泥球)，**本质是在控制变化在限界上下文之间传递所产生的影响**。
 
-##### <a name="9">共享内核(Shared Kernel)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="17">共享内核(Shared Kernel)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 共享内核指将限界上下文中的领域模型直接暴露给其他限界上下文使用。注意，这会削弱了限界上下文边界的控制力。
 > 防腐层、开放主机服务以及发布语言无不传达一种思想，限界上下文不能直接暴露自己的领域模型或直接访问其他限界上下文的领域模型，一定要有隔离层！
 
@@ -92,7 +204,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/share-core.png)
 
-##### <a name="10">客户-供应商(Customer-Supplier)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="18">客户-供应商(Customer-Supplier)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 当一个限界上下文单向地为另一个限界上下文提供服务时，它们对应的团队就形成了客户方/供应方模式。这是最为常见的团队协作模式，客户方作为下游团队，供应方作为上游团队，二者协作的主要内容包括：
 - 下游团队对上游团队提出的服务
 - 上游团队提供的服务采用什么样的协议与调用方式
@@ -101,7 +213,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 - 当上游服务的协议或调用方式发生变更时，如何控制变更
 
 
-##### <a name="11">顺从者/遵奉者</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="19">顺从者/遵奉者</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 当两个开发团队有客户-供应商关系，而且供应商团队没有动力为客户团队提供需要的帮助时，客户团队是无助的。\
 > 如果客户不得不使用供应商团队的模型，而且这个模型做得很好，那么就需要顺从这个模型了。客户团队遵从供应商团队的模型，完全顺从它。
 
@@ -109,45 +221,45 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 当下游团队选择“遵奉”于上游团队设计的模型时，意味着：
 
-可以直接复用上游上下文的模型（好的）；
-减少了两个限界上下文之间模型的转换成本（好的）；
-使得下游限界上下文对上游产生了模型上的强依赖（坏的）。
+可以直接复用上游上下文的模型(好的)；
+减少了两个限界上下文之间模型的转换成本(好的)；
+使得下游限界上下文对上游产生了模型上的强依赖(坏的)。
 
-##### <a name="12">隔离通道(Separate Way)/分离方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="20">隔离通道(Separate Way)/分离方式</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 分离方式的团队协作模式是指两个限界上下文之间没有一丁点关系。如果此时双方使用到了相似/相同的领域模型，则可以通过拷贝的方式解决，保证限界上下文之间的物理隔离！
 
 在采用隔离通道模式之前，我们需要确信我们将不会回到一个集成的系统。独立开发的模型是很难做集成的，它们的相通之处很少，不值得这样做。
-##### <a name="13">开放主机服务(Open Host Service)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="21">开放主机服务(Open Host Service)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 当我们试图集成两个子系统时，通常要在它们之间创建一个转换层。当一个子系统要和其他很多子系统集成时，为每一个子系统定制一个转换器会使整个团队陷入困境。\
 > 这个问题的解决方案是，将外部子系统看作服务提供者。如果我们能为这个系统封装一组服务，那么所有的其他子系统将会访问这些服务，我们也就不需要任何转换层。
 
-开放主机服务定义公开服务的协议（亦称为“服务契约”），包括通信方式、传递消息的格式（协议），让限界上下文可以被当做一组服务访问。开放主机服务也可以视为一种承诺，保证开放的服务不会轻易做出变化。
+开放主机服务定义公开服务的协议(亦称为“服务契约”)，包括通信方式、传递消息的格式(协议)，让限界上下文可以被当做一组服务访问。开放主机服务也可以视为一种承诺，保证开放的服务不会轻易做出变化。
 
-对于进程内的开放主机服务，称为本地服务（对应 DDD 中的应用服务）。
+对于进程内的开放主机服务，称为本地服务(对应 DDD 中的应用服务)。
 
 对于进程间的开放主机服务，成为远程服务。根据选择的分布式通信技术的不同，又可以定义出类型不同的远程服务：
-- 面向服务行为，比如基于 RPC，称为提供者（Provider）；
-- 面向服务资源，比如基于 REST，称为资源（Resource）；
-- 面向事件，比如基于消息中间件，称为订阅者（Subscriber）；
-- 面向视图模型，比如基于 MVC，称为控制器（Controller）；
+- 面向服务行为，比如基于 RPC，称为提供者(Provider)；
+- 面向服务资源，比如基于 REST，称为资源(Resource)；
+- 面向事件，比如基于消息中间件，称为订阅者(Subscriber)；
+- 面向视图模型，比如基于 MVC，称为控制器(Controller)；
 
-##### <a name="14">防崩溃层(Anticorruption Layer)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+##### <a name="22">防崩溃层(Anticorruption Layer)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 引入防腐层的目的是为了隔离耦合。防腐层往往位于下游，通过它隔离上游上下文发生的变化。
-> 可以将服务实现为一个 Facade。除了这一点，防崩溃层最有可能还需要一个适配器（Adapter）。适配器可以使你将一个类的接口转换成客户端能够理解的另一个接口。
-> 适配器将外部系统的行为包装起来。我们还需要对象和数据转换（object and data conversion），可以使用一个转换器（translator）来完成这个任务。
+> 可以将服务实现为一个 Facade。除了这一点，防崩溃层最有可能还需要一个适配器(Adapter)。适配器可以使你将一个类的接口转换成客户端能够理解的另一个接口。
+> 适配器将外部系统的行为包装起来。我们还需要对象和数据转换(object and data conversion)，可以使用一个转换器(translator)来完成这个任务。
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/anticorruption.png)
 
 
-#### <a name="15">大泥球</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="23">大泥球</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 一定要避免制造大泥球！大泥球的特点：
 - **越来越多的聚合因为不合理的关联和依赖导致交叉污染**；
 - 对大泥球的维护牵一发而动全身；
 - 强调“个人英雄主义”，只有个别“超人”能够理清逻辑。
 
 
-### <a name="16">领域与子领域</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-领域（Domain）：指的是整个要涉及的业务内容
+### <a name="24">领域与子领域</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+领域(Domain)：指的是整个要涉及的业务内容
 > 例如 ：一个CRM系统，可以是一个领域，一个HR系统，一个电子商务的商城，都可以作为领域概念。 如果一个软件公司，既提供CRM的Saas服务也提供e-HR的Saas服务，但是这两种业务是有很明确的边界的，那么这两个业务就要各自独立为两个不同的领域。不能因为是同一家公司的产品，就混在一个领域范围内。
 
 子领域的作用：
@@ -163,22 +275,22 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 子领域的功能分类策略：问题空间应该分为哪些子领域，需要团队对目标系统整体进行探索，并根据**功能分类策略**进行分解。
 - **业务职能**：当目标系统运用于企业的生产和管理时，与目标系统业务有关的职能部门往往会影响目标系统的子领域划分，并形成一种简单的映射关系。这是康威定律的一种运用。
 - **业务产品**：当目标系统为客户提供诸多具有业务价值的产品时，可以按照产品的内容与方向进行子领域划分。
-- **业务环节**对贯穿目标系统的核心业务流程进行阶段划分，然后按照划分出来的每个环节确定子领域。（这也是我们最常用的策略）
+- **业务环节**对贯穿目标系统的核心业务流程进行阶段划分，然后按照划分出来的每个环节确定子领域。(这也是我们最常用的策略)
 - **业务概念**：捕捉目标系统中一目了然的业务概念，将其作为子领域。
 
-## <a name="17">战术建模</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="18">实体(Entity)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="25">战术建模</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="26">实体(Entity)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 所谓领域，反映到代码里就是模型。模型分为实体和值对象两种。实体是有标识(Identity)的，两个拥有相同属性的实体不是相等的，除非它们的标识相等；而不同实体的标识不能相等。
 > 例如：某人下了两个相同的订单，里面都购买了相同的商品。这两个订单就是有标识(订单号)的两个实体，虽然内容相同，但它们是两个不同的实体。常用的标识有自增数字、Guid、自然标识(如邮箱、身份证号)等。
 
 **实体具有生命周期**，它们的内容可能在这期间会发生改变，但是标识是永远不会变化的。实体作为领域模型的主体，**需要拥有自己的方法**，方法名来自于通用语言。通过这些方法来保证自己始终是一致的状态，而非被调用者set来set去。例如：`people.runTo(x, y)`，而非`people.setX(x);people.setY(y);`
 
-### <a name="19">值对象(Value Object)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="27">值对象(Value Object)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 实体用来表示领域中的一个东西，而值对象只用于描述或度量一个东西。**值对象没有任何标识**，只要两个值对象的属性相等，那么它们就是相等的。值对象是不可变的，如果要改变值对象的内容，那就重新创建一个值对象。
 **值对象没有生命周期**，因为它只是值而已。
 > 例如：金额(含数值和货币单位)，颜色(含rgb值)等。因为不需要标识，所以它们其实比实体要简单许多。Java里的String类，就具有一个值对象的行为；C#的Struct其实就是一个值对象，不过一般还是会用Class来表示值对象。
 
-### <a name="20">领域服务(domain service)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="28">领域服务(domain service)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 当我们分析领域并试图定义构成模型的主要对象时，我们发现领域的有些方面难以被映射成对象。对象通常被认为是拥有属性，一个由对象管理的内部状态、并且暴露出一种行为。\
 > 例如，为了从一个账户向另一个账户转钱，这个功能应该放到转出的账户还是在接收的账户中？感觉放在这两个中的哪一个也不对劲。\
 > 当这样的行为从领域中被识别出来时，**最佳实践是将它声明成一个服务**。
@@ -191,7 +303,7 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 > 考虑一个实际的 Web 报表应用的例子。报表使用存储在数据库中的数据，它们会基于模版产生。最终的结果是一个在 Web 浏览器中可以显式给用户查看的 HTML 页面。\
 用户界面层被合并成 Web 页面，允许用户登录，选择所期望的报表，单击一个按钮就可以发出请求。应用层是非常薄的一个层，它位于用户界面和领域层以及基础设施层的中间位置。它在登录操作时，会跟数据库基础设施进行交互；在需要创建报表时会和领域层进行交互。领域层中包含了领域的核心部分，对象直接关联到报表。有两个这样的对象是报表产生的基础，它们是 Report 和Template。基础设施层将支持数据库访问和文件访问。
 
-### <a name="21">模块(module)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">模块(module)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 对一个大型的复杂项目而言，模型趋向于越来越大。模型到达了一个作为整体很难讨论的点，理解不同部件之间的关系和交互变得很困难。基于此原因，很有必要将模型组织进模块。模块被用来作为组织相关概念和任务以便降低复杂性的一种方法。
 
 在设计中使用模块是一种增进内聚和消除耦合的方法。模块应该由在功能上或者逻辑上属于一体的元素构成，以保证内聚。模块应该具有定义好的接口，这些接口可以被其他的模块访问。
@@ -203,14 +315,14 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 模块应该由在功能上或者逻辑上属于一体的元素构成，以确保内聚性。模块应该具有定义好的接口，这些接口可以被其他的模块访问。最好用访问一个接口的方式，而不是调用模块中的三个对象，因为这样做可以降低耦合度。如果模块间仅有极少的连接，通过这些连接来执行定义好的功能，这样做会让人更容易理解系统是如何工作的。
 
 
-### <a name="22">领域事件(domain event)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">领域事件(domain event)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 领域事件是一个定义了领域专家所关心的事件的对象。当关心的状态由于模型行为而发生改变时，系统将发布领域事件。如果通用语言里出现了：“当……的时候，需要……”通常就意味着一个领域事件。
 > 例如：当订单完成支付时，商品需要出库。这里的订单完成支付就预示着一个OrderPaidEvent，里面持有着这个订单的标识。领域事件代表的是已经发生的事，所以命名上通常都使用过去时(如Paid)。
 
 对领域事件的处理就像是一个观察者模式，由领域事件的订阅方来决定。订阅方既可以是本地的限界上下文，也可以是外部的限界上下文。
 
-## <a name="23">生命周期</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="24">聚合(aggregate)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="31">生命周期</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="32">聚合(aggregate)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 一个模型会包含众多的领域对象。无论在设计时做了多少考虑，我们都会看到很多对象会跟其他的对象发生关联，形成了一个复杂的关系网，如1:n,n:n。
 
 聚合是**针对数据变化可以考虑成一个单元的一组相关的对象**。聚合使用边界将内部和外部的对象划分开来。每个聚合有一个根。
@@ -230,14 +342,14 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/aggregation.png)
 
 
-### <a name="25">工厂(factory)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">工厂(factory)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 > 创建一个对象可以是它自身的主要操作，但是复杂的组装操作不应该成为被创建对象的职责。组合这样的职责会产生笨拙的设计，也很难让人理解。复杂对象的创建涉及到内部的数据结构、规则等，这破坏了对于领域对象和聚合的封装。如果客户属于应用层，领域层的一部分将被移到了外边，从而打乱整个设计。
 
 工厂用来封装对象创建所必需的知识，它们对创建聚合特别有用。当聚合的根建立时，所有聚合包含的对象将随之建立，所有的不变量得到了强化。
 
 **工厂是生命周期的开始阶段**，它可以用来创建复杂的对象或是一整个聚合。复杂对象的创建是领域层的职责，但它并不属于被创建的对象自身的职责。实体和值对象的工厂不太一样，因为值对象是不可变的，所以需要工厂一次性创建一个完整的值对象出来。而实体工厂则可以选择创建之后再补充一些细节。
 
-### <a name="26">资源库(repository)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">资源库(repository)</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 **资源库是生命周期的结束**，它封装了基础设施以提供查询和持久化聚合的操作。**这样能够让我们始终聚焦于模型**，而把对象的存储和访问都委托给资源库来完成。以订单和订单明细的聚合为例，因为一定是通过订单这个聚合根来获取订单明细，所以可以有订单的资源库，但是不能有订单明细的资源库。也就是说，只有聚合才拥有资源库。需要注意的是，资源库并不是数据库的封装，而是领域层与基础设施之间的桥梁。DDD关心的是领域内的模型，而并非是数据库的操作。理想的资源库对客户(而非开发者)隐藏了内部的工作细节，委托基础设施层来干那些脏活，到关系型数据库、NOSQL、甚至内存里读取和存储数据。
 
 使用一个资源库，它的目的是封装所有获取对象引用所需的逻辑。领域对象不需处理基础设施，以得到领域中对其他对象的所需的引用。只需从资源库中获取它们，于是模型重获它应有的清晰和焦点。\
@@ -246,13 +358,13 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/repository.png)
 
-## <a name="27">四种模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="35">四种模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - 失血模型：模型仅仅包含数据的定义和getter/setter方法，业务逻辑和应用逻辑都放到服务层中。这种类在Java中叫POJO，在.NET中叫POCO。
 - 贫血模型：贫血模型中包含了一些业务逻辑，但不包含依赖持久层的业务逻辑。这部分依赖于持久层的业务逻辑将会放到服务层中。可以看出，贫血模型中的领域对象是不依赖于持久层的。
 - 充血模型：充血模型中包含了所有的业务逻辑，包括依赖于持久层的业务逻辑。所以，使用充血模型的领域层是依赖于持久层，简单表示就是 UI层->服务层->领域层<->持久层。
-- 胀血模型：胀血模型就是把和业务逻辑不相关的其他应用逻辑（如授权、事务等）都放到领域模型中。我感觉胀血模型反而是另外一种的失血模型，因为服务层消失了，领域层干了服务层的事，到头来还是什么都没变。
+- 胀血模型：胀血模型就是把和业务逻辑不相关的其他应用逻辑(如授权、事务等)都放到领域模型中。我感觉胀血模型反而是另外一种的失血模型，因为服务层消失了，领域层干了服务层的事，到头来还是什么都没变。
 
-## <a name="28">代码实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="36">代码实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 **用户接口层**\
 用户接口层的核心职能：协议转换和适配、鉴权、参数校验和异常处理。
@@ -314,7 +426,7 @@ interfaces
 │       └── Semester.java
 ```
 
-**基础设施实现层**: 该层主要提供领域层接口（资源库、防腐层接口）和应用层接口（防腐层接口）的实现。\
+**基础设施实现层**: 该层主要提供领域层接口(资源库、防腐层接口)和应用层接口(防腐层接口)的实现。\
 代码组织基本以聚合为基本单元。对于应用层的防腐层接口，则直接以 application 作为包名组织。
 ```
 ├── application                                  // 应用层相关实现
@@ -337,7 +449,7 @@ interfaces
 
 ```
 
-## <a name="29">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="37">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [领域驱动设计(DDD)](https://www.wolai.com/sSuS9PurVF2jVuj2RU9G3D)
 - [万字长文助你上手软件领域驱动设计 DDD](https://mp.weixin.qq.com/s/BIYp9DNd_9sw5O2daiHmlA)
 - [领域驱动编程，代码怎么写？](https://mp.weixin.qq.com/s/W9xT9hNQjjIfjGxbePqDJw)

@@ -87,6 +87,7 @@
 &emsp;&emsp;<a href="#84">18.5. 约瑟夫环问题</a>  
 &emsp;&emsp;<a href="#85">18.6. 拒绝采样</a>  
 &emsp;&emsp;<a href="#86">18.7. 字典序</a>  
+&emsp;&emsp;<a href="#87">18.8. 超精度的判断</a>  
 # <a name="0">算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">链表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -2268,3 +2269,36 @@ class Solution {
 ### <a name="86">字典序</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [字典序排数](https://leetcode.cn/problems/lexicographical-numbers/)
 - [字典序的第K小数字](https://leetcode.cn/problems/k-th-smallest-in-lexicographical-order/)
+
+
+### <a name="87">超精度的判断</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+针对于整数，超过精度的时候，经常会导致答案有误
+
+针对于字符串转数字场景下，常用的超精读判断如下：
+```java
+public class Solution{
+    
+    public int convert(String str, boolean isMinus) {
+        int res = 0;
+        int sign = isMinus? -1 : 1;
+        int len = str.length();
+        for(int i = 0;i<len;i++) {
+            char ch = str.charAt(i);
+            int num = ch - '0';
+            // 针对于正数，提前判断是否超过最大值
+            if (res > Integer.MAX_VALUE / 10
+                    || (res == Integer.MAX_VALUE / 10 && num > Integer.MAX_VALUE % 10)) {
+                return Integer.MAX_VALUE;
+            }
+            // 针对于负数，提前判断是否超过最小值
+            if (res < Integer.MIN_VALUE / 10 
+                    || (res == Integer.MIN_VALUE / 10 && num > -(Integer.MIN_VALUE % 10))) {
+                return Integer.MIN_VALUE;
+            }
+            res = res*10 + num * sign;
+        }
+        
+    }
+}
+```
