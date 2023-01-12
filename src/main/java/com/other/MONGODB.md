@@ -124,14 +124,14 @@ db.helloworld.dropIndex("username_1")
 
 查询数组中的值
 ```text
-db.getCollection('crm_form_answer_whole').aggregate([
+db.getCollection('form_answer').aggregate([
     {
         $unwind:{
             path:'$answers',
             includeArrayIndex: 'index'
         }
         
-    },{"$match":{"formAnswerId":"13990100447000021072800010001"}}
+    },{"$match":{"formAnswerId":"139900001"}}
     ,
      {
         $project: {
