@@ -122,6 +122,26 @@ db.helloworld.dropIndex("username_1")
 ```
 
 
+查询数组中的值
+```text
+db.getCollection('crm_form_answer_whole').aggregate([
+    {
+        $unwind:{
+            path:'$answers',
+            includeArrayIndex: 'index'
+        }
+        
+    },{"$match":{"formAnswerId":"13990100447000021072800010001"}}
+    ,
+     {
+        $project: {
+            _id: 0,
+            "questionId": "$answers.questionId",
+        }
+    }
+])
+```
+
 ## 应用场景
 设计的两个关键，一个重要问题：
 - 范式化：将数据分散到不同的集合中，数据类似与关系型数据一样，使用主键关联。
