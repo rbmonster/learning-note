@@ -8,6 +8,8 @@
 2. xxx优缺点是什么？
 3. xxx应用及使用场景是什么？
 
+BTW：强烈大家注册一个ChatGPT，可以用来完善面试题。
+
 ## Java相关
 - [Java基础](/src/main/java/com/toc/JAVA_BASE.md)
 - [Java集合类](/src/main/java/com/toc/COLLECTION.md)
