@@ -516,7 +516,7 @@ public class Solution {
 - [同构字符串](https://leetcode-cn.com/problems/isomorphic-strings/)
 - [存在重复元素](https://leetcode-cn.com/problems/contains-duplicate-ii/)
 - [剑指 Offer 50. 第一个只出现一次的字符](https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
-- [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/): 树与Hash表结合
+- [寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/) : 树与Hash表结合
 
 利用哈希表O(1)特性查找：
 
@@ -529,9 +529,13 @@ public class Solution {
 
 针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
 
+- [移除元素](https://leetcode.cn/problems/remove-element/description/)
+- [有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/description/)
 - [寻找数组的中心索引](https://leetcode-cn.com/problems/find-pivot-index/)
 - [对角线遍历](https://leetcode-cn.com/problems/diagonal-traverse/)
-
+- [螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
+- [螺旋矩阵 II](https://leetcode.cn/problems/spiral-matrix-ii/)
+- [螺旋矩阵 III](https://leetcode.cn/problems/spiral-matrix-iii/description/)
 ### 字符串
 
 公共前缀问题
