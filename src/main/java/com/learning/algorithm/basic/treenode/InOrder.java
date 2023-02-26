@@ -1,4 +1,4 @@
-package com.learning.algorithm.basic.treeNode;
+package com.learning.algorithm.basic.treenode;
 
 import java.util.ArrayList;
 import java.util.List;

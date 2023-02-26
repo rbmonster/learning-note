@@ -1,6 +1,4 @@
-package com.learning.algorithm.basic.treeNode;
-
-import com.learning.algorithm.basic.treeNode.TreeNode;
+package com.learning.algorithm.basic.treenode;
 
 /**
  * <pre>

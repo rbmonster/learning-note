@@ -1,6 +1,6 @@
 package com.learning.algorithm;
 
-import com.learning.algorithm.basic.treeNode.TreeNode;
+import com.learning.algorithm.basic.treenode.TreeNode;
 
 import java.util.*;
 

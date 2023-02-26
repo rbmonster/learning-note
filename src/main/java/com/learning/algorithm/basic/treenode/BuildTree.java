@@ -1,6 +1,4 @@
-package com.learning.algorithm.basic.treeNode;
-
-import scala.collection.mutable.Queue;
+package com.learning.algorithm.basic.treenode;
 
 import java.util.*;
 

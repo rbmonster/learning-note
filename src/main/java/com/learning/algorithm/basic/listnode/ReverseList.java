@@ -1,6 +1,4 @@
-package com.learning.algorithm.basic.listNode;
-
-import java.util.List;
+package com.learning.algorithm.basic.listnode;
 
 /**
  * <pre>
@@ -33,8 +31,22 @@ public class ReverseList {
         return newHead;
     }
 
-
-
-
-
+    /**
+     * 迭代法
+     * @param head
+     * @return
+     */
+    public ListNode reverseList1(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode prefixHead = new ListNode(-1);
+        while(head !=null) {
+            ListNode next = head.next;
+            head.next = prefixHead.next;
+            prefixHead.next = head;
+            head = next;
+        }
+        return prefixHead.next;
+    }
 }

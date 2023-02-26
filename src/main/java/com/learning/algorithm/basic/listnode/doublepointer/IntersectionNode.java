@@ -1,6 +1,6 @@
-package com.learning.algorithm.basic.listNode.doublePoint;
+package com.learning.algorithm.basic.listnode.doublepointer;
 
-import com.learning.algorithm.basic.listNode.ListNode;
+import com.learning.algorithm.basic.listnode.ListNode;
 
 /**
  * <pre>

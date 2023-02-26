@@ -2,6 +2,7 @@
 
 ## 链表
 
+### 问题分类
 链表双指针：
 
 - [环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
@@ -24,11 +25,20 @@
 - [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
 - [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
 
-反转链表递归写法:
+
+### 常见func
+
+
+反转链表:
 
 ```java
 public class Solution {
-
+    
+    /**
+     * 反转链表递归写法
+     * @param head
+     * @return
+     */
     public ListNode reverseList(ListNode head) {
         if (head == null || head.next == null) {
             return head;
@@ -38,8 +48,75 @@ public class Solution {
         head.next = null;
         return res;
     }
+    
+    /**
+     * 反转链表迭代归写法
+     * @param head
+     * @return
+     */
+    public ListNode reverseList1(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode prefixHead = new ListNode(-1);
+        while(head !=null) {
+            ListNode next = head.next;
+            head.next = prefixHead.next;
+            prefixHead.next = head;
+            head = next;
+        }
+        return prefixHead.next;
+    }
+}
+
+```
+
+双指针
+```java
+class Solution {
+    /**
+     * 查找链表中点
+     * @param head
+     * @return
+     */
+    public ListNode findMid(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode fast = head.next;
+        ListNode slow = head;
+        while(fast != null && fast.next !=null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        return slow;
+    }
+
+    /**
+     * 查找倒数第N个节点
+     * @param head
+     * @param n
+     * @return
+     */
+    public ListNode findLastN(ListNode head, int n) {
+        ListNode fast = head;
+        while(fast != null && n >0) {
+            fast = fast.next;
+            n--;
+        }
+        if (fast == null) {
+            return null;
+        }
+        ListNode slow = head;
+        while(fast !=null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return slow;
+    }
 }
 ```
+
 
 ## 树
 
@@ -526,8 +603,8 @@ public class Solution {
 ## 数组与字符串
 
 ### 数组
+数组问题常见的解题关键字: **指针**、**搜索**、**hash表**
 
-针对于数组的索引问题，常规的操作就是用指针、搜索、hash表问题解决
 
 - [移除元素](https://leetcode.cn/problems/remove-element/description/)
 - [有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/description/)
@@ -536,6 +613,7 @@ public class Solution {
 - [螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
 - [螺旋矩阵 II](https://leetcode.cn/problems/spiral-matrix-ii/)
 - [螺旋矩阵 III](https://leetcode.cn/problems/spiral-matrix-iii/description/)
+- [旋转矩阵](https://leetcode.cn/problems/rotate-matrix-lcci/description/)
 ### 字符串
 
 公共前缀问题

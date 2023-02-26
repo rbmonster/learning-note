@@ -1,4 +1,4 @@
-package com.learning.algorithm.basic.listNode;
+package com.learning.algorithm.basic.listnode;
 
 /**
  * <pre>
