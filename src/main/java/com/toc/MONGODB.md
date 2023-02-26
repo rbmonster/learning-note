@@ -139,6 +139,26 @@ db.helloworld.dropIndex("username_1")
 ```
 
 
+查询数组中的值
+```text
+db.getCollection('form_answer').aggregate([
+    {
+        $unwind:{
+            path:'$answers',
+            includeArrayIndex: 'index'
+        }
+        
+    },{"$match":{"formAnswerId":"139900001"}}
+    ,
+     {
+        $project: {
+            _id: 0,
+            "questionId": "$answers.questionId",
+        }
+    }
+])
+```
+
 ## <a name="8">应用场景</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 设计的两个关键，一个重要问题：
 - 范式化：将数据分散到不同的集合中，数据类似与关系型数据一样，使用主键关联。
