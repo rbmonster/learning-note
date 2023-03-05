@@ -597,7 +597,7 @@ public class Arrays{
 
 ### hash 冲突解决方案
 1. 链地址法：HashMap中hash冲突节点，使用链表和红黑树解决
-2. 线性探测再散列：ThreadLocal中ThreadLocalMap的hash冲突，会线性向后探索直到寻找到向下一个空的节点。
+2. 线性探测再散列：ThreadLocal中ThreadLocalMap的hash冲突，会线性向后探索直到寻找到向下一个空的节点。存在**键簇问题**，即插入数据后产生冲突聚集成的一组连续的条目。
 3. 再哈希法。
 > 这种方法是同时构造多个不同的哈希函数：Hi=RH1（key） i=1，2，…，k。当哈希地址Hi=RH1（key）发生冲突时，再计算Hi=RH2（key）……，直到冲突不再产生。
 

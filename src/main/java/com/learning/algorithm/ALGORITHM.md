@@ -1,5 +1,9 @@
 # 算法
 
+大O表示法：大O用来表示上界的，当用它作为算法的最坏情况运行时间的上界，就是对任意数据输入的运行时间的上界。面试中说道算法的时间复杂度是多少指的都是一般情况。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/algorithm-analyse.png)
+
 ## 链表
 
 ### 问题分类
@@ -335,10 +339,9 @@ class Solution {
 [二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
 
 ```java
-// 自顶而下 通过全局变量传递值
 public class Solution {
+    // 自顶而下 通过全局变量传递值、或者方法返回值
     private int answer;
-
     private void maximum_depth(TreeNode root, int depth) {
         if (root == null) {
             return;
@@ -365,7 +368,7 @@ public class Solution {
 
 #### 构造及修改二叉树问题
 
-涉及到⼆叉树的构造，⽆论普通⼆叉树还是⼆叉搜索树⼀定前序，都是先构造中节点。
+涉及到⼆叉树的构造，⽆论普通⼆叉树还是⼆叉搜索树⼀定**前序**，都是先构造中节点。
 > 理解TreeNode作为返回值的递归方法的含义，问题可以拆解成小问题到下层递归中。
 
 常用的修改二叉树递归代码模版：
@@ -450,7 +453,7 @@ next:
 - [二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/)
 - [把二叉搜索树转换为累加树（review）](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
 
-二叉搜索树的树结构修改：
+二叉搜索树的树结构修改：\
 [删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst/)
 
 - 如果目标节点没有子节点，我们可以直接移除该目标节点。
@@ -498,6 +501,23 @@ public class Solution {
 
 二叉搜索树构建：
 [将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
+
+### 红黑二叉查找树
+红黑二叉查找树背后的思想是用标准的二叉查找树和一些二外的信息来表示2-3树。
+> 2-3树需要维护两种不同类型的节点，将被查询的键和节点中的每个键进行比较，还有链接复制、节点类型转换等工作，实现需要大量的代码，所产生的额外开销可能比标准的二叉查找树更慢
+
+红黑树另一种等价定义是满足以下条件的二叉查找树：
+- 红链接均为左链接
+- 没有一个节点同时和两个红链接项链
+- 该树是完全黑色平衡的，即任意空链接到根节点的路径上的黑色链接数量相同。
+满足这样定义的红黑树和相应的2-3树是一一对应的。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/red-black-tree.png)
+
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/find-algorithm.png)
+
+红黑树可以保证最坏情况下的性能，且它能够支持的操作更多(如排名、选择、排序和范围查找)。根据经验法则，第一选择通常是hash表(散列表)，其他因素更重要的时候，才会选择红黑树。
 
 ### 高频算法
 
@@ -581,7 +601,6 @@ public class Solution {
 - [二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 
 ## 哈希表
-
 哈希表的关键思想是使用哈希函数将键映射到存储桶。
 
 哈希接口判断元素存在：
@@ -624,7 +643,7 @@ public class Solution {
 
 - [最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
 
-## 双指针问题
+## 双指针
 
 ### 快慢指针
 
@@ -1031,6 +1050,7 @@ void slidingWindow(string s, string t) {
 
 ## 队列
 
+### 相关算法
 队列是典型的 FIFO 数据结构：
 
 - 插入（insert）操作也称作入队（enqueue），新元素始终被添加在队列的末尾。
@@ -1039,68 +1059,6 @@ void slidingWindow(string s, string t) {
 - [用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/)
 - [剑指 Offer 09. 用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
 
-### 广度优先搜索(BFS)
-
-广度优先搜索（BFS）的一个常见应用是找出从根结点到目标结点的最短路径。 注意点：
-
-1. 初始入队列。
-2. 是否需要层级访问。
-3. 记录已访问节点的信息防止重复访问。
-
-树的遍历代码模版：
-
-```java
-
-class Solution {
-    public List<List<Integer>> levelOrder(TreeNode root) {
-        Queue<TreeNode> queue = new LinkedList<>();
-        queue.add(root);
-        while (!queue.isEmpty()) {
-            int size = queue.size();
-            for (int i = 0; i < size; i++) {
-                TreeNode node = queue.poll();
-                if (node.left != null) {
-                    queue.add(node.left);
-                }
-            }
-        }
-    }
-}
-```
-
-图遍历代码模板：
-
-```java
-public class Solution {
-    int BFS2(Node root, Node target) {
-        Queue<Node> queue = new LinkedList<>();  // store all nodes which are waiting to be processed
-        Set<Node> used = new HashSet<>();     // store all the used nodes
-        int step = 0;       // number of steps neeeded from root to current node
-        // initialize
-        queue.add(root);
-        used.add(root);
-        // BFS
-        while (!queue.isEmpty()) {
-            step = step + 1;
-            // iterate the nodes which are already in the queue
-            int size = queue.size();
-            for (int i = 0; i < size; ++i) {
-                Node cur = queue.poll();
-                if (cur == target) {
-                    return step;
-                }
-                for (Node next : cur.neighbors) {
-                    if (!used.contains(next)) {
-                        queue.add(root);
-                        used.add(root);
-                    }
-                }
-            }
-        }
-        return -1;          // there is no path from root to target
-    }
-}
-```
 
 ### 单调队列
 
@@ -1153,6 +1111,7 @@ class MaxQueue {
 
 ## 栈
 
+### 相关算法
 栈具有记忆的功能，由其数据的特殊性可以用来DFS搜索
 
 - [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
@@ -1161,72 +1120,6 @@ class MaxQueue {
 - [字符串解码](https://leetcode-cn.com/problems/decode-string/): review
 - [二叉树的中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 - [二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
-
-### 深度优先搜索(DFS)
-
-深度优先搜索（DFS）是用于 在树/图中遍历/搜索 的另一种重要算法。也可以在更抽象的场景中使用。\
-正如树的遍历中所提到的，我们可以用 DFS 进行 前序遍历，中序遍历 和 后序遍历。在这三个遍历顺序中有一个共同的特性：除非我们到达最深的结点，否则我们永远不会回溯 。\
-这也是 DFS 和 BFS 之间最大的区别，BFS永远不会深入探索，除非它已经在当前层级访问了所有结点。\
-通常，我们使用递归实现 DFS。栈在递归中起着重要的作用。
-
-递归遍历： 当我们递归地实现 DFS 时，似乎不需要使用任何栈。但实际上，我们使用的是由系统提供的**隐式栈**，也称为调用栈（Call Stack）。
-
-```java
-
-public class Solution {
-    /*
-     * Return true if there is a path from cur to target.
-     */
-    boolean DFS(Node cur, Node target, Set<Node> visited) {
-        if (cur == target) {
-            return true;
-        }
-        for (Node each : cur.neighbor) {
-            if (!visited.contains(each)) {
-                visted.add(each);
-                boolean result = DFS(next, target, visited);
-                if (result) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-}
-```
-
-对于图论，若使用DFS递归搜索时，在遇到数据量过大的情况。则要注意堆栈溢出的情况。因为递归使用的是系统的**隐式栈**.\
-此时就可以使用栈来模拟系统**隐式栈**的调用过程，避免出现堆栈溢出。
-
-```java
-
-public class Solution {
-
-
-    /*
-     * Return true if there is a path from cur to target.
-     */
-    boolean DFS(Node root, int target) {
-        Set<Node> visited;
-        Stack<Node> s;
-        s.push(root);
-        while (!s.isEmpty()) {
-            Node cur = s.pop();
-            if (cur == target) {
-                return true;
-            }
-            for (Node next : cur.neighbors) {
-                if (!visited.contains(next)) {
-                    s.add(next);
-                    visited.add(next);
-                }
-            }
-        }
-        return false;
-    }
-
-}
-```
 
 ### 单调栈
 
@@ -1293,9 +1186,218 @@ class Solution {
 
 - [最多能完成排序的块](https://leetcode-cn.com/problems/max-chunks-to-make-sorted/): 单调栈的变形
 
-## BFS 与 DFS
+## 图
 
+### DFS
+DFS即Depth First Search，深度优先搜素算法其过程简要来说是对每一个可能的分支路径深入到不能再深入为止，而且每个节点只能访问一次。在访问一个节点时
+- 将它标记成访问
+- 递归的访问他的所有没有被标记的邻居节点
+> 可以解决**单点连通性、单点路径、双色问题(二分图)、检测环**
+
+
+深度优先搜索（DFS）是用于 在树/图中遍历/搜索 的另一种重要算法。
+> 如树的遍历中所提到的，我们可以用 DFS 进行 前序遍历，中序遍历 和 后序遍历。在这三个遍历顺序中有一个共同的特性：除非我们到达最深的结点，否则我们永远不会回溯 。\
+这也是 DFS 和 BFS 之间最大的区别，BFS永远不会深入探索，除非它已经在当前层级访问了所有结点。\
+通常，我们使用递归实现 DFS。栈在递归中起着重要的作用。
+
+递归遍历： 当我们递归地实现 DFS 时，似乎不需要使用任何栈。但实际上，我们使用的是由系统提供的**隐式栈**，也称为调用栈（Call Stack）。
+
+```java
+
+public class Solution {
+    /*
+     * Return true if there is a path from cur to target.
+     */
+    boolean DFS(Node cur, Node target, Set<Node> visited) {
+        if (cur == target) {
+            return true;
+        }
+        for (Node each : cur.neighbor) {
+            if (!visited.contains(each)) {
+                visted.add(each);
+                boolean result = DFS(next, target, visited);
+                if (result) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+```
+
+对于图论，若使用DFS递归搜索时，在遇到数据量过大的情况。则要注意堆栈溢出的情况。因为递归使用的是系统的**隐式栈**.\
+此时就可以使用栈来模拟系统**隐式栈**的调用过程，避免出现堆栈溢出。
+
+```java
+
+public class Solution {
+
+
+    /*
+     * Return true if there is a path from cur to target.
+     */
+    boolean DFS(Node root, int target) {
+        Set<Node> visited;
+        Stack<Node> s;
+        s.push(root);
+        while (!s.isEmpty()) {
+            Node cur = s.pop();
+            if (cur == target) {
+                return true;
+            }
+            for (Node next : cur.neighbors) {
+                if (!visited.contains(next)) {
+                    s.add(next);
+                    visited.add(next);
+                }
+            }
+        }
+        return false;
+    }
+
+}
+```
+
+
+
+双色问题(二分图) 
+```java
+ class DFSTwoColor {
+
+    private boolean[] marked;
+
+    private boolean[] color;
+    private boolean isTwoColor = true;
+
+    public DFSTwoColor(Graph G) {
+        marked = new boolean[G.V()];
+        color = new boolean[G.V()];
+        for (int i = 0; i < G.V(); i++) {
+            if (!marked[i]) {
+
+            }
+        }
+    }
+
+    private void dfs(Graph G, int v) {
+        marked[v] = true;
+        for (Integer w : G.adj(v)) {
+            if (!marked[w]) {
+                color[w] = !color[v];
+                dfs(G, w);
+            } else if (color[w] == color[v]) {
+                // 节点已经访问过，但是颜色与连通节点颜色相同，说明不是二分图
+                this.isTwoColor = false;
+            }
+        }
+    }
+}
+```
+
+检测环:
+```java
+class DFSCycle {
+
+    private boolean[] marked;
+
+    private boolean hasCycle;
+
+    public DFSCycle(Graph G) {
+        this.marked = new boolean[G.V()];
+
+    }
+
+    /**
+     * dfs 判断是否存在环
+     * @param G
+     * @param v
+     * @param u
+     */
+    private void dfs(Graph G, int v, int u) {
+        marked[v] = true;
+        for (int w: G.adj(v)) {
+            if (!marked[w]) {
+                dfs(G, w, v);
+            } else {
+                if (w != u) {
+                    this.hasCycle = true;
+                }
+            }
+        }
+    }
+}
+```
+
+
+
+### BFS
+BFS，其英文全称是Breadth First Search，广度优先搜索算法，使用了一个队列来保存所有已经被标记过但其邻接表还未被检查过的顶点。先将起点加入队列，然后重复以下步骤直到队列为空:
+- 取队列的下一个顶点并标记
+- 将与v相邻的所有未被标记的顶点加入队列。
+
+广度优先搜索（BFS）的一个常见应用是找出从根结点到目标结点的**最短路径**。 注意点：
+
+
+树的遍历代码模版：
+```java
+
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+            }
+        }
+    }
+}
+```
+
+图遍历代码模板：
+
+```java
+public class Solution {
+    int BFS2(Node root, Node target) {
+        Queue<Node> queue = new LinkedList<>();  // store all nodes which are waiting to be processed
+        Set<Node> used = new HashSet<>();     // store all the used nodes
+        int step = 0;       // number of steps neeeded from root to current node
+        // initialize
+        queue.add(root);
+        used.add(root);
+        // BFS
+        while (!queue.isEmpty()) {
+            step = step + 1;
+            // iterate the nodes which are already in the queue
+            int size = queue.size();
+            for (int i = 0; i < size; ++i) {
+                Node cur = queue.poll();
+                if (cur == target) {
+                    return step;
+                }
+                for (Node next : cur.neighbors) {
+                    if (!used.contains(next)) {
+                        queue.add(root);
+                        used.add(root);
+                    }
+                }
+            }
+        }
+        return -1;          // there is no path from root to target
+    }
+}
+```
+
+
+
+### DSF与BSF相关算法
 BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相关问题放一起。
+> **单点最短路径常常选择BFS，连通性、检测环、二分性常常使用DFS**
 
 - [剑指 Offer 13. 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
 - [岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/)
@@ -1310,9 +1412,16 @@ BFS与DFS相关的问题，经常都可以用两种方式求解，因此把相�
 - [被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
 - [钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
 
-染色法：
+二分图：
 - [判断二分图](https://leetcode-cn.com/problems/is-graph-bipartite/): 判断方法很特别，通过节点染色
 - [可能的二分法](https://leetcode.cn/problems/possible-bipartition/)
+
+
+### 拓扑排序
+拓扑排序，给定一幅有向图，将所有的顶点排序，使得所有的有向边均从排在前面的元素指向排在后面的元素。
+
+- [课程表](https://leetcode-cn.com/problems/course-schedule/)
+- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
 
 ## 递归
 编写递归代码时最重要的有以下三点：
@@ -2075,11 +2184,6 @@ class Solution {
 典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计\
 它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。
 
-## 拓扑排序
-
-- [课程表](https://leetcode-cn.com/problems/course-schedule/)
-- [课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
-
 ## 并查集
 
 ```java
@@ -2315,13 +2419,5 @@ public class Solution{
         
     }
 }
-```
-
-# 算法4原书
-
-
-```java
-
-
 ```
 

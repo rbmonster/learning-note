@@ -17,9 +17,12 @@
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/sort/basicSort.jpg)
 
+- 稳定排序: 排序算法能够保留数组中重复元素的相对位置，称为稳定的。
 - In-place: 内部排序
 - out-place: 外部排序
 - 相关资料：[一文搞定十大经典排序算法（Java实现）](https://www.jianshu.com/p/47170b1ced23)
+
+
 
 ## 冒泡排序
 
@@ -343,6 +346,7 @@ public class Solution {
 
 ## 希尔排序
 
+希尔排序的思想是使数组中任意间隔为h的元素都是有序的
 ```java
 public class Solution {
     public static void sort(int[] arr) {
@@ -403,6 +407,8 @@ public class Solution {
 
 ## 堆排序
 
+堆排序缺陷：堆排序中数组元素很少和相邻的元素比较，因此缓存为命中的次数远远高于大多数比较都在相邻元素间的算法，如快速排序、归并排序、甚至是希尔排序。
+
 ```java
 public class Solution {
     public static void sort(int[] arr) {
@@ -457,6 +463,7 @@ public class Solution {
 ```
 
 ## 归并排序
+归并排序的主要缺点是辅助数组所使用的额外空间和N的大小成正比。
 
 ```java
 public class Solution {
