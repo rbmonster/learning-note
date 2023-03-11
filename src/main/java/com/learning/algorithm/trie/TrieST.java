@@ -4,7 +4,10 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 /**
- * 字典树
+ * R向字典树
+ *  R 越大占用的空间越大
+ *  (处理由大小为R的字母表构造的N个字符串, w为单词平均长度)
+ *  一棵R向单词查找树的链接总数在RN ～ RNw
  * @param <T>
  */
 public class TrieST<T> {

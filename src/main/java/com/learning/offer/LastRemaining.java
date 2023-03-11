@@ -7,7 +7,7 @@ package com.learning.offer;
  * </pre>
  *
  * @version v1.0
- * @ClassName: LastRemaining_Soluction
+ * @ClassName: LastRemaining_Solution
  * @Author: 86159
  * @Date: 2020/3/24 20:55
  */

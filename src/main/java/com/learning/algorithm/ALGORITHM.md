@@ -1583,7 +1583,7 @@ public void backTracking() {
 3. **排列问题中的树层去重**
 
 ```java   
-public class Soluction {
+public class Solution {
     public List<List<Integer>> permute(int[] nums) {
       List<List<Integer>> res = new ArrayList<>();
       boolean[] used = new boolean[nums.length];
@@ -1647,11 +1647,15 @@ public class Soluction {
 ### 去重问题横向对比
 
 - [组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/submissions/):
-  排序后树层去重`if(i>index && candidates[i]== candidates[i-1])`
+  排序后树层去重\
+  `if(i>index && candidates[i]== candidates[i-1])`
 - [全排列 II](https://leetcode-cn.com/problems/permutations-ii/):
-  排序后树层去重```if(i>0 && nums[i] == nums[i-1] && used[i-1] == false) ```
-- [子集 II](https://leetcode-cn.com/problems/subsets-ii/): 树层去重`if (i != index && nums[i] == nums[i-1])`
-- [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/): 无序元素树层去重`if(used.contains(nums[i]))`
+  排序后树层去重\
+  ```if(i>0 && nums[i] == nums[i-1] && used[i-1] == false) ```
+- [子集 II](https://leetcode-cn.com/problems/subsets-ii/): 树层去重\
+  `if (i != index && nums[i] == nums[i-1])`
+- [递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/): 无序元素树层去重\
+  `if(used.contains(nums[i]))`
 
 
 ### 其他
@@ -2322,6 +2326,18 @@ public class Solution {
         }
         return true;
     }
+
+    public static boolean isPrime(int N) {
+        if (N < 2) {
+            return false;
+        }
+        for (int i = 2; i * i <= N; i++) {
+            if (N % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 ```
 
@@ -2350,7 +2366,7 @@ public class Solution {
 
 - [最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
-```
+```java
 class Solution {
     public int maxSubArray(int[] nums) {
         int dp = 0, res = Integer.MIN_VALUE;
