@@ -5,7 +5,7 @@
 - 传输层最主要的协议是 TCP 和 UDP 协议。
 - 应用层：HTTP、FTP、SMTP、TELNET、POP3、DNS
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/network1.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/network1.jpg)
 
 7层结构明细
 
@@ -249,13 +249,14 @@ HTTP 有以下安全性问题：
 - 不验证通信方的身份，通信方的身份有可能遭遇伪装；
 - 无法证明报文的完整性，报文有可能遭篡改。
 
+### 加密过程
 HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets Layer）通信，再由 SSL 和 TCP 通信，也就是说 HTTPS 使用了隧道进行通信。
 
 通过使用 SSL，HTTPS 具有了加密（防窃听）、认证（防伪装）和完整性保护（防篡改）。
 
 Https采用混合的加密机制。
 1. 第一阶段使用非对称加密方式，**传递对称加密**所需的客户端及服务端的会话秘钥。
-   1. 客户端收到非对称加密公钥，经过CA认证。生成客户端的RSA非对称加密**公私钥**及客户端会话秘钥。
+   1. 客户端收到非对称加密服务端公钥，经过CA认证。生成客户端的RSA非对称加密**公私钥**及客户端会话秘钥。
    2. 客户端使用服务端非对称公钥(asymmetric-public-sever)加密: 客户端RSA公钥 + 客户端会话秘钥
    3. 服务器使用私钥解密获取客户端RSA公钥 + 客户端会话秘钥，服务器生成 服务器会话秘钥。
    4. 服务端使用客户端RSA公钥加密，传输：服务端会话秘钥
@@ -264,6 +265,34 @@ Https采用混合的加密机制。
 
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/HttpsFlow.png)
 
+
+### SSL
+**SSL与TLS**\
+SSL(Secure Sockets Layer，安全套接字层)和TLS(Transport Layer Security，传输层安全)协议是两种不同但非常相似的安全协议。TLS实际上是SSL的升级版，目前已经被广泛应用，而SSL则已经逐渐被取代。
+
+
+**Keystore与Truststore**\
+Keystore与Truststore是与SSL/TLS安全协议相关的概念，它们用于存储安全证书、私钥以及根证书等信息，以确保通信的安全性。
+- Keystore是用于**存储私钥和证书**的安全存储库，在SSL/TLS协议中，客户端和服务器都需要使用Keystore来存储自己的私钥和证书，以便在握手过程中进行身份验证和密钥交换。
+- Truststore是用于存储**信任证书**的安全存储库。在SSL/TLS协议中，客户端需要使用Truststore来存储信任的根证书和中间证书，以**验证服务器端的证书**。而服务器端则不需要使用Truststore，因为客户端会在握手过程中发送自己的证书供服务器端验证。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/trustStore_and_keyStore.jpg)
+
+
+工作流程：
+当客户端发起HTTPS请求时，它会向服务器端发送一个ClientHello消息，其中包含客户端支持的加密算法列表和一些其他信息。同时，客户端也会从**Keystore中选择一个合适的数字证书**并将其发送给服务器端，以证明自己的身份。在此过程中，Keystore起着关键作用，它会**提供客户端的数字证书和私钥**，以供服务器端进行身份验证和密钥交换。\
+一旦服务器端收到了客户端的ClientHello消息和数字证书，它就会从**Truststore中选择一个根证书来验证客户端的数字证书**。如果客户端的数字证书可以成功验证，则**服务器端会使用从Keystore中**选择的数字证书和私钥来生成一个随机的会话密钥，并使用客户端的公钥进行加密，然后将其发送给客户端。客户端收到服务器端发送的信息后，使用自己的私钥解密获取到会话密钥，然后使用该密钥来加密通信过程中的所有数据。
+
+
+> 浏览器与https网站的通信过程是怎样的？\
+浏览器在访问 HTTPS 网站时不会直接发送自己的 keystore 和 truststore，而是在 SSL/TLS 握手阶段通过协商建立安全连接时，服务端会向客户端（浏览器）发送一个证书，证书中包含了服务端的公钥。**浏览器会使用自己内置的证书信任链**(truststore)对服务端证书进行验证，如果验证通过，浏览器就会使用该证书中的公钥来加密随机生成的对称密钥，并将其发送给服务端，服务端使用自己的私钥来解密该密钥，然后双方就可以使用该对称密钥进行加密通信了。\
+而客户端（浏览器）并不需要发送自己的 keystore，因为在 SSL/TLS 握手阶段中，客户端会生成一个**临时的公私钥对**(仅用于本次通信)，并将公钥发送给服务端，服务端则使用该公钥来加密通信过程中的数据，而客户端使用自己的私钥来解密数据。\
+因此，浏览器在 HTTPS 通信过程中只需要使用自己内置的 truststore 来验证服务端证书的有效性，不需要发送自己的 keystore。
+
+> 如果通信的方向只是从客户端往服务端单向发送https请求，是不是客户端truststore就不需要了？\
+如果通信的方向只是从客户端向服务端单向发送HTTPS请求，那么客户端的Truststore可以不需要，因为在这种情况下，**客户端不需要对服务器端进行身份验证**。\
+客户端的Truststore主要用于存储可信的根证书和中间证书，以便验证服务器端的数字证书的有效性。在正常的双向认证的情况下，当客户端向服务器端发送HTTPS请求时，服务器端会返回自己的数字证书，客户端会使用自己的Truststore验证服务器端的证书是否被信任和有效。但如果客户端只是单向发送HTTPS请求，那么客户端不需要验证服务器端的证书的有效性，也就不需要Truststore了。\
+需要注意的是，如果客户端仍然使用了Truststore，那么它将仅仅起到验证服务器端证书的作用，并不会增加通信的安全性，反而可能会因为误信了不可信的证书而降低通信的安全性。因此，在单向发送HTTPS请求的场景下，可以省略客户端的Truststore。建议实际使用中还是需要配置，不验证跟误验证自己权衡一下。
 
 ## 证书认证
 数字证书认证机构（CA，Certificate Authority）是客户端与服务器双方都可信赖的第三方机构。
@@ -312,7 +341,7 @@ text/plain
 
 ### 预检请求
 预检请求 首先使用 OPTIONS方法发起一个预检请求到服务器，以获知服务器是否允许该实际请求。
-> "预检请求“的使用，可以避免跨域请求对服务器的用户数据产生未预期的影响。
+> "预检请求“的使用，可以避免跨域请求对服务器的用户数据产生未预期的影响。\
 ![avatar](https://media.prod.mdn.mozit.cloud/attachments/2019/06/19/16753/b32f78ac26d18e3e155205e4f0057b73/preflight_correct.png)
 
 
