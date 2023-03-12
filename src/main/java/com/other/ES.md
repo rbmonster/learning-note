@@ -1743,5 +1743,11 @@ es 的搜索引擎严重依赖于底层的 filesystem cache ，你如果给 file
 
 [advanced-java ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？](https://github.com/doocs/advanced-java/blob/main/docs/high-concurrency/es-optimizing-query-performance.md)
 
+### ES Text与keyword 有什么区别？
+
+对于Text类型，将文本存储到倒排索引之前，会使用分析器对其进行分析，而Keyword类型则不会分析。文档是否被分析过会影响其查询的结果。
+
+[Elasticsearch中Text和Keyword类型的区别](https://www.jianshu.com/p/f5d548559791)
+
 ## 参考资料
 - [ES脑裂问题分析及优化](https://blog.csdn.net/kakaluoteyy/article/details/81068387)
