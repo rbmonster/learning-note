@@ -2306,6 +2306,8 @@ private static boolean isPowerOfTwo(int n) {
 > 相关关键词：**连续子数组**
 
 - [寻找数组的中心下标](https://leetcode-cn.com/problems/find-pivot-index/)
+- [面试题 17.05. 字母与数字](https://leetcode.cn/problems/find-longest-subarray-lcci/)
+- [统计美丽子数组数目](https://leetcode.cn/problems/count-the-number-of-beautiful-subarrays/)
 
 ### 素数
 
