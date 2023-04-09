@@ -272,6 +272,53 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 参考资料：
 [详解“洋葱架构”](https://www.infoq.cn/article/zolhf7uu455xovvqwwv3)
 
+### 整洁结构
+
+在整洁架构出现之前，已经有一些其它架构，包括 Hexagonal Architecture、Onion Architecture、Screaming Architecture、DCI 和 BCE。这些架构在本质上都是类似的，都采用分层的方式来达到一个共同的目标，那就是**分离关注**。干净架构将这些架构的核心理念提取了出来，形成了一种更加通用和灵活的架构。干净架构的设计理念如下图所示：
+
+采用整洁架构的系统，可以达成以下目标：
+- 框架无关性。干净架构不依赖于具体的框架和库，而仅把它们当作工具，因此不会受限于任何具体的框架和库。
+- 可测试性。业务规则可以在没有 UI、数据库、Web 服务器等外部依赖的情况下进行测试。
+- UI 无关性。UI 改变可以在不改动系统其它部分的情况下完成，比如把 Web UI 替换成控制台 UI。
+- 数据库无关性。可以很容易地切换数据库类型，比如从关系型数据库 MySQL 切换到文档型数据库 MongoDB，因为业务规则并没有绑定到某种特定的数据库类型。
+- 外部代理无关性。业务规则对外部世界一无所知，因此外部代理的变动不会影响到业务代码。
+
+
+相关原则与思想
+- 向内依赖原则（Inward Dependency Rule）: 最核心的原则就是代码依赖关系只能从外向内，而不能反之。整洁架构的每一圈层代表软件系统的不同部分，越往里抽象程度越高。外层为机制，内层为策略。
+- 实体（Entities）：实体用于封装业务规则。实体可以是拥有方法的对象，也可以是数据结构和函数的集合。
+- 用例（Use Cases）：用例是特定于应用的业务逻辑，一般用来完成用户的某个操作。
+- 接口适配器（Interface Adapters）：接口适配器层的主要作用是转换数据，数据从最适合内部用例层和实体层的结构转换成适合外层（比如数据持久化框架）的结构。
+- 框架和驱动（Frameworks and Drivers）：最外层由各种框架和工具组成，比如 Web 框架、数据库访问工具等。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/clean-architecture.png)
+
+参考文章：
+- [干净架构最佳实践](https://blog.jaggerwang.net/clean-architecture-in-practice/)
+- [The Clean Code Blog](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
+### CQRS
+CQRS 是“命令查询责任分离”（Command Query Responsibility Segregation）的缩写。在基于 CQRS 的系统中，命令(写操作)和查询(读操作)所使用的数据模型是有区别的。命令模型用于有效地执行写/更新操作，而查询模型用于有效地支持各种读模式。
+
+
+
+很多情况产品构建出来的数据展示，需要横跨几个领域的数据的支撑，也就是我们日常构建的大宽表，在这种情况使用CQRS模式可以完美解决这个问题。其主导视图模型和领域模型分开，让领域模型更加专注业务逻辑，流程和规则而非业务视图。
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/CQRS.png)
+
+
+CQRS的思想很简单，就是把服务中对数据的更新操作(Command)和读取操作(Query)分离, 一部分逻辑只处理和数据更新有关的业务，另外一部分只处理和数据读取有关的逻辑。这种处理方式，可以让我们辛苦构建的领域模型不被业务中所需要的这类视图需求所干扰。
+
+CQRS 的两种实现方式
+
+基于event- sourcing
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/CQRS-event-source.png)
+
+不基于event - sourcing
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/CQRS-db.png)
+
+
 
 ### DDD 领域驱动
 详细见
