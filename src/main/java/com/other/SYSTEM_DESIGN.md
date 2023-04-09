@@ -227,6 +227,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 - 更好的可扩展性
 - 对测试的友好支持
 - 更容易实施DDD
+> 缺点：忽略了在领域层中跨模型业务逻辑的实现方式-领域服务的沉淀
 
 
 与DDD的共性和区别：
@@ -238,6 +239,39 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 参考文章：
 - [微服务架构设计之六边形架构](https://xmmarlowe.github.io/2021/08/26/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E4%B9%8B%E5%85%AD%E8%BE%B9%E5%BD%A2%E6%9E%B6%E6%9E%84/)
 - [从三明治到六边形](https://insights.thoughtworks.cn/architecture-from-sandwich-to-hexagon/)
+
+### 洋葱架构
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-architecture.png)
+洋葱架构是建立在一个领域模型上的，其中各层是通过接口连接的。其背后的思想是，在领域实体和业务规则构成架构的核心部分时，尽可能将外部依赖性保持在外。
+- 它提供了灵活、可持续和可移植的架构。
+- 各层之间没有紧密的耦合，并且有关注点的分离。
+- 由于所有的代码都依赖于更深的层或者中心，所以提供了更好的可维护性。
+- 提高了整体代码的可测试性，因为单元测试可以为单独的层创建，而不会影响到其他的模块。
+- 框架/技术可以很容易地改变而不影响核心领域。例如，RabbitMQ 可以被 ActiveMQ 取代，SQL 可以被 MongoDB 取代。
+
+缺陷： **洋葱架构的架构图从其依赖顺序上来看，其依赖应用层必须先依赖域服务层，再依赖域模型层， 这样很容易造成领域模型的逻辑外泄到领域服务层，造成领域模型变成贫血模型。**
+
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-architecture-2.png)
+
+洋葱架构是由多个同心层构成，它们相互连接，并朝向代表领域的核心。它是基于控制反转（Inversion of Control，IoC）的原则。该架构并不关注底层技术或框架，而是关注实际的领域模型。它是基于以下原则：
+- 依赖性: 圆圈代表不同的责任层。外圈代表机制，内圈代表核心领域逻辑。外层依赖于内层，而内层则对外圈一无所知。
+- 数据封装: 每个层/圈封装或隐藏内部的实现细节，并向外层公开接口。所有的层也需要提供便于内层消费的信息。其目的是最小化层与层之间的耦合，最大化跨层垂直切面内的耦合。
+- 关注点的分离: 应用被分为若干层，每一层都有一组职责，并解决不同的关注点。
+- 耦合性: 低耦合性，可以使一个模块与另一个模块交互，而不需要关注另一个模块的内部。
+
+> 一个创建订单的用例来了解架构的不同层和它们的职责。当收到一个创建订单的请求时，我们会对这个订单进行验证，将这个订单保存在数据库中，更新所有订单项目的库存，借记订单金额，最后向客户发送订单完成的通知。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-case.png)
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-case-2.png)
+
+
+> 洋葱架构也适用于微服务。每个微服务都有自己的模型、自己的用例，并定义了自己的外部接口，用于检索或修改数据。这些接口可以用一个适配器来实现，该适配器通过公开 HTTP Rest、GRPC、Thrift Endpoints 等连接到另一个微服务。它很适合微服务，在微服务中，数据访问层不仅包括数据库，还包括例如一个 http 客户端，以从另一个微服务，甚至从外部系统获取数据。
+
+参考资料：
+[详解“洋葱架构”](https://www.infoq.cn/article/zolhf7uu455xovvqwwv3)
+
 
 ### DDD 领域驱动
 详细见
