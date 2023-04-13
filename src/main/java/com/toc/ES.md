@@ -83,7 +83,8 @@
 &emsp;&emsp;<a href="#80">7.1. ES 的分布式架构原理</a>  
 &emsp;&emsp;<a href="#81">7.2. ES 生产集群的部署架构是什么？每个索引的数据量大概有多少？每个索引大概有多少个分片？</a>  
 &emsp;&emsp;<a href="#82">7.3. ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？</a>  
-&emsp;<a href="#83">8. 参考资料</a>  
+&emsp;&emsp;<a href="#83">7.4. ES Text与keyword 有什么区别？</a>  
+&emsp;<a href="#84">8. 参考资料</a>  
 # <a name="0">elasticsearch </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 elasticsearch，基于lucene，隐藏复杂性，提供简单易用的restful api接口、java api接口（还有其他语言的api接口）。
 Elasticsearch 是分布式的**文档**存储。它能存储和检索复杂的数据结构——以**实时**的方式。 换句话说，一旦一个文档被存储在 Elasticsearch 中，它就是可以被集群中的任意节点检索到。
@@ -1829,5 +1830,11 @@ es 的搜索引擎严重依赖于底层的 filesystem cache ，你如果给 file
 
 [advanced-java ES 在数据量很大的情况下（数十亿级别）如何提高查询效率啊？](https://github.com/doocs/advanced-java/blob/main/docs/high-concurrency/es-optimizing-query-performance.md)
 
-## <a name="83">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="83">ES Text与keyword 有什么区别？</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+对于Text类型，将文本存储到倒排索引之前，会使用分析器对其进行分析，而Keyword类型则不会分析。文档是否被分析过会影响其查询的结果。
+
+[Elasticsearch中Text和Keyword类型的区别](https://www.jianshu.com/p/f5d548559791)
+
+## <a name="84">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [ES脑裂问题分析及优化](https://blog.csdn.net/kakaluoteyy/article/details/81068387)

@@ -19,26 +19,29 @@
 &emsp;&emsp;<a href="#16">5.2. 分布式系统</a>  
 &emsp;&emsp;<a href="#17">5.3. SOA</a>  
 &emsp;&emsp;<a href="#18">5.4. 微服务</a>  
-&emsp;&emsp;&emsp;<a href="#19">5.4.1. 拆分原则</a>  
-&emsp;&emsp;&emsp;<a href="#20">5.4.2. DDD 领域驱动</a>  
-&emsp;<a href="#21">6. 相关资料</a>  
-<a href="#22">微服务</a>  
-&emsp;<a href="#23">1. 常用技术</a>  
-&emsp;<a href="#24">2. 基本概念</a>  
-&emsp;&emsp;<a href="#25">2.1. 负载均衡</a>  
-&emsp;&emsp;<a href="#26">2.2. 缓存</a>  
-&emsp;&emsp;<a href="#27">2.3. 分片/数据分区</a>  
-&emsp;&emsp;<a href="#28">2.4. 代理</a>  
-&emsp;&emsp;<a href="#29">2.5. 冗余</a>  
-&emsp;&emsp;<a href="#30">2.6. 服务治理</a>  
-&emsp;&emsp;<a href="#31">2.7. 流量调度</a>  
-&emsp;<a href="#32">3. 限流</a>  
-&emsp;&emsp;<a href="#33">3.1. 限流算法</a>  
-&emsp;&emsp;<a href="#34">3.2. 分布式限流</a>  
-&emsp;&emsp;<a href="#35">3.3. 实际应用</a>  
-&emsp;<a href="#36">4. 熔断</a>  
-&emsp;<a href="#37">5. 监控 </a>  
-&emsp;&emsp;<a href="#38">5.1. 系统可用性测量</a>  
+&emsp;&emsp;<a href="#19">5.5. 六边形架构</a>  
+&emsp;&emsp;<a href="#20">5.6. 洋葱架构</a>  
+&emsp;&emsp;<a href="#21">5.7. 整洁结构</a>  
+&emsp;&emsp;<a href="#22">5.8. CQRS</a>  
+&emsp;&emsp;<a href="#23">5.9. DDD 领域驱动</a>  
+&emsp;<a href="#24">6. 相关资料</a>  
+<a href="#25">微服务</a>  
+&emsp;<a href="#26">1. 常用技术</a>  
+&emsp;<a href="#27">2. 基本概念</a>  
+&emsp;&emsp;<a href="#28">2.1. 负载均衡</a>  
+&emsp;&emsp;<a href="#29">2.2. 缓存</a>  
+&emsp;&emsp;<a href="#30">2.3. 分片/数据分区</a>  
+&emsp;&emsp;<a href="#31">2.4. 代理</a>  
+&emsp;&emsp;<a href="#32">2.5. 冗余</a>  
+&emsp;&emsp;<a href="#33">2.6. 服务治理</a>  
+&emsp;&emsp;<a href="#34">2.7. 流量调度</a>  
+&emsp;<a href="#35">3. 限流</a>  
+&emsp;&emsp;<a href="#36">3.1. 限流算法</a>  
+&emsp;&emsp;<a href="#37">3.2. 分布式限流</a>  
+&emsp;&emsp;<a href="#38">3.3. 实际应用</a>  
+&emsp;<a href="#39">4. 熔断</a>  
+&emsp;<a href="#40">5. 监控 </a>  
+&emsp;&emsp;<a href="#41">5.1. 系统可用性测量</a>  
 # <a name="0">设计原则及架构思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ## <a name="1">编程思想</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
@@ -230,22 +233,146 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 - 基础设施自动化（Infrastructure Automation）
 
 
-
-#### <a name="19">拆分原则</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-垂直划分优先原则：应该根据业务领域对服务进行垂直划分，让团队能关注业务实现。
-
-持续演进原则： 服务数量在非必要的情况下，应该逐步划分，持续演进，避免服务数量的爆炸性增长
+**拆分原则**
+- 垂直划分优先原则：应该根据业务领域对服务进行垂直划分，让团队能关注业务实现。
+- 持续演进原则： 服务数量在非必要的情况下，应该逐步划分，持续演进，避免服务数量的爆炸性增长
 
 
-#### <a name="20">DDD 领域驱动</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="19">六边形架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/hexagonal-architecture.png)
+
+六边形架构又称”端口适配器架构“，本质上也是一种分层架构，跟传统的MVC架构不同的是，从上下层转为了内外层。
+- 内部代表了应用的业务逻辑
+- 外部代表应用的驱动逻辑、基础设施或其他应用
+核心理念是应用通过端口与外部进行交互。核心的业务逻辑与外部资源完全隔离，仅通过适配器进行交互。
+
+六边形体系结构是围绕**领域逻辑设计**软件应用程序以将其与**外部因素隔离**的模型。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/hexagonal-architecture-2.png)
+
+六边形架构可以被分为了三层：端口适配器、应用层与领域层。而端口又可以分为输入端口和输出端口。
+- 输入端口: 用于系统提供服务时暴露API接口，接受外部客户系统的输入，并客户系统的输入转化为程序内部所能理解的输入。系统作为服务提供者是对外的接入层可以看成是输入端口。
+- 输出端口: 为系统获取外部服务提供支持，如获取持久化状态、对结果进行持久化，或者发布领域状态的变更通知（如领域事件）。系统作为服务的消费者获取服务是对外的接口（数据库、缓存、消息队列、RPC调用）等都可以看成是输入端口。
+- 应用层: 定义系统可以完成的工作，很薄的一层。它并不处理业务逻辑通过协调领域对象或领域服务完成业务逻辑，并通过输入端口输出结果。也可以在这一层进行事务管理。
+- 领域层: 负责表示业务概念、规则与状态，属于业务的核心。
+> 应用层与领域层的不变性可以保证核心领域不受外部的干扰，而端口的可替换性可以很方便的对接不用的外部系统。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/hexagonal-architecture-puml.png)
+
+
+**特性**
+- **外部可替换**: 一个端口对应多个适配器，是对一类外部系统的归纳，它**体现了对外部的抽象**。应用通过端口为外界提供服务，这些端口需要被良好的设计和测试。
+- **自动测试**: 在六边形架构中，自动化测试和用户具有同等的地位，在实现用户界面的同时就需要考虑自动化测试。它们对应相同的端口。
+- **依赖倒置**: 六边形架构必须遵循如下规则：内部相关的代码不能泄露到外部。所谓的泄露是指不能出现内部依赖外部的情况，只能外部依赖内部，这样才能保证外部是可以替换的
+
+优点：
+- 业务领域的边界更加清晰
+- 更好的可扩展性
+- 对测试的友好支持
+- 更容易实施DDD
+> 缺点：忽略了在领域层中跨模型业务逻辑的实现方式-领域服务的沉淀
+
+
+与DDD的共性和区别：
+- 在六边形架构中，业务逻辑位于中心，被称为“领域层”或“核心层”，外部环境通过“端口”或“适配器”与其交互
+- DDD的核心思想是将业务问题领域建模，以此来指导软件设计和开发。其核心是领域模型，其目的是为了实现业务规则和业务流程的自然映射
+共性。首先它们都关注业务逻辑的独立性，六边形架构通过将业务逻辑与外部环境分离，DDD则通过领域模型来描述业务逻辑。其次，它们都鼓励团队使用统一的业务语言（Ubiquitous Language）来描述领域模型或业务逻辑，这也是DDD中的重要概念之一。
+
+
+参考文章：
+- [微服务架构设计之六边形架构](https://xmmarlowe.github.io/2021/08/26/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E4%B9%8B%E5%85%AD%E8%BE%B9%E5%BD%A2%E6%9E%B6%E6%9E%84/)
+- [从三明治到六边形](https://insights.thoughtworks.cn/architecture-from-sandwich-to-hexagon/)
+
+### <a name="20">洋葱架构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-architecture.png)
+洋葱架构是建立在一个领域模型上的，其中各层是通过接口连接的。其背后的思想是，在领域实体和业务规则构成架构的核心部分时，尽可能将外部依赖性保持在外。
+- 它提供了灵活、可持续和可移植的架构。
+- 各层之间没有紧密的耦合，并且有关注点的分离。
+- 由于所有的代码都依赖于更深的层或者中心，所以提供了更好的可维护性。
+- 提高了整体代码的可测试性，因为单元测试可以为单独的层创建，而不会影响到其他的模块。
+- 框架/技术可以很容易地改变而不影响核心领域。例如，RabbitMQ 可以被 ActiveMQ 取代，SQL 可以被 MongoDB 取代。
+
+缺陷： **洋葱架构的架构图从其依赖顺序上来看，其依赖应用层必须先依赖域服务层，再依赖域模型层， 这样很容易造成领域模型的逻辑外泄到领域服务层，造成领域模型变成贫血模型。**
+
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-architecture-2.png)
+
+洋葱架构是由多个同心层构成，它们相互连接，并朝向代表领域的核心。它是基于控制反转（Inversion of Control，IoC）的原则。该架构并不关注底层技术或框架，而是关注实际的领域模型。它是基于以下原则：
+- 依赖性: 圆圈代表不同的责任层。外圈代表机制，内圈代表核心领域逻辑。外层依赖于内层，而内层则对外圈一无所知。
+- 数据封装: 每个层/圈封装或隐藏内部的实现细节，并向外层公开接口。所有的层也需要提供便于内层消费的信息。其目的是最小化层与层之间的耦合，最大化跨层垂直切面内的耦合。
+- 关注点的分离: 应用被分为若干层，每一层都有一组职责，并解决不同的关注点。
+- 耦合性: 低耦合性，可以使一个模块与另一个模块交互，而不需要关注另一个模块的内部。
+
+> 一个创建订单的用例来了解架构的不同层和它们的职责。当收到一个创建订单的请求时，我们会对这个订单进行验证，将这个订单保存在数据库中，更新所有订单项目的库存，借记订单金额，最后向客户发送订单完成的通知。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-case.png)
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/onion-case-2.png)
+
+
+> 洋葱架构也适用于微服务。每个微服务都有自己的模型、自己的用例，并定义了自己的外部接口，用于检索或修改数据。这些接口可以用一个适配器来实现，该适配器通过公开 HTTP Rest、GRPC、Thrift Endpoints 等连接到另一个微服务。它很适合微服务，在微服务中，数据访问层不仅包括数据库，还包括例如一个 http 客户端，以从另一个微服务，甚至从外部系统获取数据。
+
+参考资料：
+[详解“洋葱架构”](https://www.infoq.cn/article/zolhf7uu455xovvqwwv3)
+
+### <a name="21">整洁结构</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+
+在整洁架构出现之前，已经有一些其它架构，包括 Hexagonal Architecture、Onion Architecture、Screaming Architecture、DCI 和 BCE。这些架构在本质上都是类似的，都采用分层的方式来达到一个共同的目标，那就是**分离关注**。干净架构将这些架构的核心理念提取了出来，形成了一种更加通用和灵活的架构。干净架构的设计理念如下图所示：
+
+采用整洁架构的系统，可以达成以下目标：
+- 框架无关性。干净架构不依赖于具体的框架和库，而仅把它们当作工具，因此不会受限于任何具体的框架和库。
+- 可测试性。业务规则可以在没有 UI、数据库、Web 服务器等外部依赖的情况下进行测试。
+- UI 无关性。UI 改变可以在不改动系统其它部分的情况下完成，比如把 Web UI 替换成控制台 UI。
+- 数据库无关性。可以很容易地切换数据库类型，比如从关系型数据库 MySQL 切换到文档型数据库 MongoDB，因为业务规则并没有绑定到某种特定的数据库类型。
+- 外部代理无关性。业务规则对外部世界一无所知，因此外部代理的变动不会影响到业务代码。
+
+
+相关原则与思想
+- 向内依赖原则（Inward Dependency Rule）: 最核心的原则就是代码依赖关系只能从外向内，而不能反之。整洁架构的每一圈层代表软件系统的不同部分，越往里抽象程度越高。外层为机制，内层为策略。
+- 实体（Entities）：实体用于封装业务规则。实体可以是拥有方法的对象，也可以是数据结构和函数的集合。
+- 用例（Use Cases）：用例是特定于应用的业务逻辑，一般用来完成用户的某个操作。
+- 接口适配器（Interface Adapters）：接口适配器层的主要作用是转换数据，数据从最适合内部用例层和实体层的结构转换成适合外层（比如数据持久化框架）的结构。
+- 框架和驱动（Frameworks and Drivers）：最外层由各种框架和工具组成，比如 Web 框架、数据库访问工具等。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/clean-architecture.png)
+
+参考文章：
+- [干净架构最佳实践](https://blog.jaggerwang.net/clean-architecture-in-practice/)
+- [The Clean Code Blog](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
+### <a name="22">CQRS</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+CQRS 是“命令查询责任分离”（Command Query Responsibility Segregation）的缩写。在基于 CQRS 的系统中，命令(写操作)和查询(读操作)所使用的数据模型是有区别的。命令模型用于有效地执行写/更新操作，而查询模型用于有效地支持各种读模式。
+
+
+
+很多情况产品构建出来的数据展示，需要横跨几个领域的数据的支撑，也就是我们日常构建的大宽表，在这种情况使用CQRS模式可以完美解决这个问题。其主导视图模型和领域模型分开，让领域模型更加专注业务逻辑，流程和规则而非业务视图。
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/CQRS.png)
+
+
+CQRS的思想很简单，就是把服务中对数据的更新操作(Command)和读取操作(Query)分离, 一部分逻辑只处理和数据更新有关的业务，另外一部分只处理和数据读取有关的逻辑。这种处理方式，可以让我们辛苦构建的领域模型不被业务中所需要的这类视图需求所干扰。
+
+CQRS 的两种实现方式
+
+基于event- sourcing
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/CQRS-event-source.png)
+
+不基于event - sourcing
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/CQRS-db.png)
+
+
+
+### <a name="23">DDD 领域驱动</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 详细见
 [DDD设计思想](https://github.com/rbmonster/learning-note/blob/master/src/main/java/com/toc/DDD.md)
 
-## <a name="21">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="24">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [微服务拆分方法论](https://blog.csdn.net/no_game_no_life_/article/details/103390169)
 
 
-# <a name="22">微服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+# <a name="25">微服务</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 **主要特点**
 
@@ -273,7 +400,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 
 
 
-## <a name="23">常用技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="26">常用技术</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 微服务提高系统性能常用技术：
 
@@ -292,9 +419,9 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 
 
 
-## <a name="24">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="27">基本概念</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="25">负载均衡</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="28">负载均衡</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 定义：通过某种负载分担技术，将外部发送过来的请求均匀分配到对称结构中的某一台服务器上，而接收到请求的服务器独立地回应客户的请求。
 
 负载均衡的位置：
@@ -316,7 +443,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 - 圆周率
 - IP哈希
 
-### <a name="26">缓存</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">缓存</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 局部性原则：最近访问的数据很可能会被再次访问
 
 缓存分为：
@@ -324,7 +451,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 - 分布式缓存
 - 全局缓存
 
-### <a name="27">分片/数据分区</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">分片/数据分区</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 分片：
 - 水平分片：基于范围的分片，把不同的行放到不同的表中。
@@ -341,7 +468,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 - 完整性问题：难以执行数据完整性约束（如外键）。
 - 数据分布不均匀问题。
 
-### <a name="28">代理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="31">代理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 代理服务器是位于客户和后端服务器之间的一个中间硬件/软件。
 - 过滤请求
 - 记录请求
@@ -350,7 +477,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 - 批量请求
 - 折叠转发：使同一URI的多个客户端请求作为一个请求被处理到后端服务器。 对存储空间上相距较近的数据进行折叠式请求，以尽量减少读取的次数
 
-### <a name="29">冗余</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="32">冗余</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 冗余：关键数据或服务的重复，旨在提高系统的可靠性。
 - 服务器故障转移：移除单点故障并提供备份（如服务器故障转移）。
 - 无共享的架构
@@ -359,7 +486,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
   - 无状态：无需特殊条件或知识就可以增加新的服务器。
   - 没有单点故障。
 
-### <a name="30">服务治理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="33">服务治理</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 服务治理关键技术：
 - 服务关键程度
@@ -384,7 +511,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 
 **服务弹性伸缩和故障迁移**
 
-### <a name="31">流量调度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">流量调度</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 流量调度系统的主要功能：
 1. 根据系统运行的情况，自动地进行流量调度，在无需人工干预的情况，提升整个系统的稳定性
@@ -402,7 +529,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 3. 业务逻辑。可以拥有简单业务逻辑。
 4. 服务化。
 
-## <a name="32">限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="35">限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 流量统计指标：
 - 每秒事务数（Transactions per Second，TPS）：TPS 是衡量信息系统吞吐量的最终标准。
@@ -415,7 +542,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 > 目前，主流系统大多倾向使用 HPS 作为首选的限流指标，它是相对容易观察统计的，而且能够在一定程度上反应系统当前以及接下来一段时间的压力。但**限流指标并不存在任何必须遵循的权威法则**，**根据系统的实际需要**，哪怕完全不选择基于调用计数的指标都是有可能的。譬如下载、视频、直播等 I/O 密集型系统，往往会把每次请求和响应报文的大小，而不是调用次数作为限流指标，譬如只允许单位时间通过 100MB 的流量。又譬如网络游戏等基于长连接的应用，可能会把登陆用户数作为限流指标，热门的网游往往超过一定用户数就会让你在登陆前排队等候。
 
 
-### <a name="33">限流算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">限流算法</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 流量计数器模式：设置一个计算器，根据当前时刻的流量计数结果是否超过阈值来决定是否限流，如控制任何一秒内，发现超过 80 次业务请求就直接拒绝掉超额部分。
 > 缺陷：可能存在两个时间间隔总流量大于限制请求数情况，如前半秒+后半秒的时间区间大于限制数。以及超时误杀。(详细见周老师凤凰架构)
@@ -429,7 +556,7 @@ SOA的架构经常利用一个被称为企业服务总线（Enterprise Service B
 
 TODO
 
-### <a name="34">分布式限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">分布式限流</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 微服务架构下，上述的限流算法就最多只能应用于集群最入口处的网关上，对整个服务集群进行流量控制，而无法细粒度地管理流量在内部微服务节点中的流转情况。所以，我们把前面介绍的限流模式都统称为单机限流，把能够精细控制分布式集群中每个服务消耗量的限流算法称为分布式限流。
 
@@ -438,7 +565,7 @@ TODO
 在可以共享统计数据的前提下，原本用于单机的限流模式理论上也是可以应用于分布式环境中的，可是其代价也显而易见：每次服务调用都必须要额外增加一次网络开销，所以这种方法的效率肯定是不高的，流量压力大时，限流本身反倒会显著降低系统的处理能力。
 
 
-### <a name="35">实际应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">实际应用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 ```properties
 zuul.ratelimit.add-response-headers = false
@@ -465,10 +592,10 @@ zuul.ratelimit.repository = REDIS
 zuul.ratelimit.verify-path = /api/v1/user/v-code/captcha/verify
 ```
 
-## <a name="36">熔断</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="39">熔断</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 
-## <a name="37">监控 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="40">监控 </a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 全栈监控
 - **基础层**：监控主机和底层资源。比如：CPU、内存、网络吞吐、硬盘I/O、硬盘使用等。
@@ -492,7 +619,6 @@ zuul.ratelimit.verify-path = /api/v1/user/v-code/captcha/verify
 ![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/systemdesign/system-monitor-1.png)
 
 
-### <a name="38">系统可用性测量</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-
+### <a name="41">系统可用性测量</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 MTTA

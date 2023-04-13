@@ -48,6 +48,8 @@
 
 领域驱动指的是以领域作为解决问题切入点，面对业务需求，先提炼出领域概念，并构建领域模型来表达业务问题，而构建过程中我们应该尽可能避免牵扯技术方案或技术细节。而编码实现更像是对领域模型的代码翻译，代码(变量名、方法名、类名等)中要求能够表达领域概念，让人见码明义。
 
+DDD本质上我认为就是一种减低软件复杂度的手段， 其推荐的方法论可以适用于上面包括了业务规模，可扩展性两个维度的复杂度应对。其实业务规模的复杂度的处理包括了对可扩展性的支持。
+
 ### <a name="2">两个转变</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 结合实践经验，“领域驱动”是一种**思维模式转变**\
 实践 DDD 以前，**最常使用的是数据驱动设计**。它的核心思路针对业务需求进行数据建模：**根据业务需求提炼出类**，然后通过 ORM 把类映射为表结构，并根据读写性能要求使用范式优化表与表之间的关联关系。数据驱动是从技术的维度解决业务问题，得出的**数据模型是对业务需求的直接翻译**，并没有蕴含稳定的领域知识/规则。一旦需求发生变化，数据模型就得发生变化，对应的库表的设计也需要进行调整。**这种设计思维导致变化从需求穿透到了数据层**，中间并没有稳定的，不易变的层级进行阻隔，最终导致系统响应变化的能力很差。
@@ -366,6 +368,9 @@ DDDRUP 可以串联 DDD 的所有概念和模式，实施DDD的设计过程
 
 ## <a name="36">代码实现</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/design/ddd/code-example.png)
+
+
 **用户接口层**\
 用户接口层的核心职能：协议转换和适配、鉴权、参数校验和异常处理。
 ```
@@ -454,3 +459,4 @@ interfaces
 - [万字长文助你上手软件领域驱动设计 DDD](https://mp.weixin.qq.com/s/BIYp9DNd_9sw5O2daiHmlA)
 - [领域驱动编程，代码怎么写？](https://mp.weixin.qq.com/s/W9xT9hNQjjIfjGxbePqDJw)
 - [Alibaba-cola](https://github.com/alibaba/COLA)
+- [万字详解｜从软件复杂度的角度去理解DDD](https://mp.weixin.qq.com/s/4NWIxMVe2TDda45tUxUhYg)

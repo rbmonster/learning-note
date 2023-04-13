@@ -24,34 +24,36 @@
 &emsp;&emsp;<a href="#21">7.2. Session</a>  
 &emsp;&emsp;<a href="#22">7.3. 参考资料</a>  
 &emsp;<a href="#23">8. https</a>  
-&emsp;<a href="#24">9. 证书认证</a>  
-&emsp;<a href="#25">10. Http2.0</a>  
-&emsp;<a href="#26">11. 跨源资源共享（CORS）</a>  
-&emsp;&emsp;<a href="#27">11.1. 简单请求与非简单请求</a>  
-&emsp;&emsp;<a href="#28">11.2. 预检请求</a>  
-&emsp;&emsp;<a href="#29">11.3. response头字段</a>  
-&emsp;&emsp;<a href="#30">11.4. 参考资料</a>  
-&emsp;<a href="#31">12. 前端相关存储空间的使用</a>  
-&emsp;&emsp;<a href="#32">12.1. cookie</a>  
-&emsp;&emsp;<a href="#33">12.2. localStorage（本地存储）</a>  
-&emsp;&emsp;<a href="#34">12.3. sessionStorage</a>  
-&emsp;&emsp;<a href="#35">12.4. cookie、localStorage、sessionStorage区别</a>  
-&emsp;&emsp;<a href="#36">12.5. 其他</a>  
-&emsp;<a href="#37">13. 密码学与网络安全</a>  
-&emsp;&emsp;<a href="#38">13.1. 对称加密</a>  
-&emsp;&emsp;<a href="#39">13.2. 非对称密钥加密</a>  
-&emsp;&emsp;<a href="#40">13.3. 单向散列加密</a>  
-&emsp;&emsp;<a href="#41">13.4. 彩虹表</a>  
-&emsp;&emsp;<a href="#42">13.5. 加盐</a>  
-&emsp;&emsp;&emsp;<a href="#43">13.5.1. 动态盐</a>  
-&emsp;&emsp;<a href="#44">13.6. 加签验签</a>  
-&emsp;&emsp;<a href="#45">13.7. 相关资料</a>  
-&emsp;<a href="#46">14. 网络攻击</a>  
-&emsp;&emsp;<a href="#47">14.1. XSS攻击</a>  
-&emsp;&emsp;<a href="#48">14.2. CSP内容安全策略</a>  
-&emsp;&emsp;<a href="#49">14.3. CSRF 攻击</a>  
-&emsp;&emsp;<a href="#50">14.4. 中间人攻击</a>  
-&emsp;&emsp;<a href="#51">14.5. 参考资料</a>  
+&emsp;&emsp;<a href="#24">8.1. 加密过程</a>  
+&emsp;&emsp;<a href="#25">8.2. SSL</a>  
+&emsp;<a href="#26">9. 证书认证</a>  
+&emsp;<a href="#27">10. Http2.0</a>  
+&emsp;<a href="#28">11. 跨源资源共享（CORS）</a>  
+&emsp;&emsp;<a href="#29">11.1. 简单请求与非简单请求</a>  
+&emsp;&emsp;<a href="#30">11.2. 预检请求</a>  
+&emsp;&emsp;<a href="#31">11.3. response头字段</a>  
+&emsp;&emsp;<a href="#32">11.4. 参考资料</a>  
+&emsp;<a href="#33">12. 前端相关存储空间的使用</a>  
+&emsp;&emsp;<a href="#34">12.1. cookie</a>  
+&emsp;&emsp;<a href="#35">12.2. localStorage（本地存储）</a>  
+&emsp;&emsp;<a href="#36">12.3. sessionStorage</a>  
+&emsp;&emsp;<a href="#37">12.4. cookie、localStorage、sessionStorage区别</a>  
+&emsp;&emsp;<a href="#38">12.5. 其他</a>  
+&emsp;<a href="#39">13. 密码学与网络安全</a>  
+&emsp;&emsp;<a href="#40">13.1. 对称加密</a>  
+&emsp;&emsp;<a href="#41">13.2. 非对称密钥加密</a>  
+&emsp;&emsp;<a href="#42">13.3. 单向散列加密</a>  
+&emsp;&emsp;<a href="#43">13.4. 彩虹表</a>  
+&emsp;&emsp;<a href="#44">13.5. 加盐</a>  
+&emsp;&emsp;&emsp;<a href="#45">13.5.1. 动态盐</a>  
+&emsp;&emsp;<a href="#46">13.6. 加签验签</a>  
+&emsp;&emsp;<a href="#47">13.7. 相关资料</a>  
+&emsp;<a href="#48">14. 网络攻击</a>  
+&emsp;&emsp;<a href="#49">14.1. XSS攻击</a>  
+&emsp;&emsp;<a href="#50">14.2. CSP内容安全策略</a>  
+&emsp;&emsp;<a href="#51">14.3. CSRF 攻击</a>  
+&emsp;&emsp;<a href="#52">14.4. 中间人攻击</a>  
+&emsp;&emsp;<a href="#53">14.5. 参考资料</a>  
 # <a name="0">计算机网络</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 ## <a name="1">网络模型</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 5层模型应用层，运输层，网络层，数据链路层，物理层组成。
@@ -59,7 +61,7 @@
 - 传输层最主要的协议是 TCP 和 UDP 协议。
 - 应用层：HTTP、FTP、SMTP、TELNET、POP3、DNS
 
-![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/network1.jpg)
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/network1.jpg)
 
 7层结构明细
 
@@ -303,13 +305,14 @@ HTTP 有以下安全性问题：
 - 不验证通信方的身份，通信方的身份有可能遭遇伪装；
 - 无法证明报文的完整性，报文有可能遭篡改。
 
+### <a name="24">加密过程</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 HTTPS 并不是新协议，而是让 HTTP 先和 SSL（Secure Sockets Layer）通信，再由 SSL 和 TCP 通信，也就是说 HTTPS 使用了隧道进行通信。
 
 通过使用 SSL，HTTPS 具有了加密（防窃听）、认证（防伪装）和完整性保护（防篡改）。
 
 Https采用混合的加密机制。
 1. 第一阶段使用非对称加密方式，**传递对称加密**所需的客户端及服务端的会话秘钥。
-   1. 客户端收到非对称加密公钥，经过CA认证。生成客户端的RSA非对称加密**公私钥**及客户端会话秘钥。
+   1. 客户端收到非对称加密服务端公钥，经过CA认证。生成客户端的RSA非对称加密**公私钥**及客户端会话秘钥。
    2. 客户端使用服务端非对称公钥(asymmetric-public-sever)加密: 客户端RSA公钥 + 客户端会话秘钥
    3. 服务器使用私钥解密获取客户端RSA公钥 + 客户端会话秘钥，服务器生成 服务器会话秘钥。
    4. 服务端使用客户端RSA公钥加密，传输：服务端会话秘钥
@@ -319,12 +322,40 @@ Https采用混合的加密机制。
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/HttpsFlow.png)
 
 
-## <a name="24">证书认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="25">SSL</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+**SSL与TLS**\
+SSL(Secure Sockets Layer，安全套接字层)和TLS(Transport Layer Security，传输层安全)协议是两种不同但非常相似的安全协议。TLS实际上是SSL的升级版，目前已经被广泛应用，而SSL则已经逐渐被取代。
+
+
+**Keystore与Truststore**\
+Keystore与Truststore是与SSL/TLS安全协议相关的概念，它们用于存储安全证书、私钥以及根证书等信息，以确保通信的安全性。
+- Keystore是用于**存储私钥和证书**的安全存储库，在SSL/TLS协议中，客户端和服务器都需要使用Keystore来存储自己的私钥和证书，以便在握手过程中进行身份验证和密钥交换。
+- Truststore是用于存储**信任证书**的安全存储库。在SSL/TLS协议中，客户端需要使用Truststore来存储信任的根证书和中间证书，以**验证服务器端的证书**。而服务器端则不需要使用Truststore，因为客户端会在握手过程中发送自己的证书供服务器端验证。
+
+![image](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/learning/basic/trustStore_and_keyStore.jpg)
+
+
+工作流程：
+当客户端发起HTTPS请求时，它会向服务器端发送一个ClientHello消息，其中包含客户端支持的加密算法列表和一些其他信息。同时，客户端也会从**Keystore中选择一个合适的数字证书**并将其发送给服务器端，以证明自己的身份。在此过程中，Keystore起着关键作用，它会**提供客户端的数字证书和私钥**，以供服务器端进行身份验证和密钥交换。\
+一旦服务器端收到了客户端的ClientHello消息和数字证书，它就会从**Truststore中选择一个根证书来验证客户端的数字证书**。如果客户端的数字证书可以成功验证，则**服务器端会使用从Keystore中**选择的数字证书和私钥来生成一个随机的会话密钥，并使用客户端的公钥进行加密，然后将其发送给客户端。客户端收到服务器端发送的信息后，使用自己的私钥解密获取到会话密钥，然后使用该密钥来加密通信过程中的所有数据。
+
+
+> 浏览器与https网站的通信过程是怎样的？\
+浏览器在访问 HTTPS 网站时不会直接发送自己的 keystore 和 truststore，而是在 SSL/TLS 握手阶段通过协商建立安全连接时，服务端会向客户端（浏览器）发送一个证书，证书中包含了服务端的公钥。**浏览器会使用自己内置的证书信任链**(truststore)对服务端证书进行验证，如果验证通过，浏览器就会使用该证书中的公钥来加密随机生成的对称密钥，并将其发送给服务端，服务端使用自己的私钥来解密该密钥，然后双方就可以使用该对称密钥进行加密通信了。\
+而客户端（浏览器）并不需要发送自己的 keystore，因为在 SSL/TLS 握手阶段中，客户端会生成一个**临时的公私钥对**(仅用于本次通信)，并将公钥发送给服务端，服务端则使用该公钥来加密通信过程中的数据，而客户端使用自己的私钥来解密数据。\
+因此，浏览器在 HTTPS 通信过程中只需要使用自己内置的 truststore 来验证服务端证书的有效性，不需要发送自己的 keystore。
+
+> 如果通信的方向只是从客户端往服务端单向发送https请求，是不是客户端truststore就不需要了？\
+如果通信的方向只是从客户端向服务端单向发送HTTPS请求，那么客户端的Truststore可以不需要，因为在这种情况下，**客户端不需要对服务器端进行身份验证**。\
+客户端的Truststore主要用于存储可信的根证书和中间证书，以便验证服务器端的数字证书的有效性。在正常的双向认证的情况下，当客户端向服务器端发送HTTPS请求时，服务器端会返回自己的数字证书，客户端会使用自己的Truststore验证服务器端的证书是否被信任和有效。但如果客户端只是单向发送HTTPS请求，那么客户端不需要验证服务器端的证书的有效性，也就不需要Truststore了。\
+需要注意的是，如果客户端仍然使用了Truststore，那么它将仅仅起到验证服务器端证书的作用，并不会增加通信的安全性，反而可能会因为误信了不可信的证书而降低通信的安全性。因此，在单向发送HTTPS请求的场景下，可以省略客户端的Truststore。建议实际使用中还是需要配置，不验证跟误验证自己权衡一下。
+
+## <a name="26">证书认证</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 数字证书认证机构（CA，Certificate Authority）是客户端与服务器双方都可信赖的第三方机构。
 
 进行 HTTPS 通信时，服务器会把证书发送给客户端。客户端取得其中的公开密钥之后，先使用数字签名进行验证，如果验证通过，就可以开始通信了。
 
-## <a name="25">Http2.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="27">Http2.0</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 - 多路复用：允许同时通过单一的 HTTP/2 连接发起多重的请求-响应消息。
   > 在 HTTP/1.1 协议中 「浏览器客户端在同一时间，针对同一域名下的请求有一定数量限制。超过限制数目的请求会被阻塞」。
@@ -334,13 +365,13 @@ Https采用混合的加密机制。
 1. 单连接多资源的方式,减少服务端的链接压力,内存占用更少,连接吞吐量更大 
 2. 由于 TCP 连接的减少而使网络拥塞状况得以改善,同时慢启动时间的减少,使拥塞和丢包恢复速度更快
 
-## <a name="26">跨源资源共享（CORS）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="28">跨源资源共享（CORS）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 跨源资源共享 (CORS) （或通俗地译为跨域资源共享）是一种基于HTTP 头的机制，该机制通过允许服务器标示除了它自己以外的其它origin（域，协议和端口），这样浏览器可以访问加载这些资源，**主要解决了跨域加载数据的问题**。
 > 运行在 http://domain-a.com 的JavaScript代码使用XMLHttpRequest来发起一个到 https://domain-b.com/data.json 的请求。出于安全性，浏览器限制脚本内发起的跨源HTTP请求，浏览器控制台输出跨域请求的问题。
 
 跨源域资源共享（ CORS ）机制允许 Web 应用服务器进行跨源访问控制，从而使跨源数据传输得以安全进行。
 
-### <a name="27">简单请求与非简单请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="29">简单请求与非简单请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 浏览器将CORS请求分成两类：简单请求（simple request）和非简单请求（not-so-simple request）。
 
 简单请求的要求如下：
@@ -364,13 +395,13 @@ text/plain
 
 不满足简单请求的就是非简单请求，非简单请求发起的时候，浏览器会发起一个预检请求。
 
-### <a name="28">预检请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="30">预检请求</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 预检请求 首先使用 OPTIONS方法发起一个预检请求到服务器，以获知服务器是否允许该实际请求。
-> "预检请求“的使用，可以避免跨域请求对服务器的用户数据产生未预期的影响。
+> "预检请求“的使用，可以避免跨域请求对服务器的用户数据产生未预期的影响。\
 ![avatar](https://media.prod.mdn.mozit.cloud/attachments/2019/06/19/16753/b32f78ac26d18e3e155205e4f0057b73/preflight_correct.png)
 
 
-### <a name="29">response头字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="31">response头字段</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 `Access-Control-Allow-Origin: <origin> | *`
 > origin 参数的值指定了允许访问该资源的外域 URI。对于不需要携带身份凭证的请求，服务器可以指定该字段的值为通配符，表示允许来自所有域的请求。
 
@@ -383,17 +414,17 @@ text/plain
 `Access-Control-Allow-Credentials`
 > 当浏览器的credentials设置为true时是否允许浏览器读取response的内容。当用在对preflight预检测请求的响应中时，它指定了实际的请求是否可以使用credentials。
 
-### <a name="30">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="32">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [跨源资源共享（CORS）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS)
 
-## <a name="31">前端相关存储空间的使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="33">前端相关存储空间的使用</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="32">cookie</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="34">cookie</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 作用：cookie是纯文本，没有可执行代码。存储数据，当用户访问了某个网站（网页）的时候，我们就可以通过cookie来向访问者电脑上存储数据，或者某些网站为了辨别用户身份、进行session跟踪而储存在用户本地终端上的数据（通常经过加密）
 
 如何工作：当网页要发http请求时，**浏览器会先检查是否有相应的cookie，有则自动添加在request header中的cookie字段中。这些是浏览器自动帮我们做的，而且每一次http请求浏览器都会自动帮我们做。** 这个特点很重要，因为这关系到“什么样的数据适合存储在cookie中”。
 
-### <a name="33">localStorage（本地存储）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="35">localStorage（本地存储）</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 HTML5新方法，不过IE8及以上浏览器都兼容。
 特点：
@@ -406,13 +437,13 @@ HTML5新方法，不过IE8及以上浏览器都兼容。
 7. localStorage受同源策略的限制
 
 
-### <a name="34">sessionStorage</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="36">sessionStorage</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 其实跟localStorage差不多，也是本地存储，会话本地存储
 
 特点：
 用于本地存储一个会话（session）中的数据，这些数据**只有在同一个会话中的页面才能访问并且当会话结束后数据也随之销毁**。因此sessionStorage不是一种持久化的本地存储，仅仅是会话级别的存储。也就是说只要这个浏览器窗口没有关闭，即使刷新页面或进入同源另一页面，数据仍然存在。关闭窗口后，sessionStorage即被销毁，或者在新窗口打开同源的另一个页面，sessionStorage也是没有的。
 
-### <a name="35">cookie、localStorage、sessionStorage区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="37">cookie、localStorage、sessionStorage区别</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 localStorage只要在相同的协议、相同的主机名、相同的端口下，就能读取/修改到同一份localStorage数据。
 
 sessionStorage比localStorage更严苛一点，除了协议、主机名、端口外，还要求在同一窗口（也就是浏览器的标签页）下。
@@ -423,14 +454,14 @@ sessionStorage当会话结束（当前页面关闭的时候，自动销毁）
 
 cookie的数据会在每一次发送http请求的时候，同时发送给服务器而localStorage、sessionStorage不会。
 
-### <a name="36">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="38">其他</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - web SQL database
 - indexedDB
 
 
-## <a name="37">密码学与网络安全</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="39">密码学与网络安全</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
-### <a name="38">对称加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="40">对称加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对称密钥加密：加密和解密使用同一密钥。
 
 - 优点：加密解密的速度比较快，适合数据比较长时的使用。
@@ -441,7 +472,7 @@ cookie的数据会在每一次发送http请求的时候，同时发送给服务�
 > - 3DES（Triple DES）：是基于DES，对一块数据用三个不同的密钥进行三次加密，强度更高。
 > - AES（Advanced Encryption Standard）：高级加密标准，是下一代的加密算法标准，速度快，安全级别高；
 
-### <a name="39">非对称密钥加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="41">非对称密钥加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 非对称密钥加密，又称公开密钥加密，加密和解密使用不同的密钥。 接收方发送公开的秘钥，公开的秘钥用于加密。接收到消息之后，接收方使用私有秘钥进行解密。
 - 优点：可以更安全地将公开数据传输给通信发送方；
@@ -454,7 +485,7 @@ cookie的数据会在每一次发送http请求的时候，同时发送给服务�
 > - DSA（Digital Signature Algorithm）：数字签名算法，是一种标准的 DSS（数字签名标准）;
 > - ECC（Elliptic Curves Cryptography）：椭圆曲线密码编码学。
 
-### <a name="40">单向散列加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="42">单向散列加密</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 单向加密：不可逆加密，根据密文无法解析出原文，适用于数据校验的场景，例如登录密码。
 
 常见的算法：
@@ -462,11 +493,11 @@ cookie的数据会在每一次发送http请求的时候，同时发送给服务�
 > - SHA(Secure Hash Algorithm，安全散列算法），数字签名等密码学应用中重要的工具，被广泛地应用于电子商务等信息安全领域。虽然SHA与MD5通过碰撞法都被破解了，但是SHA仍然是公认的安全加密算法，较之MD5更为安全。常见的算法如SHA256是SHA-2下细分出的一种算法。
 > - HMAC(Hash Message Authentication Code，散列消息鉴别码，基于密钥的Hash算法的认证协议。消息鉴别码实现鉴别的原理是，用公开函数和密钥产生一个固定长度的值作为认证标识，用这个标识鉴别消息的完整性。使用一个密钥生成一个固定大小的小数据块，即MAC，并将其加入到消息中，然后传输。接收方利用与发送方共享的密钥进行鉴别认证等。
 
-### <a name="41">彩虹表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="43">彩虹表</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 彩虹表是一个用于加密散列函数逆运算的预先计算好的表，常用于破解加密过的密码散列。 
 > 彩虹表常常用于破解长度固定且包含的字符范围固定的密码（如信用卡、数字等）。这是以空间换时间（英语：space-time tradeoff）的典型实践，比暴力破解（Brute-force attack）使用的时间更少，空间更多；但与储存密码空间中的每一个密码及其对应的哈希值（Hash）实现的查找表相比，其花费的时间更多，空间更少。使用加盐的密钥派生函数可以使这种攻击难以实现。
 
-### <a name="42">加盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="44">加盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 盐（Salt），在密码学中，是指在散列之前将散列内容（例如：密码）的任意固定位置插入特定的字符串。这个在散列中加入字符串的方式称为“加盐”。其作用是让加盐后的散列结果和没有加盐的结果不相同，在不同的应用情景中，这个处理可以增加额外的安全性。
 
 
@@ -485,7 +516,7 @@ x7faqgjw**abcdefghijklmnopqrstuvwxyz**
 
 以上就是加盐过程的简单描述，在实际使用过程中，还需要通过特定位数插入、倒序或多种方法对原始密码进行固定的加盐处理，使得散列的结果更加不容易被破解或轻易得到原始密码，比如： x7**a**fa**b**qg**c**jw
 
-#### <a name="43">动态盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+#### <a name="45">动态盐</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 对于静态的加盐
 1. 基于特定的静态盐，可以生成特定的彩虹表.
 2. 对静态盐处理过的散列密码，可以按出现频率进行排序，最常出现的散列密码，对应的明文密码必然还是那些111111、123456之类的。
@@ -495,7 +526,7 @@ x7faqgjw**abcdefghijklmnopqrstuvwxyz**
 
 对于动态盐，可以使用多个加密算法混合保证密码难以破解。
 
-### <a name="44">加签验签</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="46">加签验签</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 加签验签的操作是为了防止报文传输的过程中报文被篡改。**加签与验签是用来证明身份**
 
 加签：用Hash函数把原始报文生成报文摘要，然后用私钥对这个摘要进行加密，就得到这个报文对应的数字签名。通常来说呢，请求方会把「数字签名和报文原文」一并发送给接收方。
@@ -506,12 +537,12 @@ x7faqgjw**abcdefghijklmnopqrstuvwxyz**
 ![avatar](https://raw.githubusercontent.com/rbmonster/file-storage/main/learning-note/other/Endorsement.png)
 
 **假如整个公私钥传递的过程都被人窃取了，但是窃取人仍然不知道报文的hash算法，伪造不了报文。**
-### <a name="45">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="47">相关资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 - [Https/SSL/对称加密/非对称加密](https://blog.csdn.net/user11223344abc/article/details/83658812#1Https_1)
 - [程序员必备基础：加签验签](https://cloud.tencent.com/developer/article/1665989)
 
-## <a name="46">网络攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
-### <a name="47">XSS攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+## <a name="48">网络攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="49">XSS攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 XSS攻击是Web攻击中最常见的攻击方法之一，它是通过对网页注入可执行代码且成功地被浏览器执行，达到攻击的目的，形成了一次有效XSS攻击。
 > 一旦攻击成功，它可以获取用户的联系人列表，然后向联系人发送虚假诈骗信息，可以删除用户的日志等等，有时候还和其他攻击方式同时实 施比如SQL注入攻击服务器和数据库、Click劫持、相对链接劫持等实施钓鱼，它带来的危害是巨 大的，是web安全的头号大敌。
 
@@ -526,7 +557,7 @@ XSS攻击是Web攻击中最常见的攻击方法之一，它是通过对网页�
 2. 劫持流量实现恶意跳转
 3. 注入脚本获得其他信息
 
-### <a name="48">CSP内容安全策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="50">CSP内容安全策略</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 内容安全策略 (CSP) 是一个额外的安全层，用于检测并削弱某些特定类型的攻击，包括跨站脚本 (XSS) 和数据注入攻击等。无论是数据盗取、网站内容污染还是散发恶意软件，这些攻击都是主要的手段；
 
 遵循CSP,在网站的http头部定义了 Content-Security-Policy：
@@ -546,7 +577,7 @@ server: CLOUD ELB 1.0.0
 ```
 CSP 本质上是建立白名单，规定了浏览器只能够执行特定来源的代码;那么即使发生了xss攻击，也不会加载来源不明的第三方脚本；
 
-### <a name="49">CSRF 攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="51">CSRF 攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
 跨站请求伪造（英语：Cross-site request forgery），也被称为 one-click attack 或者 session riding，通常缩写为 CSRF 或者 XSRF， 是一种挟制用户在当前已登录的Web应用程序上执行非本意的操作的攻击方法。跟跨网站指令码（XSS）相比，XSS 利用的是用户对指定网站的信任，CSRF 利用的是网站对用户网页浏览器的信任。
 
@@ -559,10 +590,10 @@ CSP 本质上是建立白名单，规定了浏览器只能够执行特定来源�
 `<img src="http://www.examplebank.com/withdraw?account=Alice&amount=1000&for=Badman">`
 如果有账户名为Alice的用户访问了恶意站点，而她之前刚访问过银行不久，登录信息尚未过期，那么她就会损失1000资金。
 
-### <a name="50">中间人攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="52">中间人攻击</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 中间人攻击(Man-in-the-MiddleAttack，简称“MITM攻击”)是指攻击者与通讯的两端分别创建独立的联系，并交换其所收到的数据，使通讯的两端认为他们正在通过一个私密的连接与对方 直接对话，但事实上整个会话都被攻击者完全控制。
 > 两端的通讯请求都被窃听，并使用自己的公私钥当成对方的公私钥传递给另一端。
 
 
-### <a name="51">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
+### <a name="53">参考资料</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 [浅谈网络安全--xss、csrf、csp](https://zhuanlan.zhihu.com/p/47678785)

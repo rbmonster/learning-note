@@ -2174,10 +2174,12 @@ public class FullPackage {
 
 除了上述背包问题的常见解法，还需**区分先遍历物品再遍历背包，与先遍历背包再遍历物品的区别**。
 
+在完全背包的前提下，即物品可放多次，区分遍历顺序，结果会有如下不同：
 - 如果**求组合数就是外层for循环遍历物品**，内层for遍历背包。组合不强调顺序，如(1,5)和(5,1)是同⼀个组合。
 - 如果**求排列数就是外层for遍历背包**，内层for循环遍历物品。排列强调顺序，如(1,5)和(5,1)是两个不同的排列。
 
-> 如果把遍历nums（物品）放在外循环，遍历target的作为内循环的话，举⼀个例⼦：计算`dp[4]`的时 候，结果集只有 {1,3} 这样的集合，不会有{3,1}这样的集合，因为nums遍历放在外层，3只能出现在1后⾯！
+> 如果把遍历nums（物品）放在外循环，遍历target的作为内循环的话，举⼀个例⼦：计算`dp[4]`的时候，结果集只有 {1,3} 这样的集合，不会有{3,1}这样的集合，因为nums遍历放在外层，物品遍历已经确定3只能出现在1后⾯！
+> 而遍历target的作为外循环的，遍历nums（物品）放在内循环的话，举⼀个例⼦：计算`dp[4]`的时候，结果集会有 {1,3},{3,1} 这样的集合，分别从`dp[1]、dp[3]`转移过来！
 
 ```
 
@@ -2195,6 +2197,9 @@ for(int i =1; i< 背包.length;i++) {
   
   }
 }
+
+
+
 
 ```
 
@@ -2402,6 +2407,8 @@ private static boolean isPowerOfTwo(int n) {
 > 相关关键词：**连续子数组**
 
 - [寻找数组的中心下标](https://leetcode-cn.com/problems/find-pivot-index/)
+- [面试题 17.05. 字母与数字](https://leetcode.cn/problems/find-longest-subarray-lcci/)
+- [统计美丽子数组数目](https://leetcode.cn/problems/count-the-number-of-beautiful-subarrays/)
 
 ### <a name="87">素数</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 
