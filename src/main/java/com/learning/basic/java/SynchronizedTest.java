@@ -20,6 +20,7 @@ public class SynchronizedTest {
         System.out.println(ClassLayout.parseInstance(o).toPrintable());
 
         synchronized (o) {
+            long size = ClassLayout.parseInstance(o).instanceSize();
             System.out.println(ClassLayout.parseInstance(o).toPrintable());
         }
     }
