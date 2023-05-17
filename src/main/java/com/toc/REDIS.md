@@ -1657,6 +1657,10 @@ master 只需要把 master_repl_offset与 slave_repl_offset之间的命令同步
 - 选用其他的数据结构去支撑，如部分场景下set可替换成布隆过滤器。
 
 
+**如何删除大Key**
+- 渐进式删除： hash结构 `hscan` 再 `hdel`删除，`list`、`zset`、`set`同样如此
+- `UNLINK` (4.0版本以后)：在所有命名空间中把 key 删掉，立即返回，不阻塞。后台线程执行真正的释放空间的操作。 `UNLINK` 不是立即释放空间。
+
 #### <a name="105">热Key</a><a style="float:right;text-decoration:none;" href="#index">[Top]</a>
 热点Key：某一件商品被数万次点击、购买时，会形成一个较大的需求量，这种情况下就会产生一个单一的Key，这样就会引起一个热点；同理，当被大量刊发、浏览的热点新闻，热点评论等也会产生热点；另外，在服务端读数据进行访问时，往往会对数据进行分片切分，此类过程中会在某一主机Server上对相应的Key进行访问，当访问超过主机Server极限时，就会导致热点Key问题的产生。
 
