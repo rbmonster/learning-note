@@ -104,7 +104,7 @@ BTW：强烈大家注册一个ChatGPT，可以用来完善面试题。
 - [【凤凰架构】周志明](https://icyfenix.cn/summary/)
 - [【计算机网络-自顶而下】](src/main/java/com/toc/NETWORK_BOOK.md)
 - [【重构-改善既有代码的设计】](src/main/java/com/toc/REFACTOR_BOOK.md)
-- [【图解kafka之实战指南】](src/main/java/com/toc/REFACTOR_BOOK.md)
+- [【图解kafka之实战指南】](src/main/java/com/toc/KAFKA_IN_ACTION.md)
 
 ## 参考资料
 技术博客：
