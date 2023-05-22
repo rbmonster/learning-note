@@ -148,6 +148,8 @@ TCC 在业务执行时只操作预留资源，几乎不会涉及锁和资源的�
 
 **TCC 落地实现的开源框架主要有 ByteTCC、TCC-transaction、Himly、Seata TCC 模式等。**
 
+- [TCC 幂等、空回滚、悬挂问题解决方案](https://seata.io/zh-cn/blog/seata-tcc-fence.html)
+
 #### SAGA事务
 在分布式事务中，若存在与外部交互的系统，那么就不可能使用TCC的冻结或预留等Try阶段操作。\
 SAGA事务是一个分布式环境中的大事务分解为一系列本地事务的设计模式。
