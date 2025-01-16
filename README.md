@@ -73,7 +73,7 @@ BTW：强烈大家注册一个ChatGPT，可以用来完善面试题。
 - [购物活动金额结算设计](/src/main/java/com/toc/SHOPPING_SETTLEMENT.md)
 - [本地缓存设计](/src/main/java/com/toc/LOCALCACHE.md)
 - [pvuv设计](/src/main/java/com/toc/PVUV_DESIGN.md)
-- [基于Feed流系统设计](/src/main/java/com/toc/PVUV_DESIGN.md)
+- [基于Feed流系统设计](/src/main/java/com/toc/FEED_DESIGN.md)
 - [评论系统](/src/main/java/com/toc/COMMENT-SYSTEM.md)
 - [核酸系统](/src/main/java/com/toc/NCOV-SYSTEM.md)
 

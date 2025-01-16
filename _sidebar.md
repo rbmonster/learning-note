@@ -67,7 +67,7 @@
     * [OAUTH2、CAS、SSO](/src/main/java/com/toc/OAUTH2_CAS_SSO.md)
     * [RPC框架介绍与设计](/src/main/java/com/toc/RPC_DESIGN.md)
     * [pvuv设计](/src/main/java/com/toc/PVUV_DESIGN.md)
-    * [基于Feed流系统设计](/src/main/java/com/toc/PVUV_DESIGN.md)
+    * [基于Feed流系统设计](/src/main/java/com/toc/FEED_DESIGN.md)
 
 * 分布式与微服务
   * [Spring Cloud相关知识](/src/main/java/com/toc/SPRING-CLOUD.md)
